@@ -1,6 +1,7 @@
 # Usage: bqbl-scrape.py <file with list of ESPN URLs>
 import re
 import sys
+import time
 import urllib
 
 qb_stats = r"<th>(\d+).(\d+)<.th><th>(\d+)<.th><th>.*<.th><th>(\d+)<.th><th>(\d+)<.th>"
@@ -10,7 +11,7 @@ int_re = re.compile("(Interception Return)")
 fumret_re = re.compile("Fumble Return")
 team_re = re.compile(">(...?) Passing")
 
-notes = ""
+notes = []
 lines = []
 teams = ["ARI","ATL","BAL","BUF","CAR","CHI","CIN","CLE","DAL","DEN","DET",
          "GB","HOU","IND","JAC","KC","MIA","MIN","NE","NO","NYG","NYJ","OAK",
@@ -126,7 +127,7 @@ def scrape(url):
                   fumkept2, "'", yds2, rushy2]]))
 
   if fumret_re.findall(data):
-    notes += " %s %s Fumble Return" % (team1, team2)
+    notes.append(" %s %s Fumble Return" % (team1, team2))
 
 urls=open(sys.argv[1]).readlines()
 
@@ -139,4 +140,5 @@ for team in teams:
     lines.append(team)
 lines.sort()
 print "\n".join(lines)
-print notes
+print "Updated: %s" % time.strftime("%Y-%m-%d %H:%M:%S %Z")
+print '\n'.join(notes)
