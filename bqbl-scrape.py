@@ -40,7 +40,9 @@ def team_int(int_data):
   """Returns (non-TD interceptions, int TDs).
   If data couldn't be parsed, returns two non-integer strings.
   """
-  team_int_re = re.compile(r"Team</th><th>(\d+)</th><th>(\d+)</th>")
+  # Match the first and last columns, because sometimes ESPN sticks a "yards"
+  # column in the middle.
+  team_int_re = re.compile(r"Team</th><th>(\d+)</th>.*?<th>(\d+)</th></tr>")
   int_match = team_int_re.search(int_data)
   if not int_data:
     return 'int', 'int6'
