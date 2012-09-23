@@ -36,6 +36,21 @@ def qb_rush(rush_data, fum_data,  qb):
   return (rushy, rushtd, fumlost, fumkept)
 
 
+def team_int(int_data):
+  """Returns (non-TD interceptions, int TDs).
+  If data couldn't be parsed, returns two non-integer strings.
+  """
+  team_int_re = re.compile(r"Team</th><th>(\d+)</th><th>(\d+)</th>")
+  int_match = team_int_re.search(int_data)
+  if not int_data:
+    return 'int', 'int6'
+  all_ints, td_ints = int_match.group(1, 2)
+  try:
+    return int(all_ints) - int(td_ints), int(td_ints)
+  except ValueError:
+    return 'int', 'int6'
+
+
 def scrape(url):
   global notes, found_teams
   data = urllib.urlopen(url).read()
@@ -77,7 +92,8 @@ def scrape(url):
     att1  = pass1_match.group(2)
     yds1  = pass1_match.group(3)
     td1   = pass1_match.group(4)
-    int1  = pass1_match.group(5)
+  else:
+    comp1, att1, yds1, td1 = (0, 0, 0, 0)
 
   pass2_match = qb_re.search(passing_total2)
   if pass2_match:
@@ -85,19 +101,28 @@ def scrape(url):
     att2  = pass2_match.group(2)
     yds2  = pass2_match.group(3)
     td2   = pass2_match.group(4)
-    int2  = pass2_match.group(5)
+  else:
+    comp2, att2, yds2, td2 = (0, 0, 0, 0)
+
+  # ints1 = interceptions thrown by team 1 (i.e., interceptions made by team 2)
+  if "Interceptions</th>" in data:
+    ints1 = data.split("Interceptions</th>")[2].split("Kick Returns")[0]
+    ints2 = data.split("Interceptions</th>")[1].split("Kick Returns")[0]
+
+    int1, inttd1 = team_int(ints1)
+    int2, inttd2 = team_int(ints2)
+  else:
+    int1, inttd1, int2, inttd2 = (0, 0, 0, 0)
 
   lines.append(
     "\t".join([str(item) for item in
-               [team1, comp1, att1, td1, int1, "i6", rushtd1, fumlost1,
+               [team1, comp1, att1, td1, int1, inttd1, rushtd1, fumlost1,
                 fumkept1, "fum6", yds1, rushy1]]))
   lines.append(
       "\t".join([str(item) for item in
-                 [team2, comp2, att2, td2, int2, "i6", rushtd2, fumlost2,
+                 [team2, comp2, att2, td2, int2, inttd2, rushtd2, fumlost2,
                   fumkept2, "fum6", yds2, rushy2]]))
 
-  if int_re.findall(data):
-    notes += " %s %s Interception Return" % (team1, team2)
   if fumret_re.findall(data):
     notes += " %s %s Fumble Return" % (team1, team2)
 
