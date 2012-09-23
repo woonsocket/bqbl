@@ -119,11 +119,11 @@ def scrape(url):
   lines.append(
     "\t".join([str(item) for item in
                [team1, comp1, att1, td1, int1, inttd1, rushtd1, fumlost1,
-                fumkept1, "fum6", yds1, rushy1]]))
+                fumkept1, "'", yds1, rushy1]]))
   lines.append(
       "\t".join([str(item) for item in
                  [team2, comp2, att2, td2, int2, inttd2, rushtd2, fumlost2,
-                  fumkept2, "fum6", yds2, rushy2]]))
+                  fumkept2, "'", yds2, rushy2]]))
 
   if fumret_re.findall(data):
     notes += " %s %s Fumble Return" % (team1, team2)
