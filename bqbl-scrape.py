@@ -45,12 +45,12 @@ def team_int(int_data):
   team_int_re = re.compile(r"Team</th><th>(\d+)</th>.*?<th>(\d+)</th></tr>")
   int_match = team_int_re.search(int_data)
   if not int_data:
-    return 'int', 'int6'
+    return "int", "int6"
   all_ints, td_ints = int_match.group(1, 2)
   try:
     return int(all_ints) - int(td_ints), int(td_ints)
   except ValueError:
-    return 'int', 'int6'
+    return "int", "int6"
 
 
 def scrape(url):
