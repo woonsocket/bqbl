@@ -12,11 +12,54 @@ fumret_re = re.compile("Fumble Return")
 team_re = re.compile(">(...?) Passing")
 
 notes = []
-lines = []
+scores = []
 teams = ["ARI","ATL","BAL","BUF","CAR","CHI","CIN","CLE","DAL","DEN","DET",
          "GB","HOU","IND","JAC","KC","MIA","MIN","NE","NO","NYG","NYJ","OAK",
          "PHI","PIT","SD","SEA","SF","STL","TB","TEN","WSH"]
 found_teams = []
+
+
+class QbStats(object):
+  """A collection of stats.
+
+  Attributes might be strings; be careful when you do math on them.
+  """
+
+  def __init__(self, team=0, completions=0, attempts=0, pass_tds=0,
+               interceptions_notd=0, interceptions_td=0, rush_tds=0,
+               fumbles_lost_notd=0, fumbles_lost_td=0, fumbles_kept=0,
+               pass_yards=0, rush_yards=0):
+    """Initializer.
+
+    If you don't pass arguments by name, you're gonna have a bad time.
+    """
+    self.team = team
+    self.completions = completions
+    self.attempts = attempts
+    self.pass_tds = pass_tds
+    self.interceptions_notd = interceptions_notd
+    self.interceptions_td = interceptions_td
+    self.rush_tds = rush_tds
+    self.fumbles_lost_notd = fumbles_lost_notd
+    self.fumbles_lost_td = fumbles_lost_td
+    self.fumbles_kept = fumbles_kept
+    self.pass_yards = pass_yards
+    self.rush_yards = rush_yards
+
+  def _StringifyStat(self, stat):
+    if stat is None:
+      return ""
+    else:
+      return str(stat)
+
+  def AsSpreadsheetRow(self, delimiter="\t"):
+    return delimiter.join(
+        [self._StringifyStat(item) for item in
+         [self.team, self.completions, self.attempts, self.pass_tds,
+          self.interceptions_notd, self.interceptions_td, self.rush_tds,
+          self.fumbles_lost_notd, self.fumbles_kept, self.fumbles_lost_td,
+          self.pass_yards, self.rush_yards]])
+
 
 def qb_rush(rush_data, fum_data,  qb):
   rush_re = re.compile(r">%s<.a><.td><td>(.?\d+)<.td><td>(.?\d+)<.td><td>.*?<.td><td>(.?\d+)<.td>" % qb)
@@ -64,8 +107,13 @@ def scrape(url):
 
   rushing1 = data.split("Rushing</th>")[1].split("Receiving")[0]
   rushing2 = data.split("Rushing</th>")[2].split("Receiving")[0]
-  fumbles1 = data.split("Fumbles</th>")[1].split("Interceptions")[0]
-  fumbles2 = data.split("Fumbles</th>")[2].split("Interceptions")[0]
+
+  if "Fumbles</th>" in data:
+    fumbles1 = data.split("Fumbles</th>")[1].split("Interceptions")[0]
+    fumbles2 = data.split("Fumbles</th>")[2].split("Interceptions")[0]
+  else:
+    fumbles1 = ""
+    fumbles2 = ""
 
   team1 = team_re.findall(data)[0]
   team2 = team_re.findall(data)[1]
@@ -117,14 +165,32 @@ def scrape(url):
   else:
     int1, inttd1, int2, inttd2 = (0, 0, 0, 0)
 
-  lines.append(
-    "\t".join([str(item) for item in
-               [team1, comp1, att1, td1, int1, inttd1, rushtd1, fumlost1,
-                fumkept1, "'", yds1, rushy1]]))
-  lines.append(
-      "\t".join([str(item) for item in
-                 [team2, comp2, att2, td2, int2, inttd2, rushtd2, fumlost2,
-                  fumkept2, "'", yds2, rushy2]]))
+  scores.append(
+      QbStats(team=team1,
+              completions=comp1,
+              attempts=att1,
+              pass_tds=td1,
+              interceptions_notd=int1,
+              interceptions_td=inttd1,
+              rush_tds=rushtd1,
+              fumbles_lost_notd=fumlost1,  # Includes fumble return TDs...
+              fumbles_lost_td=None,  # ... because we can't compute this yet.
+              fumbles_kept=fumkept1,
+              pass_yards=yds1,
+              rush_yards=rushy1))
+  scores.append(
+      QbStats(team=team2,
+              completions=comp2,
+              attempts=att2,
+              pass_tds=td2,
+              interceptions_notd=int2,
+              interceptions_td=inttd2,
+              rush_tds=rushtd2,
+              fumbles_lost_notd=fumlost2,
+              fumbles_lost_td=None,
+              fumbles_kept=fumkept2,
+              pass_yards=yds2,
+              rush_yards=rushy2))
 
   if fumret_re.findall(data):
     notes.append(" %s %s Fumble Return" % (team1, team2))
@@ -135,6 +201,7 @@ for url in urls:
   scrape(url)
 
 # Add dummy lines for teams that haven't played.
+lines = [score.AsSpreadsheetRow() for score in scores]
 for team in teams:
   if team not in found_teams:
     lines.append(team)
