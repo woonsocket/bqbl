@@ -28,7 +28,7 @@ class QbStats(object):
   def __init__(self, team=0, completions=0, attempts=0, pass_tds=0,
                interceptions_notd=0, interceptions_td=0, rush_tds=0,
                fumbles_lost_notd=0, fumbles_lost_td=0, fumbles_kept=0,
-               pass_yards=0, rush_yards=0):
+               pass_yards=0, rush_yards=0, over25=False):
     """Initializer.
 
     If you don't pass arguments by name, you're gonna have a bad time.
@@ -45,6 +45,7 @@ class QbStats(object):
     self.fumbles_kept = fumbles_kept
     self.pass_yards = pass_yards
     self.rush_yards = rush_yards
+    self.over25 = over25
 
   def _StringifyStat(self, stat):
     if stat is None:
@@ -58,7 +59,7 @@ class QbStats(object):
          [self.team, self.completions, self.attempts, self.pass_tds,
           self.interceptions_notd, self.interceptions_td, self.rush_tds,
           self.fumbles_lost_notd, self.fumbles_kept, self.fumbles_lost_td,
-          self.pass_yards, self.rush_yards]])
+          self.pass_yards, self.rush_yards, self.over25]])
 
 
 def qb_rush(rush_data, fum_data,  qb):
@@ -97,6 +98,20 @@ def team_int(int_data):
     return "int", "int6"
 
 
+def team_rec(rec_data):
+  """Returns "TRUE" iff there was a reception > 25 yards.
+  If data couldn't be parsed, returns "??".
+  """
+  team_rec_re = re.compile(r"Team</th><th>\d+</th><th>\d+</th><th>.*</th><th>\d+</th><th>(\d+)</th><th>\d+</th></tr>")
+  rec_match = team_rec_re.search(rec_data)
+  if not rec_data:
+    return "??"
+  lg = rec_match.group(1)
+  if int(lg) > 24:
+    return "TRUE"
+  return "FALSE"
+
+
 def scrape(url):
   global notes, found_teams
   data = urllib.urlopen(url).read()
@@ -107,6 +122,9 @@ def scrape(url):
 
   rushing1 = data.split("Rushing</th>")[1].split("Receiving")[0]
   rushing2 = data.split("Rushing</th>")[2].split("Receiving")[0]
+
+  receiving1 = data.split("Receiving</th>")[1].split("Fumbles")[0]
+  receiving2 = data.split("Receiving</th>")[1].split("Fumbles")[0]
 
   if "Fumbles</th>" in data:
     fumbles1 = data.split("Fumbles</th>")[1].split("Interceptions")[0]
@@ -165,6 +183,9 @@ def scrape(url):
   else:
     int1, inttd1, int2, inttd2 = (0, 0, 0, 0)
 
+  longpass1 = team_rec(receiving1)
+  longpass2 = team_rec(receiving2)
+
   scores.append(
       QbStats(team=team1,
               completions=comp1,
@@ -177,7 +198,8 @@ def scrape(url):
               fumbles_lost_td=None,  # ... because we can't compute this yet.
               fumbles_kept=fumkept1,
               pass_yards=yds1,
-              rush_yards=rushy1))
+              rush_yards=rushy1,
+              over25=longpass1))
   scores.append(
       QbStats(team=team2,
               completions=comp2,
@@ -190,7 +212,8 @@ def scrape(url):
               fumbles_lost_td=None,
               fumbles_kept=fumkept2,
               pass_yards=yds2,
-              rush_yards=rushy2))
+              rush_yards=rushy2,
+              over25=longpass2))
 
   if fumret_re.findall(data):
     notes.append(" %s %s Fumble Return" % (team1, team2))
