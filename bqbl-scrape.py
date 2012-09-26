@@ -141,7 +141,7 @@ def scrape(url):
   rushing2 = data.split("Rushing</th>")[2].split("Receiving")[0]
 
   receiving1 = data.split("Receiving</th>")[1].split("Fumbles")[0]
-  receiving2 = data.split("Receiving</th>")[1].split("Fumbles")[0]
+  receiving2 = data.split("Receiving</th>")[2].split("Fumbles")[0]
 
   if "Fumbles</th>" in data:
     fumbles1 = data.split("Fumbles</th>")[1].split("Interceptions")[0]
