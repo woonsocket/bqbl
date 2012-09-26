@@ -1,8 +1,20 @@
 # Usage: bqbl-scrape.py <file with list of ESPN URLs>
+import json
+import optparse
 import re
 import sys
 import time
 import urllib
+
+parser = optparse.OptionParser(
+  usage="Usage: %prog [options] <file with list of ESPN URLs>")
+parser.add_option("-o", "--output_format", dest="output_format", default="tab",
+                  help="Output format. Valid values: ['tab', 'json'].")
+options, args = parser.parse_args()
+
+if len(args) < 1:
+  parser.print_usage()
+  sys.exit(1)
 
 qb_stats = r"<th>(\d+).(\d+)<.th><th>(\d+)<.th><th>.*<.th><th>(\d+)<.th><th>(\d+)<.th>"
 qb_re = re.compile(qb_stats)
@@ -60,6 +72,11 @@ class QbStats(object):
           self.interceptions_notd, self.interceptions_td, self.rush_tds,
           self.fumbles_lost_notd, self.fumbles_kept, self.fumbles_lost_td,
           self.pass_yards, self.rush_yards, self.over25]])
+
+  def AsDictionary(self):
+    # This is a little risky if we start including additional fields that
+    # shouldn't be exported.
+    return self.__dict__.copy()
 
 
 def qb_rush(rush_data, fum_data,  qb):
@@ -218,17 +235,20 @@ def scrape(url):
   if fumret_re.findall(data):
     notes.append(" %s %s Fumble Return" % (team1, team2))
 
-urls=open(sys.argv[1]).readlines()
+urls=open(args[0]).readlines()
 
 for url in urls:
   scrape(url)
 
-# Add dummy lines for teams that haven't played.
-lines = [score.AsSpreadsheetRow() for score in scores]
-for team in teams:
-  if team not in found_teams:
-    lines.append(team)
-lines.sort()
-print "\n".join(lines)
-print "Updated: %s" % time.strftime("%Y-%m-%d %H:%M:%S %Z")
-print '\n'.join(notes)
+if options.output_format == 'tab':
+  # Add dummy lines for teams that haven't played.
+  lines = [score.AsSpreadsheetRow() for score in scores]
+  for team in teams:
+    if team not in found_teams:
+      lines.append(team)
+  lines.sort()
+  print "\n".join(lines)
+  print "Updated: %s" % time.strftime("%Y-%m-%d %H:%M:%S %Z")
+  print "\n".join(notes)
+elif options.output_format == 'json':
+  print json.dumps([score.AsDictionary() for score in scores])
