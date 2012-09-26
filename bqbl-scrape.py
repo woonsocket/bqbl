@@ -16,7 +16,10 @@ if len(args) < 1:
   parser.print_usage()
   sys.exit(1)
 
-qb_stats = r"<th>(\d+).(\d+)<.th><th>(\d+)<.th><th>.*?<.th><th>(\d+)<.th><th>(\d+)<.th>"
+# Cells, in order: Comp/Att; Yds; .*; TD; INT (unused); Sacks-Sack yards
+# INT isn't in a capture group because we parse it separately, from the
+# Interceptions table.
+qb_stats = r"<th>(\d+).(\d+)<.th><th>(\d+)<.th><th>.*?<.th><th>(\d+)<.th><th>\d+<.th><th>\d+[^\d](\d+)</th>"
 qb_re = re.compile(qb_stats)
 name_re = re.compile("(\w. \w+)</a>")
 int_re = re.compile("(Interception Return)")
@@ -40,7 +43,7 @@ class QbStats(object):
   def __init__(self, team=0, completions=0, attempts=0, pass_tds=0,
                interceptions_notd=0, interceptions_td=0, rush_tds=0,
                fumbles_lost_notd=0, fumbles_lost_td=0, fumbles_kept=0,
-               pass_yards=0, rush_yards=0, over25=False):
+               pass_yards=0, rush_yards=0, sack_yards=0, long_pass=0):
     """Initializer.
 
     If you don't pass arguments by name, you're gonna have a bad time.
@@ -57,7 +60,8 @@ class QbStats(object):
     self.fumbles_kept = fumbles_kept
     self.pass_yards = pass_yards
     self.rush_yards = rush_yards
-    self.over25 = over25
+    self.sack_yards = sack_yards
+    self.long_pass = long_pass
 
   def _StringifyStat(self, stat):
     if stat is None:
@@ -71,7 +75,7 @@ class QbStats(object):
          [self.team, self.completions, self.attempts, self.pass_tds,
           self.interceptions_notd, self.interceptions_td, self.rush_tds,
           self.fumbles_lost_notd, self.fumbles_kept, self.fumbles_lost_td,
-          self.pass_yards, self.rush_yards, self.over25]])
+          self.pass_yards, self.rush_yards, self.sack_yards, self.long_pass]])
 
   def AsDictionary(self):
     # This is a little risky if we start including additional fields that
@@ -116,7 +120,7 @@ def team_int(int_data):
 
 
 def team_rec(rec_data):
-  """Returns "TRUE" iff there was a reception > 25 yards.
+  """Returns the length of the longest reception, as an integer.
   If data couldn't be parsed, returns "??".
   """
   team_rec_re = re.compile(r"Team</th><th>\d+</th><th>\d+</th><th>.*?</th><th>\d+</th><th>(\d+)</th><th>\d+</th></tr>")
@@ -124,9 +128,7 @@ def team_rec(rec_data):
   if not rec_data:
     return "??"
   lg = rec_match.group(1)
-  if int(lg) > 24:
-    return "TRUE"
-  return "FALSE"
+  return int(lg)
 
 
 def scrape(url):
@@ -174,21 +176,23 @@ def scrape(url):
 
   pass1_match = qb_re.search(passing_total1)
   if pass1_match:
-    comp1 = pass1_match.group(1)
-    att1  = pass1_match.group(2)
-    yds1  = pass1_match.group(3)
-    td1   = pass1_match.group(4)
+    comp1    = pass1_match.group(1)
+    att1     = pass1_match.group(2)
+    yds1     = pass1_match.group(3)
+    td1      = pass1_match.group(4)
+    sackyds1 = pass1_match.group(5)
   else:
-    comp1, att1, yds1, td1 = (0, 0, 0, 0)
+    comp1, att1, yds1, td1, sackyds1 = (0, 0, 0, 0, 0)
 
   pass2_match = qb_re.search(passing_total2)
   if pass2_match:
-    comp2 = pass2_match.group(1)
-    att2  = pass2_match.group(2)
-    yds2  = pass2_match.group(3)
-    td2   = pass2_match.group(4)
+    comp2    = pass2_match.group(1)
+    att2     = pass2_match.group(2)
+    yds2     = pass2_match.group(3)
+    td2      = pass2_match.group(4)
+    sackyds2 = pass2_match.group(5)
   else:
-    comp2, att2, yds2, td2 = (0, 0, 0, 0)
+    comp2, att2, yds2, td2, sackyds2 = (0, 0, 0, 0, 0)
 
   # ints1 = interceptions thrown by team 1 (i.e., interceptions made by team 2)
   if "Interceptions</th>" in data:
@@ -216,7 +220,8 @@ def scrape(url):
               fumbles_kept=fumkept1,
               pass_yards=yds1,
               rush_yards=rushy1,
-              over25=longpass1))
+              sack_yards=sackyds1,
+              long_pass=longpass1))
   scores.append(
       QbStats(team=team2,
               completions=comp2,
@@ -230,7 +235,8 @@ def scrape(url):
               fumbles_kept=fumkept2,
               pass_yards=yds2,
               rush_yards=rushy2,
-              over25=longpass2))
+              sack_yards=sackyds2,
+              long_pass=longpass2))
 
   if fumret_re.findall(data):
     notes.append(" %s %s Fumble Return" % (team1, team2))
