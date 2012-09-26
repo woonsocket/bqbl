@@ -16,7 +16,7 @@ if len(args) < 1:
   parser.print_usage()
   sys.exit(1)
 
-qb_stats = r"<th>(\d+).(\d+)<.th><th>(\d+)<.th><th>.*<.th><th>(\d+)<.th><th>(\d+)<.th>"
+qb_stats = r"<th>(\d+).(\d+)<.th><th>(\d+)<.th><th>.*?<.th><th>(\d+)<.th><th>(\d+)<.th>"
 qb_re = re.compile(qb_stats)
 name_re = re.compile("(\w. \w+)</a>")
 int_re = re.compile("(Interception Return)")
@@ -119,7 +119,7 @@ def team_rec(rec_data):
   """Returns "TRUE" iff there was a reception > 25 yards.
   If data couldn't be parsed, returns "??".
   """
-  team_rec_re = re.compile(r"Team</th><th>\d+</th><th>\d+</th><th>.*</th><th>\d+</th><th>(\d+)</th><th>\d+</th></tr>")
+  team_rec_re = re.compile(r"Team</th><th>\d+</th><th>\d+</th><th>.*?</th><th>\d+</th><th>(\d+)</th><th>\d+</th></tr>")
   rec_match = team_rec_re.search(rec_data)
   if not rec_data:
     return "??"
