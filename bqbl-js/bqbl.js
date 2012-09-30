@@ -31,9 +31,7 @@ bqbl.writeScores = function(jsonData) {
       });
   var scoreMarkups = scoreObjects.map(
       function(scoreObject) {
-	return bqbl.generateTeamScoreMarkup(
-	    scoreObject['team'],
-	    bqbl.computeScoreComponents(scoreObject));
+	return bqbl.generateTeamScoreMarkup(scoreObject);
       });
   for (var j = 0; j < scoreMarkups.length; j++) {
     document.getElementById('bqblscores').innerHTML += scoreMarkups[j];
@@ -77,10 +75,14 @@ bqbl.numberToHtml = function(num) {
 };
 
 
-bqbl.generateTeamScoreMarkup = function(teamName, componentList) {
-  var componentMarkups = ['<div class="teamscore">',
-			  '<span class="teamname">' + teamName + '</span>',
-			  '<table class="scoretable">'];
+bqbl.generateTeamScoreMarkup = function(scoreObject) {
+  var statLine = bqbl.computeStatLine(scoreObject);
+  var componentList = bqbl.computeScoreComponents(scoreObject);
+  var componentMarkups = [
+      '<div class="teamscore">',
+      '<span class="teamname">' + scoreObject['team'] + '</span>: ' + statLine,
+      '<table class="scoretable">'
+  ];
   var totalPoints = 0;
   for (var cNum = 0, component; component = componentList[cNum++]; ) {
     if (component.pointValue == 0)
@@ -114,6 +116,19 @@ bqbl.generateTeamScoreMarkup = function(teamName, componentList) {
 bqbl.simpleMultiple = function(pointsPer, quantity, description) {
   return new bqbl.ScoreComponent(quantity * pointsPer,
 				 quantity + 'x ' + description);
+};
+
+
+/**
+ * @return {string} The QB stat line.
+ */
+bqbl.computeStatLine = function(qbScore) {
+  return goog.string.buildString(
+      qbScore['completions'] + '/' + qbScore['attempts'] + ', ',
+      qbScore['pass_yards'] + ' yd, ',
+      qbScore['pass_tds'] + ' TD, ',
+      qbScore['interceptions_td'] + qbScore['interceptions_notd'] + ' INT'
+  );
 };
 
 
