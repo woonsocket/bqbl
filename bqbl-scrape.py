@@ -134,6 +134,8 @@ def team_rec(rec_data):
 def scrape(url):
   global notes, found_teams
   data = urllib.urlopen(url).read()
+  if "No Boxscore Available".lower() in data.lower():
+    return
   passing1 =  data.split("Passing</th>")[1].split("Rushing")[0]
   passing2 = data.split("Passing</th>")[2].split("Rushing")[0]
   passing_total1 = passing1.split("Team")[1]
