@@ -1,0 +1,24 @@
+<html>
+  <head>
+    <script src="bqbl-compiled.js"></script>
+    <style>
+      body { font-family: sans-serif; }
+      .teamname { font-weight: bold; }
+      DIV.teamscore {
+        margin-top: 20px;
+        margin-bottom: 20px;
+      }
+      TABLE.scoretable { border-collapse: collapse; }
+      TABLE.scoretable TD { padding: 0px 8px 0px 8px; }
+      TR.total { background-color: #cccccc; font-weight: bold; }
+      TD.scorepoints { text-align: right; }
+      TD.scoredesc {}
+      .neg { color:red; }
+    </style>
+  </head>
+  <body onload="bqbl.loadDataFromJson('week4.json')">
+    <div id="bqblscores">
+      <!-- Stuff is injected here -->
+    </div>
+  </body>
+</html>
