@@ -16,11 +16,14 @@ if len(args) < 1:
   parser.print_usage()
   sys.exit(1)
 
-# Cells, in order: Comp/Att; Yds; .*; TD; INT (unused); Sacks-Sack yards
+# Cells, in order: Comp/Att; Yds; .*; TD; INT (unused)
 # INT isn't in a capture group because we parse it separately, from the
 # Interceptions table.
-qb_stats = r"<th>(\d+).(\d+)<.th><th>(\d+)<.th><th>.*?<.th><th>(\d+)<.th><th>\d+<.th><th>\d+[^\d](\d+)</th>"
-qb_re = re.compile(qb_stats)
+qb_re = re.compile(r"<th>(\d+).(\d+)<.th><th>(\d+)<.th><th>.*?<.th><th>(\d+)<.th><th>\d+<.th>")
+# Adds Sacks-Sack yards as the final column. The ESPN box score doesn't always
+# render this column (current theory is that it's added after a game is over,
+# but doesn't show while the game is in progress).
+qb_re_sacks = re.compile(r"<th>(\d+).(\d+)<.th><th>(\d+)<.th><th>.*?<.th><th>(\d+)<.th><th>\d+<.th><th>\d+[^\d](\d+)</th>")
 name_re = re.compile("(\w. \w+)</a>")
 int_re = re.compile("(Interception Return)")
 fumret_re = re.compile("Fumble Return")
@@ -176,23 +179,37 @@ def scrape(url):
     fumlost2 += fumlost2qb
     fumkept2 += fumkept2qb
 
+  pass1sacks_match = qb_re_sacks.search(passing_total1)
   pass1_match = qb_re.search(passing_total1)
-  if pass1_match:
+  if pass1sacks_match:
+    comp1    = pass1sacks_match.group(1)
+    att1     = pass1sacks_match.group(2)
+    yds1     = pass1sacks_match.group(3)
+    td1      = pass1sacks_match.group(4)
+    sackyds1 = pass1sacks_match.group(5)
+  elif pass1_match:
     comp1    = pass1_match.group(1)
     att1     = pass1_match.group(2)
     yds1     = pass1_match.group(3)
     td1      = pass1_match.group(4)
-    sackyds1 = pass1_match.group(5)
+    sackyds1 = 0  # Maybe this should be None.
   else:
     comp1, att1, yds1, td1, sackyds1 = (0, 0, 0, 0, 0)
 
+  pass2sacks_match = qb_re_sacks.search(passing_total2)
   pass2_match = qb_re.search(passing_total2)
-  if pass2_match:
+  if pass2sacks_match:
+    comp2    = pass2sacks_match.group(1)
+    att2     = pass2sacks_match.group(2)
+    yds2     = pass2sacks_match.group(3)
+    td2      = pass2sacks_match.group(4)
+    sackyds2 = pass2sacks_match.group(5)
+  elif pass2_match:
     comp2    = pass2_match.group(1)
     att2     = pass2_match.group(2)
     yds2     = pass2_match.group(3)
     td2      = pass2_match.group(4)
-    sackyds2 = pass2_match.group(5)
+    sackyds2 = 0  # Maybe this should be None.
   else:
     comp2, att2, yds2, td2, sackyds2 = (0, 0, 0, 0, 0)
 
