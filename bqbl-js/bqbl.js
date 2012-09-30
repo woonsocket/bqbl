@@ -5,21 +5,33 @@ goog.require('goog.string');
 
 
 /**
- * Loads JSON data and asynchronously renders the scores on the page.
+ * Loads JSON data and asynchronously renders the scores on the page, then
+ * enqueues another invocation of this function for some time in the future.
  * @param {string} url The URL from which to load the JSON.
+ * @param {number=} opt_updateInterval The number of seconds to wait until
+ *     updating again. Defaults to 5 minutes.
  */
-bqbl.loadDataFromJson = function(url) {
-  goog.net.XhrIo.send(
-      url,
-      function() {
-        bqbl.writeScores(this.getResponseJson());
-      },
-      undefined,  // opt_method
-      undefined,  // opt_content
-      {
-        'Cache-Control': 'max-age: 60'
-      }
-      );
+bqbl.startUpdating = function(url, opt_updateInterval) {
+  var loadAndQueueUpdate = function() {
+    goog.net.XhrIo.send(
+        url,
+        function() {
+          bqbl.writeScores(this.getResponseJson());
+        },
+        undefined,  // opt_method
+        undefined,  // opt_content
+        {
+          'Cache-Control': 'max-age: 60'
+        },
+        opt_updateInterval  // opt_timeoutInterval
+        );
+    // TODO: Include the update time in the JSON response instead, and display
+    // that as the time the data was scraped.
+    document.getElementById('updatetime').innerHTML = new Date();
+    window.setTimeout(
+        loadAndQueueUpdate, opt_updateInterval || 1000 * 60 * 5);
+  };
+  loadAndQueueUpdate();
 };
 
 
@@ -33,6 +45,7 @@ bqbl.writeScores = function(jsonData) {
       function(scoreObject) {
         return bqbl.generateTeamScoreMarkup(scoreObject);
       });
+  document.getElementById('bqblscores').innerHTML = '';
   for (var j = 0; j < scoreMarkups.length; j++) {
     document.getElementById('bqblscores').innerHTML += scoreMarkups[j];
   }
@@ -202,4 +215,4 @@ bqbl.touchdownPoints = function(tds) {
 };
 
 
-goog.exportSymbol('bqbl.loadDataFromJson', bqbl.loadDataFromJson);
+goog.exportSymbol('bqbl.startUpdating', bqbl.startUpdating);
