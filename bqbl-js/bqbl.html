@@ -1,5 +1,6 @@
 <html>
   <head>
+    <title>BQBL: Not Everybody Can Be a Winner</title>
     <script src="bqbl-compiled.js"></script>
     <style>
       body { font-family: sans-serif; }
@@ -20,5 +21,19 @@
     <div id="bqblscores">
       <!-- Stuff is injected here -->
     </div>
+    <h4>Disclaimers</h4>
+    <p>Our scraper doesn't count certain things that earn points in BQBL. All of
+    these will be added manually in the tracking spreadsheet later:
+      <ul>
+        <li>Fumbles returned for TD (+10 points) &mdash; these are counted in
+          'fumbles lost', so the total score will be off by 5
+        <li>QB sacked for a safety (+20 points)
+        <li>Game-winning drive (&minus;12 points)
+        <li>Game-losing INT-TD in OT (+50 points)
+        <li>Non-injury mid-game benching (+35 points) &mdash; this is a judgment call that will be added later
+        <li>All 24/7 points &mdash; we can only automatically determine on-the-field points
+      </ul>
+    </p>
+    <p>We also differ from Grantland (and the NFL box score) in that we deduct sack yardage from the QB passing yard total.</p>
   </body>
 </html>
