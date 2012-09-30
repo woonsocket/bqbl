@@ -12,12 +12,12 @@ bqbl.loadDataFromJson = function(url) {
   goog.net.XhrIo.send(
       url,
       function() {
-	bqbl.writeScores(this.getResponseJson());
+        bqbl.writeScores(this.getResponseJson());
       },
       undefined,  // opt_method
       undefined,  // opt_content
       {
-	'Cache-Control': 'max-age: 60'
+        'Cache-Control': 'max-age: 60'
       }
       );
 };
@@ -27,11 +27,11 @@ bqbl.writeScores = function(jsonData) {
   var scoreObjects = jsonData.map(bqbl.numberifyJson);
   scoreObjects.sort(
       function(a, b) {
-	return a['team'] > b['team'] ? 1 : (a['team'] == b['team'] ? 0 : -1);
+        return a['team'] > b['team'] ? 1 : (a['team'] == b['team'] ? 0 : -1);
       });
   var scoreMarkups = scoreObjects.map(
       function(scoreObject) {
-	return bqbl.generateTeamScoreMarkup(scoreObject);
+        return bqbl.generateTeamScoreMarkup(scoreObject);
       });
   for (var j = 0; j < scoreMarkups.length; j++) {
     document.getElementById('bqblscores').innerHTML += scoreMarkups[j];
@@ -91,15 +91,15 @@ bqbl.generateTeamScoreMarkup = function(scoreObject) {
     var pointString = bqbl.numberToHtml(component.pointValue);
     componentMarkups.push(
         '<tr>' +
-	'<td class="scorepoints">' + pointString + '</td>' +
-	'<td class="scoredesc">' + component.description + '</td>' +
-	'</tr>');
+        '<td class="scorepoints">' + pointString + '</td>' +
+        '<td class="scoredesc">' + component.description + '</td>' +
+        '</tr>');
   }
   componentMarkups.push('<tr class="total">' +
-			'<td class="scorepoints">' +
-			bqbl.numberToHtml(totalPoints) + '</td>' +
-			'<td class="scoredesc">TOTAL</td>' +
-			'</tr>');
+                        '<td class="scorepoints">' +
+                        bqbl.numberToHtml(totalPoints) + '</td>' +
+                        '<td class="scoredesc">TOTAL</td>' +
+                        '</tr>');
   componentMarkups.push('</table></div>');
   return componentMarkups.join('\n');
 };
@@ -115,7 +115,7 @@ bqbl.generateTeamScoreMarkup = function(scoreObject) {
  */
 bqbl.simpleMultiple = function(pointsPer, quantity, description) {
   return new bqbl.ScoreComponent(quantity * pointsPer,
-				 quantity + 'x ' + description);
+                                 quantity + 'x ' + description);
 };
 
 
