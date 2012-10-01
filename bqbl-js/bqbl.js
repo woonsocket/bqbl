@@ -89,13 +89,10 @@ bqbl.numberToHtml = function(num) {
 
 
 bqbl.generateTeamScoreMarkup = function(scoreObject) {
+  var teamName = scoreObject['team'];
   var statLine = bqbl.computeStatLine(scoreObject);
   var componentList = bqbl.computeScoreComponents(scoreObject);
-  var componentMarkups = [
-      '<div class="teamscore">',
-      '<span class="teamname">' + scoreObject['team'] + '</span>: ' + statLine,
-      '<table class="scoretable">'
-  ];
+  var componentMarkups = [];
   var totalPoints = 0;
   for (var cNum = 0, component; component = componentList[cNum++]; ) {
     if (component.pointValue == 0)
@@ -103,18 +100,30 @@ bqbl.generateTeamScoreMarkup = function(scoreObject) {
     totalPoints += component.pointValue;
     var pointString = bqbl.numberToHtml(component.pointValue);
     componentMarkups.push(
-        '<tr>' +
-        '<td class="scorepoints">' + pointString + '</td>' +
-        '<td class="scoredesc">' + component.description + '</td>' +
+        '<tr class="scorerow">' +
+        '  <td class="scoredesc">' + component.description + '</td>' +
+        '  <td class="scorepoints">' + pointString + '</td>' +
         '</tr>');
   }
-  componentMarkups.push('<tr class="total">' +
-                        '<td class="scorepoints">' +
-                        bqbl.numberToHtml(totalPoints) + '</td>' +
-                        '<td class="scoredesc">TOTAL</td>' +
-                        '</tr>');
-  componentMarkups.push('</table></div>');
-  return componentMarkups.join('\n');
+
+  var scoreMarkups = [
+      '<div class="team">',
+      '  <div class="teamheader">',
+      '    <img class="teamlogo" src="images/' + teamName + '.png" ',
+      '        width="48" height="32">',
+      '    <span class="teamname">' + teamName + '</span>',
+      '    <span class="teampoints">' + bqbl.numberToHtml(totalPoints) + '</span>',
+      '  </div>',
+      '  <div class="statline">' + statLine + '</div>',
+      '  <table class="scoretable">'
+  ];
+  scoreMarkups = scoreMarkups.concat(componentMarkups);
+  scoreMarkups = scoreMarkups.concat([
+      '  </table>',
+      '</div>'
+  ]);
+
+  return scoreMarkups.join('\n');
 };
 
 

@@ -3,24 +3,50 @@
     <title>BQBL: Not Everybody Can Be a Winner</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script type="text/javascript" src="bqbl-compiled.js"></script>
+    <!-- UNCOMMENT FOR UNCOMPILED
+    <script type="text/javascript" src="../closure-library/closure/goog/base.js"></script>
+    <script type="text/javascript" src="bqbl.js"></script>
+    <script>goog.require('bqbl');</script>
+    <!-- END UNCOMPILED -->
     <script type="text/javascript">
       function init() {
         bqbl.startUpdating('week4.json');
       }
     </script>
     <style>
-      body { font-family: sans-serif; }
-      .teamname { font-weight: bold; }
-      DIV.teamscore {
-        margin-top: 20px;
-        margin-bottom: 20px;
+      body { font-family: sans-serif; font-size: 10pt; }
+      DIV.team {
+        width: 240px;
+        border: 1px solid black;
+        padding: 1ex;
+        margin: 2ex 0 2ex 0;
+        display: inline-block;
+      }
+      .teamlogo {
+        vertical-align: middle;
+      }
+      .teamname {
+        font-weight: bold;
+        font-size:16pt;
+        margin-left: 0.5em;
+        vertical-align: middle;        
+      }
+      .teampoints {
+        font-weight: bold;
+        font-size:20pt;
+        vertical-align: middle;
+        float: right;
+      }
+      DIV.statline {
+        text-align: center;
+        margin: 1ex 0 1ex 0;
       }
       #updatetime { font-weight: bold; }
-      TABLE.scoretable { border-collapse: collapse; }
-      TABLE.scoretable TD { padding: 0px 8px 0px 8px; }
+      TABLE.scoretable { border-collapse: collapse; width: 100%; }
+      TABLE.scoretable TD { padding: 0; font-size: 10pt; }
       TR.total { background-color: #cccccc; font-weight: bold; }
-      TD.scorepoints { text-align: right; }
-      TD.scoredesc {}
+      .scoredesc { float: left; }
+      .scorepoints { float: right; text-align: right; }
       .neg { color:red; }
     </style>
   </head>
