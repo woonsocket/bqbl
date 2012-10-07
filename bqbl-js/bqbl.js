@@ -13,25 +13,34 @@ goog.require('goog.string');
  */
 bqbl.startUpdating = function(url, opt_updateInterval) {
   var loadAndQueueUpdate = function() {
-    goog.net.XhrIo.send(
-        url,
-        function() {
-          bqbl.writeScores(this.getResponseJson());
-        },
-        undefined,  // opt_method
-        undefined,  // opt_content
-        {
-          'Cache-Control': 'max-age: 60'
-        },
-        opt_updateInterval  // opt_timeoutInterval
-        );
-    // TODO: Include the update time in the JSON response instead, and display
-    // that as the time the data was scraped.
-    document.getElementById('updatetime').innerHTML = new Date();
+    bqbl.loadAndUpdate(url);
     window.setTimeout(
         loadAndQueueUpdate, opt_updateInterval || 1000 * 60 * 5);
   };
   loadAndQueueUpdate();
+};
+
+
+/**
+ * Loads JSON data and asynchronously renders the scores on the page.
+ * @param {string} url The URL from which to load the JSON.
+ */
+bqbl.loadAndUpdate = function(url) {
+  goog.net.XhrIo.send(
+      url,
+      function() {
+        bqbl.writeScores(this.getResponseJson());
+	// TODO: Include the update time in the JSON response instead, and
+	// display that as the time the data was scraped.
+	document.getElementById('updatetime').innerHTML = new Date();
+      },
+      undefined,  // opt_method
+      undefined,  // opt_content
+      {
+        'Cache-Control': 'max-age: 60'
+      },
+      60  // opt_timeoutInterval
+      );
 };
 
 
@@ -225,3 +234,4 @@ bqbl.touchdownPoints = function(tds) {
 
 
 goog.exportSymbol('bqbl.startUpdating', bqbl.startUpdating);
+goog.exportSymbol('bqbl.loadAndUpdate', bqbl.loadAndUpdate);

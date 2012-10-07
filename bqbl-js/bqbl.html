@@ -9,8 +9,14 @@
     <script>goog.require('bqbl');</script>
     <!-- END UNCOMPILED -->
     <script type="text/javascript">
+      var FILENAME = 'week5.json';
+
       function init() {
-        bqbl.startUpdating('week5.json');
+        bqbl.startUpdating(FILENAME);
+      }
+
+      function updateNow() {
+        bqbl.loadAndUpdate(FILENAME);
       }
     </script>
     <style>
@@ -57,12 +63,13 @@
     </style>
   </head>
   <body onload="init()">
-    <div id="bqblscores">
-      <!-- Stuff is injected here -->
-    </div>
     <div>
       This page auto-updates every 5 minutes.
       Last updated: <span id="updatetime"></span>
+      <button onclick="updateNow()">Update now</bqbl>
+    </div>
+    <div id="bqblscores">
+      <!-- Stuff is injected here -->
     </div>
     <h4>Disclaimers</h4>
     <p>Our scraper miscounts certain things that earn points in BQBL. All of
