@@ -39,7 +39,7 @@ bqbl.loadAndUpdate = function(url) {
       {
         'Cache-Control': 'max-age: 60'
       },
-      60  // opt_timeoutInterval
+      60 * 1000  // opt_timeoutInterval
       );
 };
 
