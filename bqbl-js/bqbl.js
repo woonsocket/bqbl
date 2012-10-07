@@ -61,11 +61,18 @@ bqbl.writeScores = function(jsonData) {
 };
 
 
+/**
+ * Attempts to converts all values in the JSON-parsed output to numbers. If the
+ * value cannot be parsed as a number, it is left alone. No keys are
+ * modified. The provided object is modified in-place, and also returned.
+ * @param {!Object<string, *>} qbScore An object parsed from JSON.
+ * @return {!Object<string, *>} The modified object.
+ */
 bqbl.numberifyJson = function(qbScore) {
   for (var key in qbScore) {
-    if (key == 'team')
-      continue;
-    qbScore[key] = goog.string.toNumber(qbScore[key]);
+    var numberwang = goog.string.toNumber(qbScore[key]);
+    if (!isNaN(numberwang))
+      qbScore[key] = numberwang;
   }
   return qbScore;
 };
@@ -97,9 +104,21 @@ bqbl.numberToHtml = function(num) {
 };
 
 
+/**
+ * @param {string} gameStatus The game status description.
+ * @return {boolean} Whether the game is over.
+ * @private
+ */
+bqbl.isGameOver_ = function(gameStatus) {
+  return gameStatus == 'Final';
+}
+
+
 bqbl.generateTeamScoreMarkup = function(scoreObject) {
   var teamName = scoreObject['team'];
   var statLine = bqbl.computeStatLine(scoreObject);
+  var gameStatus = scoreObject['game_time'];
+
   var componentList = bqbl.computeScoreComponents(scoreObject);
   var componentMarkups = [];
   var totalPoints = 0;
@@ -116,14 +135,17 @@ bqbl.generateTeamScoreMarkup = function(scoreObject) {
   }
 
   var scoreMarkups = [
-      '<div class="team">',
+      '<div class="team' + (bqbl.isGameOver_(gameStatus) ? '' : ' active') +
+          '">',
       '  <div class="teamheader">',
       '    <img class="teamlogo" src="images/' + teamName + '.png" ',
       '        width="48" height="32">',
       '    <span class="teamname">' + teamName + '</span>',
-      '    <span class="teampoints">' + bqbl.numberToHtml(totalPoints) + '</span>',
+      '    <span class="teampoints">' + bqbl.numberToHtml(totalPoints) +
+          '</span>',
       '  </div>',
       '  <div class="statline">' + statLine + '</div>',
+      '  <div class="gamestatus">' + gameStatus + '</div>',
       '  <table class="scoretable">'
   ];
   scoreMarkups = scoreMarkups.concat(componentMarkups);

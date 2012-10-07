@@ -28,6 +28,7 @@ name_re = re.compile("(\w. \w+)</a>")
 int_re = re.compile("(Interception Return)")
 fumret_re = re.compile("Fumble Return")
 team_re = re.compile(">(...?) Passing")
+time_re = re.compile("id=\"gameStatusBarText\">(.+?)</p>")
 
 notes = []
 scores = []
@@ -46,7 +47,8 @@ class QbStats(object):
   def __init__(self, team=0, completions=0, attempts=0, pass_tds=0,
                interceptions_notd=0, interceptions_td=0, rush_tds=0,
                fumbles_lost_notd=0, fumbles_lost_td=0, fumbles_kept=0,
-               pass_yards=0, rush_yards=0, sack_yards=0, long_pass=0):
+               pass_yards=0, rush_yards=0, sack_yards=0, long_pass=0,
+               game_time=''):
     """Initializer.
 
     If you don't pass arguments by name, you're gonna have a bad time.
@@ -65,6 +67,7 @@ class QbStats(object):
     self.rush_yards = rush_yards
     self.sack_yards = sack_yards
     self.long_pass = long_pass
+    self.game_time = game_time
 
   def _StringifyStat(self, stat):
     if stat is None:
@@ -73,6 +76,7 @@ class QbStats(object):
       return str(stat)
 
   def AsSpreadsheetRow(self, delimiter="\t"):
+    # Intentionally omits game_time.
     return delimiter.join(
         [self._StringifyStat(item) for item in
          [self.team, self.completions, self.attempts, self.pass_tds,
@@ -226,6 +230,12 @@ def scrape(url):
   longpass1 = team_rec(receiving1)
   longpass2 = team_rec(receiving2)
 
+  time_match = time_re.search(data)
+  if time_match:
+    gametime = time_match.group(1)
+  else:
+    gametime = ''
+
   scores.append(
       QbStats(team=team1,
               completions=comp1,
@@ -240,7 +250,8 @@ def scrape(url):
               pass_yards=yds1,
               rush_yards=rushy1,
               sack_yards=sackyds1,
-              long_pass=longpass1))
+              long_pass=longpass1,
+              game_time=gametime))
   scores.append(
       QbStats(team=team2,
               completions=comp2,
@@ -255,7 +266,8 @@ def scrape(url):
               pass_yards=yds2,
               rush_yards=rushy2,
               sack_yards=sackyds2,
-              long_pass=longpass2))
+              long_pass=longpass2,
+              game_time=gametime))
 
   if fumret_re.findall(data):
     notes.append(" %s %s Fumble Return" % (team1, team2))
