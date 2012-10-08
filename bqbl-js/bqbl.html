@@ -2,8 +2,8 @@
   <head>
     <title>BQBL: Not Everybody Can Be a Winner</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <script type="text/javascript" src="bqbl-compiled.js"></script>
-    <!-- UNCOMMENT FOR UNCOMPILED
+    <!--<script type="text/javascript" src="bqbl-compiled.js"></script>
+    <!-- UNCOMMENT FOR UNCOMPILED-->
     <script type="text/javascript" src="../closure-library/closure/goog/base.js"></script>
     <script type="text/javascript" src="bqbl.js"></script>
     <script>goog.require('bqbl');</script>
@@ -12,6 +12,7 @@
       var FILENAME = 'week5.json';
 
       function init() {
+        bqbl.init();
         bqbl.startUpdating(FILENAME);
       }
 

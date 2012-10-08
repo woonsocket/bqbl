@@ -64,15 +64,19 @@ bqbl.writeScores = function(jsonData) {
 
 
 /**
- * Attempts to converts all values in the JSON-parsed output to numbers. If the
- * value cannot be parsed as a number, it is left alone. No keys are
- * modified. The provided object is modified in-place, and also returned.
- * @param {!Object<string, *>} qbScore An object parsed from JSON.
- * @return {!Object<string, *>} The modified object.
+ * Attempts to converts all strings in the JSON-parsed output to numbers. If the
+ * string cannot be parsed as a number, it is left alone. Non-string values are
+ * left unmodified, as are all keys. The provided object is modified in-place,
+ * and also returned.
+ * @param {!Object.<string, *>} qbScore An object parsed from JSON.
+ * @return {!Object.<string, *>} The modified object.
  */
 bqbl.numberifyJson = function(qbScore) {
   for (var key in qbScore) {
-    var numberwang = goog.string.toNumber(qbScore[key]);
+    if (goog.isString(qbScore[key]))
+      continue;
+    var val = /** @type {string} */ qbScore[key];
+    var numberwang = goog.string.toNumber(val);
     if (!isNaN(numberwang))
       qbScore[key] = numberwang;
   }
