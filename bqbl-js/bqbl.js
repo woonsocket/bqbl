@@ -39,20 +39,18 @@ bqbl.init = function() {
 
 
 bqbl.registerListeners = function() {
-  goog.events.listen(
-      document.getElementById('sortbyteam'),
-      goog.events.EventType.CLICK,
-      function(e) {
-        bqbl.setSortOrder(['team']);
-        e.preventDefault();
-      });
-  goog.events.listen(
-      document.getElementById('sortbyactive'),
-      goog.events.EventType.CLICK,
-      function(e) {
-        bqbl.setSortOrder(['active', 'team']);
-        e.preventDefault();
-      });
+  function addListener(elementId, sortOrder) {
+    goog.events.listen(
+        document.getElementById(elementId),
+        goog.events.EventType.CLICK,
+        function(e) {
+          bqbl.setSortOrder(sortOrder);
+          e.preventDefault();
+        });
+  }
+  addListener('sortbyactive', ['active', 'team']);
+  addListener('sortbyscore', ['score', 'team']);
+  addListener('sortbyteam', ['team']);
 };
 
 
@@ -70,14 +68,19 @@ bqbl.comparisons = {};
 
 
 bqbl.comparisons.teamNameAlphabetical = function(a, b) {
-  return a['team'] > b['team'] ? 1 : (a['team'] == b['team'] ? 0 : -1);
+  return a.teamName > b.teamName ? 1 : (a.teamName == b.teamName ? 0 : -1);
 };
 
 
 bqbl.comparisons.activeGamesFirst = function(a, b) {
-  var aOver = bqbl.isGameOver_(a['game_time']) ? 1 : 0;
-  var bOver = bqbl.isGameOver_(b['game_time']) ? 1 : 0;
+  var aOver = a.isGameOver() ? 1 : 0;
+  var bOver = b.isGameOver() ? 1 : 0;
   return aOver - bOver;
+};
+
+
+bqbl.comparisons.scoresDescending = function(a, b) {
+  return b.totalScore - a.totalScore;
 };
 
 
@@ -142,22 +145,25 @@ bqbl.redrawScores = function(sortOrder) {
  */
 bqbl.writeScores = function(jsonData, opt_sortOrder) {
   var sortOrder = opt_sortOrder || [];
-  var scoreObjects = jsonData.map(bqbl.numberifyJson);
+  var teamScores = jsonData.map(bqbl.numberifyJson).map(
+      function(o) { return bqbl.scoreObjectToTeamScore(o); });
+
   for (var sortNum = sortOrder.length - 1; sortNum >= 0; sortNum--) {
     var compareFn;
     if (sortOrder[sortNum] == 'team') {
       compareFn = bqbl.comparisons.teamNameAlphabetical;
     } else if (sortOrder[sortNum] == 'active') {
       compareFn = bqbl.comparisons.activeGamesFirst;
+    } else if (sortOrder[sortNum] == 'score') {
+      compareFn = bqbl.comparisons.scoresDescending;
     }
     if (compareFn)
-      goog.array.stableSort(scoreObjects, compareFn);
+      goog.array.stableSort(teamScores, compareFn);
   }
-  // TODO: Compute the total score independently of generating the markup, so
-  // that we can sort teams by their score.
-  var scoreMarkups = scoreObjects.map(
-      function(scoreObject) {
-        return bqbl.generateTeamScoreMarkup(scoreObject);
+
+  var scoreMarkups = teamScores.map(
+      function(score) {
+        return bqbl.generateTeamScoreMarkup(score);
       });
   document.getElementById('bqblscores').innerHTML = '';
   for (var j = 0; j < scoreMarkups.length; j++) {
@@ -188,11 +194,68 @@ bqbl.numberifyJson = function(qbScore) {
 
 
 /**
- * Just a data object.
+ * Object holding the data to be displayed, along with some attributes for
+ * sorting.
+ * @constructor
+ */
+bqbl.TeamScore = function(teamName, gameStatus, statLine, scoreComponents) {
+  /**
+   * @type {string}
+   * @const
+   */
+  this.teamName = teamName;
+
+  /**
+   * The status of the game, e.g., the time remaining.
+   * @type {string}
+   * @const
+   */
+  this.gameStatus = gameStatus;
+
+  /**
+   * @type {string}
+   * @const
+   */
+  this.statLine = statLine;
+
+  /**
+   * @type {!Array.<!bqbl.ScoreComponent>}
+   */
+  this.scoreComponents = scoreComponents;  // TODO: I wish this was immutable.
+
+  /**
+   * @type {number}
+   * @const
+   */
+  this.totalScore = (scoreComponents
+                     .map(function(x) { return x.pointValue; })
+                     .reduce(function(a, b) { return a + b; }, 0));
+};
+
+
+/**
+ * @return {boolean} Whether the game is over.
+ */
+bqbl.TeamScore.prototype.isGameOver = function() {
+  return this.gameStatus == 'Final';
+};
+
+
+/**
+ * An immutable data object.
  * @constructor
  */
 bqbl.ScoreComponent = function(pointValue, description) {
+  /**
+   * @type {number}
+   * @const
+   */
   this.pointValue = pointValue;
+
+  /**
+   * @type {string}
+   * @const
+   */
   this.description = description;
 };
 
@@ -214,27 +277,28 @@ bqbl.numberToHtml = function(num) {
 
 
 /**
- * @param {string} gameStatus The game status description.
- * @return {boolean} Whether the game is over.
- * @private
+ * @param {!Object.<string, *>} scoreObject A JSON-parsed score object.
+ * @return {!bqbl.TeamScore} The score data, as a TeamScore.
  */
-bqbl.isGameOver_ = function(gameStatus) {
-  return gameStatus == 'Final';
-}
+bqbl.scoreObjectToTeamScore = function(scoreObject) {
+  return new bqbl.TeamScore(
+      scoreObject['team'],
+      scoreObject['game_time'],
+      bqbl.computeStatLine(scoreObject),
+      bqbl.computeScoreComponents(scoreObject));
+};
 
 
-bqbl.generateTeamScoreMarkup = function(scoreObject) {
-  var teamName = scoreObject['team'];
-  var statLine = bqbl.computeStatLine(scoreObject);
-  var gameStatus = scoreObject['game_time'];
-
-  var componentList = bqbl.computeScoreComponents(scoreObject);
+/**
+ * @param {!bqbl.TeamScore} score A team score.
+ * @return {string} HTML markup rendering the score.
+ */
+bqbl.generateTeamScoreMarkup = function(score) {
   var componentMarkups = [];
-  var totalPoints = 0;
-  for (var cNum = 0, component; component = componentList[cNum++]; ) {
+
+  for (var cNum = 0, component; component = score.scoreComponents[cNum++]; ) {
     if (component.pointValue == 0)
       continue;
-    totalPoints += component.pointValue;
     var pointString = bqbl.numberToHtml(component.pointValue);
     componentMarkups.push(
         '<tr class="scorerow">' +
@@ -244,17 +308,17 @@ bqbl.generateTeamScoreMarkup = function(scoreObject) {
   }
 
   var scoreMarkups = [
-      '<div class="team' + (bqbl.isGameOver_(gameStatus) ? '' : ' active') +
+      '<div class="team' + (score.isGameOver() ? '' : ' active') +
           '">',
       '  <div class="teamheader">',
-      '    <img class="teamlogo" src="images/' + teamName + '.png" ',
+      '    <img class="teamlogo" src="images/' + score.teamName + '.png" ',
       '        width="48" height="32">',
-      '    <span class="teamname">' + teamName + '</span>',
-      '    <span class="teampoints">' + bqbl.numberToHtml(totalPoints) +
+      '    <span class="teamname">' + score.teamName + '</span>',
+      '    <span class="teampoints">' + bqbl.numberToHtml(score.totalScore) +
           '</span>',
       '  </div>',
-      '  <div class="statline">' + statLine + '</div>',
-      '  <div class="gamestatus">' + gameStatus + '</div>',
+      '  <div class="statline">' + score.statLine + '</div>',
+      '  <div class="gamestatus">' + score.gameStatus + '</div>',
       '  <table class="scoretable">'
   ];
   scoreMarkups = scoreMarkups.concat(componentMarkups);
@@ -312,7 +376,7 @@ bqbl.computeScoreComponents = function(qbScore) {
     pointsList.push(new bqbl.ScoreComponent(10, 'no pass of 25+ yards'));
   if (qbScore['rush_yards'] >= 75)
     pointsList.push(new bqbl.ScoreComponent(-8, '75+ rushing yards'));
-  return pointsList;
+  return pointsList.filter(function(x) { return x.pointValue != 0; });
 };
 
 
