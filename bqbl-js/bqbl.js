@@ -2,6 +2,7 @@ goog.provide('bqbl');
 
 goog.require('goog.net.XhrIo');
 goog.require('goog.string');
+goog.require('goog.Uri');
 
 
 /**
@@ -23,11 +24,14 @@ bqbl.startUpdating = function(url, opt_updateInterval) {
 
 /**
  * Loads JSON data and asynchronously renders the scores on the page.
- * @param {string} url The URL from which to load the JSON.
+ * @param {string} jsonUrl The URL from which to load the JSON.
  */
-bqbl.loadAndUpdate = function(url) {
+bqbl.loadAndUpdate = function(jsonUrl) {
+  // Tack on a random parameter to bust the cache.
+  var uri = new goog.Uri(jsonUrl);
+  uri.makeUnique();
   goog.net.XhrIo.send(
-      url,
+      uri.toString(),
       function() {
         bqbl.writeScores(this.getResponseJson());
 	// TODO: Include the update time in the JSON response instead, and
@@ -36,9 +40,7 @@ bqbl.loadAndUpdate = function(url) {
       },
       undefined,  // opt_method
       undefined,  // opt_content
-      {
-        'Cache-Control': 'max-age: 60'
-      },
+      undefined,  // opt_headers
       60 * 1000  // opt_timeoutInterval
       );
 };
