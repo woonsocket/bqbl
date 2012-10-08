@@ -33,7 +33,8 @@ bqbl.init = function() {
       bqbl.historyState_,
       goog.history.EventType.NAVIGATE,
       function(e) {
-        bqbl.redrawScores(e.token.split(','));
+        // Redraw asynchronously.
+        setTimeout(function() { bqbl.redrawScores(e.token.split(',')); }, 0);
       });
 };
 
