@@ -176,7 +176,7 @@ bqbl.writeScores = function(jsonData, opt_sortOrder) {
  */
 bqbl.numberifyJson = function(qbScore) {
   for (var key in qbScore) {
-    if (goog.isString(qbScore[key]))
+    if (!goog.isString(qbScore[key]))
       continue;
     var val = /** @type {string} */ qbScore[key];
     var numberwang = goog.string.toNumber(val);
