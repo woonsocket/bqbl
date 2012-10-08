@@ -1,8 +1,84 @@
 goog.provide('bqbl');
 
+goog.require('goog.array');
+goog.require('goog.events');
+goog.require('goog.History');
 goog.require('goog.net.XhrIo');
 goog.require('goog.string');
 goog.require('goog.Uri');
+
+
+/**
+ * The history object. May be null before the page is initialized.
+ * @type {?goog.History}
+ */
+bqbl.historyState_ = null;
+
+
+/**
+ * Global state holding the current scores, parsed from JSON.
+ */
+bqbl.scoreState_ = [];
+
+
+/**
+ * Initializes the module. Must be called before the page is completely loaded,
+ * and before any other function in this module.
+ */
+bqbl.init = function() {
+  bqbl.historyState_ = new goog.History();
+  bqbl.historyState_.setToken('active,team');
+  bqbl.historyState_.setEnabled(true);
+  goog.events.listen(
+      bqbl.historyState_,
+      goog.history.EventType.NAVIGATE,
+      function(e) {
+        bqbl.redrawScores(e.token.split(','));
+      });
+};
+
+
+bqbl.registerListeners = function() {
+  goog.events.listen(
+      document.getElementById('sortbyteam'),
+      goog.events.EventType.CLICK,
+      function(e) {
+        bqbl.setSortOrder(['team']);
+        e.preventDefault();
+      });
+  goog.events.listen(
+      document.getElementById('sortbyactive'),
+      goog.events.EventType.CLICK,
+      function(e) {
+        bqbl.setSortOrder(['active', 'team']);
+        e.preventDefault();
+      });
+};
+
+
+/**
+ * Updates the sort order stored in the history state.
+ * @param {!Array.<string>} sortOrder A list of strings describing how to sort
+ *     the scores.
+ */
+bqbl.setSortOrder = function(sortOrder) {
+  bqbl.historyState_.setToken(sortOrder.join(','));
+};
+
+
+bqbl.comparisons = {};
+
+
+bqbl.comparisons.teamNameAlphabetical = function(a, b) {
+  return a['team'] > b['team'] ? 1 : (a['team'] == b['team'] ? 0 : -1);
+};
+
+
+bqbl.comparisons.activeGamesFirst = function(a, b) {
+  var aOver = bqbl.isGameOver_(a['game_time']) ? 1 : 0;
+  var bOver = bqbl.isGameOver_(b['game_time']) ? 1 : 0;
+  return aOver - bOver;
+};
 
 
 /**
@@ -33,10 +109,11 @@ bqbl.loadAndUpdate = function(jsonUrl) {
   goog.net.XhrIo.send(
       uri.toString(),
       function() {
-        bqbl.writeScores(this.getResponseJson());
-	// TODO: Include the update time in the JSON response instead, and
-	// display that as the time the data was scraped.
-	document.getElementById('updatetime').innerHTML = new Date();
+        bqbl.scoreState_ = this.getResponseJson();
+        bqbl.redrawScores(bqbl.historyState_.getToken().split(','));
+        // TODO: Include the update time in the JSON response instead, and
+        // display that as the time the data was scraped.
+        document.getElementById('updatetime').innerHTML = new Date();
       },
       undefined,  // opt_method
       undefined,  // opt_content
@@ -46,12 +123,38 @@ bqbl.loadAndUpdate = function(jsonUrl) {
 };
 
 
-bqbl.writeScores = function(jsonData) {
+/**
+ * Updates the document with the current score state.
+ * TODO: Make the strings be enums instead.
+ * @param {!Array.<string>} sortOrder A list of strings describing how to sort
+ *     the scores.
+ */
+bqbl.redrawScores = function(sortOrder) {
+  bqbl.writeScores(bqbl.scoreState_, sortOrder);
+};
+
+
+/**
+ * Updates the document with the given scores.
+ * @param {!Object} jsonData A list of score objects.
+ * @param {!Array.<string>=} opt_sortOrder A list of strings describing how to
+ *     sort the scores.
+ */
+bqbl.writeScores = function(jsonData, opt_sortOrder) {
+  var sortOrder = opt_sortOrder || [];
   var scoreObjects = jsonData.map(bqbl.numberifyJson);
-  scoreObjects.sort(
-      function(a, b) {
-        return a['team'] > b['team'] ? 1 : (a['team'] == b['team'] ? 0 : -1);
-      });
+  for (var sortNum = sortOrder.length - 1; sortNum >= 0; sortNum--) {
+    var compareFn;
+    if (sortOrder[sortNum] == 'team') {
+      compareFn = bqbl.comparisons.teamNameAlphabetical;
+    } else if (sortOrder[sortNum] == 'active') {
+      compareFn = bqbl.comparisons.activeGamesFirst;
+    }
+    if (compareFn)
+      goog.array.stableSort(scoreObjects, compareFn);
+  }
+  // TODO: Compute the total score independently of generating the markup, so
+  // that we can sort teams by their score.
   var scoreMarkups = scoreObjects.map(
       function(scoreObject) {
         return bqbl.generateTeamScoreMarkup(scoreObject);
@@ -261,5 +364,7 @@ bqbl.touchdownPoints = function(tds) {
 };
 
 
-goog.exportSymbol('bqbl.startUpdating', bqbl.startUpdating);
+goog.exportSymbol('bqbl.init', bqbl.init);
 goog.exportSymbol('bqbl.loadAndUpdate', bqbl.loadAndUpdate);
+goog.exportSymbol('bqbl.registerListeners', bqbl.registerListeners);
+goog.exportSymbol('bqbl.startUpdating', bqbl.startUpdating);

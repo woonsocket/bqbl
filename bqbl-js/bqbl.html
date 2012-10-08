@@ -11,8 +11,10 @@
     <script type="text/javascript">
       var FILENAME = 'week5.json';
 
+      bqbl.init();
+
       function init() {
-        bqbl.init();
+        bqbl.registerListeners();
         bqbl.startUpdating(FILENAME);
       }
 
@@ -75,6 +77,11 @@
       This page auto-updates every 5 minutes.
       Last updated: <span id="updatetime">never</span>
       <button onclick="updateNow()">Update now</bqbl>
+    </div>
+    <div>
+      Sort by:
+      <a href="#" id="sortbyteam">Team name</a> &middot;
+      <a href="#" id="sortbyactive">Game in progress</a>
     </div>
     <div id="bqblscores">
       <!-- Stuff is injected here -->
