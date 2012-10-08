@@ -128,12 +128,12 @@ def team_int(int_data):
 
 def team_rec(rec_data):
   """Returns the length of the longest reception, as an integer.
-  If data couldn't be parsed, returns "??".
+  If data couldn't be parsed, or there are no receptions, returns -100.
   """
   team_rec_re = re.compile(r"Team</th><th>\d+</th><th>\d+</th><th>.*?</th><th>\d+</th><th>(\d+)</th><th>\d+</th></tr>")
   rec_match = team_rec_re.search(rec_data)
-  if not rec_data:
-    return "??"
+  if not rec_match:
+    return -100
   lg = rec_match.group(1)
   return int(lg)
 
