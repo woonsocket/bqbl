@@ -27,7 +27,7 @@ qb_re_sacks = re.compile(r"<th>(\d+).(\d+)<.th><th>(\d+)<.th><th>.*?<.th><th>(\d
 name_re = re.compile("(\w. \w+)</a>")
 int_re = re.compile("(Interception Return)")
 fumret_re = re.compile("Fumble Return")
-team_re = re.compile(">(...?) Passing")
+team_re = re.compile("<td class=\"team\"><a [^>]*>(...?)</a>")
 time_re = re.compile("id=\"gameStatusBarText\">(.+?)</p>")
 
 notes = []
