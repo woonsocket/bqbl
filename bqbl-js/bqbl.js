@@ -89,7 +89,7 @@ bqbl.comparisons.scoresDescending = function(a, b) {
  * Loads JSON data and asynchronously renders the scores on the page, then
  * enqueues another invocation of this function for some time in the future.
  * @param {string} url The URL from which to load the JSON.
- * @param {number=} opt_updateInterval The number of seconds to wait until
+ * @param {number=} opt_updateInterval The number of milliseconds to wait until
  *     updating again. Defaults to 5 minutes.
  */
 bqbl.startUpdating = function(url, opt_updateInterval) {
