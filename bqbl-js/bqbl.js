@@ -238,7 +238,7 @@ bqbl.TeamScore = function(teamName, gameStatus, statLine, scoreComponents) {
  * @return {boolean} Whether the game is over.
  */
 bqbl.TeamScore.prototype.isGameOver = function() {
-  return this.gameStatus == 'Final';
+  return this.gameStatus.indexOf('Final') >= 0;
 };
 
 
