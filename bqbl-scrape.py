@@ -147,8 +147,11 @@ def scrape(url):
     return
   passing1 =  data.split("Passing</th>")[1].split("Rushing")[0]
   passing2 = data.split("Passing</th>")[2].split("Rushing")[0]
-  passing_total1 = passing1.split("Team")[1]
-  passing_total2 = passing2.split("Team")[1]
+  passing_total1, passing_total2 = None, None
+  if "Team" in passing1:
+    passing_total1 = passing1.split("Team")[1]
+  if "Team" in passing2:
+    passing_total2 = passing2.split("Team")[1]
 
   rushing1 = data.split("Rushing</th>")[1].split("Receiving")[0]
   rushing2 = data.split("Rushing</th>")[2].split("Receiving")[0]
@@ -185,39 +188,41 @@ def scrape(url):
     fumlost2 += fumlost2qb
     fumkept2 += fumkept2qb
 
-  pass1sacks_match = qb_re_sacks.search(passing_total1)
-  pass1_match = qb_re.search(passing_total1)
-  if pass1sacks_match:
-    comp1    = pass1sacks_match.group(1)
-    att1     = pass1sacks_match.group(2)
-    yds1     = pass1sacks_match.group(3)
-    td1      = pass1sacks_match.group(4)
-    sackyds1 = pass1sacks_match.group(5)
-  elif pass1_match:
-    comp1    = pass1_match.group(1)
-    att1     = pass1_match.group(2)
-    yds1     = pass1_match.group(3)
-    td1      = pass1_match.group(4)
-    sackyds1 = 0  # Maybe this should be None.
-  else:
-    comp1, att1, yds1, td1, sackyds1 = (0, 0, 0, 0, 0)
+  comp1, att1, yds1, td1, sackyds1 = (0, 0, 0, 0, 0)
+  if passing_total1:
+    pass1sacks_match = qb_re_sacks.search(passing_total1)
+    pass1_match = qb_re.search(passing_total1)
+    if pass1sacks_match:
+      comp1    = pass1sacks_match.group(1)
+      att1     = pass1sacks_match.group(2)
+      yds1     = pass1sacks_match.group(3)
+      td1      = pass1sacks_match.group(4)
+      sackyds1 = pass1sacks_match.group(5)
+    elif pass1_match:
+      comp1    = pass1_match.group(1)
+      att1     = pass1_match.group(2)
+      yds1     = pass1_match.group(3)
+      td1      = pass1_match.group(4)
+      sackyds1 = 0  # Maybe this should be None.
+    
 
-  pass2sacks_match = qb_re_sacks.search(passing_total2)
-  pass2_match = qb_re.search(passing_total2)
-  if pass2sacks_match:
-    comp2    = pass2sacks_match.group(1)
-    att2     = pass2sacks_match.group(2)
-    yds2     = pass2sacks_match.group(3)
-    td2      = pass2sacks_match.group(4)
-    sackyds2 = pass2sacks_match.group(5)
-  elif pass2_match:
-    comp2    = pass2_match.group(1)
-    att2     = pass2_match.group(2)
-    yds2     = pass2_match.group(3)
-    td2      = pass2_match.group(4)
-    sackyds2 = 0  # Maybe this should be None.
-  else:
-    comp2, att2, yds2, td2, sackyds2 = (0, 0, 0, 0, 0)
+  comp2, att2, yds2, td2, sackyds2 = (0, 0, 0, 0, 0)
+  if passing_total2:
+    pass2sacks_match = qb_re_sacks.search(passing_total2)
+    pass2_match = qb_re.search(passing_total2)
+    if pass2sacks_match:
+      comp2    = pass2sacks_match.group(1)
+      att2     = pass2sacks_match.group(2)
+      yds2     = pass2sacks_match.group(3)
+      td2      = pass2sacks_match.group(4)
+      sackyds2 = pass2sacks_match.group(5)
+    elif pass2_match:
+      comp2    = pass2_match.group(1)
+      att2     = pass2_match.group(2)
+      yds2     = pass2_match.group(3)
+      td2      = pass2_match.group(4)
+      sackyds2 = 0  # Maybe this should be None.
+
 
   # ints1 = interceptions thrown by team 1 (i.e., interceptions made by team 2)
   if "Interceptions</th>" in data:
