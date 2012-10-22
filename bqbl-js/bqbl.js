@@ -1,6 +1,8 @@
 goog.provide('bqbl');
 
 goog.require('goog.array');
+goog.require('goog.date');
+goog.require('goog.dom');
 goog.require('goog.events');
 goog.require('goog.History');
 goog.require('goog.net.XhrIo');
@@ -9,6 +11,7 @@ goog.require('goog.Uri');
 
 
 bqbl.DEFAULT_SORT_ORDER = 'active,team';
+bqbl.MAX_WEEK_NUM = 17;
 
 
 /**
@@ -36,30 +39,56 @@ bqbl.init = function() {
       goog.history.EventType.NAVIGATE,
       function(e) {
         var historyToken = bqbl.parseHistoryToken(e.token);
-        var sortOrder = historyToken['sort'];
-        if (sortOrder) {
-          // Redraw asynchronously.
-          setTimeout(
-              function() { bqbl.redrawScores(sortOrder.split(',')); },
-              0);
+        var sortString = historyToken['sort'];
+        var sortOrder = [];
+        if (sortString) {
+          sortOrder = sortString.split(',');
         }
+        // Redraw asynchronously.
+        setTimeout(
+            function() { bqbl.redrawScores(sortOrder); },
+            0);
       });
 };
 
 
 bqbl.registerListeners = function() {
-  function addListener(elementId, historyParams) {
+  /**
+   * @param {?Element} element The element to which to add the listener. If
+   *     null, returns without doing anything.
+   * @param {!Object.<string, string>} params Parameters from the history token.
+   * @param {boolean=} opt_forceLoad Whether to reload the JSON data.
+   */
+  function addListener(element, params, opt_forceLoad) {
+    if (!element) return;
     goog.events.listen(
-        document.getElementById(elementId),
+        element,
         goog.events.EventType.CLICK,
         function(e) {
-          bqbl.updateHistoryToken(historyParams);
+          bqbl.updateHistoryToken(params);
+          if (opt_forceLoad) bqbl.loadAndUpdate();
           e.preventDefault();
         });
   }
-  addListener('sortbyactive', {sort: ['active', 'team']});
-  addListener('sortbyscore', {sort: ['score', 'team']});
-  addListener('sortbyteam', {sort: ['team']});
+  addListener(document.getElementById('sortbyactive'),
+              {sort: ['active', 'team']});
+  addListener(document.getElementById('sortbyscore'),
+              {sort: ['score', 'team']});
+  addListener(document.getElementById('sortbyteam'),
+              {sort: ['team']});
+  var weekSelectorsElem = document.getElementById('weekselectors');
+  goog.dom.appendChild(weekSelectorsElem, goog.dom.createTextNode('Week: '));
+  for (var weekNum = 1; weekNum <= bqbl.MAX_WEEK_NUM; weekNum++) {
+    var weekLink = goog.dom.createDom('a', {href: '#'},
+                                      goog.dom.createTextNode('' + weekNum));
+    goog.dom.appendChild(weekSelectorsElem, weekLink);
+    if (weekNum != bqbl.MAX_WEEK_NUM) {
+      var separator = goog.dom.createDom('span');
+      separator.innerHTML = '&nbsp;&middot;&nbsp;';
+      goog.dom.appendChild(weekSelectorsElem, separator);
+    }
+    addListener(weekLink, {week: weekNum}, /* forceLoad */ true);
+  }
 };
 
 
@@ -145,15 +174,40 @@ bqbl.comparisons.scoresDescending = function(a, b) {
 
 
 /**
+ * Gets the URL of the JSON containing data for the given week.
+ * @param {number|string} weekNumber The week number.
+ * @return {string} A URL.
+ */
+bqbl.jsonUrl_ = function(weekNumber) {
+  // Check that the input is a positive integer (or a string of one).
+  if (!('' + weekNumber).match(/^\d+$/))
+    throw 'Invalid week number: ' + weekNumber;
+  return 'week' + weekNumber + '.json';
+};
+
+
+/**
+ * Determines the current week number of the NFL season. Only works for the 2012
+ * season, up until December 30. Weeks begin on Thursday.
+ * @param {!goog.date.Date=} opt_date A date. Defaults to today.
+ * @return {number} The current NFL week number.
+ */
+bqbl.getCurrentWeekNumber_ = function(opt_date) {
+  var date = opt_date || new goog.date.Date();
+  // Day 250 is Thursday, September 6, 2012.
+  return Math.floor((date.getDayOfYear() - 250) / 7) + 1;
+};
+
+
+/**
  * Loads JSON data and asynchronously renders the scores on the page, then
  * enqueues another invocation of this function for some time in the future.
- * @param {string} url The URL from which to load the JSON.
  * @param {number=} opt_updateInterval The number of milliseconds to wait until
  *     updating again. Defaults to 5 minutes.
  */
-bqbl.startUpdating = function(url, opt_updateInterval) {
+bqbl.startUpdating = function(opt_updateInterval) {
   var loadAndQueueUpdate = function() {
-    bqbl.loadAndUpdate(url);
+    bqbl.loadAndUpdate();
     window.setTimeout(
         loadAndQueueUpdate, opt_updateInterval || 1000 * 60 * 5);
   };
@@ -163,19 +217,20 @@ bqbl.startUpdating = function(url, opt_updateInterval) {
 
 /**
  * Loads JSON data and asynchronously renders the scores on the page.
- * @param {string} jsonUrl The URL from which to load the JSON.
  */
-bqbl.loadAndUpdate = function(jsonUrl) {
+bqbl.loadAndUpdate = function() {
+  var history = bqbl.parseHistoryToken(bqbl.historyState_.getToken());
+  var weekNumber = history['week'] || bqbl.getCurrentWeekNumber_();
+  var uri = new goog.Uri(bqbl.jsonUrl_(weekNumber));
   // Tack on a random parameter to bust the cache.
-  var uri = new goog.Uri(jsonUrl);
   uri.makeUnique();
   goog.net.XhrIo.send(
       uri.toString(),
       function() {
         bqbl.scoreState_ = this.getResponseJson();
-        var historyParams = bqbl.parseHistoryToken(
+        var params = bqbl.parseHistoryToken(
             bqbl.historyState_.getToken());
-        var sortString = historyParams['sort'];
+        var sortString = params['sort'];
         var sortCriteria = sortString ? sortString.split(',') : [];
         bqbl.redrawScores(sortCriteria);
         // TODO: Include the update time in the JSON response instead, and
@@ -193,6 +248,7 @@ bqbl.loadAndUpdate = function(jsonUrl) {
 /**
  * Updates the document with the current score state.
  * TODO: Make the strings be enums instead.
+ * TODO: Take a params object instead of just sortOrder.
  * @param {!Array.<string>} sortOrder A list of strings describing how to sort
  *     the scores.
  */
@@ -360,6 +416,7 @@ bqbl.scoreObjectToTeamScore = function(scoreObject) {
  * @return {string} HTML markup rendering the score.
  */
 bqbl.generateTeamScoreMarkup = function(score) {
+  // TODO(juangj): Use goog.dom.
   var componentMarkups = [];
 
   for (var cNum = 0, component; component = score.scoreComponents[cNum++]; ) {

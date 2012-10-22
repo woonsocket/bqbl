@@ -9,17 +9,15 @@
     <script>goog.require('bqbl');</script>
     <!-- END UNCOMPILED -->
     <script type="text/javascript">
-      var FILENAME = 'week7.json';
-
       bqbl.init();
 
       function init() {
         bqbl.registerListeners();
-        bqbl.startUpdating(FILENAME, 1000 * 60 * 3);
+        bqbl.startUpdating(1000 * 60 * 3);
       }
 
       function updateNow() {
-        bqbl.loadAndUpdate(FILENAME);
+        bqbl.loadAndUpdate();
       }
     </script>
     <style>
@@ -83,6 +81,9 @@
       <a href="#" id="sortbyteam">Team name</a> &middot;
       <a href="#" id="sortbyscore">Score</a> &middot;
       <a href="#" id="sortbyactive">Game in progress</a>
+    </div>
+    <div id="weekselectors">
+      <!-- Populated by bqbl.registerListeners -->
     </div>
     <div id="bqblscores">
       <!-- Stuff is injected here -->
