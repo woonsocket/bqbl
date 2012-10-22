@@ -71,11 +71,11 @@ bqbl.registerListeners = function() {
         });
   }
   addListener(document.getElementById('sortbyactive'),
-              {sort: ['active', 'team']});
+              {'sort': ['active', 'team']});
   addListener(document.getElementById('sortbyscore'),
-              {sort: ['score', 'team']});
+              {'sort': ['score', 'team']});
   addListener(document.getElementById('sortbyteam'),
-              {sort: ['team']});
+              {'sort': ['team']});
   var weekSelectorsElem = document.getElementById('weekselectors');
   goog.dom.appendChild(weekSelectorsElem, goog.dom.createTextNode('Week: '));
   for (var weekNum = 1; weekNum <= bqbl.MAX_WEEK_NUM; weekNum++) {
@@ -87,7 +87,7 @@ bqbl.registerListeners = function() {
       separator.innerHTML = '&nbsp;&middot;&nbsp;';
       goog.dom.appendChild(weekSelectorsElem, separator);
     }
-    addListener(weekLink, {week: weekNum}, /* forceLoad */ true);
+    addListener(weekLink, {'week': weekNum}, /* forceLoad */ true);
   }
 };
 
