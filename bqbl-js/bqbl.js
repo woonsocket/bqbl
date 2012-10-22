@@ -8,6 +8,9 @@ goog.require('goog.string');
 goog.require('goog.Uri');
 
 
+bqbl.DEFAULT_SORT_ORDER = 'active,team';
+
+
 /**
  * The history object. May be null before the page is initialized.
  * @type {?goog.History}
@@ -27,41 +30,97 @@ bqbl.scoreState_ = [];
  */
 bqbl.init = function() {
   bqbl.historyState_ = new goog.History();
-  bqbl.historyState_.setToken('active,team');
   bqbl.historyState_.setEnabled(true);
   goog.events.listen(
       bqbl.historyState_,
       goog.history.EventType.NAVIGATE,
       function(e) {
-        // Redraw asynchronously.
-        setTimeout(function() { bqbl.redrawScores(e.token.split(',')); }, 0);
+        var historyToken = bqbl.parseHistoryToken(e.token);
+        var sortOrder = historyToken['sort'];
+        if (sortOrder) {
+          // Redraw asynchronously.
+          setTimeout(
+              function() { bqbl.redrawScores(sortOrder.split(',')); },
+              0);
+        }
       });
 };
 
 
 bqbl.registerListeners = function() {
-  function addListener(elementId, sortOrder) {
+  function addListener(elementId, historyParams) {
     goog.events.listen(
         document.getElementById(elementId),
         goog.events.EventType.CLICK,
         function(e) {
-          bqbl.setSortOrder(sortOrder);
+          bqbl.updateHistoryToken(historyParams);
           e.preventDefault();
         });
   }
-  addListener('sortbyactive', ['active', 'team']);
-  addListener('sortbyscore', ['score', 'team']);
-  addListener('sortbyteam', ['team']);
+  addListener('sortbyactive', {sort: ['active', 'team']});
+  addListener('sortbyscore', {sort: ['score', 'team']});
+  addListener('sortbyteam', {sort: ['team']});
 };
 
 
 /**
- * Updates the sort order stored in the history state.
- * @param {!Array.<string>} sortOrder A list of strings describing how to sort
- *     the scores.
+ * Parses the history token string. The token consists of key-value pairs. Each
+ * key name is separated from its value by a colon. The key-value pairs are
+ * delimited by semicolons.
+ * Malformed or empty key-value strings are ignored. If duplicate keys are
+ * present, only one is returned; it is unspecified which one is returned.
+ * @param {string} token A string.
+ * @return {!Object.<string, string>} The key-value pairs from the token string,
+ *     as an object.
  */
-bqbl.setSortOrder = function(sortOrder) {
-  bqbl.historyState_.setToken(sortOrder.join(','));
+bqbl.parseHistoryToken = function(token) {
+  var kvPairs = token.split(';');
+  var result = {};
+  for (var pairNum = 0, kvPair; kvPair = kvPairs[pairNum++]; ) {
+    if (kvPair.indexOf(':') < 0) {
+      continue;
+    }
+    var firstColon = kvPair.indexOf(':');
+    if (firstColon < 0) {
+      continue;
+    }
+    var key = kvPair.substring(0, firstColon);
+    var value = kvPair.substring(firstColon + 1);
+    result[key] = value;
+  }
+  return result;
+};
+
+
+/**
+ * Converts an object into a history token string. See bqbl.parseHistoryToken
+ * for the string format.
+ * @param {!Object.<string, string>} params Key-value pairs.
+ * @return {string} A history token representing the given params.
+ */
+bqbl.unparseHistoryToken = function(params) {
+  var kvPairs = [];
+  for (var key in params) {
+    kvPairs.push(key + ':' + params[key]);
+  }
+  return kvPairs.join(';');
+};
+
+
+/**
+ * Updates the history token with new values.
+ * Not thread-safe; multiple concurrent invocations may result in updates being
+ * lost.
+ * @param {!Object.<string, string>} newParams A collection of new key-value
+ *     pairs to update in the history token. Keys that already exist in the
+ *     history token are overwritten. Keys that do not exist are added.
+ */
+bqbl.updateHistoryToken = function(newParams) {
+  var oldParams = bqbl.parseHistoryToken(bqbl.historyState_.getToken());
+  for (var key in newParams) {
+    oldParams[key] = newParams[key];
+  }
+  bqbl.historyState_.setToken(bqbl.unparseHistoryToken(oldParams));
 };
 
 
@@ -114,7 +173,11 @@ bqbl.loadAndUpdate = function(jsonUrl) {
       uri.toString(),
       function() {
         bqbl.scoreState_ = this.getResponseJson();
-        bqbl.redrawScores(bqbl.historyState_.getToken().split(','));
+        var historyParams = bqbl.parseHistoryToken(
+            bqbl.historyState_.getToken());
+        var sortString = historyParams['sort'];
+        var sortCriteria = sortString ? sortString.split(',') : [];
+        bqbl.redrawScores(sortCriteria);
         // TODO: Include the update time in the JSON response instead, and
         // display that as the time the data was scraped.
         document.getElementById('updatetime').innerHTML = new Date();
@@ -146,6 +209,8 @@ bqbl.redrawScores = function(sortOrder) {
  */
 bqbl.writeScores = function(jsonData, opt_sortOrder) {
   var sortOrder = opt_sortOrder || [];
+  if (sortOrder.length == 0)
+    sortOrder = bqbl.DEFAULT_SORT_ORDER.split(',');
   var teamScores = jsonData.map(bqbl.numberifyJson).map(
       function(o) { return bqbl.scoreObjectToTeamScore(o); });
 
