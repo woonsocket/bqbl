@@ -10,7 +10,7 @@ goog.require('goog.string');
 goog.require('goog.Uri');
 
 
-bqbl.DEFAULT_SORT_ORDER = 'active,team';
+bqbl.DEFAULT_SORT_ORDER = 'active,score';
 bqbl.MAX_WEEK_NUM = 17;
 
 
