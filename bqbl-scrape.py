@@ -160,8 +160,8 @@ def scrape(url):
   receiving2 = data.split("Receiving</th>")[2].split("Fumbles")[0]
 
   if "Fumbles</th>" in data:
-    fumbles1 = data.split("Fumbles</th>")[1].split("Interceptions")[0]
-    fumbles2 = data.split("Fumbles</th>")[2].split("Interceptions")[0]
+    fumbles1 = data.split("Fumbles</th>")[1].split("Tackles")[0]
+    fumbles2 = data.split("Fumbles</th>")[2].split("Tackles")[0]
   else:
     fumbles1 = ""
     fumbles2 = ""
