@@ -227,15 +227,16 @@ bqbl.loadAndUpdate = function() {
   goog.net.XhrIo.send(
       uri.toString(),
       function() {
-        bqbl.scoreState_ = this.getResponseJson();
+        var response = this.getResponseJson();
+        var lastUpdateSecs = response['lastUpdate'];
+        bqbl.scoreState_ = response['scores'];
         var params = bqbl.parseHistoryToken(
             bqbl.historyState_.getToken());
         var sortString = params['sort'];
         var sortCriteria = sortString ? sortString.split(',') : [];
         bqbl.redrawScores(sortCriteria);
-        // TODO: Include the update time in the JSON response instead, and
-        // display that as the time the data was scraped.
-        document.getElementById('updatetime').innerHTML = new Date();
+        document.getElementById('updatetime').innerHTML =
+            new Date(lastUpdateSecs * 1000);
       },
       undefined,  // opt_method
       undefined,  // opt_content

@@ -284,6 +284,8 @@ urls=open(args[0]).readlines()
 for url in urls:
   scrape(url)
 
+now = time.time()
+
 if options.output_format == 'tab':
   # Add dummy lines for teams that haven't played.
   lines = [score.AsSpreadsheetRow() for score in scores]
@@ -292,7 +294,11 @@ if options.output_format == 'tab':
       lines.append(team)
   lines.sort()
   print "\n".join(lines)
-  print "Updated: %s" % time.strftime("%Y-%m-%d %H:%M:%S %Z")
+  print "Updated: %s" % time.strftime("%Y-%m-%d %H:%M:%S %Z",
+                                      time.localtime(now))
   print "\n".join(notes)
 elif options.output_format == 'json':
-  print json.dumps([score.AsDictionary() for score in scores])
+  print json.dumps({
+      'lastUpdate': now,
+      'scores': [score.AsDictionary() for score in scores],
+      })
