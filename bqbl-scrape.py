@@ -19,11 +19,11 @@ if len(args) < 1:
 # Cells, in order: Comp/Att; Yds; .*; TD; INT (unused)
 # INT isn't in a capture group because we parse it separately, from the
 # Interceptions table.
-qb_re = re.compile(r"<th>(\d+).(\d+)<.th><th>(\d+)<.th><th>.*?<.th><th>(\d+)<.th><th>\d+<.th>")
+qb_re = re.compile(r"<th>(\d+).(\d+)<.th><th>(-?\d+)<.th><th>.*?<.th><th>(\d+)<.th><th>\d+<.th>")
 # Adds Sacks-Sack yards as the final column. The ESPN box score doesn't always
 # render this column (current theory is that it's added after a game is over,
 # but doesn't show while the game is in progress).
-qb_re_sacks = re.compile(r"<th>(\d+).(\d+)<.th><th>(\d+)<.th><th>.*?<.th><th>(\d+)<.th><th>\d+<.th><th>\d+[^\d](\d+)</th>")
+qb_re_sacks = re.compile(r"<th>(\d+).(\d+)<.th><th>(-?\d+)<.th><th>.*?<.th><th>(\d+)<.th><th>\d+<.th><th>\d+[^\d](\d+)</th>")
 name_re = re.compile("(\w. \w+)</a>")
 int_re = re.compile("(Interception Return)")
 fumret_re = re.compile("Fumble Return")
