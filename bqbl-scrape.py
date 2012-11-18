@@ -7,12 +7,13 @@ import time
 import urllib
 
 parser = optparse.OptionParser(
-  usage="Usage: %prog [options] <file with list of ESPN URLs>")
+  usage=("Usage: %prog [options] <file with list of ESPN URLs> "
+         "[<corrections file>]"))
 parser.add_option("-o", "--output_format", dest="output_format", default="tab",
                   help="Output format. Valid values: ['tab', 'json'].")
 options, args = parser.parse_args()
 
-if len(args) < 1:
+if len(args) < 1 or len(args) > 2:
   parser.print_usage()
   sys.exit(1)
 
@@ -36,6 +37,10 @@ teams = ["ARI","ATL","BAL","BUF","CAR","CHI","CIN","CLE","DAL","DEN","DET",
          "GB","HOU","IND","JAC","KC","MIA","MIN","NE","NO","NYG","NYJ","OAK",
          "PHI","PIT","SD","SEA","SF","STL","TB","TEN","WSH"]
 found_teams = []
+
+
+class InvalidCorrectionError(Exception):
+  """Raised when the manual correction data can't be parsed."""
 
 
 class QbStats(object):
@@ -90,6 +95,16 @@ class QbStats(object):
     return self.__dict__.copy()
 
 
+def apply_corrections(qbstats, delta_dict):
+  for attribute, value_delta in delta_dict.items():
+    try:
+      old_value = getattr(qbstats, attribute)
+      setattr(qbstats, attribute, int(old_value) + int(value_delta))
+    except AttributeError:
+      raise InvalidCorrectionError(
+          'Invalid attribute "%s" in corrections file' % attribute)
+
+
 def qb_rush(rush_data, fum_data,  qb):
   rush_re = re.compile(r">%s<.a><.td><td>(.?\d+)<.td><td>(.?\d+)<.td><td>.*?<.td><td>(.?\d+)<.td>" % qb)
   fum_re = re.compile(r">%s<.a><.td><td>(\d+)<.td><td>(\d+)<.td>" % qb)
@@ -138,8 +153,19 @@ def team_rec(rec_data):
   return int(lg)
 
 
-def scrape(url):
+def scrape(url, corrections=None):
+  """Scrape the given URL, and add the results to the global state.
+
+  Args:
+    url: An ESPN box score URL.
+    corrections: A dict defining manual corrections to apply to the scraped
+        scores. Each key is a team name. Each value is a dict whose keys are
+        the names of QbStats attributes, and whose values are integers, which
+        may be negative. The integer is added to the QbStats attribute obtained
+        from the scrape for that team.
+  """
   global notes, found_teams
+  corrections = corrections or {}
   data = urllib.urlopen(url).read()
   if "No Boxscore Available".lower() in data.lower():
     return
@@ -243,7 +269,7 @@ def scrape(url):
   else:
     gametime = ''
 
-  scores.append(
+  qbstats1 = (
       QbStats(team=team1,
               completions=comp1,
               attempts=att1,
@@ -251,15 +277,16 @@ def scrape(url):
               interceptions_notd=int1,
               interceptions_td=inttd1,
               rush_tds=rushtd1,
-              fumbles_lost_notd=fumlost1,  # Includes fumble return TDs...
-              fumbles_lost_td=None,  # ... because we can't compute this yet.
+              # Includes fumble return TDs because we can't compute
+              # fumbles_lost_td yet.
+              fumbles_lost_notd=fumlost1,
               fumbles_kept=fumkept1,
               pass_yards=yds1,
               rush_yards=rushy1,
               sack_yards=sackyds1,
               long_pass=longpass1,
               game_time=gametime))
-  scores.append(
+  qbstats2 = (
       QbStats(team=team2,
               completions=comp2,
               attempts=att2,
@@ -268,7 +295,6 @@ def scrape(url):
               interceptions_td=inttd2,
               rush_tds=rushtd2,
               fumbles_lost_notd=fumlost2,
-              fumbles_lost_td=None,
               fumbles_kept=fumkept2,
               pass_yards=yds2,
               rush_yards=rushy2,
@@ -276,13 +302,39 @@ def scrape(url):
               long_pass=longpass2,
               game_time=gametime))
 
+  if team1 in corrections:
+    apply_corrections(qbstats1, corrections[team1])
+  if team2 in corrections:
+    apply_corrections(qbstats2, corrections[team2])
+
+  scores.append(qbstats1)
+  scores.append(qbstats2)
+
   if fumret_re.findall(data):
     notes.append(" %s %s Fumble Return" % (team1, team2))
 
-urls=open(args[0]).readlines()
+urls = open(args[0]).readlines()
+corrections = {}
+if len(args) > 1:
+  try:
+    parsed_json = json.loads(open(args[1]).read())
+  except ValueError as e:
+    raise InvalidCorrectionError('JSON file %s could not be parsed: %s' %
+                                 (args[1], e))
+  try:
+    corrections_list = parsed_json['corrections']
+  except KeyError:
+    raise InvalidCorrectionError('Required key "corrections" not found in JSON')
+  for team_num, team_dict in enumerate(corrections_list):
+    try:
+      corrections[team_dict['team']] = team_dict['deltas']
+    except KeyError as e:
+      raise InvalidCorrectionError('Invalid corrections entry at position %d' %
+                                   team_num)
+      
 
 for url in urls:
-  scrape(url)
+  scrape(url, corrections)
 
 now = time.time()
 
