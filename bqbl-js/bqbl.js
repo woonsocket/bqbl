@@ -494,12 +494,18 @@ bqbl.computeScoreComponents = function(qbScore) {
     bqbl.turnoverPoints(qbScore),
     bqbl.touchdownPoints(qbScore['pass_tds'] + qbScore['rush_tds']),
     bqbl.passingYardPoints(qbScore['pass_yards']),
-    bqbl.completionRatePoints(qbScore['completions'], qbScore['attempts'])
+    bqbl.completionRatePoints(qbScore['completions'], qbScore['attempts']),
+    bqbl.simpleMultiple(20, qbScore['safeties'], 'QB sacked for safety'),
+    bqbl.simpleMultiple(35, qbScore['benchings'], 'QB benched')
   ];
   if (qbScore['long_pass'] < 25)
     pointsList.push(new bqbl.ScoreComponent(10, 'no pass of 25+ yards'));
   if (qbScore['rush_yards'] >= 75)
     pointsList.push(new bqbl.ScoreComponent(-8, '75+ rushing yards'));
+  if (qbScore['game_winning_drive'])
+    pointsList.push(new bqbl.ScoreComponent(-12, 'game-winning drive'));
+  if (qbScore['game_losing_taint'])
+    pointsList.push(new bqbl.ScoreComponent(50, 'game-losing pick six in OT'));
   return pointsList.filter(function(x) { return x.pointValue != 0; });
 };
 

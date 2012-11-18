@@ -53,7 +53,8 @@ class QbStats(object):
                interceptions_notd=0, interceptions_td=0, rush_tds=0,
                fumbles_lost_notd=0, fumbles_lost_td=0, fumbles_kept=0,
                pass_yards=0, rush_yards=0, sack_yards=0, long_pass=0,
-               game_time=''):
+               safeties=0, game_winning_drive=False, game_losing_taint=False,
+               benchings=0, game_time=''):
     """Initializer.
 
     If you don't pass arguments by name, you're gonna have a bad time.
@@ -72,10 +73,14 @@ class QbStats(object):
     self.rush_yards = rush_yards
     self.sack_yards = sack_yards
     self.long_pass = long_pass
+    self.safeties = safeties
+    self.game_winning_drive = game_winning_drive
+    self.game_losing_taint = game_losing_taint
+    self.benchings = benchings
     self.game_time = game_time
 
   def _StringifyStat(self, stat):
-    if stat is None:
+    if not stat:
       return ""
     else:
       return str(stat)
@@ -87,7 +92,9 @@ class QbStats(object):
          [self.team, self.completions, self.attempts, self.pass_tds,
           self.interceptions_notd, self.interceptions_td, self.rush_tds,
           self.fumbles_lost_notd, self.fumbles_kept, self.fumbles_lost_td,
-          self.pass_yards, self.rush_yards, self.sack_yards, self.long_pass]])
+          self.pass_yards, self.rush_yards, self.sack_yards, self.long_pass,
+          self.safeties, self.game_winning_drive, self.game_losing_taint,
+          self.benchings]])
 
   def AsDictionary(self):
     # This is a little risky if we start including additional fields that
@@ -327,10 +334,14 @@ if len(args) > 1:
     raise InvalidCorrectionError('Required key "corrections" not found in JSON')
   for team_num, team_dict in enumerate(corrections_list):
     try:
-      corrections[team_dict['team']] = team_dict['deltas']
+      team_name = team_dict['team']
+      if team_name not in teams:
+        raise InvalidCorrectionError(
+            'Invalid corrections entry: Unrecognized team %s' % team_name)
+      corrections[team_name] = team_dict['deltas']
     except KeyError as e:
-      raise InvalidCorrectionError('Invalid corrections entry at position %d' %
-                                   team_num)
+      raise InvalidCorrectionError(
+          'Invalid corrections entry at position %d' % team_num)
       
 
 for url in urls:
