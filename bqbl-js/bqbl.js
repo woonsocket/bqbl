@@ -464,8 +464,10 @@ bqbl.generateTeamScoreMarkup = function(score) {
  * @return {!bqbl.ScoreComponent} A ScoreComponent for the points described.
  */
 bqbl.simpleMultiple = function(pointsPer, quantity, description) {
-  return new bqbl.ScoreComponent(quantity * pointsPer,
-                                 quantity + 'x ' + description);
+  if (quantity != 1) {
+    description = quantity + 'x ' + description;
+  }
+  return new bqbl.ScoreComponent(quantity * pointsPer, description);
 };
 
 
