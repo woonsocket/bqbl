@@ -491,6 +491,7 @@ bqbl.computeScoreComponents = function(qbScore) {
   var pointsList = [
     bqbl.simpleMultiple(25, qbScore['interceptions_td'], 'INT returned for TD'),
     bqbl.simpleMultiple(5, qbScore['interceptions_notd'], 'INT'),
+    bqbl.simpleMultiple(10, qbScore['fumbles_lost_td'], 'fumble lost for TD'),
     bqbl.simpleMultiple(5, qbScore['fumbles_lost_notd'], 'fumble lost'),
     bqbl.simpleMultiple(2, qbScore['fumbles_kept'], 'fumble kept'),
     bqbl.turnoverPoints(qbScore),
