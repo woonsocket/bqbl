@@ -227,9 +227,17 @@ bqbl.loadAndUpdate = function() {
   goog.net.XhrIo.send(
       uri.toString(),
       function() {
-        var response = this.getResponseJson();
-        var lastUpdateSecs = response['lastUpdate'];
-        bqbl.scoreState_ = response['scores'];
+        var lastUpdateSecs;
+        try {
+          var response = this.getResponseJson();
+          lastUpdateSecs = response['lastUpdate'];
+          bqbl.scoreState_ = response['scores'];
+        } catch (err) {
+          window.console.log(err);
+          window.console.log('Could not load data; drawing a blank page.');
+          lastUpdateSecs = (new Date()).getTime() / 1000;
+          bqbl.scoreState_ = [];
+        }
         var params = bqbl.parseHistoryToken(
             bqbl.historyState_.getToken());
         var sortString = params['sort'];
