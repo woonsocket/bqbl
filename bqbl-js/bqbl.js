@@ -194,8 +194,8 @@ bqbl.jsonUrl_ = function(weekNumber) {
  */
 bqbl.getCurrentWeekNumber_ = function(opt_date) {
   var date = opt_date || new goog.date.Date();
-  // Day 250 is Thursday, September 6, 2012.
-  return Math.floor((date.getDayOfYear() - 250) / 7) + 1;
+  // Day 248 is Thursday, September 5, 2013.
+  return Math.floor((date.getDayOfYear() - 248) / 7) + 1;
 };
 
 
