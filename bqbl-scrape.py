@@ -38,6 +38,15 @@ teams = ["ARI","ATL","BAL","BUF","CAR","CHI","CIN","CLE","DAL","DEN","DET",
          "PHI","PIT","SD","SEA","SF","STL","TB","TEN","WSH"]
 found_teams = []
 
+# A map from team names to the "canonical" team names in the teams list above.
+team_aliases = {
+  # ESPN changed their abbreviation for Jacksonville halfway through the season.
+  # We'll just stick with the old abbreviation, even though the new one is
+  # obviously cooler because it contains an 'X' which is like the coolest letter
+  # possible.
+  "JAX": "JAC",
+}
+
 
 class InvalidCorrectionError(Exception):
   """Raised when the manual correction data can't be parsed."""
@@ -100,6 +109,12 @@ class QbStats(object):
     # This is a little risky if we start including additional fields that
     # shouldn't be exported.
     return self.__dict__.copy()
+
+
+def canonical_team_name(team_name):
+  if team_name in team_aliases:
+    return team_aliases[team_name]
+  return team_name
 
 
 def apply_corrections(qbstats, delta_dict):
@@ -201,6 +216,8 @@ def scrape(url, corrections=None):
 
   team1 = team_re.findall(data)[0]
   team2 = team_re.findall(data)[1]
+  team1 = canonical_team_name(team1)
+  team2 = canonical_team_name(team2)
   found_teams += [team1, team2]
 
   rushy1, rushtd1, fumlost1, fumkept1 = (0,0,0,0)
