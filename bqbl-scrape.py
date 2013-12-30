@@ -222,6 +222,8 @@ def scrape(url, corrections=None):
 
   rushy1, rushtd1, fumlost1, fumkept1 = (0,0,0,0)
   qb1s = name_re.findall(passing1)
+  if len(qb1s) > 1:
+    notes.append('%s had %d passers' % (team1, len(qb1s)))
   for qb in qb1s:
     rushy1qb, rushtd1qb, fumlost1qb, fumkept1qb = qb_rush(rushing1, fumbles1, qb)
     rushy1   += rushy1qb
@@ -231,6 +233,8 @@ def scrape(url, corrections=None):
 
   rushy2, rushtd2, fumlost2, fumkept2 = (0,0,0,0)
   qb2s = name_re.findall(passing2)
+  if len(qb2s) > 1:
+    notes.append('%s had %d passers' % (team2, len(qb2s)))
   for qb in qb2s:
     rushy2qb, rushtd2qb, fumlost2qb, fumkept2qb = qb_rush(rushing2, fumbles2, qb)
     rushy2   += rushy2qb
