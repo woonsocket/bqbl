@@ -6,16 +6,28 @@ import sys
 import time
 import urllib
 
+OUTPUT_FORMATS = ['tab', 'json']
+
 parser = optparse.OptionParser(
   usage=("Usage: %prog [options] <file with list of ESPN URLs> "
          "[<corrections file>]"))
 parser.add_option("-o", "--output_format", dest="output_format", default="tab",
-                  help="Output format. Valid values: ['tab', 'json'].")
+                  help="Output format. Valid values: %s." % OUTPUT_FORMATS)
 options, args = parser.parse_args()
 
 if len(args) < 1 or len(args) > 2:
   parser.print_usage()
   sys.exit(1)
+
+if options.output_format not in OUTPUT_FORMATS:
+  print >> sys.stderr, 'output format %s is not valid' % options.output_format
+  sys.exit(1)
+
+class ScrapeException(Exception):
+  @property
+  def message(self):
+    return self.args[0]
+
 
 # Cells, in order: Comp/Att; Yds; .*; TD; INT (unused)
 # INT isn't in a capture group because we parse it separately, from the
@@ -148,19 +160,20 @@ def qb_rush(rush_data, fum_data,  qb):
 
 def team_int(int_data):
   """Returns (non-TD interceptions, int TDs).
-  If data couldn't be parsed, returns two non-integer strings.
+  If data couldn't be parsed, raises ScrapeException.
   """
   # Match the first and last columns, because sometimes ESPN sticks a "yards"
   # column in the middle.
   team_int_re = re.compile(r"Team</th><th>(\d+)</th>.*?<th>(\d+)</th></tr>")
   int_match = team_int_re.search(int_data)
-  if not int_data:
-    return "int", "int6"
+  if not int_match:
+    raise ScrapeException("regex %s didn't match" % team_int_re.pattern)
   all_ints, td_ints = int_match.group(1, 2)
   try:
     return int(all_ints) - int(td_ints), int(td_ints)
   except ValueError:
-    return "int", "int6"
+    raise ScrapeException("could not parse ints: all_ints = %s, td_ints = %s" %
+                          (all_ints, td_ints))
 
 
 def team_rec(rec_data):
@@ -278,15 +291,21 @@ def scrape(url, corrections=None):
       sackyds2 = 0  # Maybe this should be None.
 
 
+  int1, inttd1, int2, inttd2 = (0, 0, 0, 0)
   # ints1 = interceptions thrown by team 1 (i.e., interceptions made by team 2)
   if "Interceptions</th>" in data:
     ints1 = data.split("Interceptions</th>")[2].split("Kick Returns")[0]
     ints2 = data.split("Interceptions</th>")[1].split("Kick Returns")[0]
 
-    int1, inttd1 = team_int(ints1)
-    int2, inttd2 = team_int(ints2)
-  else:
-    int1, inttd1, int2, inttd2 = (0, 0, 0, 0)
+    try:
+      int1, inttd1 = team_int(ints1)
+    except ScrapeException as e:
+      notes.append(e.message)
+    try:
+      int2, inttd2 = team_int(ints2)
+    except ScrapeException as e:
+      notes.append(e.message)
+
 
   longpass1 = team_rec(receiving1)
   longpass2 = team_rec(receiving2)

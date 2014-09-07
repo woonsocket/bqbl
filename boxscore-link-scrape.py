@@ -7,7 +7,7 @@ import sys
 import urllib
 
 WEEKLY_SCOREBOARD_URL_PATTERN = (
-    'http://scores.espn.go.com/nfl/scoreboard?seasonYear=2012&seasonType=2'
+    'http://scores.espn.go.com/nfl/scoreboard?seasonYear=2014&seasonType=2'
     '&weekNumber=%s')
 
 BOX_SCORE_URL_PATTERN = (
