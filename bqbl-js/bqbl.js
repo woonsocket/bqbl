@@ -187,15 +187,15 @@ bqbl.jsonUrl_ = function(weekNumber) {
 
 
 /**
- * Determines the current week number of the NFL season. Only works for the 2012
- * season, up until December 30. Weeks begin on Thursday.
+ * Determines the current week number of the NFL season. Only works for the 2014
+ * season, up until December 28. Weeks begin on Thursday.
  * @param {!goog.date.Date=} opt_date A date. Defaults to today.
  * @return {number} The current NFL week number.
  */
 bqbl.getCurrentWeekNumber_ = function(opt_date) {
   var date = opt_date || new goog.date.Date();
-  // Day 248 is Thursday, September 5, 2013.
-  return Math.floor((date.getDayOfYear() - 248) / 7) + 1;
+  // Day 247 is Thursday, September 4, 2014.
+  return Math.floor((date.getDayOfYear() - 247) / 7) + 1;
 };
 
 
@@ -499,7 +499,7 @@ bqbl.computeScoreComponents = function(qbScore) {
   var pointsList = [
     bqbl.simpleMultiple(25, qbScore['interceptions_td'], 'INT returned for TD'),
     bqbl.simpleMultiple(5, qbScore['interceptions_notd'], 'INT'),
-    bqbl.simpleMultiple(15, qbScore['fumbles_lost_td'], 'fumble lost for TD'),
+    bqbl.simpleMultiple(25, qbScore['fumbles_lost_td'], 'fumble lost for TD'),
     bqbl.simpleMultiple(5, qbScore['fumbles_lost_notd'], 'fumble lost'),
     bqbl.simpleMultiple(2, qbScore['fumbles_kept'], 'fumble kept'),
     bqbl.turnoverPoints(qbScore),
@@ -513,8 +513,6 @@ bqbl.computeScoreComponents = function(qbScore) {
     pointsList.push(new bqbl.ScoreComponent(10, 'no pass of 25+ yards'));
   if (qbScore['rush_yards'] >= 75)
     pointsList.push(new bqbl.ScoreComponent(-8, '75+ rushing yards'));
-  if (qbScore['game_winning_drive'])
-    pointsList.push(new bqbl.ScoreComponent(-12, 'game-winning drive'));
   if (qbScore['game_losing_taint'])
     pointsList.push(new bqbl.ScoreComponent(50, 'game-losing pick six in OT'));
   return pointsList.filter(function(x) { return x.pointValue != 0; });
