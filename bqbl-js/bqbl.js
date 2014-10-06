@@ -11,6 +11,7 @@ goog.require('goog.Uri');
 
 
 bqbl.DEFAULT_SORT_ORDER = 'active,score';
+bqbl.DEFAULT_SCORE_MODE = 'proj';
 bqbl.MAX_WEEK_NUM = 17;
 
 
@@ -70,12 +71,14 @@ bqbl.registerListeners = function() {
           e.preventDefault();
         });
   }
+
   addListener(document.getElementById('sortbyactive'),
               {'sort': ['active', 'team']});
   addListener(document.getElementById('sortbyscore'),
               {'sort': ['score', 'team']});
   addListener(document.getElementById('sortbyteam'),
               {'sort': ['team']});
+
   var weekSelectorsElem = document.getElementById('weekselectors');
   goog.dom.appendChild(weekSelectorsElem, goog.dom.createTextNode('Week: '));
   for (var weekNum = 1; weekNum <= bqbl.MAX_WEEK_NUM; weekNum++) {
@@ -89,6 +92,9 @@ bqbl.registerListeners = function() {
     }
     addListener(weekLink, {'week': weekNum}, /* forceLoad */ true);
   }
+
+  addListener(document.getElementById('scoresreal'), {'score': 'real'});
+  addListener(document.getElementById('scoresprojected'), {'score': 'proj'});
 };
 
 
@@ -412,11 +418,19 @@ bqbl.numberToHtml = function(num) {
  * @return {!bqbl.TeamScore} The score data, as a TeamScore.
  */
 bqbl.scoreObjectToTeamScore = function(scoreObject) {
+  var history = bqbl.parseHistoryToken(bqbl.historyState_.getToken());
+  var mode = history['score'] || bqbl.DEFAULT_SCORE_MODE;
+  if (mode == 'proj') {
+    scoreObject = bqbl.computeStupidProjection(
+        scoreObject,
+        bqbl.parseElapsedFraction('' + scoreObject['game_time']));
+  }
+  var scoreComponents = bqbl.computeScoreComponents(scoreObject);
   return new bqbl.TeamScore(
       scoreObject['team'],
       scoreObject['game_time'],
       bqbl.computeStatLine(scoreObject),
-      bqbl.computeScoreComponents(scoreObject));
+      scoreComponents);
 };
 
 
@@ -564,6 +578,86 @@ bqbl.touchdownPoints = function(tds) {
   else if (tds == 4) points = -10;
   else points = -20;
   return new bqbl.ScoreComponent(points, tds + '-touchdown game');
+};
+
+
+/**
+ * A score object with the same format as the qbScore that is parsed from
+ * JSON. Represents "average" stats for a QB. Fields that are absent are not
+ * modified by the projection.
+ */
+bqbl._STUPID_PROJECTION_TARGET = {
+  // These numbers are a little arbitrary. They're approximated from the average
+  // stats for all 32 teams in Week 3 of the 2014 season.
+  'pass_yards': 250,
+  'pass_tds': 1.6,
+  'completions': 22,
+  'attempts': 35,
+  // This one has the effect of only making the 'No 25+ yard pass' line show up
+  // late in the game.
+  'long_pass': 40
+};
+
+
+/**
+ * @param {!Object.<string, *>} qbScore Quarterback stats.
+ * @param {number} elapsedFrac The fraction of regulation time that has
+ *     elapsed. Equal to 0 at the start of the game, and 1 during overtime and
+ *     when the game is over.
+ * @return {!Object.<string, *>} Projected stats. The parameter object is not
+ *     modified.
+ */
+bqbl.computeStupidProjection = function(qbScore, elapsedFrac) {
+  var projected = [];
+  for (var stat in qbScore) {
+    if (stat in bqbl._STUPID_PROJECTION_TARGET && elapsedFrac < 1) {
+      var currentStat = parseInt(qbScore[stat], 10);
+      projected[stat] = Math.round(
+          elapsedFrac * currentStat +
+          (1 - elapsedFrac) * bqbl._STUPID_PROJECTION_TARGET[stat]);
+    } else {
+      projected[stat] = qbScore[stat];
+    }
+  }
+  return projected;
+};
+
+
+/**
+ * @param {string} gameStatus String describing the game time remaining.
+ * @return {number} The fraction of regulation time that has elapsed, between 0
+ *     and 1.
+ */
+bqbl.parseElapsedFraction = function(gameStatus) {
+  var timeParts = gameStatus.match(/([^ ]*) ([1-4]).. Qtr/);
+  var quarterNumber;
+  var secondsLeftInQuarter;
+
+  if (!timeParts) {
+    if (gameStatus.toLowerCase().indexOf('half') > -1) {
+      quarterNumber = 2;
+      secondsLeftInQuarter = 0;
+    } else {
+      // Otherwise, it's likely OT or game over.
+      return 1;
+    }
+  } else {
+    quarterNumber = timeParts[2];
+    var clock = timeParts[1];
+
+    if (clock.indexOf(':') > -1) {
+      var clockParts = clock.split(':');
+      var minutesLeft = parseInt(clockParts[0], 10);
+      var secondsLeft = parseInt(clockParts[1], 10);
+      secondsLeftInQuarter = 60 * minutesLeft + secondsLeft;
+    } else {
+      // If the clock doesn't look like a time, it's probably the word "End".
+      secondsLeftInQuarter = 0;
+    }
+  }
+
+  var secsElapsed = 900 * quarterNumber - secondsLeftInQuarter;
+  return secsElapsed / 3600;
 };
 
 
