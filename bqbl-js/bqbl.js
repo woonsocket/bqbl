@@ -418,6 +418,7 @@ bqbl.numberToHtml = function(num) {
  * @return {!bqbl.TeamScore} The score data, as a TeamScore.
  */
 bqbl.scoreObjectToTeamScore = function(scoreObject) {
+  var originalScoreObject = scoreObject;
   var history = bqbl.parseHistoryToken(bqbl.historyState_.getToken());
   var mode = history['score'] || bqbl.DEFAULT_SCORE_MODE;
   if (mode == 'proj') {
@@ -429,7 +430,7 @@ bqbl.scoreObjectToTeamScore = function(scoreObject) {
   return new bqbl.TeamScore(
       scoreObject['team'],
       scoreObject['game_time'],
-      bqbl.computeStatLine(scoreObject),
+      bqbl.computeStatLine(originalScoreObject),
       scoreComponents);
 };
 
