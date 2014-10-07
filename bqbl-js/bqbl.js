@@ -613,9 +613,9 @@ bqbl.computeStupidProjection = function(qbScore, elapsedFrac) {
   for (var stat in qbScore) {
     if (stat in bqbl._STUPID_PROJECTION_TARGET && elapsedFrac < 1) {
       var currentStat = parseInt(qbScore[stat], 10);
-      projected[stat] = Math.round(
-          elapsedFrac * currentStat +
-          (1 - elapsedFrac) * bqbl._STUPID_PROJECTION_TARGET[stat]);
+      var targetStat = bqbl._STUPID_PROJECTION_TARGET[stat];
+      projected[stat] =
+          Math.round(currentStat + (1 - elapsedFrac) * targetStat);
     } else {
       projected[stat] = qbScore[stat];
     }
