@@ -542,7 +542,7 @@ bqbl.turnoverPoints = function(qbScore) {
   if (totalTurnovers == 3) points = 12;
   else if (totalTurnovers == 4) points = 16;
   else if (totalTurnovers == 5) points = 24;
-  else if (totalTurnovers > 5) points = 50;
+  else if (totalTurnovers > 5) points = (totalTurnovers - 4) * 25;
   return new bqbl.ScoreComponent(points, totalTurnovers + '-turnover game');
 };
 
