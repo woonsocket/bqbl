@@ -178,12 +178,12 @@ def team_int(int_data):
 
 def team_rec(rec_data):
   """Returns the length of the longest reception, as an integer.
-  If data couldn't be parsed, or there are no receptions, returns -100.
+  If data couldn't be parsed, or there are no receptions, returns None.
   """
   team_rec_re = re.compile(r"Team</th><th>\d+</th><th>\d+</th><th>.*?</th><th>\d+</th><th>(\d+)</th><th>\d+</th></tr>")
   rec_match = team_rec_re.search(rec_data)
   if not rec_match:
-    return -100
+    return None
   lg = rec_match.group(1)
   return int(lg)
 
@@ -307,8 +307,8 @@ def scrape(url, corrections=None):
       notes.append(e.message)
 
 
-  longpass1 = team_rec(receiving1)
-  longpass2 = team_rec(receiving2)
+  longpass1 = team_rec(receiving1) or 0
+  longpass2 = team_rec(receiving2) or 0
 
   time_match = time_re.search(data)
   if time_match:
