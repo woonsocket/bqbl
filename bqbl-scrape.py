@@ -75,7 +75,7 @@ class QbStats(object):
                fumbles_lost_notd=0, fumbles_lost_td=0, fumbles_kept=0,
                pass_yards=0, rush_yards=0, sack_yards=0, long_pass=0,
                safeties=0, game_winning_drive=False, game_losing_taint=False,
-               benchings=0, game_time=''):
+               benchings=0, game_time='', boxscore_url=''):
     """Initializer.
 
     If you don't pass arguments by name, you're gonna have a bad time.
@@ -99,6 +99,7 @@ class QbStats(object):
     self.game_losing_taint = game_losing_taint
     self.benchings = benchings
     self.game_time = game_time
+    self.boxscore_url = boxscore_url
 
   def _StringifyStat(self, stat):
     if not stat:
@@ -332,7 +333,8 @@ def scrape(url, corrections=None):
               rush_yards=rushy1,
               sack_yards=sackyds1,
               long_pass=longpass1,
-              game_time=gametime))
+              game_time=gametime,
+              boxscore_url=url))
   qbstats2 = (
       QbStats(team=team2,
               completions=comp2,
@@ -347,7 +349,8 @@ def scrape(url, corrections=None):
               rush_yards=rushy2,
               sack_yards=sackyds2,
               long_pass=longpass2,
-              game_time=gametime))
+              game_time=gametime,
+              boxscore_url=url))
 
   if team1 in corrections:
     apply_corrections(qbstats1, corrections[team1])
@@ -385,7 +388,7 @@ if len(args) > 1:
       
 
 for url in urls:
-  scrape(url, corrections)
+  scrape(url.strip(), corrections)
 
 now = time.time()
 
