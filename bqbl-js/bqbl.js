@@ -436,7 +436,7 @@ bqbl.scoreObjectToTeamScore = function(scoreObject) {
   var scoreComponents = bqbl.computeScoreComponents(scoreObject);
   return new bqbl.TeamScore(
       scoreObject['team'],
-      scoreObject['boxscore_url'],
+      scoreObject['boxscore_url'] || 'javascript:void(0);',
       scoreObject['game_time'],
       bqbl.computeStatLine(originalScoreObject),
       scoreComponents);
