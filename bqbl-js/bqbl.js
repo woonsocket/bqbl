@@ -335,12 +335,19 @@ bqbl.numberifyJson = function(qbScore) {
  * sorting.
  * @constructor
  */
-bqbl.TeamScore = function(teamName, gameStatus, statLine, scoreComponents) {
+bqbl.TeamScore = function(teamName, boxscoreUrl, gameStatus, statLine,
+                          scoreComponents) {
   /**
    * @type {string}
    * @const
    */
   this.teamName = teamName;
+
+  /**
+   * @type {string}
+   * @const
+   */
+  this.boxscoreUrl = boxscoreUrl;
 
   /**
    * The status of the game, e.g., the time remaining.
@@ -429,6 +436,7 @@ bqbl.scoreObjectToTeamScore = function(scoreObject) {
   var scoreComponents = bqbl.computeScoreComponents(scoreObject);
   return new bqbl.TeamScore(
       scoreObject['team'],
+      scoreObject['boxscore_url'],
       scoreObject['game_time'],
       bqbl.computeStatLine(originalScoreObject),
       scoreComponents);
@@ -465,7 +473,9 @@ bqbl.generateTeamScoreMarkup = function(score) {
           '</span>',
       '  </div>',
       '  <div class="statline">' + score.statLine + '</div>',
-      '  <div class="gamestatus">' + score.gameStatus + '</div>',
+      '  <div class="gamestatus">',
+      '    <a href="' + score.boxscoreUrl + '">' + score.gameStatus + '</a>',
+      '  </div>',
       '  <table class="scoretable">'
   ];
   scoreMarkups = scoreMarkups.concat(componentMarkups);
