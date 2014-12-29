@@ -335,13 +335,19 @@ bqbl.numberifyJson = function(qbScore) {
  * sorting.
  * @constructor
  */
-bqbl.TeamScore = function(teamName, boxscoreUrl, gameStatus, statLine,
-                          scoreComponents) {
+bqbl.TeamScore = function(teamName, opponentName, boxscoreUrl, gameStatus,
+                          statLine, scoreComponents) {
   /**
    * @type {string}
    * @const
    */
   this.teamName = teamName;
+
+  /**
+   * @type {string}
+   * @const
+   */
+  this.opponentName = opponentName;
 
   /**
    * @type {string}
@@ -436,6 +442,7 @@ bqbl.scoreObjectToTeamScore = function(scoreObject) {
   var scoreComponents = bqbl.computeScoreComponents(scoreObject);
   return new bqbl.TeamScore(
       scoreObject['team'],
+      scoreObject['opponent'] || '',
       scoreObject['boxscore_url'] || 'javascript:void(0);',
       scoreObject['game_time'],
       bqbl.computeStatLine(originalScoreObject),
@@ -462,6 +469,12 @@ bqbl.generateTeamScoreMarkup = function(score) {
         '</tr>');
   }
 
+  // Weeks before 2014 Week 17 don't have opponent data.
+  var opponentString = '';
+  if (score.opponentName) {
+    opponentString = '(vs. ' + score.opponentName + ')';
+  }
+
   var scoreMarkups = [
       '<div class="team' + (score.isGameOver() ? '' : ' active') +
           '">',
@@ -475,6 +488,7 @@ bqbl.generateTeamScoreMarkup = function(score) {
       '  <div class="statline">' + score.statLine + '</div>',
       '  <div class="gamestatus">',
       '    <a href="' + score.boxscoreUrl + '">' + score.gameStatus + '</a>',
+      '    ' + opponentString,
       '  </div>',
       '  <table class="scoretable">'
   ];

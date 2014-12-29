@@ -75,7 +75,7 @@ class QbStats(object):
                fumbles_lost_notd=0, fumbles_lost_td=0, fumbles_kept=0,
                pass_yards=0, rush_yards=0, sack_yards=0, long_pass=0,
                safeties=0, game_winning_drive=False, game_losing_taint=False,
-               benchings=0, game_time='', boxscore_url=''):
+               benchings=0, game_time='', boxscore_url='', opponent=''):
     """Initializer.
 
     If you don't pass arguments by name, you're gonna have a bad time.
@@ -100,6 +100,7 @@ class QbStats(object):
     self.benchings = benchings
     self.game_time = game_time
     self.boxscore_url = boxscore_url
+    self.opponent = opponent
 
   def _StringifyStat(self, stat):
     if not stat:
@@ -108,7 +109,7 @@ class QbStats(object):
       return str(stat)
 
   def AsSpreadsheetRow(self, delimiter="\t"):
-    # Intentionally omits game_time.
+    # Intentionally omits game_time and opponent.
     return delimiter.join(
         [self._StringifyStat(item) for item in
          [self.team, self.completions, self.attempts, self.pass_tds,
@@ -319,6 +320,7 @@ def scrape(url, corrections=None):
 
   qbstats1 = (
       QbStats(team=team1,
+              opponent=team2,
               completions=comp1,
               attempts=att1,
               pass_tds=td1,
@@ -337,6 +339,7 @@ def scrape(url, corrections=None):
               boxscore_url=url))
   qbstats2 = (
       QbStats(team=team2,
+              opponent=team1,
               completions=comp2,
               attempts=att2,
               pass_tds=td2,
