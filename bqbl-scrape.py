@@ -1,10 +1,13 @@
 # Usage: bqbl-scrape.py <file with list of ESPN URLs>
+import collections
 import json
 import optparse
 import re
 import sys
 import time
 import urllib
+
+from bs4 import BeautifulSoup
 
 OUTPUT_FORMATS = ['tab', 'json']
 
@@ -23,41 +26,22 @@ if options.output_format not in OUTPUT_FORMATS:
   print >> sys.stderr, 'output format %s is not valid' % options.output_format
   sys.exit(1)
 
+
+ALL_TEAMS = ("ARI","ATL","BAL","BUF","CAR","CHI","CIN","CLE","DAL","DEN","DET",
+             "GB","HOU","IND","JAX","KC","MIA","MIN","NE","NO","NYG","NYJ",
+             "OAK", "PHI","PIT","SD","SEA","SF","STL","TB","TEN","WSH")
+
+
+# Gross global variables
+notes = []
+scores = []
+found_teams = []
+
+
 class ScrapeException(Exception):
   @property
   def message(self):
     return self.args[0]
-
-
-# Cells, in order: Comp/Att; Yds; .*; TD; INT (unused)
-# INT isn't in a capture group because we parse it separately, from the
-# Interceptions table.
-qb_re = re.compile(r"<th>(\d+).(\d+)<.th><th>(-?\d+)<.th><th>.*?<.th><th>(\d+)<.th><th>\d+<.th>")
-# Adds Sacks-Sack yards as the final column. The ESPN box score doesn't always
-# render this column (current theory is that it's added after a game is over,
-# but doesn't show while the game is in progress).
-qb_re_sacks = re.compile(r"<th>(\d+).(\d+)<.th><th>(-?\d+)<.th><th>.*?<.th><th>(\d+)<.th><th>\d+<.th><th>\d+[^\d](\d+)</th>")
-name_re = re.compile("(\w. \w+)</a>")
-int_re = re.compile("(Interception Return)")
-fumret_re = re.compile("Fumble Return")
-team_re = re.compile("<td class=\"team\"><a [^>]*>(...?)</a>")
-time_re = re.compile("id=\"gameStatusBarText\">(.+?)</p>")
-
-notes = []
-scores = []
-teams = ["ARI","ATL","BAL","BUF","CAR","CHI","CIN","CLE","DAL","DEN","DET",
-         "GB","HOU","IND","JAC","KC","MIA","MIN","NE","NO","NYG","NYJ","OAK",
-         "PHI","PIT","SD","SEA","SF","STL","TB","TEN","WSH"]
-found_teams = []
-
-# A map from team names to the "canonical" team names in the teams list above.
-team_aliases = {
-  # ESPN changed their abbreviation for Jacksonville halfway through the season.
-  # We'll just stick with the old abbreviation, even though the new one is
-  # obviously cooler because it contains an 'X' which is like the coolest letter
-  # possible.
-  "JAX": "JAC",
-}
 
 
 class InvalidCorrectionError(Exception):
@@ -125,13 +109,10 @@ class QbStats(object):
     return self.__dict__.copy()
 
 
-def canonical_team_name(team_name):
-  if team_name in team_aliases:
-    return team_aliases[team_name]
-  return team_name
+Team = collections.namedtuple('Team', ['long_name', 'short_name', 'abbrev'])
 
 
-def apply_corrections(qbstats, delta_dict):
+def ApplyCorrections(qbstats, delta_dict):
   for attribute, value_delta in delta_dict.items():
     try:
       old_value = getattr(qbstats, attribute)
@@ -141,56 +122,39 @@ def apply_corrections(qbstats, delta_dict):
           'Invalid attribute "%s" in corrections file' % attribute)
 
 
-def qb_rush(rush_data, fum_data,  qb):
-  rush_re = re.compile(r">%s<.a><.td><td>(.?\d+)<.td><td>(.?\d+)<.td><td>.*?<.td><td>(.?\d+)<.td>" % qb)
-  fum_re = re.compile(r">%s<.a><.td><td>(\d+)<.td><td>(\d+)<.td>" % qb)
-  rushy, rushtd, fumlost, fumkept = (0,0,0,0)
-
-  rush_match = rush_re.search(rush_data)
-  if rush_match:
-    rushy = int(rush_match.group(2))
-    rushtd = int(rush_match.group(3))
-
-  fum_match = fum_re.search(fum_data)
-  if fum_match:
-    fum = int(fum_match.group(1))
-    fumlost = int(fum_match.group(2))
-    fumkept = fum - fumlost
-
-  return (rushy, rushtd, fumlost, fumkept)
+def SelectAndGetText(soup, selector):
+  elem = soup.select_one(selector)
+  if not elem:
+    raise ScrapeException('found no match for "%s" in element: %s' %
+                          (selector, soup))
+  return elem.get_text()
 
 
-def team_int(int_data):
-  """Returns (non-TD interceptions, int TDs).
-  If data couldn't be parsed, raises ScrapeException.
+def FindTeams(boxscore_soup):
+  """Returns the 2-tuple of teams in the box score.
+
+  Raises ScrapeException if not exactly 2 teams are found.
   """
-  # Match the first and last columns, because sometimes ESPN sticks a "yards"
-  # column in the middle.
-  team_int_re = re.compile(r"Team</th><th>(\d+)</th>.*?<th>(\d+)</th></tr>")
-  int_match = team_int_re.search(int_data)
-  if not int_match:
-    raise ScrapeException("regex %s didn't match" % team_int_re.pattern)
-  all_ints, td_ints = int_match.group(1, 2)
-  try:
-    return int(all_ints) - int(td_ints), int(td_ints)
-  except ValueError:
-    raise ScrapeException("could not parse ints: all_ints = %s, td_ints = %s" %
-                          (all_ints, td_ints))
+  team_elems = boxscore_soup.select('.team-info .team-name')
+  teams = []
+  abbrs = []
+  for t in team_elems:
+    teams.append(
+        Team(long_name=SelectAndGetText(t, '.long-name'),
+             short_name=SelectAndGetText(t, '.short-name'),
+             abbrev=SelectAndGetText(t, '.abbrev')))
+  if len(teams) != 2:
+    raise ScrapeException('expected exactly 2 teams, but found %s' %
+                          [t.abbrev for t in teams])
+  return teams
 
 
-def team_rec(rec_data):
-  """Returns the length of the longest reception, as an integer.
-  If data couldn't be parsed, or there are no receptions, returns None.
-  """
-  team_rec_re = re.compile(r"Team</th><th>\d+</th><th>\d+</th><th>.*?</th><th>\d+</th><th>(\d+)</th><th>\d+</th></tr>")
-  rec_match = team_rec_re.search(rec_data)
-  if not rec_match:
-    return None
-  lg = rec_match.group(1)
-  return int(lg)
+def QbNames(passing_soup):
+  return [e.get_text() for e in passing_soup.select('tbody .name')
+          if e.get_text() != 'TEAM']
 
 
-def scrape(url, corrections=None):
+def Scrape(url, corrections=None):
   """Scrape the given URL, and add the results to the global state.
 
   Args:
@@ -202,169 +166,94 @@ def scrape(url, corrections=None):
         from the scrape for that team.
   """
   global notes, found_teams
+
   corrections = corrections or {}
-  data = urllib.urlopen(url).read()
-  if "No Boxscore Available".lower() in data.lower():
-    return
-  if "Passing</th>" not in data:
-    return
-  passing1 =  data.split("Passing</th>")[1].split("Rushing")[0]
-  passing2 = data.split("Passing</th>")[2].split("Rushing")[0]
-  passing_total1, passing_total2 = None, None
-  if "Team" in passing1:
-    passing_total1 = passing1.split("Team")[1]
-  if "Team" in passing2:
-    passing_total2 = passing2.split("Team")[1]
+  box_html = urllib.urlopen(url).read()
+  data = box_html  # TODO(juangj): Delete "data" var
+  box_soup = BeautifulSoup(box_html, 'html.parser')
 
-  rushing1 = data.split("Rushing</th>")[1].split("Receiving")[0]
-  rushing2 = data.split("Rushing</th>")[2].split("Receiving")[0]
+  teams = FindTeams(box_soup)
+  found_teams.extend([t.abbrev for t in teams])
 
-  receiving1 = data.split("Receiving</th>")[1].split("Fumbles")[0]
-  receiving2 = data.split("Receiving</th>")[2].split("Fumbles")[0]
+  def Section(sec, col):
+    return box_soup.select_one('#gamepackage-%s .column-%s .mod-data' %
+                               (sec, col))
+  
+  for team, opponent, col, opp_col in ((teams[0], teams[1], 'one', 'two'),
+                                       (teams[1], teams[0], 'two', 'one')):
+    qbstats = QbStats()
 
-  if "Fumbles</th>" in data:
-    fumbles1 = data.split("Fumbles</th>")[1].split("</table>")[0]
-    fumbles2 = data.split("Fumbles</th>")[2].split("</table>")[0]
-  else:
-    fumbles1 = ""
-    fumbles2 = ""
-
-  team1 = team_re.findall(data)[0]
-  team2 = team_re.findall(data)[1]
-  team1 = canonical_team_name(team1)
-  team2 = canonical_team_name(team2)
-  found_teams += [team1, team2]
-
-  rushy1, rushtd1, fumlost1, fumkept1 = (0,0,0,0)
-  qb1s = name_re.findall(passing1)
-  if len(qb1s) > 1:
-    notes.append('%s had %d passers' % (team1, len(qb1s)))
-  for qb in qb1s:
-    rushy1qb, rushtd1qb, fumlost1qb, fumkept1qb = qb_rush(rushing1, fumbles1, qb)
-    rushy1   += rushy1qb
-    rushtd1  += rushtd1qb
-    fumlost1 += fumlost1qb
-    fumkept1 += fumkept1qb
-
-  rushy2, rushtd2, fumlost2, fumkept2 = (0,0,0,0)
-  qb2s = name_re.findall(passing2)
-  if len(qb2s) > 1:
-    notes.append('%s had %d passers' % (team2, len(qb2s)))
-  for qb in qb2s:
-    rushy2qb, rushtd2qb, fumlost2qb, fumkept2qb = qb_rush(rushing2, fumbles2, qb)
-    rushy2   += rushy2qb
-    rushtd2  += rushtd2qb
-    fumlost2 += fumlost2qb
-    fumkept2 += fumkept2qb
-
-  comp1, att1, yds1, td1, sackyds1 = (0, 0, 0, 0, 0)
-  if passing_total1:
-    pass1sacks_match = qb_re_sacks.search(passing_total1)
-    pass1_match = qb_re.search(passing_total1)
-    if pass1sacks_match:
-      comp1    = pass1sacks_match.group(1)
-      att1     = pass1sacks_match.group(2)
-      yds1     = pass1sacks_match.group(3)
-      td1      = pass1sacks_match.group(4)
-      sackyds1 = pass1sacks_match.group(5)
-    elif pass1_match:
-      comp1    = pass1_match.group(1)
-      att1     = pass1_match.group(2)
-      yds1     = pass1_match.group(3)
-      td1      = pass1_match.group(4)
-      sackyds1 = 0  # Maybe this should be None.
+    qbstats.team = team.abbrev
+    qbstats.opponent = opponent.abbrev
+    qbstats.boxscore_url = url
     
+    passing = Section('passing', col)
+    qb_names = set(QbNames(passing))
+    if len(qb_names) > 1:
+      notes.append('%s had %d passers: %s' %
+                   (team.abbrev, len(qb_names), ', '.join(qb_names)))
 
-  comp2, att2, yds2, td2, sackyds2 = (0, 0, 0, 0, 0)
-  if passing_total2:
-    pass2sacks_match = qb_re_sacks.search(passing_total2)
-    pass2_match = qb_re.search(passing_total2)
-    if pass2sacks_match:
-      comp2    = pass2sacks_match.group(1)
-      att2     = pass2sacks_match.group(2)
-      yds2     = pass2sacks_match.group(3)
-      td2      = pass2sacks_match.group(4)
-      sackyds2 = pass2sacks_match.group(5)
-    elif pass2_match:
-      comp2    = pass2_match.group(1)
-      att2     = pass2_match.group(2)
-      yds2     = pass2_match.group(3)
-      td2      = pass2_match.group(4)
-      sackyds2 = 0  # Maybe this should be None.
+    team_passing = passing.select_one('tbody tr.highlight')
+    if SelectAndGetText(team_passing, '.name') == 'TEAM':
+      # Is the sacks column always present? In the past, it wasn't always.
+      comp_stats = SelectAndGetText(team_passing, '.c-att')
+      comp, att = comp_stats.split('/', 1)
+      qbstats.completions = int(comp)
+      qbstats.attempts = int(att)
+      qbstats.pass_yards = int(SelectAndGetText(team_passing, '.yds'))
+      qbstats.pass_tds = int(SelectAndGetText(team_passing, '.td'))
+      sack_stats = SelectAndGetText(team_passing, '.sacks')
+      sacks, sack_yards = sack_stats.split('-', 1)
+      qbstats.sack_yards = int(sack_yards)
+    else:
+      raise ScrapeException('could not find passing stats for %s' % team.abbrev)
 
+    rushing = Section('rushing', col)
+    for row in rushing.select('tbody tr'):
+      name = SelectAndGetText(row, '.name')
+      if name in qb_names:
+        qbstats.rush_yards += int(SelectAndGetText(row, '.yds'))
+        qbstats.rush_tds += int(SelectAndGetText(row, '.td'))
 
-  int1, inttd1, int2, inttd2 = (0, 0, 0, 0)
-  # ints1 = interceptions thrown by team 1 (i.e., interceptions made by team 2)
-  if "Interceptions</th>" in data:
-    ints1 = data.split("Interceptions</th>")[2].split("Kick Returns")[0]
-    ints2 = data.split("Interceptions</th>")[1].split("Kick Returns")[0]
+    interceptions = Section('interceptions', opp_col)
+    opp_interceptions = interceptions.select_one('tbody tr.highlight')
+    # tr.highlight won't exist if the opponents made no interceptions.
+    if opp_interceptions:
+      num_ints = int(SelectAndGetText(opp_interceptions, '.int'))
+      num_int_tds = int(SelectAndGetText(opp_interceptions, '.td'))
+      qbstats.interceptions_td = num_int_tds
+      qbstats.interceptions_notd = num_ints - num_int_tds
 
-    try:
-      int1, inttd1 = team_int(ints1)
-    except ScrapeException as e:
-      notes.append(e.message)
-    try:
-      int2, inttd2 = team_int(ints2)
-    except ScrapeException as e:
-      notes.append(e.message)
+    fumbles = Section('fumbles', col)
+    for row in fumbles.select('tbody tr'):
+      name_cell = row.select_one('.name')
+      if not name_cell:  # Occurs if there were no fumbles.
+        continue
+      name = name_cell.get_text()
+      if name in qb_names:
+        fums = int(SelectAndGetText(row, '.fum'))
+        fums_lost = int(SelectAndGetText(row, '.lost'))
+        # TODO(juangj): Scrape the play-by-play to determine when a fumble is
+        # lost for a TD. Until then, we have to keep manually-correcting all
+        # such occurrences. The scoring summary also no longer appears on the
+        # page, so we no longer get a warning when there was a fumble return TD.
+        qbstats.fumbles_kept += fums - fums_lost
+        qbstats.fumbles_lost_notd += fums_lost
 
+    receiving = Section('receiving', col)
+    team_receiving = receiving.select_one('tbody tr.highlight')
+    if SelectAndGetText(team_receiving, '.name') == 'TEAM':
+      qbstats.long_pass = int(SelectAndGetText(team_receiving, '.long'))
+    else:
+      raise ScrapeException(
+          'could not find receiving stats for %s' % team.abbrev)
 
-  longpass1 = team_rec(receiving1) or 0
-  longpass2 = team_rec(receiving2) or 0
+    qbstats.game_time = SelectAndGetText(box_soup, '.game-status .game-time')
 
-  time_match = time_re.search(data)
-  if time_match:
-    gametime = time_match.group(1)
-  else:
-    gametime = ''
+    if team.abbrev in corrections:
+      ApplyCorrections(qbstats, corrections[team.abbrev])
+    scores.append(qbstats)
 
-  qbstats1 = (
-      QbStats(team=team1,
-              opponent=team2,
-              completions=comp1,
-              attempts=att1,
-              pass_tds=td1,
-              interceptions_notd=int1,
-              interceptions_td=inttd1,
-              rush_tds=rushtd1,
-              # Includes fumble return TDs because we can't compute
-              # fumbles_lost_td yet.
-              fumbles_lost_notd=fumlost1,
-              fumbles_kept=fumkept1,
-              pass_yards=yds1,
-              rush_yards=rushy1,
-              sack_yards=sackyds1,
-              long_pass=longpass1,
-              game_time=gametime,
-              boxscore_url=url))
-  qbstats2 = (
-      QbStats(team=team2,
-              opponent=team1,
-              completions=comp2,
-              attempts=att2,
-              pass_tds=td2,
-              interceptions_notd=int2,
-              interceptions_td=inttd2,
-              rush_tds=rushtd2,
-              fumbles_lost_notd=fumlost2,
-              fumbles_kept=fumkept2,
-              pass_yards=yds2,
-              rush_yards=rushy2,
-              sack_yards=sackyds2,
-              long_pass=longpass2,
-              game_time=gametime,
-              boxscore_url=url))
-
-  if team1 in corrections:
-    apply_corrections(qbstats1, corrections[team1])
-  if team2 in corrections:
-    apply_corrections(qbstats2, corrections[team2])
-
-  scores.append(qbstats1)
-  scores.append(qbstats2)
-
-  if fumret_re.findall(data):
-    notes.append(" %s %s Fumble Return" % (team1, team2))
 
 urls = open(args[0]).readlines()
 corrections = {}
@@ -381,7 +270,7 @@ if len(args) > 1:
   for team_num, team_dict in enumerate(corrections_list):
     try:
       team_name = team_dict['team']
-      if team_name not in teams:
+      if team_name not in ALL_TEAMS:
         raise InvalidCorrectionError(
             'Invalid corrections entry: Unrecognized team %s' % team_name)
       corrections[team_name] = team_dict['deltas']
@@ -391,14 +280,14 @@ if len(args) > 1:
       
 
 for url in urls:
-  scrape(url.strip(), corrections)
+  Scrape(url.strip(), corrections)
 
 now = time.time()
 
 if options.output_format == 'tab':
   # Add dummy lines for teams that haven't played.
   lines = [score.AsSpreadsheetRow() for score in scores]
-  for team in teams:
+  for team in ALL_TEAMS:
     if team not in found_teams:
       lines.append(team)
   lines.sort()
