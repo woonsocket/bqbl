@@ -2,7 +2,6 @@
 import collections
 import json
 import optparse
-import re
 import sys
 import time
 import urllib

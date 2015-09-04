@@ -2,24 +2,28 @@
 # the box score URLs for the games.
 # Usage: %prog <weeknum>
 
-import re
 import sys
 import urllib
 
-WEEKLY_SCOREBOARD_URL_PATTERN = (
-    'http://scores.espn.go.com/nfl/scoreboard?seasonYear=2014&seasonType=2'
-    '&weekNumber=%s')
+from bs4 import BeautifulSoup
 
-BOX_SCORE_URL_PATTERN = (
-    'http://scores.espn.go.com/nfl/boxscore?gameId=%s')
+SCHEDULE_URL_PATTERN = (
+    'http://espn.go.com/nfl/schedule/_/seasontype/2/week/%s')
+
+CONVERSATION_URL_PREFIX = (
+    'http://espn.go.com/nfl/conversation?gameId=')
 
 week_num = int(sys.argv[1])
+url = SCHEDULE_URL_PATTERN % week_num
 
-scoreboard_data = urllib.urlopen(
-    WEEKLY_SCOREBOARD_URL_PATTERN % week_num).read()
+scoreboard_data = urllib.urlopen(url).read()
+scoreboard_soup = BeautifulSoup(scoreboard_data, 'html.parser')
 
-GAME_ID_RE = re.compile('class="sort".*?>([\d]+?)<')
-matches = GAME_ID_RE.findall(scoreboard_data)
-
-for match in matches:
-    print BOX_SCORE_URL_PATTERN % match
+# Hm, looks like the <article> tags are rendered by JS
+game_links = scoreboard_soup.find_all(
+    href=lambda s: s and s.startswith(CONVERSATION_URL_PREFIX))
+if not game_links:
+    raise Exception('no games found on %s' % url)
+print len(game_links)
+for game in game_links:
+    print game['href'].replace('/conversation', '/boxscore')
