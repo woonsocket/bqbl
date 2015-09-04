@@ -17,7 +17,7 @@ week_num = int(sys.argv[1])
 url = SCHEDULE_URL_PATTERN % week_num
 
 scoreboard_data = urllib.urlopen(url).read()
-scoreboard_soup = BeautifulSoup(scoreboard_data, 'html.parser')
+scoreboard_soup = BeautifulSoup(scoreboard_data, 'lxml')
 
 # Hm, looks like the <article> tags are rendered by JS
 game_links = scoreboard_soup.find_all(

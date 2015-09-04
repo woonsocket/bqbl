@@ -166,8 +166,7 @@ def Scrape(url, corrections=None):
 
   corrections = corrections or {}
   box_html = urllib.urlopen(url).read()
-  data = box_html  # TODO(juangj): Delete "data" var
-  box_soup = BeautifulSoup(box_html, 'html.parser')
+  box_soup = BeautifulSoup(box_html, 'lxml')
 
   teams = FindTeams(box_soup)
   found_teams.extend([t.abbrev for t in teams])
@@ -230,10 +229,10 @@ def Scrape(url, corrections=None):
       if name in qb_names:
         fums = int(SelectAndGetText(row, '.fum'))
         fums_lost = int(SelectAndGetText(row, '.lost'))
-        # TODO(juangj): Scrape the play-by-play to determine when a fumble is
-        # lost for a TD. Until then, we have to keep manually-correcting all
-        # such occurrences. The scoring summary also no longer appears on the
-        # page, so we no longer get a warning when there was a fumble return TD.
+        # TODO: Scrape the play-by-play to determine when a fumble is lost for a
+        # TD. Until then, we have to keep manually-correcting all such
+        # occurrences. The scoring summary also no longer appears on the page,
+        # so we no longer get a warning when there was a fumble return TD.
         qbstats.fumbles_kept += fums - fums_lost
         qbstats.fumbles_lost_notd += fums_lost
 
