@@ -24,6 +24,5 @@ game_links = scoreboard_soup.find_all(
     href=lambda s: s and s.startswith(CONVERSATION_URL_PREFIX))
 if not game_links:
     raise Exception('no games found on %s' % url)
-print len(game_links)
 for game in game_links:
     print game['href'].replace('/conversation', '/boxscore')
