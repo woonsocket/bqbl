@@ -6,6 +6,11 @@
 # and place it in closure-library, or run:
 #   svn co http://closure-library.googlecode.com/svn/trunk/ closure-library
 
+# Ubuntu 15.04 started setting JAVA_TOOL_OPTIONS, which makes Java echo a line
+# to stdout when starting. The compiler determines Java version by parsing the
+# output of `java -version`, and the extra line breaks it.
+unset JAVA_TOOL_OPTIONS
+
 closure-library/closure/bin/build/closurebuilder.py \
     --root=closure-library/ \
     --root=bqbl-js/ \

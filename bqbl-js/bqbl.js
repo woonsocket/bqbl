@@ -321,7 +321,7 @@ bqbl.numberifyJson = function(qbScore) {
   for (var key in qbScore) {
     if (!goog.isString(qbScore[key]))
       continue;
-    var val = /** @type {string} */ qbScore[key];
+    var val = '' + qbScore[key];
     var numberwang = goog.string.toNumber(val);
     if (!isNaN(numberwang))
       qbScore[key] = numberwang;
