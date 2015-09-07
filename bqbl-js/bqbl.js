@@ -200,8 +200,8 @@ bqbl.jsonUrl_ = function(weekNumber) {
  */
 bqbl.getCurrentWeekNumber_ = function(opt_date) {
   var date = opt_date || new goog.date.Date();
-  // Day 247 is Thursday, September 4, 2014.
-  return Math.floor((date.getDayOfYear() - 247) / 7) + 1;
+  // Day 253 is Thursday, September 10, 2015.
+  return Math.floor((date.getDayOfYear() - 253) / 7) + 1;
 };
 
 
@@ -563,10 +563,13 @@ bqbl.turnoverPoints = function(qbScore) {
       qbScore['interceptions_td'] + qbScore['fumbles_lost_notd'] +
       qbScore['fumbles_lost_td'];
   var points = 0;
-  if (totalTurnovers == 3) points = 12;
-  else if (totalTurnovers == 4) points = 16;
-  else if (totalTurnovers == 5) points = 24;
-  else if (totalTurnovers > 5) points = (totalTurnovers - 4) * 25;
+  if (totalTurnovers == 3) points = 10;
+  else if (totalTurnovers == 4) points = 20;
+  else if (totalTurnovers >= 5) points = 32;
+  // 1.5x points for subsequent turnovers.
+  for (var to = 6; to <= totalTurnovers; to++) {
+    points = points + points / 2;
+  }
   return new bqbl.ScoreComponent(points, totalTurnovers + '-turnover game');
 };
 
@@ -599,9 +602,11 @@ bqbl.touchdownPoints = function(tds) {
   var points;
   if (tds == 0) points = 10;
   else if (tds < 3) points = 0;
-  else if (tds == 3) points = -5;
-  else if (tds == 4) points = -10;
-  else points = -20;
+  else points = -5;
+  // Penalty doubled for each TD beyond 3.
+  for (var td = 4; td <= tds; td++) {
+    points *= 2;
+  }
   return new bqbl.ScoreComponent(points, tds + '-touchdown game');
 };
 
