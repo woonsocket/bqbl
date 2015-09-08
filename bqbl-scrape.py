@@ -182,8 +182,9 @@ def Scrape(url, corrections=None):
     qbstats.team = team.abbrev
     qbstats.opponent = opponent.abbrev
     qbstats.boxscore_url = url
-    
     passing = Section('passing', col)
+    if not passing:
+      continue
     qb_names = set(QbNames(passing))
     if len(qb_names) > 1:
       notes.append('%s had %d passers: %s' %
