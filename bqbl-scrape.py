@@ -120,14 +120,16 @@ def ApplyCorrections(qbstats, delta_dict):
 
 
 def SelectAndGetText(soup, selector, default='0'):
-  elem = soup.select_one(selector)
-  if not elem:
-    if default is None:
-      raise ScrapeException('found no match for "%s" in element: %s' %
-                            (selector, soup))
-    else:
-      return str(default)
-  return elem.get_text()
+  if soup:
+    elem = soup.select_one(selector)
+    if elem:
+      return elem.get_text()
+
+  if default is None:
+    raise ScrapeException('found no match for "%s" in element: %s' %
+                          (selector, soup))
+  else:
+    return str(default)
 
 
 def FindTeams(boxscore_soup):
