@@ -291,7 +291,7 @@ if len(args) > 1:
 for url in urls:
   try:
     Scrape(url.strip(), corrections)
-  except ScrapeException as e:
+  except Exception as e:
     print >> sys.stderr, e
 
 now = time.time()
