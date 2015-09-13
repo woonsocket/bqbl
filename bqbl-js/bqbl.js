@@ -659,7 +659,7 @@ bqbl.computeStupidProjection = function(qbScore, elapsedFrac) {
  *     and 1.
  */
 bqbl.parseElapsedFraction = function(gameStatus) {
-  var timeParts = gameStatus.match(/([^ ]*) ([1-4]).. Qtr/);
+  var timeParts = gameStatus.match(/([^ ]*) - ([1-4])/);
   var quarterNumber;
   var secondsLeftInQuarter;
 
