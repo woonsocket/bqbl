@@ -177,8 +177,6 @@ def Scrape(url, corrections=None):
   teams = FindTeams(box_soup)
   found_teams.extend([t.abbrev for t in teams])
 
-  print url
-
   def Section(sec, col):
     return box_soup.select_one('#gamepackage-%s .column-%s .mod-data' %
                                (sec, col))
