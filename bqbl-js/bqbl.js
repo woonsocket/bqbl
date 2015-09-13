@@ -664,7 +664,11 @@ bqbl.parseElapsedFraction = function(gameStatus) {
   var secondsLeftInQuarter;
 
   if (!timeParts) {
-    if (gameStatus.toLowerCase().indexOf('half') > -1) {
+    var quarterEnd = gameStatus.match(/End ([1-4])../);
+    if (quarterEnd) {
+      quarterNumber = parseInt(quarterEnd[1], 10);
+      secondsLeftInQuarter = 0;
+    } else if (gameStatus.toLowerCase().indexOf('half') > -1) {
       quarterNumber = 2;
       secondsLeftInQuarter = 0;
     } else {
