@@ -664,7 +664,8 @@ bqbl.parseElapsedFraction = function(gameStatus) {
   var secondsLeftInQuarter;
 
   if (!timeParts) {
-    var quarterEnd = gameStatus.match(/End ([1-4])../);
+    // May be "End 1st" or "End of 1st". Thanks, ESPN.
+    var quarterEnd = gameStatus.match(/End.*([1-4])../);
     if (quarterEnd) {
       quarterNumber = parseInt(quarterEnd[1], 10);
       secondsLeftInQuarter = 0;
