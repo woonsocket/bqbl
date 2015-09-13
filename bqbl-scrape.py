@@ -4,6 +4,7 @@ import json
 import optparse
 import sys
 import time
+import traceback
 import urllib
 
 from bs4 import BeautifulSoup
@@ -294,7 +295,7 @@ for url in urls:
   try:
     Scrape(url.strip(), corrections)
   except Exception as e:
-    print >> sys.stderr, e
+    traceback.print_exc(file=sys.stderr)
 
 now = time.time()
 
