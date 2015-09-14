@@ -182,7 +182,6 @@ def Scrape(url, corrections=None):
   for team, opponent, col, opp_col in ((teams[0], teams[1], 'one', 'two'),
                                        (teams[1], teams[0], 'two', 'one')):
     qbstats = QbStats()
-    scores.append(qbstats)  # Adding it now, but we will continue to mutate it.
 
     qbstats.team = team.abbrev
     qbstats.opponent = opponent.abbrev
@@ -262,6 +261,8 @@ def Scrape(url, corrections=None):
     if team.abbrev in corrections:
       ApplyCorrections(qbstats, corrections[team.abbrev])
 
+    scores.append(qbstats)
+
 
 urls = open(args[0]).readlines()
 corrections = {}
@@ -298,6 +299,10 @@ now = time.time()
 if options.output_format == 'tab':
   # Add dummy lines for teams that haven't played.
   lines = [score.AsSpreadsheetRow() for score in scores]
+  found_teams = set([score.team for score in scores])
+  for t in ALL_TEAMS:
+    if t not in found_teams:
+      lines.append(t)
   lines.sort()
   print "\n".join(lines)
   print "Updated: %s" % time.strftime("%Y-%m-%d %H:%M:%S %Z",
