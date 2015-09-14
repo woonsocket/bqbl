@@ -35,7 +35,6 @@ ALL_TEAMS = ("ARI","ATL","BAL","BUF","CAR","CHI","CIN","CLE","DAL","DEN","DET",
 # Gross global variables
 notes = []
 scores = []
-found_teams = []
 
 
 class ScrapeException(Exception):
@@ -168,14 +167,13 @@ def Scrape(url, corrections=None):
         may be negative. The integer is added to the QbStats attribute obtained
         from the scrape for that team.
   """
-  global notes, found_teams
+  global notes
 
   corrections = corrections or {}
   box_html = urllib.urlopen(url).read()
   box_soup = BeautifulSoup(box_html, 'lxml')
 
   teams = FindTeams(box_soup)
-  found_teams.extend([t.abbrev for t in teams])
 
   def Section(sec, col):
     return box_soup.select_one('#gamepackage-%s .column-%s .mod-data' %
@@ -184,6 +182,7 @@ def Scrape(url, corrections=None):
   for team, opponent, col, opp_col in ((teams[0], teams[1], 'one', 'two'),
                                        (teams[1], teams[0], 'two', 'one')):
     qbstats = QbStats()
+    scores.append(qbstats)  # Adding it now, but we will continue to mutate it.
 
     qbstats.team = team.abbrev
     qbstats.opponent = opponent.abbrev
@@ -262,7 +261,6 @@ def Scrape(url, corrections=None):
 
     if team.abbrev in corrections:
       ApplyCorrections(qbstats, corrections[team.abbrev])
-    scores.append(qbstats)
 
 
 urls = open(args[0]).readlines()
@@ -300,9 +298,6 @@ now = time.time()
 if options.output_format == 'tab':
   # Add dummy lines for teams that haven't played.
   lines = [score.AsSpreadsheetRow() for score in scores]
-  for team in ALL_TEAMS:
-    if team not in found_teams:
-      lines.append(team)
   lines.sort()
   print "\n".join(lines)
   print "Updated: %s" % time.strftime("%Y-%m-%d %H:%M:%S %Z",
