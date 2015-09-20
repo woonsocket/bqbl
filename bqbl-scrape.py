@@ -208,8 +208,8 @@ def Scrape(url, corrections=None):
         sacks, sack_yards = sack_stats.split('-', 1)
         qbstats.sack_yards = int(sack_yards)
       else:
-        raise ScrapeException('could not find passing stats for %s' %
-                              team.abbrev)
+        # TODO(juangj): Log warning.
+        pass
 
     rushing = Section('rushing', col)
     if rushing:
@@ -252,8 +252,8 @@ def Scrape(url, corrections=None):
       if SelectAndGetText(team_receiving, '.name', default='') == 'TEAM':
         qbstats.long_pass = int(SelectAndGetText(team_receiving, '.long'))
       else:
-        raise ScrapeException(
-            'could not find receiving stats for %s' % team.abbrev)
+        # TODO(juangj): Log warning.
+        pass
 
     qbstats.game_time = SelectAndGetText(box_soup, '.game-status .game-time',
                                          default='(game clock unknown)')
