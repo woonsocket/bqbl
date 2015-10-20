@@ -156,6 +156,13 @@ def QbNames(passing_soup):
           if e.get_text() != 'TEAM']
 
 
+def IntOrZero(s):
+  try:
+    return int(s)
+  except ValueError:
+    return 0
+
+
 def Scrape(url, corrections=None):
   """Scrape the given URL, and add the results to the global state.
 
@@ -200,13 +207,13 @@ def Scrape(url, corrections=None):
         # Is the sacks column always present? In the past, it wasn't always.
         comp_stats = SelectAndGetText(team_passing, '.c-att', default='0/0')
         comp, att = comp_stats.split('/', 1)
-        qbstats.completions = int(comp)
-        qbstats.attempts = int(att)
-        qbstats.pass_yards = int(SelectAndGetText(team_passing, '.yds'))
-        qbstats.pass_tds = int(SelectAndGetText(team_passing, '.td'))
+        qbstats.completions = IntOrZero(comp)
+        qbstats.attempts = IntOrZero(att)
+        qbstats.pass_yards = IntOrZero(SelectAndGetText(team_passing, '.yds'))
+        qbstats.pass_tds = IntOrZero(SelectAndGetText(team_passing, '.td'))
         sack_stats = SelectAndGetText(team_passing, '.sacks', default='0-0')
         sacks, sack_yards = sack_stats.split('-', 1)
-        qbstats.sack_yards = int(sack_yards)
+        qbstats.sack_yards = IntOrZero(sack_yards)
       else:
         # TODO(juangj): Log warning.
         pass
@@ -216,16 +223,16 @@ def Scrape(url, corrections=None):
       for row in rushing.select('tbody tr'):
         name = SelectAndGetText(row, '.name', default='')
         if name in qb_names:
-          qbstats.rush_yards += int(SelectAndGetText(row, '.yds'))
-          qbstats.rush_tds += int(SelectAndGetText(row, '.td'))
+          qbstats.rush_yards += IntOrZero(SelectAndGetText(row, '.yds'))
+          qbstats.rush_tds += IntOrZero(SelectAndGetText(row, '.td'))
 
     interceptions = Section('interceptions', opp_col)
     if interceptions:
       opp_interceptions = interceptions.select_one('tbody tr.highlight')
       # tr.highlight won't exist if the opponents made no interceptions.
       if opp_interceptions:
-        num_ints = int(SelectAndGetText(opp_interceptions, '.int'))
-        num_int_tds = int(SelectAndGetText(opp_interceptions, '.td'))
+        num_ints = IntOrZero(SelectAndGetText(opp_interceptions, '.int'))
+        num_int_tds = IntOrZero(SelectAndGetText(opp_interceptions, '.td'))
         qbstats.interceptions_td = num_int_tds
         qbstats.interceptions_notd = num_ints - num_int_tds
 
@@ -237,8 +244,8 @@ def Scrape(url, corrections=None):
           continue
         name = name_cell.get_text()
         if name in qb_names:
-          fums = int(SelectAndGetText(row, '.fum'))
-          fums_lost = int(SelectAndGetText(row, '.lost'))
+          fums = IntOrZero(SelectAndGetText(row, '.fum'))
+          fums_lost = IntOrZero(SelectAndGetText(row, '.lost'))
           # TODO: Scrape the play-by-play to determine when a fumble is lost for a
           # TD. Until then, we have to keep manually-correcting all such
           # occurrences. The scoring summary also no longer appears on the page,
@@ -250,7 +257,7 @@ def Scrape(url, corrections=None):
     if receiving:
       team_receiving = receiving.select_one('tbody tr.highlight')
       if SelectAndGetText(team_receiving, '.name', default='') == 'TEAM':
-        qbstats.long_pass = int(SelectAndGetText(team_receiving, '.long'))
+        qbstats.long_pass = IntOrZero(SelectAndGetText(team_receiving, '.long'))
       else:
         # TODO(juangj): Log warning.
         pass
