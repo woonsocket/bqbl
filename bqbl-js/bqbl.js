@@ -14,6 +14,11 @@ bqbl.DEFAULT_SORT_ORDER = 'active,score';
 bqbl.DEFAULT_SCORE_MODE = 'proj';
 bqbl.MAX_WEEK_NUM = 17;
 
+// Set this to the start date of Week 1 of the current season. Typically a
+// Thursday, so that the week changes before Thursday Night Football each week.
+bqbl.SEASON_START = new Date(2015, 8, 10);  // September 10, 2015
+bqbl.ONE_WEEK = 1000 * 60 * 60 * 24 * 7;
+
 
 /**
  * The history object. May be null before the page is initialized.
@@ -201,7 +206,7 @@ bqbl.jsonUrl_ = function(weekNumber) {
 bqbl.getCurrentWeekNumber_ = function(opt_date) {
   var date = opt_date || new goog.date.Date();
   // Day 253 is Thursday, September 10, 2015.
-  return Math.floor((date.getDayOfYear() - 253) / 7) + 1;
+  return Math.floor((new Date() - bqbl.SEASON_START) / bqbl.ONE_WEEK) + 1;
 };
 
 
