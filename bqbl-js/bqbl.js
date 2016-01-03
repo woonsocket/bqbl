@@ -514,6 +514,7 @@ bqbl.generateTeamScoreMarkup = function(score) {
  * @return {!bqbl.ScoreComponent} A ScoreComponent for the points described.
  */
 bqbl.simpleMultiple = function(pointsPer, quantity, description) {
+  quantity = quantity || 0;
   if (quantity != 1) {
     description = quantity + 'x ' + description;
   }
@@ -549,7 +550,8 @@ bqbl.computeScoreComponents = function(qbScore) {
     bqbl.passingYardPoints(qbScore['pass_yards']),
     bqbl.completionRatePoints(qbScore['completions'], qbScore['attempts']),
     bqbl.simpleMultiple(20, qbScore['safeties'], 'QB at fault for safety'),
-    bqbl.simpleMultiple(35, qbScore['benchings'], 'QB benched')
+    bqbl.simpleMultiple(35, qbScore['benchings'], 'QB benched'),
+    bqbl.simpleMultiple(20, qbScore['street_free_agent'], 'free agent starter')
   ];
   if (qbScore['long_pass'] < 25)
     pointsList.push(new bqbl.ScoreComponent(10, 'no pass of 25+ yards'));

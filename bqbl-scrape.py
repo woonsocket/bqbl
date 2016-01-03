@@ -57,8 +57,8 @@ class QbStats(object):
                interceptions_notd=0, interceptions_td=0, rush_tds=0,
                fumbles_lost_notd=0, fumbles_lost_td=0, fumbles_kept=0,
                pass_yards=0, rush_yards=0, sack_yards=0, long_pass=0,
-               safeties=0, game_losing_taint=False, benchings=0, game_time='',
-               boxscore_url='', opponent=''):
+               safeties=0, game_losing_taint=False, benchings=0,
+               street_free_agent=0, game_time='', boxscore_url='', opponent=''):
     """Initializer.
 
     If you don't pass arguments by name, you're gonna have a bad time.
@@ -80,6 +80,7 @@ class QbStats(object):
     self.safeties = safeties
     self.game_losing_taint = game_losing_taint
     self.benchings = benchings
+    self.street_free_agent = street_free_agent
     self.game_time = game_time
     self.boxscore_url = boxscore_url
     self.opponent = opponent
@@ -98,7 +99,8 @@ class QbStats(object):
           self.interceptions_notd, self.interceptions_td, self.rush_tds,
           self.fumbles_lost_notd, self.fumbles_kept, self.fumbles_lost_td,
           self.pass_yards, self.rush_yards, self.sack_yards, self.long_pass,
-          self.safeties, self.game_losing_taint, self.benchings]])
+          self.safeties, self.game_losing_taint, self.benchings,
+          self.street_free_agent]])
 
   def AsDictionary(self):
     # This is a little risky if we start including additional fields that
