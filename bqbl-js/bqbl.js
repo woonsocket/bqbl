@@ -198,14 +198,12 @@ bqbl.jsonUrl_ = function(weekNumber) {
 
 
 /**
- * Determines the current week number of the NFL season. Only works for the 2014
- * season, up until December 28. Weeks begin on Thursday.
+ * Determines the current week number of the NFL season.
  * @param {!goog.date.Date=} opt_date A date. Defaults to today.
  * @return {number} The current NFL week number.
  */
 bqbl.getCurrentWeekNumber_ = function(opt_date) {
   var date = opt_date || new goog.date.Date();
-  // Day 253 is Thursday, September 10, 2015.
   return Math.floor((new Date() - bqbl.SEASON_START) / bqbl.ONE_WEEK) + 1;
 };
 
