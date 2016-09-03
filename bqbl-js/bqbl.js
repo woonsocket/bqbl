@@ -16,7 +16,7 @@ bqbl.MAX_WEEK_NUM = 17;
 
 // Set this to the start date of Week 1 of the current season. Typically a
 // Thursday, so that the week changes before Thursday Night Football each week.
-bqbl.SEASON_START = new Date(2015, 8, 10);  // September 10, 2015
+bqbl.SEASON_START = new Date(2016, 8, 8);  // September 8, 2016
 bqbl.ONE_WEEK = 1000 * 60 * 60 * 24 * 7;
 
 
@@ -643,7 +643,7 @@ bqbl._STUPID_PROJECTION_TARGET = {
  *     modified.
  */
 bqbl.computeStupidProjection = function(qbScore, elapsedFrac) {
-  var projected = [];
+  var projected = {};
   for (var stat in qbScore) {
     if (stat in bqbl._STUPID_PROJECTION_TARGET && elapsedFrac < 1) {
       var currentStat = parseInt(qbScore[stat], 10);
