@@ -11,7 +11,7 @@ SCHEDULE_URL_PATTERN = (
     'http://espn.go.com/nfl/schedule/_/seasontype/2/week/%s')
 
 CONVERSATION_URL_PREFIX = (
-    'http://espn.go.com/nfl/conversation?gameId=')
+    '/nfl/game?gameId=')
 
 week_num = int(sys.argv[1])
 url = SCHEDULE_URL_PATTERN % week_num
@@ -25,4 +25,4 @@ game_links = scoreboard_soup.find_all(
 if not game_links:
     raise Exception('no games found on %s' % url)
 for game in game_links:
-    print game['href'].replace('/conversation', '/boxscore')
+    print game['href'].replace(CONVERSATION_URL_PREFIX, '')
