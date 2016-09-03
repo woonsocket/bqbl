@@ -1,4 +1,4 @@
-# Usage: bqbl-scrape.py <file with list of ESPN URLs>
+# Usage: bqbl-scrape.py <file with list of ESPN game IDs>
 import collections
 import json
 import optparse
@@ -12,7 +12,7 @@ from bs4 import BeautifulSoup
 OUTPUT_FORMATS = ['tab', 'json']
 
 parser = optparse.OptionParser(
-  usage=("Usage: %prog [options] <file with list of ESPN URLs> "
+  usage=("Usage: %prog [options] <file with list of ESPN game IDs> "
          "[<corrections file>]"))
 parser.add_option("-o", "--output_format", dest="output_format", default="tab",
                   help="Output format. Valid values: %s." % OUTPUT_FORMATS)
@@ -273,7 +273,7 @@ def Scrape(url, corrections=None):
     scores.append(qbstats)
 
 
-urls = open(args[0]).readlines()
+gameIds = open(args[0]).readlines()
 corrections = {}
 if len(args) > 1:
   try:
@@ -297,9 +297,10 @@ if len(args) > 1:
           'Invalid corrections entry at position %d' % team_num)
       
 
-for url in urls:
+for gameId in gameIds:
+  url = 'http://scores.espn.com/nfl/boxscore?gameId=' + gameId.strip()
   try:
-    Scrape(url.strip(), corrections)
+    Scrape(url, corrections)
   except Exception as e:
     traceback.print_exc(file=sys.stderr)
 
