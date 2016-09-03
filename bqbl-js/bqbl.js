@@ -549,6 +549,7 @@ bqbl.computeScoreComponents = function(qbScore) {
     bqbl.touchdownPoints(qbScore['pass_tds'] + qbScore['rush_tds']),
     bqbl.passingYardPoints(qbScore['pass_yards']),
     bqbl.completionRatePoints(qbScore['completions'], qbScore['attempts']),
+    bqbl.simpleMultiple(1, qbScore['sacks'], 'sacked'),
     bqbl.simpleMultiple(20, qbScore['safeties'], 'QB at fault for safety'),
     bqbl.simpleMultiple(35, qbScore['benchings'], 'QB benched'),
     bqbl.simpleMultiple(20, qbScore['street_free_agent'], 'free agent starter')

@@ -56,7 +56,7 @@ class QbStats(object):
   def __init__(self, team=0, completions=0, attempts=0, pass_tds=0,
                interceptions_notd=0, interceptions_td=0, rush_tds=0,
                fumbles_lost_notd=0, fumbles_lost_td=0, fumbles_kept=0,
-               pass_yards=0, rush_yards=0, sack_yards=0, long_pass=0,
+               pass_yards=0, rush_yards=0, sacks=0, sack_yards=0, long_pass=0,
                safeties=0, game_losing_taint=False, benchings=0,
                street_free_agent=0, game_time='', boxscore_url='', opponent=''):
     """Initializer.
@@ -75,6 +75,7 @@ class QbStats(object):
     self.fumbles_kept = fumbles_kept
     self.pass_yards = pass_yards
     self.rush_yards = rush_yards
+    self.sacks = sacks
     self.sack_yards = sack_yards
     self.long_pass = long_pass
     self.safeties = safeties
@@ -98,8 +99,8 @@ class QbStats(object):
          [self.team, self.completions, self.attempts, self.pass_tds,
           self.interceptions_notd, self.interceptions_td, self.rush_tds,
           self.fumbles_lost_notd, self.fumbles_kept, self.fumbles_lost_td,
-          self.pass_yards, self.rush_yards, self.sack_yards, self.long_pass,
-          self.safeties, self.game_losing_taint, self.benchings,
+          self.pass_yards, self.rush_yards, self.sacks, self.sack_yards,
+          self.long_pass, self.safeties, self.game_losing_taint, self.benchings,
           self.street_free_agent]])
 
   def AsDictionary(self):
@@ -215,6 +216,7 @@ def Scrape(url, corrections=None):
         qbstats.pass_tds = IntOrZero(SelectAndGetText(team_passing, '.td'))
         sack_stats = SelectAndGetText(team_passing, '.sacks', default='0-0')
         sacks, sack_yards = sack_stats.split('-', 1)
+        qbstats.sacks = IntOrZero(sacks)
         qbstats.sack_yards = IntOrZero(sack_yards)
       else:
         # TODO(juangj): Log warning.
