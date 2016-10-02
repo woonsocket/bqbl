@@ -16,6 +16,8 @@ parser = optparse.OptionParser(
          "[<corrections file>]"))
 parser.add_option("-o", "--output_format", dest="output_format", default="tab",
                   help="Output format. Valid values: %s." % OUTPUT_FORMATS)
+parser.add_option("--passer_db", dest="passer_db_path",
+                  help="Path to passer info DB file")
 options, args = parser.parse_args()
 
 if len(args) < 1 or len(args) > 2:
@@ -154,9 +156,39 @@ def FindTeams(boxscore_soup):
   return teams
 
 
-def QbNames(passing_soup):
-  return [e.get_text() for e in passing_soup.select('tbody .name')
-          if e.get_text() != 'TEAM']
+def LookupPlayer(espn_id):
+  url = 'http://www.espn.com/nfl/player/_/id/' + espn_id
+  player_html = urllib.urlopen(url).read()
+  player_soup = BeautifulSoup(player_html, 'lxml')
+  num_and_pos = player_soup.select_one('.player-bio .general-info .first')
+  num, pos = num_and_pos.get_text().split()
+  return pos
+
+
+def PlayerId(player_soup):
+  link = player_soup.select_one('.name a')
+  if not link:
+    return None
+  href = link['href']
+  if href.startswith('http://www.espn.com/nfl/player/_/id/'):
+    return href[len('http://www.espn.com/nfl/player/_/id/'):]
+  else:
+    return None
+
+
+class PlayerInfo(object):
+  def __init__(self, player_soup):
+    self.name = SelectAndGetText(player_soup, '.name', default='')
+    self.espn_id = PlayerId(player_soup)
+
+
+def PasserInfos(passing_soup):
+  infos = []
+  for passer in passing_soup.select('tbody tr'):
+    info = PlayerInfo(passer)
+    if info.name != 'TEAM':
+      infos.append(info)
+  return infos
 
 
 def IntOrZero(s):
@@ -166,7 +198,7 @@ def IntOrZero(s):
     return 0
 
 
-def Scrape(url, corrections=None):
+def Scrape(url, corrections, passer_db):
   """Scrape the given URL, and add the results to the global state.
 
   Args:
@@ -176,6 +208,10 @@ def Scrape(url, corrections=None):
         the names of QbStats attributes, and whose values are integers, which
         may be negative. The integer is added to the QbStats attribute obtained
         from the scrape for that team.
+    passer_db: A dict mapping ESPN player IDs to their positions ('QB', 'WR',
+        etc.). Used for ignoring passing stats accumulated by non-QBs, e.g., as
+        part of trick plays. This dict MAY BE MUTATED if this scrape includes
+        a previously-unknown player. Look, I know it's bad design. Shut up.
   """
   global notes
 
@@ -199,16 +235,25 @@ def Scrape(url, corrections=None):
     passing = Section('passing', col)
     if not passing:
       continue
-    qb_names = set(QbNames(passing))
-    if len(qb_names) != 1:
+    passer_infos = PasserInfos(passing)
+
+    qb_ids = []
+    for passer in passer_infos:
+      if passer.espn_id not in passer_db:
+        passer_db[passer.espn_id] = LookupPlayer(passer.espn_id)
+      if passer_db[passer.espn_id] == 'QB':
+        qb_ids.append(passer.espn_id)
+
+    if len(passer_infos) != 1:
+      names = [p.name for p in passer_infos]
       notes.append('%s had %d passers: %s' %
-                   (team.abbrev, len(qb_names), ', '.join(qb_names)))
+                   (team.abbrev, len(names), ', '.join(names)))
 
     # This includes one row for each player, plus one row for the team totals.
     team_passers = passing.select('tbody tr')
     for passer in team_passers:
-      passer_name = SelectAndGetText(passer, '.name', default='')
-      if passer_name in qb_names:
+      passer_info = PlayerInfo(passer)
+      if passer_info.espn_id in qb_ids:
         # Is the sacks column always present? In the past, it wasn't always.
         comp_stats = SelectAndGetText(passer, '.c-att', default='0/0')
         comp, att = comp_stats.split('/', 1)
@@ -221,17 +266,17 @@ def Scrape(url, corrections=None):
         qbstats.sacks += IntOrZero(sacks)
         qbstats.sack_yards += IntOrZero(sack_yards)
       else:
-        if passer_name != 'TEAM':  # Ignore the team summary line.
+        if passer_info.name != 'TEAM':  # Ignore the team summary line.
           notes.append('%s: skipped non-QB passer %s' %
-                       (team.abbrev, passer_name))
+                       (team.abbrev, passer_info.name))
         pass
     qbstats.pass_yards -= qbstats.sack_yards
 
     rushing = Section('rushing', col)
     if rushing:
       for row in rushing.select('tbody tr'):
-        name = SelectAndGetText(row, '.name', default='')
-        if name in qb_names:
+        info = PlayerInfo(row)
+        if info.espn_id in qb_ids:
           qbstats.rush_yards += IntOrZero(SelectAndGetText(row, '.yds'))
           qbstats.rush_tds += IntOrZero(SelectAndGetText(row, '.td'))
 
@@ -251,8 +296,8 @@ def Scrape(url, corrections=None):
         name_cell = row.select_one('.name')
         if not name_cell:  # Occurs if there were no fumbles.
           continue
-        name = name_cell.get_text()
-        if name in qb_names:
+        info = PlayerInfo(row)
+        if info.espn_id in qb_ids:
           fums = IntOrZero(SelectAndGetText(row, '.fum'))
           fums_lost = IntOrZero(SelectAndGetText(row, '.lost'))
           # TODO: Scrape the play-by-play to determine when a fumble is lost for a
@@ -303,13 +348,28 @@ if len(args) > 1:
       raise InvalidCorrectionError(
           'Invalid corrections entry at position %d' % team_num)
       
+# Load passer DB from disk.
+passer_db = {}
+if options.passer_db_path:
+  with open(options.passer_db_path) as f:
+    for player in f.readlines():
+      espn_id, position = player.strip().split()
+      passer_db[espn_id] = position
+
+passer_db_old_len = len(passer_db)
 
 for gameId in gameIds:
   url = 'http://scores.espn.com/nfl/boxscore?gameId=' + gameId.strip()
   try:
-    Scrape(url, corrections)
+    Scrape(url, corrections, passer_db)
   except Exception as e:
     traceback.print_exc(file=sys.stderr)
+
+# Write the passer DB back to disk, if it was modified.
+if options.passer_db_path and passer_db_old_len != len(passer_db):
+  with open(options.passer_db_path, 'w') as f:
+    for espn_id, position in sorted(passer_db.items()):
+      f.write('%s\t%s\n' % (espn_id, position))
 
 now = time.time()
 
