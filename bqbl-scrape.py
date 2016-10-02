@@ -200,27 +200,32 @@ def Scrape(url, corrections=None):
     if not passing:
       continue
     qb_names = set(QbNames(passing))
-    if len(qb_names) > 1:
+    if len(qb_names) != 1:
       notes.append('%s had %d passers: %s' %
                    (team.abbrev, len(qb_names), ', '.join(qb_names)))
 
-    team_passing = passing.select_one('tbody tr.highlight')
-    if team_passing:
-      if SelectAndGetText(team_passing, '.name', default='') == 'TEAM':
+    # This includes one row for each player, plus one row for the team totals.
+    team_passers = passing.select('tbody tr')
+    for passer in team_passers:
+      passer_name = SelectAndGetText(passer, '.name', default='')
+      if passer_name in qb_names:
         # Is the sacks column always present? In the past, it wasn't always.
-        comp_stats = SelectAndGetText(team_passing, '.c-att', default='0/0')
+        comp_stats = SelectAndGetText(passer, '.c-att', default='0/0')
         comp, att = comp_stats.split('/', 1)
-        qbstats.completions = IntOrZero(comp)
-        qbstats.attempts = IntOrZero(att)
-        qbstats.pass_yards = IntOrZero(SelectAndGetText(team_passing, '.yds'))
-        qbstats.pass_tds = IntOrZero(SelectAndGetText(team_passing, '.td'))
-        sack_stats = SelectAndGetText(team_passing, '.sacks', default='0-0')
+        qbstats.completions += IntOrZero(comp)
+        qbstats.attempts += IntOrZero(att)
+        qbstats.pass_yards += IntOrZero(SelectAndGetText(passer, '.yds'))
+        qbstats.pass_tds += IntOrZero(SelectAndGetText(passer, '.td'))
+        sack_stats = SelectAndGetText(passer, '.sacks', default='0-0')
         sacks, sack_yards = sack_stats.split('-', 1)
-        qbstats.sacks = IntOrZero(sacks)
-        qbstats.sack_yards = IntOrZero(sack_yards)
+        qbstats.sacks += IntOrZero(sacks)
+        qbstats.sack_yards += IntOrZero(sack_yards)
       else:
-        # TODO(juangj): Log warning.
+        if passer_name != 'TEAM':  # Ignore the team summary line.
+          notes.append('%s: skipped non-QB passer %s' %
+                       (team.abbrev, passer_name))
         pass
+    qbstats.pass_yards -= qbstats.sack_yards
 
     rushing = Section('rushing', col)
     if rushing:
