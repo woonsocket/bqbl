@@ -178,7 +178,9 @@ def PlayerId(player_soup):
 
 class PlayerInfo(object):
   def __init__(self, player_soup):
-    self.name = SelectAndGetText(player_soup, '.name', default='')
+    for s in player_soup.select_one('.name').stripped_strings:
+      self.name = s
+      break
     self.espn_id = PlayerId(player_soup)
 
 
@@ -239,7 +241,9 @@ def Scrape(url, corrections, passer_db):
 
     qb_ids = []
     for passer in passer_infos:
-      if passer.espn_id not in passer_db:
+      if not passer.espn_id:  # Might be the 'TEAM' summary line.
+        continue
+      if passer.espn_id and passer.espn_id not in passer_db:
         passer_db[passer.espn_id] = LookupPlayer(passer.espn_id)
       if passer_db[passer.espn_id] == 'QB':
         qb_ids.append(passer.espn_id)
