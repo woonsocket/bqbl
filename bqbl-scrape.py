@@ -165,8 +165,8 @@ def LookupPlayer(espn_id):
   return pos
 
 
-def PlayerId(player_soup):
-  link = player_soup.select_one('.name a')
+def PlayerId(name_soup):
+  link = name_soup.select_one('a')
   if not link:
     return None
   href = link['href']
@@ -176,19 +176,23 @@ def PlayerId(player_soup):
     return None
 
 
-class PlayerInfo(object):
-  def __init__(self, player_soup):
-    for s in player_soup.select_one('.name').stripped_strings:
-      self.name = s
-      break
-    self.espn_id = PlayerId(player_soup)
+PlayerInfo = collections.namedtuple('PlayerInfo', ['name', 'espn_id'])
+
+
+def ParsePlayerInfo(player_soup):
+  name_soup = player_soup.select_one('.name')
+  if name_soup:
+    return PlayerInfo(name=next(name_soup.stripped_strings),
+                      espn_id=PlayerId(name_soup))
+  else:
+    return None
 
 
 def PasserInfos(passing_soup):
   infos = []
   for passer in passing_soup.select('tbody tr'):
-    info = PlayerInfo(passer)
-    if info.name != 'TEAM':
+    info = ParsePlayerInfo(passer)
+    if info and info.name != 'TEAM':
       infos.append(info)
   return infos
 
@@ -256,8 +260,8 @@ def Scrape(url, corrections, passer_db):
     # This includes one row for each player, plus one row for the team totals.
     team_passers = passing.select('tbody tr')
     for passer in team_passers:
-      passer_info = PlayerInfo(passer)
-      if passer_info.espn_id in qb_ids:
+      passer_info = ParsePlayerInfo(passer)
+      if passer_info and passer_info.espn_id in qb_ids:
         # Is the sacks column always present? In the past, it wasn't always.
         comp_stats = SelectAndGetText(passer, '.c-att', default='0/0')
         comp, att = comp_stats.split('/', 1)
@@ -279,8 +283,8 @@ def Scrape(url, corrections, passer_db):
     rushing = Section('rushing', col)
     if rushing:
       for row in rushing.select('tbody tr'):
-        info = PlayerInfo(row)
-        if info.espn_id in qb_ids:
+        info = ParsePlayerInfo(row)
+        if info and info.espn_id in qb_ids:
           qbstats.rush_yards += IntOrZero(SelectAndGetText(row, '.yds'))
           qbstats.rush_tds += IntOrZero(SelectAndGetText(row, '.td'))
 
@@ -300,8 +304,8 @@ def Scrape(url, corrections, passer_db):
         name_cell = row.select_one('.name')
         if not name_cell:  # Occurs if there were no fumbles.
           continue
-        info = PlayerInfo(row)
-        if info.espn_id in qb_ids:
+        info = ParsePlayerInfo(row)
+        if info and info.espn_id in qb_ids:
           fums = IntOrZero(SelectAndGetText(row, '.fum'))
           fums_lost = IntOrZero(SelectAndGetText(row, '.lost'))
           # TODO: Scrape the play-by-play to determine when a fumble is lost for a
