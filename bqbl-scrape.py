@@ -274,7 +274,8 @@ def Scrape(url, corrections, passer_db):
         qbstats.sacks += IntOrZero(sacks)
         qbstats.sack_yards += IntOrZero(sack_yards)
       else:
-        if passer_info.name != 'TEAM':  # Ignore the team summary line.
+        # Ignore the team summary line.
+        if passer_info and passer_info.name != 'TEAM':
           notes.append('%s: skipped non-QB passer %s' %
                        (team.abbrev, passer_info.name))
         pass
