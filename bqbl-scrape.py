@@ -259,6 +259,7 @@ def Scrape(url, corrections, passer_db):
 
     # This includes one row for each player, plus one row for the team totals.
     team_passers = passing.select('tbody tr')
+    total_ints = 0
     for passer in team_passers:
       passer_info = ParsePlayerInfo(passer)
       if passer_info and passer_info.espn_id in qb_ids:
@@ -273,6 +274,7 @@ def Scrape(url, corrections, passer_db):
         sacks, sack_yards = sack_stats.split('-', 1)
         qbstats.sacks += IntOrZero(sacks)
         qbstats.sack_yards += IntOrZero(sack_yards)
+        total_ints += IntOrZero(SelectAndGetText(passer, '.int'))
       else:
         # Ignore the team summary line.
         if passer_info and passer_info.name != 'TEAM':
@@ -294,10 +296,9 @@ def Scrape(url, corrections, passer_db):
       opp_interceptions = interceptions.select_one('tbody tr.highlight')
       # tr.highlight won't exist if the opponents made no interceptions.
       if opp_interceptions:
-        num_ints = IntOrZero(SelectAndGetText(opp_interceptions, '.int'))
         num_int_tds = IntOrZero(SelectAndGetText(opp_interceptions, '.td'))
         qbstats.interceptions_td = num_int_tds
-        qbstats.interceptions_notd = num_ints - num_int_tds
+        qbstats.interceptions_notd = total_ints - num_int_tds
 
     fumbles = Section('fumbles', col)
     if fumbles:
