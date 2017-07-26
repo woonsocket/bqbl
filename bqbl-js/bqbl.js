@@ -204,7 +204,9 @@ bqbl.jsonUrl_ = function(weekNumber) {
  */
 bqbl.getCurrentWeekNumber_ = function(opt_date) {
   var date = opt_date || new goog.date.Date();
-  return Math.floor((new Date() - bqbl.SEASON_START) / bqbl.ONE_WEEK) + 1;
+  return Math.min(
+      Math.floor((new Date() - bqbl.SEASON_START) / bqbl.ONE_WEEK) + 1,
+      bqbl.MAX_WEEK_NUM);
 };
 
 
