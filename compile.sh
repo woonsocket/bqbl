@@ -11,6 +11,7 @@
 # output of `java -version`, and the extra line breaks it.
 unset JAVA_TOOL_OPTIONS
 
+tmp=$(mktemp -d)
 closure-library/closure/bin/build/closurebuilder.py \
     --root=closure-library/ \
     --root=bqbl-js/ \
@@ -22,4 +23,8 @@ closure-library/closure/bin/build/closurebuilder.py \
     -f "--warning_level=VERBOSE" \
     -f "--jscomp_error=checkTypes" \
     -f "--jscomp_error=checkVars" \
-    > bqbl-js/bqbl-compiled.js; wc -c bqbl-js/bqbl-compiled.js
+    > "${tmp}/bqbl-compiled.js" &&
+    mv "${tmp}/bqbl-compiled.js" bqbl-js/ &&
+    wc -c bqbl-js/bqbl-compiled.js
+
+rm -r "${tmp}"
