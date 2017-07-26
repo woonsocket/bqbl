@@ -19,6 +19,7 @@ closure-library/closure/bin/build/closurebuilder.py \
     --output_mode=compiled \
     --compiler_jar=compiler.jar \
     -f "--js=closure-library/closure/goog/deps.js" \
+    -f "--externs=firebase-externs.js" \
     -f "--compilation_level=ADVANCED_OPTIMIZATIONS" \
     -f "--warning_level=VERBOSE" \
     -f "--jscomp_error=checkTypes" \

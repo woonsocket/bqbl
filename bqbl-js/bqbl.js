@@ -13,6 +13,7 @@ goog.require('goog.Uri');
 bqbl.DEFAULT_SORT_ORDER = 'active,score';
 bqbl.DEFAULT_SCORE_MODE = 'proj';
 bqbl.MAX_WEEK_NUM = 17;
+bqbl.SEASON = '2016';
 
 // Set this to the start date of Week 1 of the current season. Typically a
 // Thursday, so that the week changes before Thursday Night Football each week.
@@ -34,10 +35,30 @@ bqbl.scoreState_ = [];
 
 
 /**
+ * Reference to the Firebase database.
+ * @type {?firebase.database.Database}
+ */
+bqbl.database = null;
+
+
+/**
+ * The database location we're currently listening to.
+ * @type {string}
+ */
+bqbl.dbListenLocation = '';
+
+
+/**
  * Initializes the module. Must be called before the page is completely loaded,
  * and before any other function in this module.
  */
 bqbl.init = function() {
+  firebase.initializeApp({
+    'apiKey': 'AIzaSyCVbZ7U5Y4ZO-tsQpsZgIf7ROPJdpAXLuE',
+    'databaseURL': 'https://bqbl-591f3.firebaseio.com',
+  });
+  bqbl.database = firebase.database();
+
   bqbl.historyState_ = new goog.History();
   bqbl.historyState_.setEnabled(true);
   goog.events.listen(
@@ -55,6 +76,7 @@ bqbl.init = function() {
             function() { bqbl.redrawScores(sortOrder); },
             0);
       });
+  bqbl.listenToScores(bqbl.SEASON, bqbl.getCurrentWeekNumber_());
 };
 
 
@@ -63,16 +85,21 @@ bqbl.registerListeners = function() {
    * @param {?Element} element The element to which to add the listener. If
    *     null, returns without doing anything.
    * @param {!Object.<string, string>} params Parameters from the history token.
-   * @param {boolean=} opt_forceLoad Whether to reload the JSON data.
+   * @param {boolean=} opt_weekChange Whether this is a week change, i.e.,
+   *     whether we should switch the DB listener.
    */
-  function addListener(element, params, opt_forceLoad) {
+  function addListener(element, params, opt_weekChange) {
     if (!element) return;
     goog.events.listen(
         element,
         goog.events.EventType.CLICK,
         function(e) {
           bqbl.updateHistoryToken(params);
-          if (opt_forceLoad) bqbl.loadAndUpdate();
+          if (opt_weekChange) {
+            var history = bqbl.parseHistoryToken(bqbl.historyState_.getToken());
+            var weekNumber = history['week'] || bqbl.getCurrentWeekNumber_();
+            bqbl.listenToScores(bqbl.SEASON, weekNumber);
+          }
           e.preventDefault();
         });
   }
@@ -95,7 +122,7 @@ bqbl.registerListeners = function() {
       separator.innerHTML = '&nbsp;&middot;&nbsp;';
       goog.dom.appendChild(weekSelectorsElem, separator);
     }
-    addListener(weekLink, {'week': weekNum}, /* forceLoad */ true);
+    addListener(weekLink, {'week': weekNum}, /* weekChange */ true);
   }
 
   addListener(document.getElementById('scoresreal'), {'score': 'real'});
@@ -211,57 +238,45 @@ bqbl.getCurrentWeekNumber_ = function(opt_date) {
 
 
 /**
- * Loads JSON data and asynchronously renders the scores on the page, then
- * enqueues another invocation of this function for some time in the future.
- * @param {number=} opt_updateInterval The number of milliseconds to wait until
- *     updating again. Defaults to 5 minutes.
+ * The Firebase database location for scores for the given week.
+ * @param {string|number} season A season ID.
+ * @param {string|number} week A week ID.
  */
-bqbl.startUpdating = function(opt_updateInterval) {
-  var loadAndQueueUpdate = function() {
-    bqbl.loadAndUpdate();
-    window.setTimeout(
-        loadAndQueueUpdate, opt_updateInterval || 1000 * 60 * 5);
-  };
-  loadAndQueueUpdate();
+bqbl.dbLocationForScores = function(season, week) {
+  return `/score/${season}/${week}`;
 };
 
 
 /**
- * Loads JSON data and asynchronously renders the scores on the page.
+ * Listen for score updates for the given week. Removes the old listener. The
+ * listener redraws the scores on the page whenever score data changes.
+ * @param {string|number} season A season ID.
+ * @param {string|number} week A week ID.
  */
-bqbl.loadAndUpdate = function() {
-  var history = bqbl.parseHistoryToken(bqbl.historyState_.getToken());
-  var weekNumber = history['week'] || bqbl.getCurrentWeekNumber_();
-  var uri = new goog.Uri(bqbl.jsonUrl_(weekNumber));
-  // Tack on a random parameter to bust the cache.
-  uri.makeUnique();
-  goog.net.XhrIo.send(
-      uri.toString(),
-      function() {
-        var lastUpdateSecs;
-        try {
-          var response = this.getResponseJson();
-          lastUpdateSecs = response['lastUpdate'];
-          bqbl.scoreState_ = response['scores'];
-        } catch (err) {
-          window.console.log(err);
-          window.console.log('Could not load data; drawing a blank page.');
-          lastUpdateSecs = (new Date()).getTime() / 1000;
-          bqbl.scoreState_ = [];
+bqbl.listenToScores = function(season, week) {
+  if (bqbl.dbListenLocation) {
+    bqbl.database.ref(bqbl.dbListenLocation).off();
+  }
+
+  var loc = bqbl.dbLocationForScores(season, week);
+  bqbl.dbListenLocation = loc;
+  bqbl.database.ref(loc)
+      .on('value', (snapshot) => {
+        // TODO: Add an error/disconnection handler.
+        document.getElementById('status').textContent = 'Listening for updates.';
+
+        var v = snapshot.val();
+        if (!v || !(v instanceof Object)) {
+          return;
         }
-        var params = bqbl.parseHistoryToken(
-            bqbl.historyState_.getToken());
+        bqbl.scoreState_ = Object.values(v);
+
+        var params = bqbl.parseHistoryToken(bqbl.historyState_.getToken());
         var sortString = params['sort'];
         var sortCriteria = sortString ? sortString.split(',') : [];
         bqbl.redrawScores(sortCriteria);
-        document.getElementById('updatetime').innerHTML =
-            new Date(lastUpdateSecs * 1000);
-      },
-      undefined,  // opt_method
-      undefined,  // opt_content
-      undefined,  // opt_headers
-      60 * 1000  // opt_timeoutInterval
-      );
+        document.getElementById('updatetime').textContent = new Date();
+      });
 };
 
 
@@ -705,6 +720,4 @@ bqbl.parseElapsedFraction = function(gameStatus) {
 
 
 goog.exportSymbol('bqbl.init', bqbl.init);
-goog.exportSymbol('bqbl.loadAndUpdate', bqbl.loadAndUpdate);
 goog.exportSymbol('bqbl.registerListeners', bqbl.registerListeners);
-goog.exportSymbol('bqbl.startUpdating', bqbl.startUpdating);

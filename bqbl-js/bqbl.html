@@ -2,6 +2,8 @@
   <head>
     <title>BQBL: Not Everybody Can Be a Winner</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://www.gstatic.com/firebasejs/4.1.3/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.1.3/firebase-database.js"></script>
     <script type="text/javascript" src="bqbl-compiled.js"></script>
     <!-- UNCOMMENT FOR UNCOMPILED
     <script type="text/javascript" src="../closure-library/closure/goog/base.js"></script>
@@ -13,11 +15,6 @@
 
       function init() {
         bqbl.registerListeners();
-        bqbl.startUpdating(1000 * 60 * 3);
-      }
-
-      function updateNow() {
-        bqbl.loadAndUpdate();
       }
     </script>
     <style>
@@ -72,9 +69,8 @@
   </head>
   <body onload="init()">
     <div>
-      This page auto-updates every 3 minutes, though scrapes may occur less
-      frequently. Shown data was scraped at: <span id="updatetime">never</span>
-      <button onclick="updateNow()">Update now</bqbl>
+      <span id="status">Connecting...</span>
+      Last update: <span id="updatetime">never</span>
     </div>
     <div>
       Sort by:
