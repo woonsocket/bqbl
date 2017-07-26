@@ -64,18 +64,7 @@ bqbl.init = function() {
   goog.events.listen(
       bqbl.historyState_,
       goog.history.EventType.NAVIGATE,
-      function(e) {
-        var historyToken = bqbl.parseHistoryToken(e.token);
-        var sortString = historyToken['sort'];
-        var sortOrder = [];
-        if (sortString) {
-          sortOrder = sortString.split(',');
-        }
-        // Redraw asynchronously.
-        setTimeout(
-            function() { bqbl.redrawScores(sortOrder); },
-            0);
-      });
+      (e) => setTimeout(bqbl.redrawScores, 0));
   bqbl.listenToScores(bqbl.SEASON, bqbl.getCurrentWeekNumber_());
 };
 
@@ -271,24 +260,22 @@ bqbl.listenToScores = function(season, week) {
         }
         bqbl.scoreState_ = Object.values(v);
 
-        var params = bqbl.parseHistoryToken(bqbl.historyState_.getToken());
-        var sortString = params['sort'];
-        var sortCriteria = sortString ? sortString.split(',') : [];
-        bqbl.redrawScores(sortCriteria);
-        document.getElementById('updatetime').textContent = new Date();
+        bqbl.redrawScores();
       });
 };
 
 
 /**
  * Updates the document with the current score state.
- * TODO: Make the strings be enums instead.
- * TODO: Take a params object instead of just sortOrder.
- * @param {!Array.<string>} sortOrder A list of strings describing how to sort
- *     the scores.
  */
-bqbl.redrawScores = function(sortOrder) {
-  bqbl.writeScores(bqbl.scoreState_, sortOrder);
+bqbl.redrawScores = function() {
+  var params = bqbl.parseHistoryToken(bqbl.historyState_.getToken());
+  var sortString = params['sort'];
+  var sortCriteria = sortString ? sortString.split(',') : [];
+
+  bqbl.writeScores(bqbl.scoreState_, sortCriteria);
+
+  document.getElementById('updatetime').textContent = new Date();
 };
 
 
