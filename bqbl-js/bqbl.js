@@ -65,7 +65,7 @@ bqbl.init = function() {
       bqbl.historyState_,
       goog.history.EventType.NAVIGATE,
       (e) => setTimeout(bqbl.redrawScores, 0));
-  bqbl.listenToScores(bqbl.SEASON, bqbl.getCurrentWeekNumber_());
+  bqbl.listenToScores(bqbl.SEASON, bqbl.activeWeek());
 };
 
 
@@ -85,9 +85,7 @@ bqbl.registerListeners = function() {
         function(e) {
           bqbl.updateHistoryToken(params);
           if (opt_weekChange) {
-            var history = bqbl.parseHistoryToken(bqbl.historyState_.getToken());
-            var weekNumber = history['week'] || bqbl.getCurrentWeekNumber_();
-            bqbl.listenToScores(bqbl.SEASON, weekNumber);
+            bqbl.listenToScores(bqbl.SEASON, bqbl.activeWeek());
           }
           e.preventDefault();
         });
@@ -180,6 +178,15 @@ bqbl.updateHistoryToken = function(newParams) {
 };
 
 
+/**
+ * @return {string} Which week to show scores for.
+ */
+bqbl.activeWeek = function() {
+  var history = bqbl.parseHistoryToken(bqbl.historyState_.getToken());
+  return history['week'] || bqbl.getCurrentWeekNumber_();
+};
+
+
 bqbl.comparisons = {};
 
 
@@ -216,11 +223,11 @@ bqbl.jsonUrl_ = function(weekNumber) {
 /**
  * Determines the current week number of the NFL season.
  * @param {!goog.date.Date=} opt_date A date. Defaults to today.
- * @return {number} The current NFL week number.
+ * @return {string} The current NFL week number.
  */
 bqbl.getCurrentWeekNumber_ = function(opt_date) {
   var date = opt_date || new goog.date.Date();
-  return Math.min(
+  return '' + Math.min(
       Math.floor((new Date() - bqbl.SEASON_START) / bqbl.ONE_WEEK) + 1,
       bqbl.MAX_WEEK_NUM);
 };
