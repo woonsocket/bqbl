@@ -14,7 +14,7 @@ unset JAVA_TOOL_OPTIONS
 tmp=$(mktemp -d)
 closure-library/closure/bin/build/closurebuilder.py \
     --root=closure-library/ \
-    --root=bqbl-js/ \
+    --root=web/ \
     --namespace=bqbl \
     --output_mode=compiled \
     --compiler_jar=compiler.jar \
@@ -25,7 +25,7 @@ closure-library/closure/bin/build/closurebuilder.py \
     -f "--jscomp_error=checkTypes" \
     -f "--jscomp_error=checkVars" \
     > "${tmp}/bqbl-compiled.js" &&
-    mv "${tmp}/bqbl-compiled.js" bqbl-js/ &&
-    wc -c bqbl-js/bqbl-compiled.js
+    mv "${tmp}/bqbl-compiled.js" web/ &&
+    wc -c web/bqbl-compiled.js
 
 rm -r "${tmp}"
