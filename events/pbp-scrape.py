@@ -86,6 +86,6 @@ if options.firebase:
   safety_ref = db.reference('/events/%s/%s/safeties' % (options.year, options.week))
   safety_ref.set(safeties)
 
-  interception_ref = db.reference('/events/%s/%s/interception' % (options.year, options.week))
+  interception_ref = db.reference('/events/%s/%s/interceptions' % (options.year, options.week))
   interception_ref.set(interceptions)
 
