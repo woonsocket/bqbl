@@ -1,4 +1,3 @@
-# Usage: php-scrape.py <file with list of NFL game IDs>
 import json
 import copy
 import optparse
@@ -18,8 +17,18 @@ firebase_admin.initialize_app(cred, {
 
 parser = optparse.OptionParser(
   usage=("Usage: %prog [options] <file with list of NFL game IDs> "))
+parser.add_option("-f", "--firebase", dest="firebase", default=False,
+                  action="store_true",
+                  help="Write output to firebase")
+parser.add_option("-w", "--week", dest="week",
+                  help="Week")
+parser.add_option("-y", "--year", dest="year",
+                  help="Year")
 
 options, args = parser.parse_args()
+if len(args) < 1:
+  parser.print_usage()
+  sys.exit(1)
 
 def process(raw, fumbles, safeties, interceptions):
   data = json.loads(str(raw, 'utf-8'))
@@ -63,12 +72,13 @@ for id in gameIds:
   raw = urllib.request.urlopen("http://www.nfl.com/liveupdate/game-center/%s/%s_gtd.json" % (id, id)).read()
   process(raw, fumbles, safeties, interceptions)
 
-fumble_ref = db.reference('/events/2016/%d/fumbles' % 1)
-fumble_ref.set(fumbles)
+if options.firebase:
+  fumble_ref = db.reference('/events/%s/%s/fumbles' % (options.year, options.week))
+  fumble_ref.set(fumbles)
 
-safety_ref = db.reference('/events/2016/%d/safeties' % 1)
-safety_ref.set(safeties)
+  safety_ref = db.reference('/events/%s/%s/safeties' % (options.year, options.week))
+  safety_ref.set(safeties)
 
-interception_ref = db.reference('/events/2016/%d/interception' % 1)
-interception_ref.set(interceptions)
+  interception_ref = db.reference('/events/%s/%s/interception' % (options.year, options.week))
+  interception_ref.set(interceptions)
 
