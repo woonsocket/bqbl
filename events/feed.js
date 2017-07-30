@@ -49,6 +49,10 @@ function onEventLoad(snapshot) {
 
 	var fumbles = snapshot.val().fumbles;
 	fumbles.forEach(function (fumble) {
+			// Currently can do all fumbles or all valid fumble-sixes. Hm.
+			//			if (!fumble.valid) {
+			//				return;
+			//			}
 			fumble.title = formatDescription("fumble", fumble);
 			events[Number(fumble.key)] = fumble;
 		});
