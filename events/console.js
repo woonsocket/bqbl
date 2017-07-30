@@ -38,9 +38,8 @@ function onEventLoad(snapshot) {
 									"GB","HOU","IND","JAX","KC","LA","MIA","MIN","NE","NO","NYG","NYJ",
 									"OAK", "PHI","PIT","SD","SEA","SF","TB","TEN","WSH"];
 	var benchings = snapshot.val().benchings;
-	console.log(benchings);
 	allTeams.forEach(function(team) {
-			var valid = benchings[team] && benchings[team].valid;
+			var valid = benchings && benchings[team] && benchings[team].valid;
 			var row = makeRow({"desc": team, "valid": valid}, team, getEventsPath() + "/benchings");
 			document.querySelector("#benchings_list").append(row);
 		});
