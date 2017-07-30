@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>BQBL Console</title>
 
+		<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700" type="text/css">
 		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-		<link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+		<link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.red-pink.min.css" />
 		<script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
 
     <script src="https://www.gstatic.com/firebasejs/4.2.0/firebase.js"></script>
@@ -25,17 +26,25 @@
 }
 
 input[type="checkbox"]{
-  width: 30px; /*Desired width*/
-  height: 30px; /*Desired height*/
+  width: 30px;
+  height: 30px;
 }
 
 </style>
 
+<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+  <header class="mdl-layout__header">
+    <div class="mdl-layout__header-row">
+      <!-- Title -->
+      <span class="mdl-layout-title">BQBL Console</span>
+    </div>
+		</header>
+    <!-- Tabs -->
 
 
 <div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
   <div class="mdl-tabs__tab-bar">
-    <a href="#fumbles-panel" class="mdl-tabs__tab is-active">Fumbles</a>
+    <a href="#fumbles-panel" class="mdl-tabs__tab is-active">Fumble-6</a>
     <a href="#safeties-panel" class="mdl-tabs__tab">Safeties</a>
     <a href="#benchings-panel" class="mdl-tabs__tab">Benchings</a>
   </div>
@@ -64,6 +73,6 @@ input[type="checkbox"]{
   </div>
 
 </div>
-
+</div>
   </body>
 </html>
