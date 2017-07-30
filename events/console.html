@@ -21,10 +21,6 @@
 			max-width: 700px;
 			}
 
-			#radio_tpl {
-			display:none;
-			}
-
 			input[type="checkbox"]{
 			width: 30px;
 			height: 30px;
@@ -32,47 +28,52 @@
 
 		</style>
 
-		<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+		<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header
+								mdl-layout--fixed-tabs">
 			<header class="mdl-layout__header">
 				<div class="mdl-layout__header-row">
 					<!-- Title -->
 					<span class="mdl-layout-title">BQBL Console</span>
 				</div>
+				<!-- Tabs -->
+				<div class="mdl-layout__tab-bar mdl-js-ripple-effect">
+					<a href="#fumble-tab" class="mdl-layout__tab is-active">Fumble-6</a>
+					<a href="#safety-tab" class="mdl-layout__tab">Safeties</a>
+					<a href="#benchings-tab" class="mdl-layout__tab">Benchings</a>
+				</div>
 			</header>
-			<!-- Tabs -->
-
-
-			<div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
-				<div class="mdl-tabs__tab-bar">
-					<a href="#fumbles-panel" class="mdl-tabs__tab is-active">Fumble-6</a>
-					<a href="#safeties-panel" class="mdl-tabs__tab">Safeties</a>
-					<a href="#benchings-panel" class="mdl-tabs__tab">Benchings</a>
-				</div>
-				
-				<div class="mdl-tabs__panel is-active" id="fumbles-panel">
-					<ul id=fumble_list class="mdl-list">
-						<li id=radio_tpl class="mdl-list__item">
-							<span class="mdl-list__item-primary-content desc">
-							</span>
-							<div class="slideOne">
-								<input type="checkbox" value="None" id="slideOne" name="check" unchecked />
-								<label for="slideOne"></label>
-							</div>
-						</li>	
-					</ul>
-				</div>
-				
-				<div class="mdl-tabs__panel" id="safeties-panel">
-					<ul id=safety_list class="mdl-list">
-					</ul>
-				</div>
-
-				<div class="mdl-tabs__panel" id="benchings-panel">
-					<ul id=benchings_list class="mdl-list">
-					</ul>
-				</div>
-
+			<div class="mdl-layout__drawer">
+				<span class="mdl-layout-title">Title</span>
 			</div>
+			<main class="mdl-layout__content">
+				<section class="mdl-layout__tab-panel is-active" id="fumble-tab">
+					<div class="page-content">
+						<ul id=fumbles_list class="mdl-list"></ul>
+					</div>
+				</section>
+				<section class="mdl-layout__tab-panel" id="safety-tab">
+					<div class="page-content">
+						<ul id=safeties_list class="mdl-list"></ul>
+					</div>
+				</section>
+				<section class="mdl-layout__tab-panel" id="benchings-tab">
+					<div class="page-content">
+						<ul id=benchings_list class="mdl-list">
+						</ul>
+					</div>
+				</section>
+			</main>
+		</div>
+
+		<div style="display:none">
+			<li class="mdl-list__item" id="item_tpl">
+				<span class="mdl-list__item-primary-content desc">
+				</span>
+				<div>
+					<input type="checkbox" value="None" name="check" unchecked />
+					<label></label>
+				</div>
+			</li>	
 		</div>
   </body>
 </html>
