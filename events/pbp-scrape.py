@@ -36,14 +36,15 @@ def process(raw, fumbles, safeties, interceptions):
   # 5 is for overtime
   quarters = {1: {}, 2: {}, 3:{}, 4:{}, 5:{}}
 
-  for drive in drives:
+  for drive_key in drives:
     # skip junk in there about current drive
-    if drive == 'crntdrv': continue
-    plays = copy.deepcopy(drives[drive]['plays'])
+    if drive_key == 'crntdrv': continue
+    plays = copy.deepcopy(drives[drive_key]['plays'])
     for play_key in plays:
       play = plays[play_key]
       quarter = play['qtr']
       time = play['time']
+      play['key'] = play_key
       quarters[quarter][time] = play
 
   for n in range(1, 6):
@@ -51,14 +52,20 @@ def process(raw, fumbles, safeties, interceptions):
       play = quarters[n][t]
       desc = play['desc']
       if "SAFETY" in desc:
-        safeties.append({
-            'desc': desc, 'team': play['posteam'], 'quarter': n, 'time': t})
+        safeties.append(play_to_obj(play))
       elif "FUMBLE" in desc and "TOUCHDOWN" in desc:
-        fumbles.append({
-            'desc': desc, 'team': play['posteam'], 'quarter': n, 'time': t})
+        fumbles.append(play_to_obj(play))
       if "INTERCEPT" in desc:
-        interceptions.append({
-            'desc': desc, 'team': play['posteam'], 'quarter': n, 'time': t})
+        interceptions.append(play_to_obj(play))
+
+def play_to_obj(play):
+  return {
+    'desc': play['desc'],
+    'team': play['posteam'],
+    'quarter': play['qtr'],
+    'time': play['time'],
+    'key': play['key']
+    }
 
 
 gameIds = open(args[0]).readlines()
