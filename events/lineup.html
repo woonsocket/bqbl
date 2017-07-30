@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>BQBL Console</title>
+    <title>BQBL Lineup</title>
 		
 		<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:300,400,500,700" type="text/css">
 		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
@@ -11,8 +11,8 @@
 		<script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
 
     <script src="https://www.gstatic.com/firebasejs/4.2.0/firebase.js"></script>
-		<script defer src="base.js"></script>
-    <script defer src="feed.js"></script>
+    <script defer src="base.js"></script>
+    <script defer src="lineup.js"></script>
 		<style>
 			img.logo {
 			width: 48px;
@@ -31,6 +31,12 @@
 			.mdl-card {
 			min-height: 0px;
 			}
+			td.selected {
+			background:#b3d4fc;
+			}
+			.mdl-data-table tbody tr:hover {
+			background:none;
+			}
 </style>
   </head>
   <body>
@@ -38,34 +44,35 @@
 			<header class="mdl-layout__header">
 				<div class="mdl-layout__header-row">
 					<!-- Title -->
-					<span class="mdl-layout-title">BQBL Top Plays</span>
+					<span class="mdl-layout-title">BQBL Lineup</span>
 					<!-- Add spacer, to align navigation to the right -->
 					<div class="mdl-layout-spacer"></div>
+					<nav class="mdl-navigation">
+						<a class="mdl-navigation__link login" onclick=handleSignIn>Link</a>
+					</nav>
 				</div>
 			</header>
 			<main class="mdl-layout__content">
-				<div class="page-content">
-					<!-- Filled client-side -->
-				</div>
+				<table class="mdl-data-table mdl-js-data-table">
+					<thead></thead>
+					<tbody id=page_content>
+						<!-- Filled client-side -->
+					</tbody>
+				</table>
 			</main>
 		</div>
 		
 		<div style="display:none">
-			<div class="demo-card-wide mdl-card mdl-shadow--2dp" id=item_tpl>
-				<div class="mdl-card__title">
-					<h2 class="mdl-card__title-text">
-						<img class="logo" src=""/>
-						<span class="title">event</span>
-					</h2>
-				</div>
-				<div class="mdl-card__supporting-text">
-					<div class="time">
-					</div>
-					<div class="desc">
-					Description
-					</div>
-				</div>
-			</div>
+			<table>
+				<tr id=item_tpl>
+				<td class="mdl-data-table__cell--non-numeric week">1</td>
+				<td class="mdl-data-table__cell--non-numeric team-0">NYJ</td>
+				<td class="mdl-data-table__cell--non-numeric team-1">CLE</td>
+				<td class="mdl-data-table__cell--non-numeric team-2">SF</td>
+				<td class="mdl-data-table__cell--non-numeric team-3">JAC</td>
+				</tr>
+				</table>
 		</div>
+
   </body>
 </html>
