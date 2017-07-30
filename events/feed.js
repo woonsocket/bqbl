@@ -48,12 +48,18 @@ function onEventLoad(snapshot) {
 
 	var keys = Object.keys(events);
 	for (var i = 0; i < keys.length; i++) {
-		document.querySelector(".page-content").append(makeRow(events[keys[i]]));
+		var event = events[keys[i]];
+		event.time = formatTime(event);
+		document.querySelector(".page-content").append(makeRow(event));
 	}
 }
 
 function formatDescription(type, item) {
-	return item.team + " " + type + "q" + item.quarter + " - " + item.time;
+	return item.team + " " + type;
+}
+
+function formatTime(item) {
+  return  "q" + item.quarter + " - " + item.time;
 }
 
 function makeRow(item, id) {
@@ -61,10 +67,12 @@ function makeRow(item, id) {
 	var descElement = tpl.querySelector("div.desc");
 	var titleElement = tpl.querySelector("span.title");
 	var imageElement = tpl.querySelector("img.logo");
+	var timeElement = tpl.querySelector("div.time");
 	
 	tpl.setAttribute("id", id);
 	descElement.textContent = item.desc;
 	titleElement.textContent = item.title;
+	timeElement.textContent = item.time;
 	imageElement.setAttribute("src", makeLogoImageHref(item.team));
 	return tpl;
 };
