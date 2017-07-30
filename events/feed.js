@@ -1,4 +1,4 @@
-args = splitHash();
+var args = splitHash();
 
 document.addEventListener('DOMContentLoaded', function() {
 		// Initialize Firebase
@@ -12,8 +12,15 @@ document.addEventListener('DOMContentLoaded', function() {
 		};
 		firebase.initializeApp(config);
 
-		firebase.database().ref(getEventsPath()).once('value').then(onEventLoad);
+		window.addEventListener("hashchange", updatePage, false);
+		updatePage();
 	});
+
+function updatePage() {
+	args = splitHash();
+	document.querySelector(".page-content").innerHTML = "";
+	firebase.database().ref(getEventsPath()).once('value').then(onEventLoad);
+}
 
 function getEventsPath() {
 	return "events/" + args.year + "/" + args.week;
