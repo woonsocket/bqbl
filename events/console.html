@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>BQBL Console</title>
+
+		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+		<link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+		<script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/4.2.0/firebase.js"></script>
+    <script defer src="console.js"></script>
+  </head>
+  <body>
+
+<style>
+
+.event-list {
+  max-width: 700px;
+}
+
+#radio_tpl {
+  display:none;
+}
+
+input[type="checkbox"]{
+  width: 30px; /*Desired width*/
+  height: 30px; /*Desired height*/
+}
+
+/* end .slideOne */
+
+</style>
+
+
+
+<div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+  <div class="mdl-tabs__tab-bar">
+    <a href="#fumbles-panel" class="mdl-tabs__tab is-active">Fumbles</a>
+    <a href="#safeties-panel" class="mdl-tabs__tab">Safeties</a>
+  </div>
+	
+  <div class="mdl-tabs__panel is-active" id="fumbles-panel">
+		<ul id=fumble_list class="mdl-list">
+			<li id=radio_tpl class="mdl-list__item">
+				<span class="mdl-list__item-primary-content desc">
+				</span>
+				<div class="slideOne">
+					<input type="checkbox" value="None" id="slideOne" name="check" unchecked />
+					<label for="slideOne"></label>
+				</div>
+			</li>	
+		</ul>
+  </div>
+	
+  <div class="mdl-tabs__panel" id="safeties-panel">
+		<ul id=safety_list class="mdl-list">
+		</ul>
+  </div>
+</div>
+
+  </body>
+</html>
