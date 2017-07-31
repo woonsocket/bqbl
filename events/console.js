@@ -3,7 +3,6 @@ function updatePage() {
 	document.querySelector("#fumbles_list").innerHTML = "";
 	document.querySelector("#safeties_list").innerHTML = "";
 	document.querySelector("#benchings_list").innerHTML = "";
-	console.log(getEventsPath());
 	firebase.database().ref(getEventsPath()).once('value').then(onEventLoad);
 }
 

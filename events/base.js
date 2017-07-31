@@ -44,10 +44,6 @@ function handleSignIn() {
 	}
 }
 
-function getEventsPath() {
-	return "events/" + args.year + "/" + args.week;
-}
-
 // Take window.location.hash and turn it into a key:val map.
 function splitHash() {
 	// Strip leading # and split by &
@@ -59,3 +55,12 @@ function splitHash() {
 		});
 	return ret;
 }
+
+function getUserPath() {
+	return "users/" + firebase.auth().currentUser.uid;
+}
+
+function getEventsPath() {
+	return "events/" + args.year + "/" + args.week;
+}
+
