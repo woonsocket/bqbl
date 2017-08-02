@@ -12,25 +12,27 @@ document.addEventListener('DOMContentLoaded', function() {
 		};
 		firebase.initializeApp(config);
 
-		firebase.auth().onAuthStateChanged(function(user) {
-				if (user) {
-					// User is signed in.
-					var displayName = user.displayName;
-					var email = user.email;
-					var emailVerified = user.emailVerified;
-					var photoURL = user.photoURL;
-					var isAnonymous = user.isAnonymous;
-					var uid = user.uid;
-					var providerData = user.providerData;
-					document.querySelector(".login").textContent = user.displayName;
-				} else {
-					document.querySelector(".login").textContent="Log in";
-				}
-				updatePage();
-			});
-
+		firebase.auth().onAuthStateChanged(onAuthStateChanged);
 		window.addEventListener("hashchange", updatePage, false);
+		onPageLoad();
 	});
+
+function onAuthStateChanged(user) {
+	if (user) {
+		// User is signed in.
+		var displayName = user.displayName;
+		var email = user.email;
+		var emailVerified = user.emailVerified;
+		var photoURL = user.photoURL;
+		var isAnonymous = user.isAnonymous;
+		var uid = user.uid;
+		var providerData = user.providerData;
+		document.querySelector(".login").textContent = user.displayName;
+	} else {
+		document.querySelector(".login").textContent="Log in";
+	}
+	updatePage();
+}
 
 function handleSignIn() {
 	var provider = new firebase.auth.GoogleAuthProvider();
@@ -64,3 +66,16 @@ function getEventsPath() {
 	return "events/" + args.year + "/" + args.week;
 }
 
+// https://stackoverflow.com/questions/23013447/how-to-define-handlebar-js-templates-in-an-external-file
+function loadHandlebarsTemplate(url, callback) {
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET', url, true);
+	xhr.onreadystatechange = function() {
+		if (xhr.readyState == 4 && xhr.status == 200) {
+			var raw = xhr.responseText;
+			var compiled = Handlebars.compile(raw);
+			callback(compiled);
+		}
+	};
+	xhr.send();     
+}
