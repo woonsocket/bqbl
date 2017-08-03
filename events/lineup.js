@@ -1,19 +1,19 @@
-var rowTpl = null;
+var lineupTableTpl = null;
 
 function onPageLoad() {
-	loadHandlebarsTemplate("lineup-row.tpl.js", function (loadedTpl) {
-			rowTpl = loadedTpl;
-		});
+	loadHandlebarsTemplate("lineup-table.tpl.js", function (loadedTpl) {
+		lineupTableTpl = loadedTpl;
+	});
 
 	loadHandlebarsTemplate("header.tpl.js", function (headerTpl) {
-			var headerHtml = headerTpl({"title": "Lineup"});
-			document.getElementById("header").innerHTML = headerHtml;
-		});
+		var headerHtml = headerTpl({"title": "Lineup"});
+		document.getElementById("header").innerHTML = headerHtml;
+	});
 }
 
 function updatePage() {
 	args = splitHash();
-	document.querySelector("#page_content").innerHTML = "";
+	document.querySelector("#content").innerHTML = "";
 	if (firebase.auth().currentUser == null) {
 		console.log('null!');
 	} else {
@@ -23,14 +23,18 @@ function updatePage() {
 
 function onEventLoad(snapshot) {
 	var weeks = snapshot.val().weeks;
-	var weeksKeys = Object.keys(weeks);
-	Object.keys(weeks).forEach(function (week) {
-			var row = makeRow(weeks[week], week, snapshot.val().teams);
-			document.querySelector("#page_content").append(row);
-		});
+	var lineupTableDict = {
+		'week': []
+	};
+	weeks.forEach(function (week, i) {
+		var row = makeRow(week, i, snapshot.val().teams);
+		lineupTableDict.week.push(row);
+	});
+	document.querySelector("#content").innerHTML = lineupTableTpl(lineupTableDict);
+
 	document.querySelectorAll(".cell-listener").forEach(function (cell) {
-			cell.addEventListener('click', lineupOnClick);
-		});
+		cell.addEventListener('click', lineupOnClick);
+	});
 }
 
 function makeRow(week, id, teams) {
@@ -40,13 +44,11 @@ function makeRow(week, id, teams) {
 		}
 	}
 
-	dict = { 
+	weekDict = { 
 		'week': id,
 		'team': week,
 	};
-	var ret = document.createElement('table');
-	ret.innerHTML = rowTpl(dict);
-	return ret;
+	return weekDict;
 };
 
 function lineupOnClick(e) {
@@ -65,9 +67,9 @@ function lineupOnClick(e) {
 	var week = e.target.getAttribute('data-week');
 	var team = e.target.getAttribute('data-team');
 	var path = getLineupPath(week, team);
-  var updates = {};
-  updates[path] = val;
-  return firebase.database().ref().update(updates);
+	var updates = {};
+	updates[path] = val;
+	return firebase.database().ref().update(updates);
 };
 
 function getLineupPath(week, team) {
