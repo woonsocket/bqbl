@@ -24,6 +24,8 @@ parser.add_option("-w", "--week", dest="week",
                   help="Week")
 parser.add_option("-y", "--year", dest="year",
                   help="Year")
+parser.add_option("-d", "--dump", dest="dump", action="store_true",
+                  help="Dump data?")
 
 options, args = parser.parse_args()
 if len(args) < 1:
@@ -77,6 +79,10 @@ for id in gameIds:
   id = id.strip()
   url = "http://www.nfl.com/liveupdate/game-center/%s/%s_gtd.json" % (id, id)
   raw = urllib.request.urlopen("http://www.nfl.com/liveupdate/game-center/%s/%s_gtd.json" % (id, id)).read()
+  if options.dump:
+    print(url)
+    print(raw)
+    continue
   process(raw, fumbles, safeties, interceptions)
 
 if options.firebase:
