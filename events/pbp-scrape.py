@@ -38,9 +38,9 @@ class Plays(object):
     self.safeties = []
     self.interceptions = []
 
-  def process(self, raw):
+  def process(self, game_id, raw):
     data = json.loads(str(raw, 'utf-8'))
-    drives = data[id]['drives']
+    drives = data[game_id]['drives']
     # 5 is for overtime
     quarters = {1: {}, 2: {}, 3:{}, 4:{}, 5:{}}
 
@@ -69,28 +69,32 @@ class Plays(object):
               'desc': desc, 'team': play['posteam'], 'quarter': n, 'time': t})
 
 
-gameIds = open(args[0]).readlines()
+def main():
+  gameIds = open(args[0]).readlines()
 
-plays = Plays()
-for id in gameIds:
-  id = id.strip()
-  url = "http://www.nfl.com/liveupdate/game-center/%s/%s_gtd.json" % (id, id)
-  raw = urllib.request.urlopen("http://www.nfl.com/liveupdate/game-center/%s/%s_gtd.json" % (id, id)).read()
-  plays.process(raw)
+  plays = Plays()
+  for id in gameIds:
+    id = id.strip()
+    url = "http://www.nfl.com/liveupdate/game-center/%s/%s_gtd.json" % (id, id)
+    raw = urllib.request.urlopen("http://www.nfl.com/liveupdate/game-center/%s/%s_gtd.json" % (id, id)).read()
+    plays.process(id, raw)
 
-if options.firebase:
-  fumble_ref = db.reference('/events/%s/%s/fumbles' % (options.year, options.week))
-  fumble_ref.set(plays.fumbles)
+  if options.firebase:
+    fumble_ref = db.reference('/events/%s/%s/fumbles' % (options.year, options.week))
+    fumble_ref.set(plays.fumbles)
 
-  safety_ref = db.reference('/events/%s/%s/safeties' % (options.year, options.week))
-  safety_ref.set(plays.safeties)
+    safety_ref = db.reference('/events/%s/%s/safeties' % (options.year, options.week))
+    safety_ref.set(plays.safeties)
 
-  interception_ref = db.reference('/events/%s/%s/interception' % (options.year, options.week))
-  interception_ref.set(plays.interceptions)
-else:
-  for f in plays.fumbles:
-    print(f)
-  for s in plays.safeties:
-    print(s)
-  for i in plays.interceptions:
-    print(i)
+    interception_ref = db.reference('/events/%s/%s/interception' % (options.year, options.week))
+    interception_ref.set(plays.interceptions)
+  else:
+    for f in plays.fumbles:
+      print(f)
+    for s in plays.safeties:
+      print(s)
+    for i in plays.interceptions:
+      print(i)
+
+
+main()
