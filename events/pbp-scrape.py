@@ -2,6 +2,7 @@ import collections
 import copy
 import json
 import optparse
+import re
 import sys
 import urllib.request
 
@@ -34,14 +35,14 @@ if len(args) < 1:
   sys.exit(1)
 
 
-def parse_play(play):
+def parse_play(play, player_cache):
   offense_team = play['posteam']
   qbs = []
   defenders = []
   outcomes = collections.defaultdict(int)
   for pid, player in play['players'].items():
-    if player[0]['clubcode'] == offense_team:
-      # TODO(aerion): Look up player's position and only count stats by QBs.
+    if (player[0]['clubcode'] == offense_team and
+        player_cache.lookup_position(pid) == 'QB'):
       qbs.append(player)
     else:
       defenders.append(player)
@@ -61,17 +62,20 @@ def parse_play(play):
       if sid in (26, 28):
         outcomes['INT6'] += 1
       elif sid in (60, 62):
+        # Oops, this is wrong. We should only count this if the QB fumbled.
         outcomes['FUM6'] += 1
   return outcomes
 
 
 class Plays(object):
 
-  def __init__(self):
+  def __init__(self, player_cache):
     self.fumbles = []
     self.safeties = []
     self.interceptions = []
-    self.outcomes_by_team = collections.defaultdict(lambda: collections.defaultdict(int))
+    self.outcomes_by_team = collections.defaultdict(
+        lambda: collections.defaultdict(int))
+    self.player_cache = player_cache
 
   def process(self, game_id, raw):
     data = json.loads(str(raw, 'utf-8'))
@@ -94,7 +98,7 @@ class Plays(object):
         play = quarters[n][t]
         desc = play['desc']
 
-        outcomes = parse_play(play)
+        outcomes = parse_play(play, self.player_cache)
         for k, v in outcomes.items():
           self.outcomes_by_team[play['posteam']][k] += v
 
@@ -109,10 +113,61 @@ class Plays(object):
               'desc': desc, 'team': play['posteam'], 'quarter': n, 'time': t})
 
 
+class PlayerCache(object):
+  PLAYER_POSITION_REGEX = re.compile(
+      r'<span class="player-number">#\d+ ([A-Z]*)</span>', flags=re.I)
+
+  def __init__(self, firebase_db):
+    self.local_db = {}
+    self.firebase_db = firebase_db
+
+  def lookup_position(self, player_id):
+    position = self._read_from_local_cache(player_id)
+    if position is None:
+      position = self._read_from_firebase(player_id)
+      if position is None:
+        position = self._read_from_web(player_id)
+        self._write_to_firebase(player_id, position)
+      self.local_db[player_id] = position
+    return position
+
+  def _read_from_local_cache(self, player_id):
+    return self.local_db.get(player_id, None)
+
+  def _write_to_local_cache(self, player_id, position):
+    self.local_db[player_id] = position
+
+  def _firebase_ref(self, player_id):
+    return self.firebase_db.reference(
+        '/players/{id}/position'.format(id=player_id))
+
+  def _read_from_firebase(self, player_id):
+    return self._firebase_ref(player_id).get()
+
+  def _write_to_firebase(self, player_id, position):
+    # The data in Firebase never expires. This might lead to errors in the
+    # future when somebody pulls a Terrelle Pryor and stops being a QB.
+    self._firebase_ref(player_id).set(position)
+
+  def _read_from_web(self, player_id):
+    profile_bytes = urllib.request.urlopen(
+        'http://www.nfl.com/players/profile?id={id}'.format(id=player_id)).read()
+    profile = str(profile_bytes, 'utf-8')
+    match = PlayerCache.PLAYER_POSITION_REGEX.search(profile)
+    if not match:
+      # Sometimes a bogus player ID (e.g., '0') is used when a stat is credited
+      # to a whole team, or it's not clear which player was involved.
+      return 'UNKNOWN'
+    print('>> found position {pos} for player id {id}'.format(pos=match.group(1), id=player_id))
+    return match.group(1).upper()
+
+
+
 def main():
   gameIds = open(args[0]).readlines()
 
-  plays = Plays()
+  player_cache = PlayerCache(db)
+  plays = Plays(player_cache)
   for id in gameIds:
     id = id.strip()
     url = "http://www.nfl.com/liveupdate/game-center/%s/%s_gtd.json" % (id, id)
