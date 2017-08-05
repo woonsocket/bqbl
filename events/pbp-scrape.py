@@ -1,11 +1,14 @@
-import json
+import collections
 import copy
+import json
 import optparse
-import urllib.request
 import sys
+import urllib.request
+
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
+
 
 cred = credentials.Certificate('BQBL-2c621a7cef1f.json')
 firebase_admin.initialize_app(cred, {
@@ -31,12 +34,44 @@ if len(args) < 1:
   sys.exit(1)
 
 
+def parse_play(play):
+  offense_team = play['posteam']
+  qbs = []
+  defenders = []
+  outcomes = collections.defaultdict(int)
+  for pid, player in play['players'].items():
+    if player[0]['clubcode'] == offense_team:
+      # TODO(aerion): Look up player's position and only count stats by QBs.
+      qbs.append(player)
+    else:
+      defenders.append(player)
+  # TODO(aerion): Check other stats, like safeties.
+  for qb in qbs:
+    for stat in qb:
+      sid = stat['statId']
+      if sid == 19:
+        outcomes['INT'] += 1
+      elif sid in (52, 53):
+        outcomes['FUM'] += 1
+      elif sid == 106:
+        outcomes['FUML'] += 1
+  for defender in defenders:
+    for stat in defender:
+      sid = stat['statId']
+      if sid in (26, 28):
+        outcomes['INT6'] += 1
+      elif sid in (60, 62):
+        outcomes['FUM6'] += 1
+  return outcomes
+
+
 class Plays(object):
 
   def __init__(self):
     self.fumbles = []
     self.safeties = []
     self.interceptions = []
+    self.outcomes_by_team = collections.defaultdict(lambda: collections.defaultdict(int))
 
   def process(self, game_id, raw):
     data = json.loads(str(raw, 'utf-8'))
@@ -58,6 +93,11 @@ class Plays(object):
       for t in sorted(quarters[n].keys())[::-1]:
         play = quarters[n][t]
         desc = play['desc']
+
+        outcomes = parse_play(play)
+        for k, v in outcomes.items():
+          self.outcomes_by_team[play['posteam']][k] += v
+
         if "SAFETY" in desc:
           self.safeties.append({
               'desc': desc, 'team': play['posteam'], 'quarter': n, 'time': t})
@@ -95,6 +135,7 @@ def main():
       print(s)
     for i in plays.interceptions:
       print(i)
+    print(json.dumps(plays.outcomes_by_team))
 
 
 main()
