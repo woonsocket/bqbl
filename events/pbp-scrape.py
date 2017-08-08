@@ -73,7 +73,9 @@ def parse_play(play, player_cache):
   # TODO(aerion): Check other stats, like safeties.
   for stat in qb_stats:
     sid = stat['statId']
-    if sid == 20:
+    if sid == 15:
+      outcomes['LONG'] = max(outcomes['LONG'], stat.get('yards'))
+    elif sid == 20:
       outcomes['SACK'] += 1
       outcomes['SACKYD'] += stat.get('yards', 0)  # The value is negative.
     elif sid == 19:
@@ -132,7 +134,11 @@ class Plays(object):
 
         outcomes = parse_play(play, self.player_cache)
         for k, v in outcomes.items():
-          self.outcomes_by_team[play['posteam']][k] += v
+          if k == 'LONG':
+            old = self.outcomes_by_team[play['posteam']][k]
+            self.outcomes_by_team[play['posteam']][k] = max(old, v)
+          else:
+            self.outcomes_by_team[play['posteam']][k] += v
 
         if "SAFETY" in desc:
           self.safeties.append({
