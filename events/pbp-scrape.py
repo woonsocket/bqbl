@@ -37,32 +37,27 @@ if len(args) < 1:
 
 def parse_play(play, player_cache):
   offense_team = play['posteam']
-  qbs = []
-  defenders = []
+  qb_stats = []
+  def_stats = []
   outcomes = collections.defaultdict(int)
-  for pid, player in play['players'].items():
-    if (player[0]['clubcode'] == offense_team and
+  for pid, player_stats in play['players'].items():
+    if (player_stats[0]['clubcode'] == offense_team and
         player_cache.lookup_position(pid) == 'QB'):
-      qbs.append(player)
+      qb_stats.extend(player_stats)
     else:
-      defenders.append(player)
+      def_stats.extend(player_stats)
   # TODO(aerion): Check other stats, like safeties.
-  for qb in qbs:
-    for stat in qb:
-      sid = stat['statId']
-      if sid == 19:
-        outcomes['INT'] += 1
-      elif sid in (52, 53):
-        outcomes['FUM'] += 1
-      elif sid == 106:
-        outcomes['FUML'] += 1
-  for defender in defenders:
-    for stat in defender:
-      sid = stat['statId']
-      if sid in (26, 28):
+  for stat in qb_stats:
+    sid = stat['statId']
+    if sid == 19:
+      outcomes['INT'] += 1
+      if any(filter(lambda s: s.get('statId') in (26, 28), def_stats)):
         outcomes['INT6'] += 1
-      elif sid in (60, 62):
-        # Oops, this is wrong. We should only count this if the QB fumbled.
+    elif sid in (52, 53):
+      outcomes['FUM'] += 1
+    elif sid == 106:
+      outcomes['FUML'] += 1
+      if any(filter(lambda s: s.get('statId') in (60, 62), def_stats)):
         outcomes['FUM6'] += 1
   return outcomes
 
