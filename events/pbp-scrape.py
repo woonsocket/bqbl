@@ -35,6 +35,30 @@ if len(args) < 1:
   sys.exit(1)
 
 
+def parse_box(box, player_cache):
+  outcomes = collections.defaultdict(int)
+  for pid, passer in box.get('passing', {}).items():
+    if player_cache.lookup_position(pid) != 'QB':
+      continue
+    outcomes['ATT'] += passer.get('att', 0)
+    outcomes['CMP'] += passer.get('cmp', 0)
+    outcomes['PASSYD'] += passer.get('yds', 0)
+    outcomes['TD'] += passer.get('tds', 0)
+    # Interceptions are present here, but we'll read those from the
+    # play-by-play instead, because we can tell if it was a pick-6.
+  for pid, rusher in box.get('rushing', {}).items():
+    if player_cache.lookup_position(pid) != 'QB':
+      continue
+    outcomes['RUSHYD'] += rusher.get('yds', 0)
+    outcomes['TD'] += rusher.get('tds', 0)
+  for pid, receiver in box.get('receiving', {}).items():
+    if player_cache.lookup_position(pid) != 'QB':
+      continue
+    # This is a *receiving* TD for the QB. It's been known to happen!
+    outcomes['TD'] += receiver.get('tds', 0)
+  return outcomes
+
+
 def parse_play(play, player_cache):
   offense_team = play['posteam']
   qb_stats = []
@@ -49,7 +73,10 @@ def parse_play(play, player_cache):
   # TODO(aerion): Check other stats, like safeties.
   for stat in qb_stats:
     sid = stat['statId']
-    if sid == 19:
+    if sid == 20:
+      outcomes['SACK'] += 1
+      outcomes['SACKYD'] += stat.get('yards', 0)  # The value is negative.
+    elif sid == 19:
       outcomes['INT'] += 1
       if any(filter(lambda s: s.get('statId') in (26, 28), def_stats)):
         outcomes['INT6'] += 1
@@ -78,6 +105,16 @@ class Plays(object):
     # 5 is for overtime
     quarters = {1: {}, 2: {}, 3:{}, 4:{}, 5:{}}
 
+    # Read box score stats.
+    home_box = data[game_id]['home']
+    away_box = data[game_id]['away']
+    for k, v in parse_box(home_box['stats'], self.player_cache).items():
+      self.outcomes_by_team[home_box['abbr']][k] += v
+    for k, v in parse_box(away_box['stats'], self.player_cache).items():
+      self.outcomes_by_team[away_box['abbr']][k] += v
+
+    # Read play-by-play info for slightly more complex stats like turnovers and
+    # sack yardage.
     for drive in drives:
       # skip junk in there about current drive
       if drive == 'crntdrv': continue
