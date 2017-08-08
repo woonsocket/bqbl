@@ -69,10 +69,11 @@ def parse_play(play, player_cache):
       qb_stats.extend(player_stats)
     else:
       def_stats.extend(player_stats)
+  # http://www.nflgsis.com/gsis/documentation/Partners/StatIDs.html
   # TODO(aerion): Check other stats, like safeties.
   for stat in qb_stats:
     sid = stat['statId']
-    if sid == 15:
+    if sid in (15, 16):
       outcomes['LONG'] = max(outcomes['LONG'], stat.get('yards'))
     elif sid == 20:
       outcomes['SACK'] += 1
