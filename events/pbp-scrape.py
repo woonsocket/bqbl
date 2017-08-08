@@ -117,19 +117,11 @@ class Plays(object):
 
     # Read play-by-play info for slightly more complex stats like turnovers and
     # sack yardage.
-    for drive in drives:
+    for drive_num, drive in drives.items():
       # skip junk in there about current drive
-      if drive == 'crntdrv': continue
-      plays = copy.deepcopy(drives[drive]['plays'])
-      for play_key in plays:
-        play = plays[play_key]
-        quarter = play['qtr']
-        time = play['time']
-        quarters[quarter][time] = play
-
-    for n in range(1, 6):
-      for t in sorted(quarters[n].keys())[::-1]:
-        play = quarters[n][t]
+      if drive_num == 'crntdrv':
+        continue
+      for play in drive['plays'].values():
         desc = play['desc']
 
         outcomes = parse_play(play, self.player_cache)
@@ -140,15 +132,18 @@ class Plays(object):
           else:
             self.outcomes_by_team[play['posteam']][k] += v
 
+        summary = {
+          'desc': desc,
+          'team': play['posteam'],
+          'quarter': play['qtr'],
+          'time': play['time'],
+        }
         if "SAFETY" in desc:
-          self.safeties.append({
-              'desc': desc, 'team': play['posteam'], 'quarter': n, 'time': t})
+          self.safeties.append(summary)
         elif "FUMBLE" in desc and "TOUCHDOWN" in desc:
-          self.fumbles.append({
-              'desc': desc, 'team': play['posteam'], 'quarter': n, 'time': t})
+          self.fumbles.append(summary)
         if "INTERCEPT" in desc:
-          self.interceptions.append({
-              'desc': desc, 'team': play['posteam'], 'quarter': n, 'time': t})
+          self.interceptions.append(summary)
 
 
 class PlayerCache(object):
@@ -196,7 +191,6 @@ class PlayerCache(object):
       # Sometimes a bogus player ID (e.g., '0') is used when a stat is credited
       # to a whole team, or it's not clear which player was involved.
       return 'UNKNOWN'
-    print('>> found position {pos} for player id {id}'.format(pos=match.group(1), id=player_id))
     return match.group(1).upper()
 
 
