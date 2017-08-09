@@ -150,37 +150,23 @@ class PlayerCache(object):
   PLAYER_POSITION_REGEX = re.compile(
       r'<span class="player-number">#\d+ ([A-Z]*)</span>', flags=re.I)
 
-  def __init__(self, firebase_db):
-    self.local_db = {}
-    self.firebase_db = firebase_db
+  def __init__(self, positions):
+    self.positions = positions
+    self.new_keys = {}  # Keys that need to be written back to Firebase.
 
   def lookup_position(self, player_id):
     position = self._read_from_local_cache(player_id)
     if position is None:
-      position = self._read_from_firebase(player_id)
-      if position is None:
-        position = self._read_from_web(player_id)
-        self._write_to_firebase(player_id, position)
-      self.local_db[player_id] = position
+      position = self._read_from_web(player_id)
+      self._write_to_local_cache(player_id, position)
     return position
 
   def _read_from_local_cache(self, player_id):
-    return self.local_db.get(player_id, None)
+    return self.positions.get(player_id, None)
 
   def _write_to_local_cache(self, player_id, position):
-    self.local_db[player_id] = position
-
-  def _firebase_ref(self, player_id):
-    return self.firebase_db.reference(
-        '/players/{id}/position'.format(id=player_id))
-
-  def _read_from_firebase(self, player_id):
-    return self._firebase_ref(player_id).get()
-
-  def _write_to_firebase(self, player_id, position):
-    # The data in Firebase never expires. This might lead to errors in the
-    # future when somebody pulls a Terrelle Pryor and stops being a QB.
-    self._firebase_ref(player_id).set(position)
+    self.positions[player_id] = position
+    self.new_keys[player_id] = position
 
   def _read_from_web(self, player_id):
     profile_bytes = urllib.request.urlopen(
@@ -198,13 +184,16 @@ class PlayerCache(object):
 def main():
   gameIds = open(args[0]).readlines()
 
-  player_cache = PlayerCache(db)
+  player_cache = PlayerCache(db.reference('/playerpositions').get())
   plays = Plays(player_cache)
   for id in gameIds:
     id = id.strip()
     url = "http://www.nfl.com/liveupdate/game-center/%s/%s_gtd.json" % (id, id)
     raw = urllib.request.urlopen("http://www.nfl.com/liveupdate/game-center/%s/%s_gtd.json" % (id, id)).read()
     plays.process(id, raw)
+
+  if player_cache.new_keys:
+    db.reference('/playerpositions').update(player_cache.new_keys)
 
   if options.firebase:
     fumble_ref = db.reference('/events/%s/%s/fumbles' % (options.year, options.week))
