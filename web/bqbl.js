@@ -17,7 +17,7 @@ bqbl.SEASON = '2017';
 
 // Set this to the start date of Week 1 of the current season. Typically a
 // Thursday, so that the week changes before Thursday Night Football each week.
-bqbl.SEASON_START = new Date(2016, 8, 7);  // September 7, 2017
+bqbl.SEASON_START = new Date(2017, 8, 7);  // September 7, 2017
 bqbl.ONE_WEEK = 1000 * 60 * 60 * 24 * 7;
 
 
