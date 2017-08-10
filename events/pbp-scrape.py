@@ -34,6 +34,11 @@ if len(args) < 1:
   sys.exit(1)
 
 
+def ordinal(n):
+  """Ordinals for quarter numbers."""
+  return {1: '1st', 2: '2nd', 3: '3rd', 4: '4th'}.get(n) or str(n)
+
+
 def parse_box(box, is_qb):
   outcomes = collections.defaultdict(int)
   for pid, passer in box.get('passing', {}).items():
@@ -111,6 +116,15 @@ class Plays(object):
 
     def is_qb(pid):
       return pid in passers and self.player_cache.lookup_position(pid) == 'QB'
+
+    quarter = data[game_id]['qtr']
+    if quarter == 'Final':
+      clock = 'Final'
+    else:
+      clock = '{time} - {quarter}'.format(
+          time=data[game_id]['clock'], quarter=ordinal(quarter))
+    self.outcomes_by_team[home_box['abbr']]['CLOCK'] = clock
+    self.outcomes_by_team[away_box['abbr']]['CLOCK'] = clock
 
     # Read box score stats.
     for k, v in parse_box(home_box['stats'], is_qb).items():
@@ -202,8 +216,9 @@ def to_old_format(team, stats):
     'sacks': stats['SACK'],
     'sack_yards': -stats['SACKYD'],
     'long_pass': stats['LONG'],
+    'game_time': stats['CLOCK'],
     # Missing: 'safeties', 'game_losing_taint', 'benchings'
-    # Missing: 'game_time', 'boxscore_url', 'opponent'
+    # Missing: 'boxscore_url', 'opponent'
   }
 
 
