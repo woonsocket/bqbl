@@ -34,10 +34,10 @@ if len(args) < 1:
   sys.exit(1)
 
 
-def parse_box(box, player_cache):
+def parse_box(box, is_qb):
   outcomes = collections.defaultdict(int)
   for pid, passer in box.get('passing', {}).items():
-    if player_cache.lookup_position(pid) != 'QB':
+    if not is_qb(pid):
       continue
     outcomes['ATT'] += passer.get('att', 0)
     outcomes['CMP'] += passer.get('cmp', 0)
@@ -46,26 +46,25 @@ def parse_box(box, player_cache):
     # Interceptions are present here, but we'll read those from the
     # play-by-play instead, because we can tell if it was a pick-6.
   for pid, rusher in box.get('rushing', {}).items():
-    if player_cache.lookup_position(pid) != 'QB':
+    if not is_qb(pid):
       continue
     outcomes['RUSHYD'] += rusher.get('yds', 0)
     outcomes['TD'] += rusher.get('tds', 0)
   for pid, receiver in box.get('receiving', {}).items():
-    if player_cache.lookup_position(pid) != 'QB':
+    if not is_qb(pid):
       continue
     # This is a *receiving* TD for the QB. It's been known to happen!
     outcomes['TD'] += receiver.get('tds', 0)
   return outcomes
 
 
-def parse_play(play, player_cache):
+def parse_play(play, is_qb):
   offense_team = play['posteam']
   qb_stats = []
   def_stats = []
   outcomes = collections.defaultdict(int)
   for pid, player_stats in play['players'].items():
-    if (player_stats[0]['clubcode'] == offense_team and
-        player_cache.lookup_position(pid) == 'QB'):
+    if player_stats[0]['clubcode'] == offense_team and is_qb(pid):
       qb_stats.extend(player_stats)
     else:
       def_stats.extend(player_stats)
@@ -107,12 +106,18 @@ class Plays(object):
     # 5 is for overtime
     quarters = {1: {}, 2: {}, 3:{}, 4:{}, 5:{}}
 
-    # Read box score stats.
     home_box = data[game_id]['home']
     away_box = data[game_id]['away']
-    for k, v in parse_box(home_box['stats'], self.player_cache).items():
+    passers = (set(home_box['stats'].get('passing', {}).keys()) |
+               set(away_box['stats'].get('passing', {}).keys()))
+
+    def is_qb(pid):
+      return pid in passers and self.player_cache.lookup_position(pid) == 'QB'
+
+    # Read box score stats.
+    for k, v in parse_box(home_box['stats'], is_qb).items():
       self.outcomes_by_team[home_box['abbr']][k] += v
-    for k, v in parse_box(away_box['stats'], self.player_cache).items():
+    for k, v in parse_box(away_box['stats'], is_qb).items():
       self.outcomes_by_team[away_box['abbr']][k] += v
 
     # Read play-by-play info for slightly more complex stats like turnovers and
@@ -124,7 +129,7 @@ class Plays(object):
       for play in drive['plays'].values():
         desc = play['desc']
 
-        outcomes = parse_play(play, self.player_cache)
+        outcomes = parse_play(play, is_qb)
         for k, v in outcomes.items():
           if k == 'LONG':
             old = self.outcomes_by_team[play['posteam']][k]
