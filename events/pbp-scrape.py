@@ -189,7 +189,7 @@ class PlayerCache(object):
 def main():
   gameIds = open(args[0]).readlines()
 
-  player_cache = PlayerCache(db.reference('/playerpositions').get())
+  player_cache = PlayerCache(db.reference('/playerpositions').get() or {})
   plays = Plays(player_cache)
   for id in gameIds:
     id = id.strip()
