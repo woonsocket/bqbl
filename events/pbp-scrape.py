@@ -153,7 +153,7 @@ class Plays(object):
 
 class PlayerCache(object):
   PLAYER_POSITION_REGEX = re.compile(
-      r'<span class="player-number">#\d+ ([A-Z]*)</span>', flags=re.I)
+      r'<span class="player-number">#\d* ([A-Z]*)</span>', flags=re.I)
 
   def __init__(self, positions):
     self.positions = positions
