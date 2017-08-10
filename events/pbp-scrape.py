@@ -106,23 +106,27 @@ class Plays(object):
     self.player_cache = player_cache
 
   def process(self, game_id, raw):
-    data = json.loads(str(raw, 'utf-8'))
-    drives = data[game_id]['drives']
+    data = json.loads(str(raw, 'utf-8')).get(game_id)
+    if not data:
+      # Empty data file. Maybe the game hasn't started yet.
+      return
 
-    home_box = data[game_id]['home']
-    away_box = data[game_id]['away']
+    drives = data['drives']
+
+    home_box = data['home']
+    away_box = data['away']
     passers = (set(home_box['stats'].get('passing', {}).keys()) |
                set(away_box['stats'].get('passing', {}).keys()))
 
     def is_qb(pid):
       return pid in passers and self.player_cache.lookup_position(pid) == 'QB'
 
-    quarter = data[game_id]['qtr']
+    quarter = data['qtr']
     if quarter == 'Final':
       clock = 'Final'
     else:
       clock = '{time} - {quarter}'.format(
-          time=data[game_id]['clock'], quarter=ordinal(quarter))
+          time=data['clock'], quarter=ordinal(quarter))
     self.outcomes_by_team[home_box['abbr']]['CLOCK'] = clock
     self.outcomes_by_team[away_box['abbr']]['CLOCK'] = clock
 
