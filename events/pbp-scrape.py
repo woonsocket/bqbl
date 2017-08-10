@@ -3,7 +3,7 @@ import json
 import optparse
 import re
 import sys
-import urllib.request
+import urllib
 
 import firebase_admin
 from firebase_admin import credentials
@@ -185,6 +185,29 @@ class PlayerCache(object):
     return match.group(1).upper()
 
 
+def to_old_format(team, stats):
+  stats = collections.defaultdict(int, stats)
+  return {
+    'team': team,
+    'completions': stats['CMP'],
+    'attempts': stats['ATT'],
+    # Lump all the TDs into pass_tds. We never distinguished between pass/rush.
+    'pass_tds': stats['TD'],
+    'rush_tds': 0,
+    'interceptions_notd': stats['INT'] - stats['INT6'],
+    'interceptions_td': stats['INT6'],
+    'fumbles_lost_notd': stats['FUML'] - stats['FUM6'],
+    'fumbles_lost_td': stats['FUM6'],
+    'fumbles_kept': stats['FUM'] - stats['FUML'],
+    'pass_yards': stats['PASSYD'] + stats['SACKYD'],
+    'rush_yards': stats['RUSHYD'],
+    'sacks': stats['SACK'],
+    'sack_yards': -stats['SACKYD'],
+    'long_pass': stats['LONG'],
+    # Missing: 'safeties', 'game_losing_taint', 'benchings'
+    # Missing: 'game_time', 'boxscore_url', 'opponent'
+  }
+
 
 def main():
   gameIds = open(args[0]).readlines()
@@ -194,7 +217,13 @@ def main():
   for id in gameIds:
     id = id.strip()
     url = "http://www.nfl.com/liveupdate/game-center/%s/%s_gtd.json" % (id, id)
-    raw = urllib.request.urlopen("http://www.nfl.com/liveupdate/game-center/%s/%s_gtd.json" % (id, id)).read()
+    try:
+      raw = urllib.request.urlopen(url).read()
+    except urllib.error.HTTPError as e:
+      # TODO: Ignore 404s for games that haven't started yet.
+      print('error fetching {url}: {err}'.format(url=url, err=e),
+            file=sys.stderr)
+      continue
     plays.process(id, raw)
 
   if player_cache.new_keys:
@@ -209,6 +238,10 @@ def main():
 
     interception_ref = db.reference('/events/%s/%s/interception' % (options.year, options.week))
     interception_ref.set(plays.interceptions)
+
+    db.reference('/score/%s/%s' % (options.year, options.week)).update(
+        {team: to_old_format(team, stats)
+         for team, stats in plays.outcomes_by_team.items()})
   else:
     for f in plays.fumbles:
       print(f)
