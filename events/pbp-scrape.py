@@ -103,8 +103,6 @@ class Plays(object):
   def process(self, game_id, raw):
     data = json.loads(str(raw, 'utf-8'))
     drives = data[game_id]['drives']
-    # 5 is for overtime
-    quarters = {1: {}, 2: {}, 3:{}, 4:{}, 5:{}}
 
     home_box = data[game_id]['home']
     away_box = data[game_id]['away']
