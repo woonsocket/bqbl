@@ -133,7 +133,8 @@ class Plays(object):
                    set(away_box['stats'].get('passing', {}).keys()))
 
         def is_qb(pid):
-            return pid in passers and self.player_cache.lookup_position(pid) == 'QB'
+            return (pid in passers and
+                    self.player_cache.lookup_position(pid) == 'QB')
 
         quarter = data['qtr']
         if quarter == 'Final':
@@ -150,8 +151,8 @@ class Plays(object):
         for k, v in parse_box(away_box['stats'], is_qb).items():
             self.outcomes_by_team[away_box['abbr']][k] += v
 
-        # Read play-by-play info for slightly more complex stats like turnovers and
-        # sack yardage.
+        # Read play-by-play info for slightly more complex stats like turnovers
+        # and sack yardage.
         for drive_num, drive in drives.items():
             # skip junk in there about current drive
             if drive_num == 'crntdrv':
@@ -204,13 +205,14 @@ class PlayerCache(object):
         self.new_keys[player_id] = position
 
     def _read_from_web(self, player_id):
-        profile_bytes = urllib.request.urlopen(
-            'http://www.nfl.com/players/profile?id={id}'.format(id=player_id)).read()
+        url = 'http://www.nfl.com/players/profile?id={id}'.format(id=player_id)
+        profile_bytes = urllib.request.urlopen(url).read()
         profile = str(profile_bytes, 'utf-8')
         match = PlayerCache.PLAYER_POSITION_REGEX.search(profile)
         if not match:
-            # Sometimes a bogus player ID (e.g., '0') is used when a stat is credited
-            # to a whole team, or it's not clear which player was involved.
+            # Sometimes a bogus player ID (e.g., '0') is used when a stat is
+            # credited to a whole team, or it's not clear which player was
+            # involved.
             return 'UNKNOWN'
         return match.group(1).upper()
 
