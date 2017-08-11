@@ -493,7 +493,7 @@ bqbl.generateTeamScoreMarkup = function(score) {
       '<div class="team' + (score.isGameOver() ? '' : ' active') +
           '">',
       '  <div class="teamheader">',
-      '    <img class="teamlogo" src="images/' + score.teamName + '.png" ',
+      '    <img class="teamlogo" src="images/' + score.teamName + '.svg" ',
       '        width="48" height="32">',
       '    <span class="teamname">' + score.teamName + '</span>',
       '    <span class="teampoints">' + bqbl.numberToHtml(score.totalScore) +
