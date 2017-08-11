@@ -64,6 +64,19 @@ def parse_box(box, is_qb):
 
 
 def parse_play(play, is_qb):
+    """Parse a play and count BQBL-relevant events such as turnovers.
+
+    We count turnovers here, because we can get info about whether the turnover
+    led to a TD. And we count sacks because we have easy access to the sack
+    yardage.
+
+    We try to count safeties. Some cases are obvious (sacks), but some might
+    still require judgment calls (e.g., bad snap from the center).
+
+    Args:
+        play: JSON data for one play.
+        is_qb: Predicate that returns whether a player ID is a QB.
+    """
     offense_team = play['posteam']
     qb_stats = []
     def_stats = []
@@ -74,15 +87,15 @@ def parse_play(play, is_qb):
         else:
             def_stats.extend(player_stats)
     # http://www.nflgsis.com/gsis/documentation/Partners/StatIDs.html
-    # TODO(aerion): Check other stats, like safeties.
     for stat in qb_stats:
         sid = stat['statId']
         if sid in (15, 16):
             outcomes['LONG'] = max(outcomes['LONG'], stat.get('yards'))
         elif sid == 20:
             outcomes['SACK'] += 1
-            outcomes['SACKYD'] += stat.get(
-                'yards', 0)  # The value is negative.
+            outcomes['SACKYD'] += stat.get('yards', 0)  # Value is negative.
+            if any(filter(lambda s: s.get('statId') == 89, def_stats)):
+                outcomes['SAF'] += 1
         elif sid == 19:
             outcomes['INT'] += 1
             if any(filter(lambda s: s.get('statId') in (26, 28), def_stats)):
