@@ -14,7 +14,7 @@ _SCORES_URL = 'https://feeds.nfl.com/feeds-rs/scores.json'
 
 
 Game = collections.namedtuple(
-    'Game', ('home', 'hscore', 'away', 'ascore', 'start_time'))
+    'Game', ('home', 'hscore', 'away', 'ascore', 'start_time', 'is_over'))
 Game.__doc__ = """The score and schedule for a game.
 
 Attributes:
@@ -25,6 +25,7 @@ Attributes:
     away_team: The away team's score. None if the game hasn't started.
         Otherwise, an integer, such as 3.
     start_time: The start time of the game, as a datetime.datetime.
+    is_over: Whether the game is over.
 """
 
 
@@ -36,15 +37,18 @@ def parse_game_json(json_obj):
     if score:
         home_score = score['homeTeamScore']['pointTotal']
         away_score = score['visitorTeamScore']['pointTotal']
+        is_over = score['phase'] == 'FINAL'
     else:
         home_score = None
         away_score = None
+        is_over = False
     start_time = datetime.datetime.fromtimestamp(sched['isoTime'] / 1000)
     return Game(home=home_team,
                 away=away_team,
                 hscore=home_score,
                 ascore=away_score,
-                start_time=start_time)
+                start_time=start_time,
+                is_over=is_over)
 
 
 def main():
@@ -57,14 +61,14 @@ def main():
     for obj in data:
         games.append(parse_game_json(obj))
     for g in games:
-        delta = datetime.datetime.now() - g.start_time
-        if delta > datetime.timedelta(0):
-            print('{delta} ago: {ateam} {ascore} - {hteam} {hscore}'
-                  .format(delta=delta, ateam=g.away, ascore=g.ascore,
+        if g.is_over:
+            print('FINAL: {ateam} {ascore} - {hteam} {hscore}'
+                  .format(ateam=g.away, ascore=g.ascore,
                           hteam=g.home, hscore=g.hscore))
         else:
+            delta = g.start_time - datetime.datetime.now()
             print('in {delta}: {ateam} - {hteam}'
-                  .format(delta=-delta, ateam=g.away, hteam=g.home))
+                  .format(delta=delta, ateam=g.away, hteam=g.home))
 
 
 if __name__ == '__main__':
