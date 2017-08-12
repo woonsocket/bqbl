@@ -3,7 +3,8 @@ import json
 import optparse
 import re
 import sys
-import urllib
+import urllib.error
+import urllib.request
 
 import firebase_admin
 from firebase_admin import credentials
