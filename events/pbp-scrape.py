@@ -255,9 +255,9 @@ def main():
         try:
             raw = urllib.request.urlopen(url).read()
         except urllib.error.HTTPError as e:
-            # TODO: Ignore 404s for games that haven't started yet.
-            print('error fetching {url}: {err}'.format(url=url, err=e),
-                  file=sys.stderr)
+            if e.code != 404:
+                print('error fetching {url}: {err}'.format(url=url, err=e),
+                      file=sys.stderr)
             continue
         plays.process(id, raw)
 
