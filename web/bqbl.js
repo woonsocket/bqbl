@@ -13,11 +13,11 @@ goog.require('goog.Uri');
 bqbl.DEFAULT_SORT_ORDER = 'active,score';
 bqbl.DEFAULT_SCORE_MODE = 'proj';
 bqbl.MAX_WEEK_NUM = 17;
-bqbl.SEASON = '2016';
+bqbl.SEASON = '2017';
 
 // Set this to the start date of Week 1 of the current season. Typically a
 // Thursday, so that the week changes before Thursday Night Football each week.
-bqbl.SEASON_START = new Date(2016, 8, 8);  // September 8, 2016
+bqbl.SEASON_START = new Date(2017, 8, 7);  // September 7, 2017
 bqbl.ONE_WEEK = 1000 * 60 * 60 * 24 * 7;
 
 
@@ -493,7 +493,7 @@ bqbl.generateTeamScoreMarkup = function(score) {
       '<div class="team' + (score.isGameOver() ? '' : ' active') +
           '">',
       '  <div class="teamheader">',
-      '    <img class="teamlogo" src="images/' + score.teamName + '.png" ',
+      '    <img class="teamlogo" src="images/' + score.teamName + '.svg" ',
       '        width="48" height="32">',
       '    <span class="teamname">' + score.teamName + '</span>',
       '    <span class="teampoints">' + bqbl.numberToHtml(score.totalScore) +
