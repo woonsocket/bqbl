@@ -7,6 +7,7 @@ decide which box scores to refresh next.
 import collections
 import datetime
 import json
+import sys
 import urllib.request
 
 
@@ -15,16 +16,21 @@ _SCORES_URL = 'https://feeds.nfl.com/feeds-rs/scores.json'
 
 Game = collections.namedtuple(
     'Game',
-    ('home', 'hscore', 'away', 'ascore', 'start_time', 'clock'))
+    ('id', 'home', 'hscore', 'away', 'ascore', 'poss', 'start_time', 'clock',
+     'is_over'))
 Game.__doc__ = """The score and schedule for a game.
 
 Attributes:
-    home_team: The home team abbreviation, e.g., 'ATL'.
-    away_team: The away team abbreviation, e.g., 'NE'.
-    home_score: The home team's score. None if the game hasn't started.
+    id: The game ID.
+    home: The home team abbreviation, e.g., 'ATL'.
+    away: The away team abbreviation, e.g., 'NE'.
+    hscore: The home team's score. None if the game hasn't started.
         Otherwise, an integer, such as 28.
-    away_team: The away team's score. None if the game hasn't started.
+    ascore: The away team's score. None if the game hasn't started.
         Otherwise, an integer, such as 3.
+    poss: The team that currently has possession. This is either the home team,
+        the away team, or the empty string if nobody has possession (the game is
+        over, it's halftime, etc.).
     start_time: The start time of the game, as a datetime.datetime.
     clock: Number of seconds elapsed on the game clock since the start of the
         game. 0 if the game hasn't started. This value is not well-defined if
@@ -36,23 +42,28 @@ Attributes:
 def parse_game_json(json_obj):
     sched = json_obj.get('gameSchedule')
     score = json_obj.get('score')
+    game_id = sched['gameId']
     home_team = sched['homeTeamAbbr']
     away_team = sched['visitorTeamAbbr']
     if score:
         home_score = score['homeTeamScore']['pointTotal']
         away_score = score['visitorTeamScore']['pointTotal']
+        poss = score['possessionTeamAbbr'] or ''
         clock = parse_game_clock(score['phase'], score['time'])
         is_over = score['phase'].upper() == 'FINAL'
     else:
         home_score = None
         away_score = None
+        poss = ''
         clock = 0
         is_over = False
     start_time = datetime.datetime.fromtimestamp(sched['isoTime'] / 1000)
-    return Game(home=home_team,
+    return Game(id=game_id,
+                home=home_team,
                 away=away_team,
                 hscore=home_score,
                 ascore=away_score,
+                poss=poss,
                 start_time=start_time,
                 clock=clock,
                 is_over=is_over)
@@ -97,25 +108,47 @@ def parse_game_clock(phase, clock):
     return qnum * 900 - clock_secs
 
 
-def main():
-    # TODO: Get rid of this and make this module actually do something.
-    raw = urllib.request.urlopen(_SCORES_URL).read()
+def fetch(url=_SCORES_URL):
+    """Get line scores for whatever the current week is.
+
+    Returns:
+        A dict mapping game IDs to Games. Each game's ID is unique, and is
+        constant between fetches, so you can compare Games fetched at different
+        times.
+    """
+    raw = urllib.request.urlopen(url).read()
     data = json.loads(str(raw, 'utf-8')).get('gameScores')
     if not data:
-        return
-    games = []
+        return {}
+    games = {}
     for obj in data:
-        games.append(parse_game_json(obj))
-    for g in games:
-        if g.is_over:
-            print('FINAL: {ateam} {ascore} - {hteam} {hscore}'
-                  .format(ateam=g.away, ascore=g.ascore,
-                          hteam=g.home, hscore=g.hscore))
-        else:
-            delta = g.start_time - datetime.datetime.now()
-            print('in {delta}: {ateam} - {hteam}'
-                  .format(delta=delta, ateam=g.away, hteam=g.home))
+        game = parse_game_json(obj)
+        games[game.id] = game
+    return games
 
 
-if __name__ == '__main__':
-    main()
+def compare(old_games, new_games):
+    """Find games that have changed in an "interesting" way.
+
+    We consider it interesting if the game's score changed, if possession
+    changed, or if the game has ended.
+
+    Args:
+        old_games: A dict that maps game IDs to Games.
+        new_games: A dict that maps game IDs to Games.
+    Returns:
+        A list of interesting game IDs.
+    """
+    changed_ids = set()
+    for new_id, new_game in new_games.items():
+        old_game = old_games.get(new_id)
+        if not old_game:
+            changed_ids.add(new_id)
+        elif (old_game.ascore != new_game.ascore or
+            old_game.hscore != new_game.hscore):
+            changed_ids.add(new_id)
+        elif old_game.poss != new_game.poss:
+            changed_ids.add(new_id)
+        elif not old_game.is_over and new_game.is_over:
+            changed_ids.add(new_id)
+    return changed_ids
