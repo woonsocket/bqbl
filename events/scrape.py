@@ -11,14 +11,6 @@ from firebase_admin import credentials
 from firebase_admin import db
 
 
-cred = credentials.Certificate('BQBL-2c621a7cef1f.json')
-firebase_admin.initialize_app(cred, {
-    'databaseURL': 'https://bqbl-591f3.firebaseio.com/',
-    'databaseAuthVariableOverride': {
-        'uid': 'score-scraper',
-    },
-})
-
 parser = optparse.OptionParser(
     usage=("Usage: %prog [options] <file with list of NFL game IDs> "))
 parser.add_option("-f", "--firebase", dest="firebase", default=False,
@@ -31,10 +23,15 @@ parser.add_option("-y", "--year", dest="year",
 parser.add_option("-d", "--dump", dest="dump", action="store_true",
                   help="Dump data?")
 
-options, args = parser.parse_args()
-if len(args) < 1:
-    parser.print_usage()
-    sys.exit(1)
+
+def init_firebase():
+    cred = credentials.Certificate('BQBL-2c621a7cef1f.json')
+    firebase_admin.initialize_app(cred, {
+        'databaseURL': 'https://bqbl-591f3.firebaseio.com/',
+        'databaseAuthVariableOverride': {
+            'uid': 'score-scraper',
+        },
+    })
 
 
 def ordinal(n):
@@ -247,6 +244,13 @@ def to_old_format(team, stats):
 
 
 def main():
+    options, args = parser.parse_args()
+    if len(args) < 1:
+        parser.print_usage()
+        sys.exit(1)
+
+    init_firebase()
+
     gameIds = open(args[0]).readlines()
 
     player_cache = PlayerCache(db.reference('/playerpositions').get() or {})
@@ -292,4 +296,6 @@ def main():
             print(i)
         print(json.dumps(plays.outcomes_by_team))
 
-main()
+
+if __name__ == '__main__':
+    main()
