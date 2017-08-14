@@ -100,6 +100,8 @@ def parse_play(play, is_qb):
             outcomes['INT'] += 1
             if any(filter(lambda s: s.get('statId') in (26, 28), def_stats)):
                 outcomes['INT6'] += 1
+                if play['qtr'] > 4:
+                    outcomes['INT6OT'] += 1
         elif sid in (52, 53):
             outcomes['FUM'] += 1
         elif sid == 106:
@@ -228,7 +230,7 @@ def to_old_format(team, stats):
       'pass_tds': stats['TD'],
       'rush_tds': 0,
       'interceptions_notd': stats['INT'] - stats['INT6'],
-      'interceptions_td': stats['INT6'],
+      'interceptions_td': stats['INT6'] - stats['INT6OT'],
       'fumbles_lost_notd': stats['FUML'] - stats['FUM6'],
       'fumbles_lost_td': stats['FUM6'],
       'fumbles_kept': stats['FUM'] - stats['FUML'],
@@ -239,6 +241,7 @@ def to_old_format(team, stats):
       'long_pass': stats['LONG'],
       'game_time': stats['CLOCK'],
       'safeties': stats['SAF'],
+      'game_losing_taint': stats['INT6OT'],
       # Missing: 'safeties', 'game_losing_taint', 'benchings'
       # Missing: 'boxscore_url', 'opponent'
     }
