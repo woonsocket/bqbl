@@ -14,7 +14,8 @@ _SCORES_URL = 'https://feeds.nfl.com/feeds-rs/scores.json'
 
 
 Game = collections.namedtuple(
-    'Game', ('home', 'hscore', 'away', 'ascore', 'start_time', 'is_over'))
+    'Game',
+    ('home', 'hscore', 'away', 'ascore', 'start_time', 'clock'))
 Game.__doc__ = """The score and schedule for a game.
 
 Attributes:
@@ -25,7 +26,10 @@ Attributes:
     away_team: The away team's score. None if the game hasn't started.
         Otherwise, an integer, such as 3.
     start_time: The start time of the game, as a datetime.datetime.
-    is_over: Whether the game is over.
+    clock: Number of seconds elapsed on the game clock since the start of the
+        game. 0 if the game hasn't started. This value is not well-defined if
+        the game is over. Check is_over instead.
+    is_over: Whether this game is over.
 """
 
 
@@ -37,10 +41,12 @@ def parse_game_json(json_obj):
     if score:
         home_score = score['homeTeamScore']['pointTotal']
         away_score = score['visitorTeamScore']['pointTotal']
-        is_over = score['phase'] == 'FINAL'
+        clock = parse_game_clock(score['phase'], score['time'])
+        is_over = score['phase'].upper() == 'FINAL'
     else:
         home_score = None
         away_score = None
+        clock = 0
         is_over = False
     start_time = datetime.datetime.fromtimestamp(sched['isoTime'] / 1000)
     return Game(home=home_team,
@@ -48,7 +54,47 @@ def parse_game_json(json_obj):
                 hscore=home_score,
                 ascore=away_score,
                 start_time=start_time,
+                clock=clock,
                 is_over=is_over)
+
+
+def parse_game_clock(phase, clock):
+    """Parses the game clock.
+
+    Args:
+        phase: The phase of the game, e.g., 'Q1', 'Q3', 'FINAL'. Not sure what
+            overtime is, but it's probably 'OT'.
+        clock: The current game clock, as a string, e.g., '03:28'.
+    Returns:
+        The number of seconds elapsed on the game clock since the start of the
+        game. For example, 920 means the clock shows 14:40 in the 2nd quarter.
+        If the game is over, returns some large value.
+    """
+    # TODO: Find out what the phase is for overtime. Also, whether overtime
+    # finals are shown differently ('F/OT'?)
+    if phase.upper() == 'FINAL':
+        # Larger than any regulation game (5 quarters at most).
+        return 5 * 900 + 1
+    if phase.upper() == 'HALFTIME':
+        return 1800
+    if phase.upper() in ('Q1', 'Q2', 'Q3', 'Q4'):
+        qnum = int(phase[1])
+    elif phase.upper() == 'OT':
+        qnum = 5
+    else:
+        # Unknown phase.
+        return 0
+    if ':' not in clock:
+        # Unknown clock format.
+        return 0
+    try:
+        mm_str, ss_str = clock.split(':')
+        mm = int(mm_str)
+        ss = int(ss_str)
+    except ValueError:
+        return 0
+    clock_secs = 60 * mm + ss
+    return qnum * 900 - clock_secs
 
 
 def main():
