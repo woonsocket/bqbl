@@ -238,6 +238,7 @@ def to_old_format(team, stats):
       'sack_yards': -stats['SACKYD'],
       'long_pass': stats['LONG'],
       'game_time': stats['CLOCK'],
+      'safeties': stats['SAF'],
       # Missing: 'safeties', 'game_losing_taint', 'benchings'
       # Missing: 'boxscore_url', 'opponent'
     }
