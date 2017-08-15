@@ -1,6 +1,8 @@
-sandbox/*
-*~
-\#*
-.#*
 *.txt
+*~
+.#*
+\#*
+__pycache__
 events/BQBL-2c621a7cef1f.json
+private-keys
+sandbox/*
