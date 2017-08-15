@@ -98,7 +98,9 @@ def parse_play(game_id, play_id, play, is_qb, events, notifier):
             def_stats.extend(player_stats)
     # http://www.nflgsis.com/gsis/documentation/Partners/StatIDs.html
     for stat in qb_stats:
-        sid = stat['statId']
+        sid = stat.get('statId')
+        player = stat.get('playerName')
+        team = stat.get('clubcode')
         if sid in (15, 16):
             outcomes['LONG'] = max(outcomes['LONG'], stat.get('yards'))
         elif sid == 20:
@@ -106,39 +108,41 @@ def parse_play(game_id, play_id, play, is_qb, events, notifier):
             outcomes['SACKYD'] += stat.get('yards', 0)  # Value is negative.
             if any(filter(lambda s: s.get('statId') == 89, def_stats)):
                 outcomes['SAF'] += 1
-                events.add_safety(game_id, play_id, play)
+                is_new = events.add_safety(game_id, play_id, play)
+                if is_new:
+                    notifier.notify(slack.EventType.SAFETY, player, team)
         elif sid == 19:
             outcomes['INT'] += 1
-            opp_td = False
-            if any(filter(lambda s: s.get('statId') in (26, 28), def_stats)):
+            opp_td = any(
+                filter(lambda s: s.get('statId') in (26, 28), def_stats))
+            if opp_td:
                 outcomes['INT6'] += 1
-                opp_td = True
                 if play['qtr'] > 4:
                     outcomes['INT6OT'] += 1
-            events.add_interception(game_id, play_id, play, opp_td)
-            if opp_td:
-                # TODO(aerion): Make this only notify if the event is new.
-                notifier.notify(slack.EventType.INT_TD, stat.get('playerName'),
-                                stat.get('clubcode'))
+            is_new = events.add_interception(game_id, play_id, play, opp_td)
+            if opp_td and is_new:
+                notifier.notify(slack.EventType.INT_TD, player, team)
         elif sid in (52, 53):
             outcomes['FUM'] += 1
         elif sid == 106:
             outcomes['FUML'] += 1
-            opp_td = False
-            if any(filter(lambda s: s.get('statId') in (60, 62), def_stats)):
+            opp_td = any(
+                filter(lambda s: s.get('statId') in (60, 62), def_stats))
+            if opp_td:
                 outcomes['FUM6'] += 1
-                opp_td = True
-            events.add_fumble(game_id, play_id, play, opp_td)
+            is_new = events.add_fumble(game_id, play_id, play, opp_td)
+            if opp_td and is_new:
+                notifier.notify(slack.EventType.FUM_TD, player, team)
     return outcomes
 
 
 class Events(object):
     """Data object for holding "interesting" events."""
 
-    def __init__(self):
-        self.fumbles = {}
-        self.safeties = {}
-        self.interceptions = {}
+    def __init__(self, fumbles, safeties, interceptions):
+        self.fumbles = fumbles
+        self.safeties = safeties
+        self.interceptions = interceptions
 
     @staticmethod
     def _id(game_id, play_id):
@@ -163,10 +167,16 @@ class Events(object):
                 distinct integer ID.
             play: A play dict, decoded from JSON.
             is_opponent_td: Whether the fumble was returned for a touchdown.
+        Returns:
+            Whether this event is new (i.e., the play ID was not previously
+            known to this Events object).
         """
         summary = Events._summary(play)
         summary['td'] = is_opponent_td
-        self.fumbles[Events._id(game_id, play_id)] = summary
+        id = Events._id(game_id, play_id)
+        is_new = id not in self.fumbles
+        self.fumbles[id] = summary
+        return is_new
 
     def add_interception(self, game_id, play_id, play, is_opponent_td):
         """Adds an interception event.
@@ -178,10 +188,16 @@ class Events(object):
                 distinct integer ID.
             play: A play dict, decoded from JSON.
             is_opponent_td: Whether the fumble was returned for a touchdown.
+        Returns:
+            Whether this event is new (i.e., the play ID was not previously
+            known to this Events object).
         """
         summary = Events._summary(play)
         summary['td'] = is_opponent_td
-        self.interceptions[Events._id(game_id, play_id)] = summary
+        id = Events._id(game_id, play_id)
+        is_new = id not in self.interceptions
+        self.interceptions[id] = summary
+        return is_new
 
     def add_safety(self, game_id, play_id, play):
         """Adds a safety event.
@@ -192,15 +208,30 @@ class Events(object):
                 represented as a key-value pairs, with play's key being a
                 distinct integer ID.
             play: A play dict, decoded from JSON.
+        Returns:
+            Whether this event is new (i.e., the play ID was not previously
+            known to this Events object).
         """
         summary = Events._summary(play)
+        id = Events._id(game_id, play_id)
+        is_new = id not in self.safeties
         self.safeties[Events._id(game_id, play_id)] = summary
+        return is_new
+
+    @staticmethod
+    def create_from_db(year, week):
+        ref = db.reference('/events/{y}/{w}'.format(y=year, w=week))
+        db_events = ref.get() or {}
+        return Events(
+            fumbles=db_events.get('fumbles', {}),
+            safeties=db_events.get('safeties', {}),
+            interceptions=db_events.get('interceptions', {}))
 
 
 class Plays(object):
 
-    def __init__(self, player_cache, notifier):
-        self.events = Events()
+    def __init__(self, player_cache, events, notifier):
+        self.events = events
         self.outcomes_by_team = collections.defaultdict(
             lambda: collections.defaultdict(int))
         self.player_cache = player_cache
@@ -344,7 +375,8 @@ def main():
     gameIds = open(args[0]).readlines()
 
     player_cache = PlayerCache(db.reference('/playerpositions').get() or {})
-    plays = Plays(player_cache, notifier)
+    events = Events.create_from_db(options.year, options.week)
+    plays = Plays(player_cache, events, notifier)
     for id in gameIds:
         id = id.strip()
         url = "http://www.nfl.com/liveupdate/game-center/%s/%s_gtd.json" % (
