@@ -1,4 +1,5 @@
 import collections
+import itertools
 import json
 import optparse
 import re
@@ -111,12 +112,75 @@ def parse_play(play, is_qb):
     return outcomes
 
 
+class Events(object):
+    """Data object for holding "interesting" events."""
+
+    def __init__(self):
+        self.fumbles = {}
+        self.safeties = {}
+        self.interceptions = {}
+
+    @staticmethod
+    def _id(game_id, play_id):
+        return '{g}-{p}'.format(g=game_id, p=play_id)
+
+    @staticmethod
+    def _summary(play):
+        return {
+            'desc': play['desc'],
+            'team': play['posteam'],
+            'quarter': play['qtr'],
+            'time': play['time'],
+        }
+
+    def add_fumble(self, game_id, play_id, play, is_opponent_td):
+        """Add a fumble event.
+
+        Args:
+            game_id: ID for this game. Looks like '2016122406'.
+            play_id: The ID of the play. In the play-by-play data, each drive is
+                represented as a key-value pairs, with play's key being a
+                distinct integer ID.
+            play: A play dict, decoded from JSON.
+            is_opponent_td: Whether the fumble was returned for a touchdown.
+        """
+        summary = Events._summary(play)
+        summary['td'] = is_opponent_td
+        self.fumbles[Events._id(game_id, play_id)] = summary
+
+    def add_interception(self, game_id, play_id, play, is_opponent_td):
+        """Adds an interception event.
+
+        Args:
+            game_id: ID for this game. Looks like '2016122406'.
+            play_id: The ID of the play. In the play-by-play data, each drive is
+                represented as a key-value pairs, with play's key being a
+                distinct integer ID.
+            play: A play dict, decoded from JSON.
+            is_opponent_td: Whether the fumble was returned for a touchdown.
+        """
+        summary = Events._summary(play)
+        summary['td'] = is_opponent_td
+        self.interceptions[Events._id(game_id, play_id)] = summary
+
+    def add_safety(self, game_id, play_id, play):
+        """Adds a safety event.
+
+        Args:
+            game_id: ID for this game. Looks like '2016122406'.
+            play_id: The ID of the play. In the play-by-play data, each drive is
+                represented as a key-value pairs, with play's key being a
+                distinct integer ID.
+            play: A play dict, decoded from JSON.
+        """
+        summary = Events._summary(play)
+        self.safeties[Events._id(game_id, play_id)] = summary
+
+
 class Plays(object):
 
     def __init__(self, player_cache):
-        self.fumbles = []
-        self.safeties = []
-        self.interceptions = []
+        self.events = Events()
         self.outcomes_by_team = collections.defaultdict(
             lambda: collections.defaultdict(int))
         self.player_cache = player_cache
@@ -159,7 +223,7 @@ class Plays(object):
             # skip junk in there about current drive
             if drive_num == 'crntdrv':
                 continue
-            for play in drive['plays'].values():
+            for play_id, play in drive['plays'].items():
                 desc = play['desc']
 
                 outcomes = parse_play(play, is_qb)
@@ -170,18 +234,16 @@ class Plays(object):
                     else:
                         self.outcomes_by_team[play['posteam']][k] += v
 
-                summary = {
-                    'desc': desc,
-                    'team': play['posteam'],
-                    'quarter': play['qtr'],
-                    'time': play['time'],
-                }
-                if "SAFETY" in desc:
-                    self.safeties.append(summary)
-                elif "FUMBLE" in desc and "TOUCHDOWN" in desc:
-                    self.fumbles.append(summary)
-                if "INTERCEPT" in desc:
-                    self.interceptions.append(summary)
+                if 'SAFETY' in desc:
+                    self.events.add_safety(game_id, play_id, play)
+                elif 'FUMBLE' in desc:
+                    # TODO: Just checking for 'TOUCHDOWN' isn't 100% accurate
+                    # (the QB's teammate could have recovered it).
+                    self.events.add_fumble(
+                        game_id, play_id, play, 'TOUCHDOWN' in desc)
+                if 'INTERCEPT' in desc:
+                    self.events.add_interception(
+                        game_id, play_id, play, 'TOUCHDOWN' in desc)
 
 
 class PlayerCache(object):
@@ -278,26 +340,26 @@ def main():
     if options.firebase:
         fumble_ref = db.reference(
             '/events/%s/%s/fumbles' % (options.year, options.week))
-        fumble_ref.set(plays.fumbles)
+        fumble_ref.set(plays.events.fumbles)
 
         safety_ref = db.reference(
             '/events/%s/%s/safeties' % (options.year, options.week))
-        safety_ref.set(plays.safeties)
+        safety_ref.set(plays.events.safeties)
 
         interception_ref = db.reference(
             '/events/%s/%s/interceptions' % (options.year, options.week))
-        interception_ref.set(plays.interceptions)
+        interception_ref.set(plays.events.interceptions)
 
         db.reference('/score/%s/%s' % (options.year, options.week)).update(
             {team: to_old_format(team, stats)
              for team, stats in plays.outcomes_by_team.items()})
     else:
-        for f in plays.fumbles:
-            print(f)
-        for s in plays.safeties:
-            print(s)
-        for i in plays.interceptions:
-            print(i)
+        all_events = itertools.chain(
+            plays.events.fumbles.items(),
+            plays.events.safeties.items(),
+            plays.events.interceptions.items())
+        for id, ev in all_events:
+            print('{0}: {1}'.format(id, ev))
         print(json.dumps(plays.outcomes_by_team))
 
 
