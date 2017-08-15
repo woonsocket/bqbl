@@ -285,7 +285,7 @@ def main():
         safety_ref.set(plays.safeties)
 
         interception_ref = db.reference(
-            '/events/%s/%s/interception' % (options.year, options.week))
+            '/events/%s/%s/interceptions' % (options.year, options.week))
         interception_ref.set(plays.interceptions)
 
         db.reference('/score/%s/%s' % (options.year, options.week)).update(
