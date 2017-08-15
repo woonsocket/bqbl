@@ -1,0 +1,14 @@
+<nav>
+    <a routerLink="/newuser" routerLinkActive="active">New User</a>
+    <a routerLink="/" routerLinkActive="active">Base</a>
+</nav>
+
+
+<span>{{displayName}}</span>
+
+  <button (click)="login()">Login</button>
+  <button (click)="logout()">Logout</button>
+  <button (click)="test()">test</button>
+  <button (click)="test2()">test2</button>
+
+<router-outlet></router-outlet>

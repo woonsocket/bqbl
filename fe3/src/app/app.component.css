@@ -1,0 +1,12 @@
+.selected {
+	background:#b3d4fc;
+}
+
+li {
+	display: block;
+	padding:10px;
+}
+
+li span{
+	padding:10px;
+}

@@ -1,0 +1,13 @@
+<ul>
+<li *ngFor="let week of (userData|async)?.weeks; let i = index">
+    <span>{{week.id}}</span>
+    <span *ngFor="let team of week.teams" 
+    [class.selected]="team.selected">
+      <span (click)="onSelect(week, team, i)">
+        {{team.name}}
+      </span>
+    </span> 
+  </li>
+</ul>
+
+<input type="button" name="write" (click)="onReset()" value="Reset!!">
