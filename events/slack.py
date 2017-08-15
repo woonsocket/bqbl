@@ -24,26 +24,29 @@ class Notifier(object):
         self.url = webhook_url
         self.channel = channel
 
-    def notify(self, event_type, player_name, team):
+    def notify(self, event_type, player_name, team, description):
         """Sends a message to Slack.
 
         Args:
             event_type: A slack.EventType.
             player_name: The QB's name.
             team: The QB's team abbreviation.
+            description: Description of the play.
         """
         if event_type == EventType.INT_TD:
-            desc = 'threw a pick-6'
+            what = 'threw a pick-6'
         elif event_type == EventType.FUM_TD:
-            desc = 'lost a fumble for a TD'
+            what = 'lost a fumble for a TD'
         elif event_type == EventType.SAFETY:
-            desc = 'gave up a safety'
+            what = 'gave up a safety'
         else:
             return
 
         payload = {
-            'text' : ('{qb} ({team}) {desc}'
-                      .format(qb=player_name, team=team, desc=desc)),
+            'text' : ('{qb} ({team}) {what}\n'
+                      '{desc}'
+                      .format(qb=player_name, team=team, what=what,
+                              desc=description)),
             'channel': self.channel,
         }
         requests.post(self.url, json=payload)

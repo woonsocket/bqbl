@@ -101,6 +101,7 @@ def parse_play(game_id, play_id, play, is_qb, events, notifier):
         sid = stat.get('statId')
         player = stat.get('playerName')
         team = stat.get('clubcode')
+        desc = play['desc']
         if sid in (15, 16):
             outcomes['LONG'] = max(outcomes['LONG'], stat.get('yards'))
         elif sid == 20:
@@ -110,7 +111,7 @@ def parse_play(game_id, play_id, play, is_qb, events, notifier):
                 outcomes['SAF'] += 1
                 is_new = events.add_safety(game_id, play_id, play)
                 if is_new:
-                    notifier.notify(slack.EventType.SAFETY, player, team)
+                    notifier.notify(slack.EventType.SAFETY, player, team, desc)
         elif sid == 19:
             outcomes['INT'] += 1
             opp_td = any(
@@ -121,7 +122,7 @@ def parse_play(game_id, play_id, play, is_qb, events, notifier):
                     outcomes['INT6OT'] += 1
             is_new = events.add_interception(game_id, play_id, play, opp_td)
             if opp_td and is_new:
-                notifier.notify(slack.EventType.INT_TD, player, team)
+                notifier.notify(slack.EventType.INT_TD, player, team, desc)
         elif sid in (52, 53):
             outcomes['FUM'] += 1
         elif sid == 106:
@@ -132,7 +133,7 @@ def parse_play(game_id, play_id, play, is_qb, events, notifier):
                 outcomes['FUM6'] += 1
             is_new = events.add_fumble(game_id, play_id, play, opp_td)
             if opp_td and is_new:
-                notifier.notify(slack.EventType.FUM_TD, player, team)
+                notifier.notify(slack.EventType.FUM_TD, player, team, desc)
     return outcomes
 
 
