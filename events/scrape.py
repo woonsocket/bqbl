@@ -64,7 +64,7 @@ def parse_box(box, is_qb):
     return outcomes
 
 
-def parse_play(play, is_qb):
+def parse_play(game_id, play_id, play, is_qb, events):
     """Parse a play and count BQBL-relevant events such as turnovers.
 
     We count turnovers here, because we can get info about whether the turnover
@@ -75,8 +75,11 @@ def parse_play(play, is_qb):
     still require judgment calls (e.g., bad snap from the center).
 
     Args:
+        game_id: The ID of the game this play belongs to.
+        play_id: The ID of the play.
         play: JSON data for one play.
         is_qb: Predicate that returns whether a player ID is a QB.
+        events: An Events object in which to record turnovers.
     """
     offense_team = play['posteam']
     qb_stats = []
@@ -97,18 +100,25 @@ def parse_play(play, is_qb):
             outcomes['SACKYD'] += stat.get('yards', 0)  # Value is negative.
             if any(filter(lambda s: s.get('statId') == 89, def_stats)):
                 outcomes['SAF'] += 1
+                events.add_safety(game_id, play_id, play)
         elif sid == 19:
             outcomes['INT'] += 1
+            opp_td = False
             if any(filter(lambda s: s.get('statId') in (26, 28), def_stats)):
                 outcomes['INT6'] += 1
+                opp_td = True
                 if play['qtr'] > 4:
                     outcomes['INT6OT'] += 1
+            events.add_interception(game_id, play_id, play, opp_td)
         elif sid in (52, 53):
             outcomes['FUM'] += 1
         elif sid == 106:
             outcomes['FUML'] += 1
+            opp_td = False
             if any(filter(lambda s: s.get('statId') in (60, 62), def_stats)):
                 outcomes['FUM6'] += 1
+                opp_td = True
+            events.add_fumble(game_id, play_id, play, opp_td)
     return outcomes
 
 
@@ -226,24 +236,14 @@ class Plays(object):
             for play_id, play in drive['plays'].items():
                 desc = play['desc']
 
-                outcomes = parse_play(play, is_qb)
+                outcomes = parse_play(
+                    game_id, play_id, play, is_qb, self.events)
                 for k, v in outcomes.items():
                     if k == 'LONG':
                         old = self.outcomes_by_team[play['posteam']][k]
                         self.outcomes_by_team[play['posteam']][k] = max(old, v)
                     else:
                         self.outcomes_by_team[play['posteam']][k] += v
-
-                if 'SAFETY' in desc:
-                    self.events.add_safety(game_id, play_id, play)
-                elif 'FUMBLE' in desc:
-                    # TODO: Just checking for 'TOUCHDOWN' isn't 100% accurate
-                    # (the QB's teammate could have recovered it).
-                    self.events.add_fumble(
-                        game_id, play_id, play, 'TOUCHDOWN' in desc)
-                if 'INTERCEPT' in desc:
-                    self.events.add_interception(
-                        game_id, play_id, play, 'TOUCHDOWN' in desc)
 
 
 class PlayerCache(object):
