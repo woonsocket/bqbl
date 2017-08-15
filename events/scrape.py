@@ -3,9 +3,8 @@ import itertools
 import json
 import optparse
 import re
+import requests
 import sys
-import urllib.error
-import urllib.request
 
 import firebase_admin
 from firebase_admin import credentials
@@ -205,8 +204,8 @@ class Plays(object):
         self.player_cache = player_cache
         self.notifier = notifier
 
-    def process(self, game_id, raw):
-        data = json.loads(str(raw, 'utf-8')).get(game_id)
+    def process(self, game_id, data):
+        data = data.get(game_id)
         if not data:
             # Empty data file. Maybe the game hasn't started yet.
             return
@@ -280,8 +279,7 @@ class PlayerCache(object):
 
     def _read_from_web(self, player_id):
         url = 'http://www.nfl.com/players/profile?id={id}'.format(id=player_id)
-        profile_bytes = urllib.request.urlopen(url).read()
-        profile = str(profile_bytes, 'utf-8')
+        profile = requests.get(url).text
         match = PlayerCache.PLAYER_POSITION_REGEX.search(profile)
         if not match:
             # Sometimes a bogus player ID (e.g., '0') is used when a stat is
@@ -343,14 +341,13 @@ def main():
         id = id.strip()
         url = "http://www.nfl.com/liveupdate/game-center/%s/%s_gtd.json" % (
             id, id)
-        try:
-            raw = urllib.request.urlopen(url).read()
-        except urllib.error.HTTPError as e:
-            if e.code != 404:
+        resp = requests.get(url)
+        if resp.status_code >= 400:
+            if resp.status_code != 404:
                 print('error fetching {url}: {err}'.format(url=url, err=e),
                       file=sys.stderr)
             continue
-        plays.process(id, raw)
+        plays.process(id, resp.json())
 
     if player_cache.new_keys:
         db.reference('/playerpositions').update(player_cache.new_keys)
