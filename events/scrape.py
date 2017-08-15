@@ -11,6 +11,8 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
 
+import slack
+
 
 parser = optparse.OptionParser(
     usage=("Usage: %prog [options] <file with list of NFL game IDs> "))
@@ -23,6 +25,8 @@ parser.add_option("-y", "--year", dest="year",
                   help="Year")
 parser.add_option("-d", "--dump", dest="dump", action="store_true",
                   help="Dump data?")
+parser.add_option("--slack_url_file", dest="slack_url_file",
+                  help="Slack webhook URL to which to post major scoring events")
 
 
 def init_firebase():
@@ -64,7 +68,7 @@ def parse_box(box, is_qb):
     return outcomes
 
 
-def parse_play(game_id, play_id, play, is_qb, events):
+def parse_play(game_id, play_id, play, is_qb, events, notifier):
     """Parse a play and count BQBL-relevant events such as turnovers.
 
     We count turnovers here, because we can get info about whether the turnover
@@ -80,6 +84,7 @@ def parse_play(game_id, play_id, play, is_qb, events):
         play: JSON data for one play.
         is_qb: Predicate that returns whether a player ID is a QB.
         events: An Events object in which to record turnovers.
+        notifier: A slack.Notifier.
     """
     offense_team = play['posteam']
     qb_stats = []
@@ -110,6 +115,10 @@ def parse_play(game_id, play_id, play, is_qb, events):
                 if play['qtr'] > 4:
                     outcomes['INT6OT'] += 1
             events.add_interception(game_id, play_id, play, opp_td)
+            if opp_td:
+                # TODO(aerion): Make this only notify if the event is new.
+                notifier.notify(slack.EventType.INT_TD, stat.get('playerName'),
+                                stat.get('clubcode'))
         elif sid in (52, 53):
             outcomes['FUM'] += 1
         elif sid == 106:
@@ -189,11 +198,12 @@ class Events(object):
 
 class Plays(object):
 
-    def __init__(self, player_cache):
+    def __init__(self, player_cache, notifier):
         self.events = Events()
         self.outcomes_by_team = collections.defaultdict(
             lambda: collections.defaultdict(int))
         self.player_cache = player_cache
+        self.notifier = notifier
 
     def process(self, game_id, raw):
         data = json.loads(str(raw, 'utf-8')).get(game_id)
@@ -237,7 +247,7 @@ class Plays(object):
                 desc = play['desc']
 
                 outcomes = parse_play(
-                    game_id, play_id, play, is_qb, self.events)
+                    game_id, play_id, play, is_qb, self.events, self.notifier)
                 for k, v in outcomes.items():
                     if k == 'LONG':
                         old = self.outcomes_by_team[play['posteam']][k]
@@ -316,11 +326,19 @@ def main():
         sys.exit(1)
 
     init_firebase()
+    slack_url = ''
+    try:
+        if options.slack_url_file:
+            with open(options.slack_url_file) as f:
+                slack_url = f.read().strip()
+    except OSError:
+        pass
+    notifier = slack.Notifier(slack_url) if slack_url else slack.NoOpNotifier()
 
     gameIds = open(args[0]).readlines()
 
     player_cache = PlayerCache(db.reference('/playerpositions').get() or {})
-    plays = Plays(player_cache)
+    plays = Plays(player_cache, notifier)
     for id in gameIds:
         id = id.strip()
         url = "http://www.nfl.com/liveupdate/game-center/%s/%s_gtd.json" % (
