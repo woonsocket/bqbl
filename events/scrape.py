@@ -26,8 +26,8 @@ parser.add_option("-d", "--dump", dest="dump", action="store_true",
                   help="Dump data?")
 parser.add_option("--firebase_creds", dest="firebase_cred_file",
                   help="File containing Firebase service account credentials")
-parser.add_option("--slack_url_file", dest="slack_url_file",
-                  help="Slack webhook URL to which to post major scoring events")
+parser.add_option("--slack_config", dest="slack_config",
+                  help="JSON config file containing a Slack webhook URL")
 
 
 def init_firebase(cred_file):
@@ -363,14 +363,15 @@ def main():
     # We need this even if --firebase is false because we read some cached data
     # from Firebase.
     init_firebase(options.firebase_cred_file)
-    slack_url = ''
-    try:
-        if options.slack_url_file:
-            with open(options.slack_url_file) as f:
-                slack_url = f.read().strip()
-    except OSError:
-        pass
-    notifier = slack.Notifier(slack_url) if slack_url else slack.NoOpNotifier()
+    if options.slack_config:
+        try:
+            notifier = slack.Notifier.from_json_file(options.slack_config)
+        except slack.ConfigError as e:
+            print('Error reading {0}: {1}'.format(options.slack_config, e),
+                  file=sys.stderr)
+            sys.exit(1)
+    else:
+        notifier = slack.NoOpNotifier()
 
     gameIds = open(args[0]).readlines()
 

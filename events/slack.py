@@ -1,7 +1,12 @@
 """Sends notifications to a Slack webhook."""
 
 import enum
+import json
 import requests
+
+
+class ConfigError(Exception):
+    """Raised when the JSON config file can't be read."""
 
 
 # TODO(aerion): This could probably be defined somewhere better.
@@ -15,8 +20,9 @@ class EventType(enum.Enum):
 
 class Notifier(object):
 
-    def __init__(self, webhook_url):
+    def __init__(self, webhook_url, channel):
         self.url = webhook_url
+        self.channel = channel
 
     def notify(self, event_type, player_name, team):
         """Sends a message to Slack.
@@ -38,9 +44,22 @@ class Notifier(object):
         payload = {
             'text' : ('{qb} ({team}) {desc}'
                       .format(qb=player_name, team=team, desc=desc)),
+            'channel': self.channel,
         }
         requests.post(self.url, json=payload)
         # TODO(aerion): Check for errors and maybe do something about them.
+
+    @staticmethod
+    def from_json_file(config_path):
+        try:
+            with open(config_path) as f:
+                slack_config = json.loads(f.read())
+        except (OSError, json.decoder.JSONDecodeError) as e:
+            raise ConfigError(e)
+        for key in ('webhookUrl', 'channel'):
+            if key not in slack_config:
+                raise ConfigError('Missing required key "webhookUrl"')
+        return Notifier(slack_config['webhookUrl'], slack_config['channel'])
 
 
 class NoOpNotifier(object):
