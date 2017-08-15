@@ -24,12 +24,14 @@ parser.add_option("-y", "--year", dest="year",
                   help="Year")
 parser.add_option("-d", "--dump", dest="dump", action="store_true",
                   help="Dump data?")
+parser.add_option("--firebase_creds", dest="firebase_cred_file",
+                  help="File containing Firebase service account credentials")
 parser.add_option("--slack_url_file", dest="slack_url_file",
                   help="Slack webhook URL to which to post major scoring events")
 
 
-def init_firebase():
-    cred = credentials.Certificate('BQBL-2c621a7cef1f.json')
+def init_firebase(cred_file):
+    cred = credentials.Certificate(cred_file)
     firebase_admin.initialize_app(cred, {
         'databaseURL': 'https://bqbl-591f3.firebaseio.com/',
         'databaseAuthVariableOverride': {
@@ -320,10 +322,16 @@ def to_old_format(team, stats):
 def main():
     options, args = parser.parse_args()
     if len(args) < 1:
-        parser.print_usage()
+        parser.print_usage(file=sys.stderr)
         sys.exit(1)
 
-    init_firebase()
+    if not options.firebase_cred_file:
+        sys.stderr.write('must supply --firebase_creds\n')
+        parser.print_help(file=sys.stderr)
+        sys.exit(1)
+    # We need this even if --firebase is false because we read some cached data
+    # from Firebase.
+    init_firebase(options.firebase_cred_file)
     slack_url = ''
     try:
         if options.slack_url_file:
