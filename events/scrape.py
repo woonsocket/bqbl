@@ -346,8 +346,7 @@ def to_old_format(team, stats):
       'game_time': stats['CLOCK'],
       'safeties': stats['SAF'],
       'game_losing_taint': stats['INT6OT'],
-      # Missing: 'safeties', 'game_losing_taint', 'benchings'
-      # Missing: 'boxscore_url', 'opponent'
+      # Missing: 'benchings', 'boxscore_url', 'opponent'
     }
 
 
