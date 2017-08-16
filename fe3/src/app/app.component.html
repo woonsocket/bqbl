@@ -1,12 +1,27 @@
-<nav>
-    <a routerLink="/newuser" routerLinkActive="active">New User</a>
-    <a routerLink="/" routerLinkActive="active">Base</a>
-</nav>
+<!-- Always shows a header, even in smaller screens. -->
+<div mdl class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+	<header class="mdl-layout__header">
+		<div class="mdl-layout__header-row">
+			<!-- Title -->
+			<span class="mdl-layout-title">BQBL</span>
+			<!-- Add spacer, to align navigation to the right -->
+			<div class="mdl-layout-spacer"></div>
+			<!-- Navigation. We hide it in small screens. -->
+			<a class="mdl-navigation__link" (click)=login()><span>{{displayName}}</span></a>
+		</div>
+	</header>
+	<div class="mdl-layout__drawer">
+		<span class="mdl-layout-title">Title</span>
+		<nav class="mdl-navigation">
+			<a routerLink="/newuser" routerLinkActive="active">New User</a>
+			<a routerLink="/" routerLinkActive="active">Lineup</a>
 
-
-<span>{{displayName}}</span>
-
-<button (click)="login()">Login</button>
-<button (click)="logout()">Logout</button>
-
-<router-outlet></router-outlet>
+		</nav>
+	</div>
+	<main class="mdl-layout__content">
+		<div class="page-content">
+			<!-- Your content goes here -->
+			<router-outlet></router-outlet>
+		</div>
+	</main>
+</div>
