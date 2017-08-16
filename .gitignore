@@ -4,3 +4,5 @@ sandbox/*
 .#*
 *.txt
 events/BQBL-2c621a7cef1f.json
+
+fe3/src/environments/environment.prod.ts
