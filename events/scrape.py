@@ -1,14 +1,16 @@
 import collections
+import itertools
 import json
 import optparse
 import re
+import requests
 import sys
-import urllib.error
-import urllib.request
 
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
+
+import slack
 
 
 parser = optparse.OptionParser(
@@ -22,10 +24,14 @@ parser.add_option("-y", "--year", dest="year",
                   help="Year")
 parser.add_option("-d", "--dump", dest="dump", action="store_true",
                   help="Dump data?")
+parser.add_option("--firebase_creds", dest="firebase_cred_file",
+                  help="File containing Firebase service account credentials")
+parser.add_option("--slack_config", dest="slack_config",
+                  help="JSON config file containing a Slack webhook URL")
 
 
-def init_firebase():
-    cred = credentials.Certificate('BQBL-2c621a7cef1f.json')
+def init_firebase(cred_file):
+    cred = credentials.Certificate(cred_file)
     firebase_admin.initialize_app(cred, {
         'databaseURL': 'https://bqbl-591f3.firebaseio.com/',
         'databaseAuthVariableOverride': {
@@ -63,7 +69,7 @@ def parse_box(box, is_qb):
     return outcomes
 
 
-def parse_play(play, is_qb):
+def parse_play(game_id, play_id, play, is_qb, events, notifier):
     """Parse a play and count BQBL-relevant events such as turnovers.
 
     We count turnovers here, because we can get info about whether the turnover
@@ -74,8 +80,12 @@ def parse_play(play, is_qb):
     still require judgment calls (e.g., bad snap from the center).
 
     Args:
+        game_id: The ID of the game this play belongs to.
+        play_id: The ID of the play.
         play: JSON data for one play.
         is_qb: Predicate that returns whether a player ID is a QB.
+        events: An Events object in which to record turnovers.
+        notifier: A slack.Notifier.
     """
     offense_team = play['posteam']
     qb_stats = []
@@ -88,7 +98,10 @@ def parse_play(play, is_qb):
             def_stats.extend(player_stats)
     # http://www.nflgsis.com/gsis/documentation/Partners/StatIDs.html
     for stat in qb_stats:
-        sid = stat['statId']
+        sid = stat.get('statId')
+        player = stat.get('playerName')
+        team = stat.get('clubcode')
+        desc = play['desc']
         if sid in (15, 16):
             outcomes['LONG'] = max(outcomes['LONG'], stat.get('yards'))
         elif sid == 20:
@@ -96,33 +109,137 @@ def parse_play(play, is_qb):
             outcomes['SACKYD'] += stat.get('yards', 0)  # Value is negative.
             if any(filter(lambda s: s.get('statId') == 89, def_stats)):
                 outcomes['SAF'] += 1
+                is_new = events.add_safety(game_id, play_id, play)
+                if is_new:
+                    notifier.notify(slack.EventType.SAFETY, player, team, desc)
         elif sid == 19:
             outcomes['INT'] += 1
-            if any(filter(lambda s: s.get('statId') in (26, 28), def_stats)):
+            opp_td = any(
+                filter(lambda s: s.get('statId') in (26, 28), def_stats))
+            if opp_td:
                 outcomes['INT6'] += 1
                 if play['qtr'] > 4:
                     outcomes['INT6OT'] += 1
+            is_new = events.add_interception(game_id, play_id, play, opp_td)
+            if opp_td and is_new:
+                notifier.notify(slack.EventType.INT_TD, player, team, desc)
         elif sid in (52, 53):
             outcomes['FUM'] += 1
         elif sid == 106:
             outcomes['FUML'] += 1
-            if any(filter(lambda s: s.get('statId') in (60, 62), def_stats)):
+            opp_td = any(
+                filter(lambda s: s.get('statId') in (60, 62), def_stats))
+            if opp_td:
                 outcomes['FUM6'] += 1
+            is_new = events.add_fumble(game_id, play_id, play, opp_td)
+            if opp_td and is_new:
+                notifier.notify(slack.EventType.FUM_TD, player, team, desc)
     return outcomes
+
+
+class Events(object):
+    """Data object for holding "interesting" events."""
+
+    def __init__(self, fumbles, safeties, interceptions):
+        self.fumbles = fumbles
+        self.safeties = safeties
+        self.interceptions = interceptions
+
+    @staticmethod
+    def _id(game_id, play_id):
+        return '{g}-{p}'.format(g=game_id, p=play_id)
+
+    @staticmethod
+    def _summary(play):
+        return {
+            'desc': play['desc'],
+            'team': play['posteam'],
+            'quarter': play['qtr'],
+            'time': play['time'],
+        }
+
+    def add_fumble(self, game_id, play_id, play, is_opponent_td):
+        """Add a fumble event.
+
+        Args:
+            game_id: ID for this game. Looks like '2016122406'.
+            play_id: The ID of the play. In the play-by-play data, each drive is
+                represented as a key-value pairs, with play's key being a
+                distinct integer ID.
+            play: A play dict, decoded from JSON.
+            is_opponent_td: Whether the fumble was returned for a touchdown.
+        Returns:
+            Whether this event is new (i.e., the play ID was not previously
+            known to this Events object).
+        """
+        summary = Events._summary(play)
+        summary['td'] = is_opponent_td
+        id = Events._id(game_id, play_id)
+        is_new = id not in self.fumbles
+        self.fumbles[id] = summary
+        return is_new
+
+    def add_interception(self, game_id, play_id, play, is_opponent_td):
+        """Adds an interception event.
+
+        Args:
+            game_id: ID for this game. Looks like '2016122406'.
+            play_id: The ID of the play. In the play-by-play data, each drive is
+                represented as a key-value pairs, with play's key being a
+                distinct integer ID.
+            play: A play dict, decoded from JSON.
+            is_opponent_td: Whether the fumble was returned for a touchdown.
+        Returns:
+            Whether this event is new (i.e., the play ID was not previously
+            known to this Events object).
+        """
+        summary = Events._summary(play)
+        summary['td'] = is_opponent_td
+        id = Events._id(game_id, play_id)
+        is_new = id not in self.interceptions
+        self.interceptions[id] = summary
+        return is_new
+
+    def add_safety(self, game_id, play_id, play):
+        """Adds a safety event.
+
+        Args:
+            game_id: ID for this game. Looks like '2016122406'.
+            play_id: The ID of the play. In the play-by-play data, each drive is
+                represented as a key-value pairs, with play's key being a
+                distinct integer ID.
+            play: A play dict, decoded from JSON.
+        Returns:
+            Whether this event is new (i.e., the play ID was not previously
+            known to this Events object).
+        """
+        summary = Events._summary(play)
+        id = Events._id(game_id, play_id)
+        is_new = id not in self.safeties
+        self.safeties[Events._id(game_id, play_id)] = summary
+        return is_new
+
+    @staticmethod
+    def create_from_db(year, week):
+        ref = db.reference('/events/{y}/{w}'.format(y=year, w=week))
+        db_events = ref.get() or {}
+        return Events(
+            fumbles=db_events.get('fumbles', {}),
+            safeties=db_events.get('safeties', {}),
+            interceptions=db_events.get('interceptions', {}))
 
 
 class Plays(object):
 
-    def __init__(self, player_cache):
-        self.fumbles = []
-        self.safeties = []
-        self.interceptions = []
+    def __init__(self, player_cache, events, notifier):
+        self.events = events
         self.outcomes_by_team = collections.defaultdict(
             lambda: collections.defaultdict(int))
         self.player_cache = player_cache
+        self.notifier = notifier
 
-    def process(self, game_id, raw):
-        data = json.loads(str(raw, 'utf-8')).get(game_id)
+    def process(self, game_id, data):
+        data = data.get(game_id)
         if not data:
             # Empty data file. Maybe the game hasn't started yet.
             return
@@ -159,29 +276,17 @@ class Plays(object):
             # skip junk in there about current drive
             if drive_num == 'crntdrv':
                 continue
-            for play in drive['plays'].values():
+            for play_id, play in drive['plays'].items():
                 desc = play['desc']
 
-                outcomes = parse_play(play, is_qb)
+                outcomes = parse_play(
+                    game_id, play_id, play, is_qb, self.events, self.notifier)
                 for k, v in outcomes.items():
                     if k == 'LONG':
                         old = self.outcomes_by_team[play['posteam']][k]
                         self.outcomes_by_team[play['posteam']][k] = max(old, v)
                     else:
                         self.outcomes_by_team[play['posteam']][k] += v
-
-                summary = {
-                    'desc': desc,
-                    'team': play['posteam'],
-                    'quarter': play['qtr'],
-                    'time': play['time'],
-                }
-                if "SAFETY" in desc:
-                    self.safeties.append(summary)
-                elif "FUMBLE" in desc and "TOUCHDOWN" in desc:
-                    self.fumbles.append(summary)
-                if "INTERCEPT" in desc:
-                    self.interceptions.append(summary)
 
 
 class PlayerCache(object):
@@ -208,8 +313,7 @@ class PlayerCache(object):
 
     def _read_from_web(self, player_id):
         url = 'http://www.nfl.com/players/profile?id={id}'.format(id=player_id)
-        profile_bytes = urllib.request.urlopen(url).read()
-        profile = str(profile_bytes, 'utf-8')
+        profile = requests.get(url).text
         match = PlayerCache.PLAYER_POSITION_REGEX.search(profile)
         if not match:
             # Sometimes a bogus player ID (e.g., '0') is used when a stat is
@@ -250,27 +354,42 @@ def to_old_format(team, stats):
 def main():
     options, args = parser.parse_args()
     if len(args) < 1:
-        parser.print_usage()
+        parser.print_usage(file=sys.stderr)
         sys.exit(1)
 
-    init_firebase()
+    if not options.firebase_cred_file:
+        sys.stderr.write('must supply --firebase_creds\n')
+        parser.print_help(file=sys.stderr)
+        sys.exit(1)
+    # We need this even if --firebase is false because we read some cached data
+    # from Firebase.
+    init_firebase(options.firebase_cred_file)
+    if options.slack_config:
+        try:
+            notifier = slack.Notifier.from_json_file(options.slack_config)
+        except slack.ConfigError as e:
+            print('Error reading {0}: {1}'.format(options.slack_config, e),
+                  file=sys.stderr)
+            sys.exit(1)
+    else:
+        notifier = slack.NoOpNotifier()
 
     gameIds = open(args[0]).readlines()
 
     player_cache = PlayerCache(db.reference('/playerpositions').get() or {})
-    plays = Plays(player_cache)
+    events = Events.create_from_db(options.year, options.week)
+    plays = Plays(player_cache, events, notifier)
     for id in gameIds:
         id = id.strip()
         url = "http://www.nfl.com/liveupdate/game-center/%s/%s_gtd.json" % (
             id, id)
-        try:
-            raw = urllib.request.urlopen(url).read()
-        except urllib.error.HTTPError as e:
-            if e.code != 404:
+        resp = requests.get(url)
+        if resp.status_code >= 400:
+            if resp.status_code != 404:
                 print('error fetching {url}: {err}'.format(url=url, err=e),
                       file=sys.stderr)
             continue
-        plays.process(id, raw)
+        plays.process(id, resp.json())
 
     if player_cache.new_keys:
         db.reference('/playerpositions').update(player_cache.new_keys)
@@ -278,26 +397,26 @@ def main():
     if options.firebase:
         fumble_ref = db.reference(
             '/events/%s/%s/fumbles' % (options.year, options.week))
-        fumble_ref.set(plays.fumbles)
+        fumble_ref.set(plays.events.fumbles)
 
         safety_ref = db.reference(
             '/events/%s/%s/safeties' % (options.year, options.week))
-        safety_ref.set(plays.safeties)
+        safety_ref.set(plays.events.safeties)
 
         interception_ref = db.reference(
-            '/events/%s/%s/interception' % (options.year, options.week))
-        interception_ref.set(plays.interceptions)
+            '/events/%s/%s/interceptions' % (options.year, options.week))
+        interception_ref.set(plays.events.interceptions)
 
         db.reference('/score/%s/%s' % (options.year, options.week)).update(
             {team: to_old_format(team, stats)
              for team, stats in plays.outcomes_by_team.items()})
     else:
-        for f in plays.fumbles:
-            print(f)
-        for s in plays.safeties:
-            print(s)
-        for i in plays.interceptions:
-            print(i)
+        all_events = itertools.chain(
+            plays.events.fumbles.items(),
+            plays.events.safeties.items(),
+            plays.events.interceptions.items())
+        for id, ev in all_events:
+            print('{0}: {1}'.format(id, ev))
         print(json.dumps(plays.outcomes_by_team))
 
 

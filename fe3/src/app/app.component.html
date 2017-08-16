@@ -11,10 +11,10 @@
 		</div>
 	</header>
 	<div class="mdl-layout__drawer">
-		<span class="mdl-layout-title">Title</span>
+		<span class="mdl-layout-title">Menu</span>
 		<nav class="mdl-navigation">
-			<a routerLink="/newuser" routerLinkActive="active">New User</a>
-			<a routerLink="/" routerLinkActive="active">Lineup</a>
+			<a class="mdl-navigation__link" routerLink="/newuser" routerLinkActive="active" (click)=closeDrawer()>New User</a>
+			<a class="mdl-navigation__link" routerLink="/" routerLinkActive="active" (click)=closeDrawer()>Lineup</a>
 
 		</nav>
 	</div>

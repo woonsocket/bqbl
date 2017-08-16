@@ -29,6 +29,10 @@ export class AppComponent {
 		});
 	};
 
+	closeDrawer() {
+		var d = document.querySelector('.mdl-layout');
+		d["MaterialLayout"].toggleDrawer();
+	}
 
 	login() {
 		this.afAuth.auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());

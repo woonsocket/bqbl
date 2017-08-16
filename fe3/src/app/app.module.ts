@@ -4,6 +4,7 @@ import { AppComponent } from './app.component';
 import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { AngularFireAuthModule } from 'angularfire2/auth';
+import { ScoresComponent } from './scores.component';
 import { NewUserComponent } from './newuser.component';
 import { LineupComponent } from './lineup.component';
 import { RouterModule, Routes } from '@angular/router';
@@ -14,6 +15,7 @@ import { routing } from './app.routes';
 @NgModule({
 	declarations: [
 		AppComponent,
+		ScoresComponent,
 		NewUserComponent,
 		LineupComponent
 	],
