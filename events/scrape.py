@@ -96,6 +96,10 @@ def parse_play(game_id, play_id, play, is_qb, events, notifier):
             qb_stats.extend(player_stats)
         else:
             def_stats.extend(player_stats)
+
+    is_sack = False
+    is_qb_fumble = False
+
     # http://www.nflgsis.com/gsis/documentation/Partners/StatIDs.html
     for stat in qb_stats:
         sid = stat.get('statId')
@@ -105,13 +109,9 @@ def parse_play(game_id, play_id, play, is_qb, events, notifier):
         if sid in (15, 16):
             outcomes['LONG'] = max(outcomes['LONG'], stat.get('yards'))
         elif sid == 20:
+            is_sack = True
             outcomes['SACK'] += 1
             outcomes['SACKYD'] += stat.get('yards', 0)  # Value is negative.
-            if any(filter(lambda s: s.get('statId') == 89, def_stats)):
-                outcomes['SAF'] += 1
-                is_new = events.add_safety(game_id, play_id, play)
-                if is_new:
-                    notifier.notify(slack.EventType.SAFETY, player, team, desc)
         elif sid == 19:
             outcomes['INT'] += 1
             opp_td = any(
@@ -124,8 +124,10 @@ def parse_play(game_id, play_id, play, is_qb, events, notifier):
             if opp_td and is_new:
                 notifier.notify(slack.EventType.INT_TD, player, team, desc)
         elif sid in (52, 53):
+            is_qb_fumble = True
             outcomes['FUM'] += 1
         elif sid == 106:
+            is_qb_fumble = True
             outcomes['FUML'] += 1
             opp_td = any(
                 filter(lambda s: s.get('statId') in (60, 62), def_stats))
@@ -134,6 +136,20 @@ def parse_play(game_id, play_id, play, is_qb, events, notifier):
             is_new = events.add_fumble(game_id, play_id, play, opp_td)
             if opp_td and is_new:
                 notifier.notify(slack.EventType.FUM_TD, player, team, desc)
+
+    is_safety = any(filter(lambda s: s.get('statId') == 89, def_stats))
+    if is_safety:
+        # Add all safeties to the events list, even if we're not sure that they
+        # should count for BQBL points. Some might be false negatives, and
+        # putting them in the events feed lets us easily override them later.
+        is_new = events.add_safety(game_id, play_id, play)
+        is_qb_fault = is_sack or is_qb_fumble
+
+        if is_qb_fault:
+            outcomes['SAF'] += 1
+            if is_new:
+                notifier.notify(slack.EventType.SAFETY, player, team, desc)
+
     return outcomes
 
 
