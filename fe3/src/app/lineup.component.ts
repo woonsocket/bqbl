@@ -27,7 +27,7 @@ export class LineupComponent {
 				return;
 			}
 			this.userData = this.db.object('/tmp/'+value.uid);
-			this.displayName = value.displayName;
+			this.uid = value.uid;
 		});
 	};
 
@@ -49,35 +49,6 @@ export class LineupComponent {
 		this.db.object("/tmp/"+this.uid+"/weeks/"+weekId+"/teams").set(week.teams);
 	};
 
-	onReset() : void {
-		var user = new User();
-		user.name = "Harvey";
-		user.teams = [];
-		user.weeks = [];
-		for (let weekNum in WEEK_NAMES) {
-			var newWeek = new Week();
-			newWeek.id = WEEK_NAMES[weekNum];
-			newWeek.teams = [];
-			for (let teamNum in TEAM_NAMES) {
-				var newTeam = new Team();
-				newTeam.name = TEAM_NAMES[teamNum];
-				newTeam.selected = false;
-				newWeek.teams.push(newTeam)
-			}
-			user.weeks[weekNum] = newWeek;
-		}
-		this.userData.set(user);
-		this.db.object("/tmp/"+this.uid).set(user);
-	}
-
-	login() {
-		this.afAuth.auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
-	}
-
-	logout() {
-		this.afAuth.auth.signOut();
-	}
-
 }
 
 export class User {
@@ -93,7 +64,3 @@ export class Team {
 	name: string;
 	selected: boolean;	
 }
-const TEAM_NAMES: string[] = ["ARI", "CLE", "HOU", "SF"];
-const WEEK_NAMES: string[] = ["p1","p2","p3","p4"];
-
-

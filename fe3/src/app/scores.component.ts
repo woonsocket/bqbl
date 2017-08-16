@@ -20,8 +20,5 @@ export class ScoresComponent {
 			this.userDataList = this.db.list('/tmp/');
 		});
 	};
-
-
-
 }
 
