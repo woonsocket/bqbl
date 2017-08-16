@@ -92,10 +92,11 @@ def parse_play(game_id, play_id, play, is_qb, events, notifier):
     def_stats = []
     outcomes = collections.defaultdict(int)
     for pid, player_stats in play['players'].items():
-        if player_stats[0]['clubcode'] == offense_team and is_qb(pid):
-            qb_stats.extend(player_stats)
-        else:
-            def_stats.extend(player_stats)
+        for stat in player_stats:
+            if stat['clubcode'] == offense_team and is_qb(pid):
+                qb_stats.append(stat)
+            else:
+                def_stats.append(stat)
 
     is_sack = False
     is_qb_fumble = False
