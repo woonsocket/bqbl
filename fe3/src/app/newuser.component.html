@@ -1,7 +1,32 @@
-<input type="text" #team1 placeholder="ARI" />
-<input type="text" #team2 placeholder="CLE" />
-<input type="text" #team3 placeholder="SF" />
-<input type="text" #team4 placeholder="HOU" />
-
-<button (click)="onReset(team1.value, team2.value, team3.value, team4.value)">reset
+<table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+	<thead>
+		<tr>
+			<th class="mdl-data-table__cell--non-numeric">Team 1</th>
+			<th class="mdl-data-table__cell--non-numeric">Team 2</th>
+			<th class="mdl-data-table__cell--non-numeric">Team 3</th>
+			<th class="mdl-data-table__cell--non-numeric">Team 4</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td class="mdl-data-table__cell--non-numeric">
+				<input class="mdl-textfield__input" type="text" #team1 placeholder="ARI" />
+			</td>
+			<td class="mdl-data-table__cell--non-numeric">
+				<input class="mdl-textfield__input" type="text" #team2 placeholder="CLE" />
+			</td>
+			<td class="mdl-data-table__cell--non-numeric">
+				<input class="mdl-textfield__input" type="text" #team3 placeholder="SF" />
+			</td>
+			<td class="mdl-data-table__cell--non-numeric">
+				<input class="mdl-textfield__input" type="text" #team4 placeholder="HOU" />
+			</td>
+		</tr>
+	</tbody>
+</table>
+<div style="padding-top:20px; display:flex">
+<button style="margin:auto" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" 
+(click)="onReset(team1.value, team2.value, team3.value, team4.value)">
+Create User
 </button>
+</div>

@@ -15,13 +15,13 @@ export class AppComponent {
 	userData: FirebaseObjectObservable<any>;
 	db = null;
 	user: Observable<firebase.User>;
-	uid: string;
-	displayName: string;
+	uid = "";
+	displayName = "Login";
 	constructor(db: AngularFireDatabase, private afAuth: AngularFireAuth) {
 		this.user = afAuth.authState;
 		this.user.subscribe(value => {
 			if (!value) {
-				this.displayName = "";
+				this.displayName = "Login";
 				return;
 			}
 			this.displayName = value.displayName;
@@ -35,12 +35,13 @@ export class AppComponent {
 	}
 
 	login() {
-		this.afAuth.auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+		if (this.uid != "") {
+			this.afAuth.auth.signOut();
+			this.displayName = "Login";
+			this.uid = "";
+		} else {
+			this.afAuth.auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+		}
 	}
-
-	logout() {
-		this.afAuth.auth.signOut();
-	}
-
 }
 
