@@ -1,0 +1,43 @@
+// If you change rules here, make sure to propagate the changes to
+// database.rules.json in the repo. You can use `firebase deploy --only
+// database` to push the rules file.
+{
+  "rules": {
+    ".read": "auth != null",
+    "score": {
+      ".read": true,
+      "$season": {
+        // Writes are enabled only for the current season so that we don't
+        // accidentally overwrite historical data.
+        ".write": "auth.uid == 'score-scraper' && $season == '2017'"
+      }
+    },
+    "stats": {
+      ".read": true,
+      "$season": {
+        ".write": "auth.uid == 'score-scraper' && $season == '2017'"
+      }
+    },
+    "events": {
+      ".read": true,
+      "$season": {
+	  	  ".write": "auth.uid == 'score-scraper' && $season == '2017'"
+      }
+    },
+    "tmp": {
+	  	".read": true,
+	  	".write": true
+    },
+    "playerpositions": {
+      ".write": "auth.uid == 'score-scraper'"
+    },
+    "users": {
+      ".read": true,
+      "$user_id": {
+        // grants write access to the owner of this user account
+        // whose uid must exactly match the key ($user_id)
+        ".write": "$user_id === auth.uid"
+      }
+    }
+  }
+}
