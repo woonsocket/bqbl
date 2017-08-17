@@ -426,6 +426,8 @@ def main():
         db.reference('/score/%s/%s' % (options.year, options.week)).update(
             {team: to_old_format(team, stats)
              for team, stats in plays.outcomes_by_team.items()})
+        db.reference('/stats/%s/%s' % (options.year, options.week)).update(
+            plays.outcomes_by_team)
     else:
         all_events = itertools.chain(
             plays.events.fumbles.items(),
