@@ -8,6 +8,7 @@ java -jar third_party/closure-compiler/closure-compiler-v20170806.jar \
     --js="web/bqbl.js" \
     --dependency_mode="STRICT" \
     --entry_point="bqbl" \
+    --externs="es6-externs.js" \
     --externs="firebase-externs.js" \
     --compilation_level="ADVANCED_OPTIMIZATIONS" \
     --warning_level="VERBOSE" \
