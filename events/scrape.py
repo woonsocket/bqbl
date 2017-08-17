@@ -280,6 +280,8 @@ class Plays(object):
                 time=data['clock'], quarter=ordinal(quarter))
         self.outcomes_by_team[home_box['abbr']]['CLOCK'] = clock
         self.outcomes_by_team[away_box['abbr']]['CLOCK'] = clock
+        self.outcomes_by_team[home_box['abbr']]['OPP'] = away_box['abbr']
+        self.outcomes_by_team[away_box['abbr']]['OPP'] = home_box['abbr']
 
         # Read box score stats.
         for k, v in parse_box(home_box['stats'], is_qb).items():
@@ -344,26 +346,30 @@ def to_old_format(team, stats):
     stats = collections.defaultdict(int, stats)
     return {
         'team': team,
-      'completions': stats['CMP'],
-      'attempts': stats['ATT'],
-      # Lump all the TDs into pass_tds. We never distinguished between
-      # pass/rush.
-      'pass_tds': stats['TD'],
-      'rush_tds': 0,
-      'interceptions_notd': stats['INT'] - stats['INT6'],
-      'interceptions_td': stats['INT6'] - stats['INT6OT'],
-      'fumbles_lost_notd': stats['FUML'] - stats['FUM6'],
-      'fumbles_lost_td': stats['FUM6'],
-      'fumbles_kept': stats['FUM'] - stats['FUML'],
-      'pass_yards': stats['PASSYD'] + stats['SACKYD'],
-      'rush_yards': stats['RUSHYD'],
-      'sacks': stats['SACK'],
-      'sack_yards': -stats['SACKYD'],
-      'long_pass': stats['LONG'],
-      'game_time': stats['CLOCK'],
-      'safeties': stats['SAF'],
-      'game_losing_taint': stats['INT6OT'],
-      # Missing: 'benchings', 'boxscore_url', 'opponent'
+        'completions': stats['CMP'],
+        'attempts': stats['ATT'],
+        # Lump all the TDs into pass_tds. We never distinguished between
+        # pass/rush.
+        'pass_tds': stats['TD'],
+        'rush_tds': 0,
+        'interceptions_notd': stats['INT'] - stats['INT6'],
+        'interceptions_td': stats['INT6'] - stats['INT6OT'],
+        'fumbles_lost_notd': stats['FUML'] - stats['FUM6'],
+        'fumbles_lost_td': stats['FUM6'],
+        'fumbles_kept': stats['FUM'] - stats['FUML'],
+        'pass_yards': stats['PASSYD'] + stats['SACKYD'],
+        'rush_yards': stats['RUSHYD'],
+        'sacks': stats['SACK'],
+        'sack_yards': -stats['SACKYD'],
+        'long_pass': stats['LONG'],
+        'game_time': stats['CLOCK'],
+        'safeties': stats['SAF'],
+        'game_losing_taint': stats['INT6OT'],
+        'opponent': stats['OPP'],
+        # Missing:
+        # 'benchings' (BENCH)
+        # 'street_free_agent' (FREEAGENT)
+        # 'boxscore_url' (URL)
     }
 
 
