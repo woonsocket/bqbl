@@ -10,11 +10,12 @@ import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
 
+import linescore
 import slack
 
 
 parser = optparse.OptionParser(
-    usage=("Usage: %prog [options] <file with list of NFL game IDs> "))
+    usage=("Usage: %prog [options] [file with list of NFL game IDs]"))
 parser.add_option("-f", "--firebase", dest="firebase", default=False,
                   action="store_true",
                   help="Write output to firebase")
@@ -396,9 +397,21 @@ def to_old_format(team, stats):
 
 def main():
     options, args = parser.parse_args()
-    if len(args) < 1:
-        parser.print_usage(file=sys.stderr)
-        sys.exit(1)
+
+    if args:
+        season, week = options.year, options.week
+        if not (season and week):
+            print('--year and --week are required if a game ID file is used',
+                  file=sys.stderr)
+            sys.exit(1)
+        game_ids = [gid.strip() for gid in open(args[0])]
+    else:
+        if options.year or options.week:
+            print('must not set --year and --week without game ID file',
+                  file=sys.stderr)
+            sys.exit(1)
+        season, week, games = linescore.fetch()
+        game_ids = [g.id for g in games.values()]
 
     if not options.firebase_cred_file:
         sys.stderr.write('must supply --firebase_creds\n')
@@ -417,44 +430,41 @@ def main():
     else:
         notifier = slack.NoOpNotifier()
 
-    gameIds = open(args[0]).readlines()
-
     player_cache = PlayerCache(db.reference('/playerpositions').get() or {})
-    events = Events.create_from_db(options.year, options.week)
+    events = Events.create_from_db(season, week)
     plays = Plays(player_cache, events, notifier)
-    for id in gameIds:
-        id = id.strip()
-        url = "http://www.nfl.com/liveupdate/game-center/%s/%s_gtd.json" % (
-            id, id)
+    for id in game_ids:
+        url = ('http://www.nfl.com/liveupdate/game-center/{0}/{0}_gtd.json'
+               .format(id))
         resp = requests.get(url)
         if resp.status_code >= 400:
             if resp.status_code != 404:
                 print('error fetching {url}: {err}'.format(url=url, err=e),
                       file=sys.stderr)
             continue
-        plays.process(options.year, options.week, id, resp.json())
+        plays.process(season, week, id, resp.json())
 
     if player_cache.new_keys:
         db.reference('/playerpositions').update(player_cache.new_keys)
 
     if options.firebase:
         fumble_ref = db.reference(
-            '/events/%s/%s/fumbles' % (options.year, options.week))
+            '/events/%s/%s/fumbles' % (season, week))
         fumble_ref.set(plays.events.fumbles)
 
         safety_ref = db.reference(
-            '/events/%s/%s/safeties' % (options.year, options.week))
+            '/events/%s/%s/safeties' % (season, week))
         safety_ref.set(plays.events.safeties)
 
         interception_ref = db.reference(
-            '/events/%s/%s/interceptions' % (options.year, options.week))
+            '/events/%s/%s/interceptions' % (season, week))
         interception_ref.set(plays.events.interceptions)
 
         if plays.outcomes_by_team:
-            db.reference('/score/%s/%s' % (options.year, options.week)).update(
+            db.reference('/score/%s/%s' % (season, week)).update(
                 {team: to_old_format(team, stats)
                  for team, stats in plays.outcomes_by_team.items()})
-            db.reference('/stats/%s/%s' % (options.year, options.week)).update(
+            db.reference('/stats/%s/%s' % (season, week)).update(
                 plays.outcomes_by_team)
     else:
         all_events = itertools.chain(

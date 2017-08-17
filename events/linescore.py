@@ -112,19 +112,24 @@ def fetch(url=_SCORES_URL):
     """Get line scores for whatever the current week is.
 
     Returns:
-        A dict mapping game IDs to Games. Each game's ID is unique, and is
-        constant between fetches, so you can compare Games fetched at different
-        times.
+        (season, week, games)
+        games is a dict mapping game IDs to Games. Each game's ID is unique, and
+        is constant between fetches, so you can compare Games fetched at
+        different times.
     """
     raw = urllib.request.urlopen(url).read()
-    data = json.loads(str(raw, 'utf-8')).get('gameScores')
-    if not data:
+    data = json.loads(str(raw, 'utf-8'))
+    scores = data.get('gameScores')
+    if not scores:
         return {}
     games = {}
-    for obj in data:
+    for obj in scores:
         game = parse_game_json(obj)
         games[game.id] = game
-    return games
+    week = data['week']
+    if data['seasonType'] == 'PRE':
+        week = 'P{0}'.format(week)
+    return data['season'], week, games
 
 
 def compare(old_games, new_games):
