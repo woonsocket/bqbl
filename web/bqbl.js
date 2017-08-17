@@ -31,7 +31,7 @@ bqbl.historyState_ = null;
 /**
  * Global state holding the current scores, parsed from JSON.
  */
-bqbl.scoreState_ = [];
+bqbl.scoreState_ = {};
 
 
 /**
@@ -239,7 +239,7 @@ bqbl.getCurrentWeekNumber_ = function(opt_date) {
  * @param {string|number} week A week ID.
  */
 bqbl.dbLocationForScores = function(season, week) {
-  return `/score/${season}/${week}`;
+  return `/stats/${season}/${week}`;
 };
 
 
@@ -265,7 +265,7 @@ bqbl.listenToScores = function(season, week) {
         if (!v || !(v instanceof Object)) {
           return;
         }
-        bqbl.scoreState_ = Object.values(v);
+        bqbl.scoreState_ = v;
 
         bqbl.redrawScores();
       });
@@ -296,8 +296,8 @@ bqbl.writeScores = function(jsonData, opt_sortOrder) {
   var sortOrder = opt_sortOrder || [];
   if (sortOrder.length == 0)
     sortOrder = bqbl.DEFAULT_SORT_ORDER.split(',');
-  var teamScores = jsonData.map(bqbl.numberifyJson).map(
-      function(o) { return bqbl.scoreObjectToTeamScore(o); });
+  var teamScores = Object.entries(jsonData).map(([team, score]) =>
+      bqbl.scoreObjectToTeamScore(team, bqbl.numberify(score)));
 
   for (var sortNum = sortOrder.length - 1; sortNum >= 0; sortNum--) {
     var compareFn;
@@ -324,23 +324,30 @@ bqbl.writeScores = function(jsonData, opt_sortOrder) {
 
 
 /**
- * Attempts to converts all strings in the JSON-parsed output to numbers. If the
- * string cannot be parsed as a number, it is left alone. Non-string values are
- * left unmodified, as are all keys. The provided object is modified in-place,
- * and also returned.
+ * Creates an object proxy that, on property access:
+ *  - if the property does not exist, returns 0
+ *  - if the property value is a numeric string, returns it as a number
+ *  - otherwise, returns the value.
  * @param {!Object.<string, *>} qbScore An object parsed from JSON.
- * @return {!Object.<string, *>} The modified object.
+ * @return {!Object.<string, *>} The proxied object.
  */
-bqbl.numberifyJson = function(qbScore) {
-  for (var key in qbScore) {
-    if (!goog.isString(qbScore[key]))
-      continue;
-    var val = '' + qbScore[key];
-    var numberwang = goog.string.toNumber(val);
-    if (!isNaN(numberwang))
-      qbScore[key] = numberwang;
-  }
-  return qbScore;
+bqbl.numberify = function(qbScore) {
+  return new Proxy(qbScore, {
+    get: (target, name) => {
+      if (!(name in target)) {
+        return 0;
+      }
+      let val = target[name];
+      if (!goog.isString(val)) {
+        return val;
+      }
+      var numberwang = goog.string.toNumber('' + target[name]);
+      if (isNaN(numberwang)) {
+        return val;
+      }
+      return numberwang;
+    },
+  });
 };
 
 
@@ -441,24 +448,25 @@ bqbl.numberToHtml = function(num) {
 
 
 /**
+ * @param {string} team The team to which this score belongs.
  * @param {!Object.<string, *>} scoreObject A JSON-parsed score object.
  * @return {!bqbl.TeamScore} The score data, as a TeamScore.
  */
-bqbl.scoreObjectToTeamScore = function(scoreObject) {
+bqbl.scoreObjectToTeamScore = function(team, scoreObject) {
   var originalScoreObject = scoreObject;
   var history = bqbl.parseHistoryToken(bqbl.historyState_.getToken());
   var mode = history['score'] || bqbl.DEFAULT_SCORE_MODE;
   if (mode == 'proj') {
     scoreObject = bqbl.computeStupidProjection(
         scoreObject,
-        bqbl.parseElapsedFraction('' + scoreObject['game_time']));
+        bqbl.parseElapsedFraction('' + scoreObject['CLOCK']));
   }
   var scoreComponents = bqbl.computeScoreComponents(scoreObject);
   return new bqbl.TeamScore(
-      scoreObject['team'],
-      scoreObject['opponent'] || '',
-      scoreObject['boxscore_url'] || 'javascript:void(0);',
-      scoreObject['game_time'],
+      team,
+      scoreObject['OPP'] || '',
+      scoreObject['URL'] || 'javascript:void(0);',
+      scoreObject['CLOCK'],
       bqbl.computeStatLine(originalScoreObject),
       scoreComponents);
 };
@@ -538,10 +546,10 @@ bqbl.simpleMultiple = function(pointsPer, quantity, description) {
  */
 bqbl.computeStatLine = function(qbScore) {
   return goog.string.buildString(
-      qbScore['completions'] + '/' + qbScore['attempts'] + ', ',
-      qbScore['pass_yards'] + ' yd, ',
-      qbScore['pass_tds'] + ' TD, ',
-      qbScore['interceptions_td'] + qbScore['interceptions_notd'] + ' INT'
+      qbScore['CMP'] + '/' + qbScore['ATT'] + ', ',
+      (qbScore['PASSYD'] + qbScore['SACKYD']) + ' yd, ',
+      qbScore['TD'] + ' TD, ',
+      qbScore['INT'] + ' INT'
   );
 };
 
@@ -551,34 +559,33 @@ bqbl.computeStatLine = function(qbScore) {
  */
 bqbl.computeScoreComponents = function(qbScore) {
   var pointsList = [
-    bqbl.simpleMultiple(25, qbScore['interceptions_td'], 'INT returned for TD'),
-    bqbl.simpleMultiple(5, qbScore['interceptions_notd'], 'INT'),
-    bqbl.simpleMultiple(25, qbScore['fumbles_lost_td'], 'fumble lost for TD'),
-    bqbl.simpleMultiple(5, qbScore['fumbles_lost_notd'], 'fumble lost'),
-    bqbl.simpleMultiple(2, qbScore['fumbles_kept'], 'fumble kept'),
+    bqbl.simpleMultiple(25, qbScore['INT6'] - qbScore['INT6OT'],
+                        'INT returned for TD'),
+    bqbl.simpleMultiple(5, qbScore['INT'] - qbScore['INT6'], 'INT'),
+    bqbl.simpleMultiple(25, qbScore['FUM6'], 'fumble lost for TD'),
+    bqbl.simpleMultiple(5, qbScore['FUML'] - qbScore['FUM6'], 'fumble lost'),
+    bqbl.simpleMultiple(2, qbScore['FUM'] - qbScore['FUML'], 'fumble kept'),
     bqbl.turnoverPoints(qbScore),
-    bqbl.touchdownPoints(qbScore['pass_tds'] + qbScore['rush_tds']),
-    bqbl.passingYardPoints(qbScore['pass_yards']),
-    bqbl.completionRatePoints(qbScore['completions'], qbScore['attempts']),
-    bqbl.simpleMultiple(1, qbScore['sacks'], 'sacked'),
-    bqbl.simpleMultiple(20, qbScore['safeties'], 'QB at fault for safety'),
-    bqbl.simpleMultiple(35, qbScore['benchings'], 'QB benched'),
-    bqbl.simpleMultiple(20, qbScore['street_free_agent'], 'free agent starter')
+    bqbl.touchdownPoints(qbScore['TD']),
+    bqbl.passingYardPoints(qbScore['PASSYD'] + qbScore['SACKYD']),
+    bqbl.completionRatePoints(qbScore['CMP'], qbScore['ATT']),
+    bqbl.simpleMultiple(1, qbScore['SACK'], 'sacked'),
+    bqbl.simpleMultiple(20, qbScore['SAF'], 'QB at fault for safety'),
+    bqbl.simpleMultiple(35, qbScore['BENCH'], 'QB benched'),
+    bqbl.simpleMultiple(20, qbScore['FREEAGENT'], 'free agent starter')
   ];
-  if (qbScore['long_pass'] < 25)
+  if (qbScore['LONG'] < 25)
     pointsList.push(new bqbl.ScoreComponent(10, 'no pass of 25+ yards'));
-  if (qbScore['rush_yards'] >= 75)
+  if (qbScore['RUSHYD'] >= 75)
     pointsList.push(new bqbl.ScoreComponent(-8, '75+ rushing yards'));
-  if (qbScore['game_losing_taint'])
+  if (qbScore['INT6OT'])
     pointsList.push(new bqbl.ScoreComponent(50, 'game-losing pick six in OT'));
   return pointsList.filter(function(x) { return x.pointValue != 0; });
 };
 
 
 bqbl.turnoverPoints = function(qbScore) {
-  var totalTurnovers = qbScore['interceptions_notd'] +
-      qbScore['interceptions_td'] + qbScore['fumbles_lost_notd'] +
-      qbScore['fumbles_lost_td'];
+  var totalTurnovers = qbScore['INT'] + qbScore['FUML'];
   var points = 0;
   if (totalTurnovers == 3) points = 10;
   else if (totalTurnovers == 4) points = 20;
@@ -666,7 +673,7 @@ bqbl.computeStupidProjection = function(qbScore, elapsedFrac) {
       projected[stat] = qbScore[stat];
     }
   }
-  return projected;
+  return bqbl.numberify(projected);
 };
 
 
