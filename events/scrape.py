@@ -450,11 +450,12 @@ def main():
             '/events/%s/%s/interceptions' % (options.year, options.week))
         interception_ref.set(plays.events.interceptions)
 
-        db.reference('/score/%s/%s' % (options.year, options.week)).update(
-            {team: to_old_format(team, stats)
-             for team, stats in plays.outcomes_by_team.items()})
-        db.reference('/stats/%s/%s' % (options.year, options.week)).update(
-            plays.outcomes_by_team)
+        if plays.outcomes_by_team:
+            db.reference('/score/%s/%s' % (options.year, options.week)).update(
+                {team: to_old_format(team, stats)
+                 for team, stats in plays.outcomes_by_team.items()})
+            db.reference('/stats/%s/%s' % (options.year, options.week)).update(
+                plays.outcomes_by_team)
     else:
         all_events = itertools.chain(
             plays.events.fumbles.items(),
