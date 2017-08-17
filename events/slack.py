@@ -48,12 +48,17 @@ class Notifier(object):
         else:
             return
 
+        icon_url = ('https://nflcdns.nfl.com/static/site/img/logos/png-500x500/'
+                    'teams/{0}.png'
+                    .format(team))
+
         payload = {
             'text' : ('*{qb} ({team})* {what}\n'
                       '>{desc}'
                       .format(qb=player_name, team=team, what=what,
                               desc=description)),
             'channel': self.channel,
+            'icon_url': icon_url,
         }
         requests.post(self.url, json=payload)
         # TODO(aerion): Check for errors and maybe do something about them.
