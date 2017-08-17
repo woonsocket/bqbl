@@ -49,8 +49,8 @@ class Notifier(object):
             return
 
         payload = {
-            'text' : ('{qb} ({team}) {what}\n'
-                      '{desc}'
+            'text' : ('*{qb} ({team})* {what}\n'
+                      '>{desc}'
                       .format(qb=player_name, team=team, what=what,
                               desc=description)),
             'channel': self.channel,
