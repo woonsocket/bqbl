@@ -13,8 +13,10 @@ class ConfigError(Exception):
 class EventType(enum.Enum):
     # Don't assign any meaning to these numbers. We should use enum.auto()
     # whenever we're on Python 3.6.
-    INT_TD = 1
-    FUM_TD = 2
+    INT = 1
+    INT_TD = 2
+    FUM = 3
+    FUM_TD = 4
     SAFETY = 3
 
 
@@ -33,8 +35,12 @@ class Notifier(object):
             team: The QB's team abbreviation.
             description: Description of the play.
         """
-        if event_type == EventType.INT_TD:
+        if event_type == EventType.INT:
+            what = 'threw an interception'
+        elif event_type == EventType.INT_TD:
             what = 'threw a pick-6'
+        elif event_type == EventType.FUM:
+            what = 'lost a fumble'
         elif event_type == EventType.FUM_TD:
             what = 'lost a fumble for a TD'
         elif event_type == EventType.SAFETY:

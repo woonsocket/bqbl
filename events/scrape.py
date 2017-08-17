@@ -131,8 +131,9 @@ def parse_play(game_id, play_id, play, is_qb, events, notifier):
                 if play['qtr'] > 4:
                     outcomes['INT6OT'] += 1
             is_new = events.add_interception(game_id, play_id, play, opp_td)
-            if opp_td and is_new:
-                notifier.notify(slack.EventType.INT_TD, player, team, desc)
+            if is_new:
+                etype = slack.EventType.INT_TD if opp_td else slack.EventType.INT
+                notifier.notify(etype, player, team, desc)
         elif sid in (52, 53):
             is_qb_fumble = True
             outcomes['FUM'] += 1
@@ -144,8 +145,9 @@ def parse_play(game_id, play_id, play, is_qb, events, notifier):
             if opp_td:
                 outcomes['FUM6'] += 1
             is_new = events.add_fumble(game_id, play_id, play, opp_td)
-            if opp_td and is_new:
-                notifier.notify(slack.EventType.FUM_TD, player, team, desc)
+            if is_new:
+                etype = slack.EventType.FUM_TD if opp_td else slack.EventType.FUM
+                notifier.notify(etype, player, team, desc)
 
     is_safety = any(filter(lambda s: s.get('statId') == 89, def_stats))
     if is_safety:
