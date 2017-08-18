@@ -267,7 +267,7 @@ class Plays(object):
         self.notifier = notifier
 
     def process(self, season, week, game_id, data):
-        data = data.get(game_id)
+        data = data.get(str(game_id))
         if not data:
             # Empty data file. Maybe the game hasn't started yet.
             return
