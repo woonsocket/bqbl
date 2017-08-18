@@ -1,4 +1,4 @@
-To use the scraper, make sure you have BeautifulSoup 4 installed. Use
+To use the scraper, make sure you have the Firebase package installed. Use
 `virtualenv`. Or don't. I'm a readme file, not a cop.
 
 ```shell
