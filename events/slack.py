@@ -1,23 +1,13 @@
 """Sends notifications to a Slack webhook."""
 
-import enum
 import json
 import requests
+
+import event
 
 
 class ConfigError(Exception):
     """Raised when the JSON config file can't be read."""
-
-
-# TODO(aerion): This could probably be defined somewhere better.
-class EventType(enum.Enum):
-    # Don't assign any meaning to these numbers. We should use enum.auto()
-    # whenever we're on Python 3.6.
-    INT = 1
-    INT_TD = 2
-    FUM = 3
-    FUM_TD = 4
-    SAFETY = 3
 
 
 class Notifier(object):
@@ -30,20 +20,20 @@ class Notifier(object):
         """Sends a message to Slack.
 
         Args:
-            event_type: A slack.EventType.
+            event_type: An event.Type.
             player_name: The QB's name.
             team: The QB's team abbreviation.
             description: Description of the play.
         """
-        if event_type == EventType.INT:
+        if event_type == event.Type.INT:
             what = 'threw an interception'
-        elif event_type == EventType.INT_TD:
+        elif event_type == event.Type.INT_TD:
             what = 'threw a pick-6'
-        elif event_type == EventType.FUM:
+        elif event_type == event.Type.FUM:
             what = 'lost a fumble'
-        elif event_type == EventType.FUM_TD:
+        elif event_type == event.Type.FUM_TD:
             what = 'lost a fumble for a TD'
-        elif event_type == EventType.SAFETY:
+        elif event_type == event.Type.SAFETY:
             what = 'gave up a safety'
         else:
             return
