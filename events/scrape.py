@@ -1,4 +1,5 @@
 import collections
+import datetime
 import itertools
 import json
 import optparse
@@ -413,7 +414,8 @@ def main():
                   file=sys.stderr)
             sys.exit(1)
         season, week, games = linescore.fetch()
-        game_ids = [g.id for g in games.values()]
+        game_ids = [g.id for g in games.values()
+                    if g.start_time < datetime.datetime.now()]
 
     if not options.firebase_cred_file:
         sys.stderr.write('must supply --firebase_creds\n')
