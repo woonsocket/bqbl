@@ -643,13 +643,13 @@ bqbl.touchdownPoints = function(tds) {
 bqbl._STUPID_PROJECTION_TARGET = {
   // These numbers are a little arbitrary. They're approximated from the average
   // stats for all 32 teams in Week 3 of the 2014 season.
-  'pass_yards': 250,
-  'pass_tds': 1.6,
-  'completions': 22,
-  'attempts': 35,
+  'PASSYD': 250,
+  'TD': 1.6,
+  'CMP': 22,
+  'ATT': 35,
   // This one has the effect of only making the 'No 25+ yard pass' line show up
   // late in the game.
-  'long_pass': 40
+  'LONG': 40
 };
 
 
