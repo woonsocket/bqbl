@@ -276,37 +276,6 @@ class PlayerCache(object):
         return match.group(1).upper()
 
 
-def to_old_format(team, stats):
-    stats = collections.defaultdict(int, stats)
-    return {
-        'team': team,
-        'completions': stats['CMP'],
-        'attempts': stats['ATT'],
-        # Lump all the TDs into pass_tds. We never distinguished between
-        # pass/rush.
-        'pass_tds': stats['TD'],
-        'rush_tds': 0,
-        'interceptions_notd': stats['INT'] - stats['INT6'],
-        'interceptions_td': stats['INT6'] - stats['INT6OT'],
-        'fumbles_lost_notd': stats['FUML'] - stats['FUM6'],
-        'fumbles_lost_td': stats['FUM6'],
-        'fumbles_kept': stats['FUM'] - stats['FUML'],
-        'pass_yards': stats['PASSYD'] + stats['SACKYD'],
-        'rush_yards': stats['RUSHYD'],
-        'sacks': stats['SACK'],
-        'sack_yards': -stats['SACKYD'],
-        'long_pass': stats['LONG'],
-        'game_time': stats['CLOCK'],
-        'safeties': stats['SAF'],
-        'game_losing_taint': stats['INT6OT'],
-        'opponent': stats['OPP'],
-        'boxscore_url': stats['URL'],
-        # Missing:
-        # 'benchings' (BENCH)
-        # 'street_free_agent' (FREEAGENT)
-    }
-
-
 def main():
     options, args = parser.parse_args()
 
@@ -370,9 +339,6 @@ def main():
         })
 
         if plays.outcomes_by_team:
-            db.reference('/score/%s/%s' % (season, week)).update(
-                {team: to_old_format(team, stats)
-                 for team, stats in plays.outcomes_by_team.items()})
             db.reference('/stats/%s/%s' % (season, week)).update(
                 plays.outcomes_by_team)
     else:
