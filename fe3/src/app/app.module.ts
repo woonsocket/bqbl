@@ -7,8 +7,9 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
 import { ScoresComponent } from './scores.component';
 import { NewUserComponent } from './newuser.component';
 import { LineupComponent } from './lineup.component';
+import { LoginComponent } from './login.component';
+import { ConsoleComponent } from './console.component';
 import { RouterModule, Routes } from '@angular/router';
-
 import { environment } from '../environments/environment';
 import { routing } from './app.routes';
 
@@ -17,7 +18,9 @@ import { routing } from './app.routes';
 		AppComponent,
 		ScoresComponent,
 		NewUserComponent,
-		LineupComponent
+		LineupComponent, 
+		ConsoleComponent, 
+		LoginComponent,
 	],
 	imports: [
 		BrowserModule,

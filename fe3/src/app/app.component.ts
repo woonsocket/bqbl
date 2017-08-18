@@ -5,6 +5,7 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
 import { Observable } from 'rxjs/Observable';
 import { AngularFireAuth } from 'angularfire2/auth';
 import * as firebase from 'firebase/app';
+import { Router }  from '@angular/router';
 
 @Component({
 	selector: 'app-root',
@@ -17,11 +18,13 @@ export class AppComponent {
 	user: Observable<firebase.User>;
 	uid = "";
 	displayName = "Login";
-	constructor(db: AngularFireDatabase, private afAuth: AngularFireAuth) {
+	constructor(db: AngularFireDatabase, private afAuth: AngularFireAuth,  private router: Router) {
 		this.user = afAuth.authState;
+		this.router = router;
 		this.user.subscribe(value => {
 			if (!value) {
 				this.displayName = "Login";
+				this.router.navigate(["/login"]);
 				return;
 			}
 			this.displayName = value.displayName;
@@ -40,7 +43,7 @@ export class AppComponent {
 			this.displayName = "Login";
 			this.uid = "";
 		} else {
-			this.afAuth.auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+			this.router.navigate(["/login"]);
 		}
 	}
 }
