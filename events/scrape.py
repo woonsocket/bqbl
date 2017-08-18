@@ -450,17 +450,12 @@ def main():
         db.reference('/playerpositions').update(player_cache.new_keys)
 
     if options.firebase:
-        fumble_ref = db.reference(
-            '/events/%s/%s/fumbles' % (season, week))
-        fumble_ref.set(plays.events.fumbles)
-
-        safety_ref = db.reference(
-            '/events/%s/%s/safeties' % (season, week))
-        safety_ref.set(plays.events.safeties)
-
-        interception_ref = db.reference(
-            '/events/%s/%s/interceptions' % (season, week))
-        interception_ref.set(plays.events.interceptions)
+        events_ref = db.reference('/events/{0}/{1}'.format(season, week))
+        events_ref.set({
+            'fumbles': plays.events.fumbles,
+            'safeties': plays.events.safeties,
+            'interceptions': plays.events.interceptions,
+        })
 
         if plays.outcomes_by_team:
             db.reference('/score/%s/%s' % (season, week)).update(
