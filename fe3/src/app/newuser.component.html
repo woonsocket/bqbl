@@ -1,3 +1,8 @@
+<div style="margin:20px;">
+Name<br>
+<input class="mdl-textfield__input" type="text"  #nameInput placeholder="Blaine">
+	
+</div>
 <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
 	<thead>
 		<tr>
@@ -10,23 +15,23 @@
 	<tbody>
 		<tr>
 			<td class="mdl-data-table__cell--non-numeric">
-				<input class="mdl-textfield__input" type="text" #team1 placeholder="ARI" />
+				<input class="mdl-textfield__input" type="text" #team1 value="ARI" />
 			</td>
 			<td class="mdl-data-table__cell--non-numeric">
-				<input class="mdl-textfield__input" type="text" #team2 placeholder="CLE" />
+				<input class="mdl-textfield__input" type="text" #team2 value="CLE" />
 			</td>
 			<td class="mdl-data-table__cell--non-numeric">
-				<input class="mdl-textfield__input" type="text" #team3 placeholder="SF" />
+				<input class="mdl-textfield__input" type="text" #team3 value="SF" />
 			</td>
 			<td class="mdl-data-table__cell--non-numeric">
-				<input class="mdl-textfield__input" type="text" #team4 placeholder="HOU" />
+				<input class="mdl-textfield__input" type="text" #team4 value="HOU" />
 			</td>
 		</tr>
 	</tbody>
 </table>
 <div style="padding-top:20px; display:flex">
 <button style="margin:auto" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" 
-(click)="onCreate(team1.value, team2.value, team3.value, team4.value)">
+(click)="onCreate(team1.value, team2.value, team3.value, team4.value, nameInput.value)">
 Create User
 </button>
 </div>

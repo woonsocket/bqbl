@@ -28,10 +28,10 @@ export class NewUserComponent {
 		this.router = router;
 	};
 
-	onCreate(team1: string, team2: string, team3: string, team4: string) : void {
+	onCreate(team1: string, team2: string, team3: string, team4: string, name: string) : void {
 		var user = new User();
 		var teamNames = [team1, team2, team3, team4];
-		user.name = "Harvey";
+		user.name = name;
 		user.teams = [];
 		user.weeks = [];
 		for (let weekNum in WEEK_NAMES) {
