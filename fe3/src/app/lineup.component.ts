@@ -5,6 +5,7 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
 import { Observable } from 'rxjs/Observable';
 import { AngularFireAuth } from 'angularfire2/auth';
 import * as firebase from 'firebase/app';
+import { Router }  from '@angular/router';
 
 @Component({
 	templateUrl: './lineup.component.html',
@@ -18,7 +19,7 @@ export class LineupComponent {
 	user: Observable<firebase.User>;
 	uid: string;
 	displayName: string;
-	constructor(db: AngularFireDatabase, private afAuth: AngularFireAuth) {
+	constructor(db: AngularFireDatabase, private afAuth: AngularFireAuth, private router: Router) {
 		this.db = db;
 		this.user = afAuth.authState;
 		this.user.subscribe(value => {
@@ -27,8 +28,15 @@ export class LineupComponent {
 				return;
 			}
 			this.userData = this.db.object('/tmp/'+value.uid);
+			this.userData.subscribe(value => {
+				if (!value.$exists()) {
+					this.router.navigate(["/newuser"]);
+				}
+			})
+
 			this.uid = value.uid;
 		});
+
 	};
 
 	isLegalAdd (week: Week) : boolean {

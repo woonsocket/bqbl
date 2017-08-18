@@ -5,6 +5,7 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { Observable } from 'rxjs/Observable';
 import * as firebase from 'firebase/app';
+import { Router }  from '@angular/router';
 
 @Component({
 	templateUrl: './newuser.component.html',
@@ -15,17 +16,19 @@ export class NewUserComponent {
 	db = null;
 	user: Observable<firebase.User>;
 	uid: string;
+	router: Router;
 
-	constructor(db: AngularFireDatabase, private afAuth: AngularFireAuth) {
+	constructor(db: AngularFireDatabase, private afAuth: AngularFireAuth, router: Router) {
 		this.db = db;
 		this.user = afAuth.authState;
 		this.user.subscribe(value => {
 			this.userData = this.db.object('/tmp/'+value.uid);
 			this.uid = value.uid;
 		});
+		this.router = router;
 	};
 
-	onReset(team1: string, team2: string, team3: string, team4: string) : void {
+	onCreate(team1: string, team2: string, team3: string, team4: string) : void {
 		var user = new User();
 		var teamNames = [team1, team2, team3, team4];
 		user.name = "Harvey";
@@ -43,7 +46,9 @@ export class NewUserComponent {
 			}
 			user.weeks[weekNum] = newWeek;
 		}
-		this.db.object("/tmp/"+this.uid).set(user);
+		this.db.object("/tmp/"+this.uid).set(user).then( _ => {
+			this.router.navigate(["lineup"]);
+		});
 	}
 }
 
@@ -60,6 +65,6 @@ export class Team {
 	name: string;
 	selected: boolean;	
 }
-const WEEK_NAMES: string[] = ["p1","p2","p3","p4"];
+const WEEK_NAMES: string[] = ["p1","p2","p3","p4", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"];
 
 
