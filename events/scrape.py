@@ -249,13 +249,16 @@ class Events(object):
         return is_new
 
     @staticmethod
-    def create_from_db(year, week):
-        ref = db.reference('/events/{y}/{w}'.format(y=year, w=week))
-        db_events = ref.get() or {}
+    def create_from_dict(d):
+        """Initializes an Events from a dict.
+
+        Each value in the dict is a dict mapping an event ID (see _id) to an
+        event (see _summary).
+        """
         return Events(
-            fumbles=db_events.get('fumbles', {}),
-            safeties=db_events.get('safeties', {}),
-            interceptions=db_events.get('interceptions', {}))
+            fumbles=d.get('fumbles', {}),
+            safeties=d.get('safeties', {}),
+            interceptions=d.get('interceptions', {}))
 
 
 class Plays(object):
@@ -435,7 +438,8 @@ def main():
         notifier = slack.NoOpNotifier()
 
     player_cache = PlayerCache(db.reference('/playerpositions').get() or {})
-    events = Events.create_from_db(season, week)
+    events_ref = db.reference('/events/{0}/{1}'.format(season, week))
+    events = Events.create_from_dict(events_ref.get() or {})
     plays = Plays(player_cache, events, notifier)
     for id in game_ids:
         url = ('http://www.nfl.com/liveupdate/game-center/{0}/{0}_gtd.json'
