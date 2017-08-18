@@ -465,10 +465,27 @@ bqbl.scoreObjectToTeamScore = function(team, scoreObject) {
   return new bqbl.TeamScore(
       team,
       scoreObject['OPP'] || '',
-      scoreObject['URL'] || 'javascript:void(0);',
+      bqbl.nflBoxScoreUrl(
+          bqbl.SEASON, bqbl.activeWeek(), scoreObject['ID'].toString()),
       scoreObject['CLOCK'],
       bqbl.computeStatLine(originalScoreObject),
       scoreComponents);
+};
+
+
+/**
+ * @param {string} season The year of the current season.
+ * @param {string} week A week number. Preseason weeks are 'P0' through 'P4'.
+ * @param {string} gameId An NFL.com game ID.
+ */
+bqbl.nflBoxScoreUrl = function(season, week, gameId) {
+  let nflWeek = week.startsWith('P') ? `PRE${week.slice(1)}` : `REG${week}`;
+  // Actually, this component of the path doesn't seem to matter at all, as long
+  // as it's non-empty. NFL.com puts the team nicknames in there
+  // ('patriots@falcons'), but it appears to be purely for URL aesthetics.
+  let atCode = 'score';
+  return `http://www.nfl.com/gamecenter/` +
+      `${gameId}/${season}/${nflWeek}/${atCode}#tab=analyze&analyze=boxscore`;
 };
 
 

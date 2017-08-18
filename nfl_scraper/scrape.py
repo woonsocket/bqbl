@@ -48,14 +48,6 @@ def ordinal(n):
     return {'1': '1st', '2': '2nd', '3': '3rd', '4': '4th'}.get(n) or str(n)
 
 
-def nflcom_week(w):
-    """Converts a week number to the format used by NFL.com."""
-    w = str(w)
-    if w.startswith('P'):
-        return 'PRE' + w[1:]
-    return 'REG' + w
-
-
 def parse_box(box, is_qb):
     outcomes = collections.defaultdict(int)
     for pid, passer in box.get('passing', {}).items():
@@ -177,7 +169,8 @@ class Plays(object):
         self.notifier = notifier
 
     def process(self, season, week, game_id, data):
-        data = data.get(str(game_id))
+        game_id = str(game_id)
+        data = data.get(game_id)
         if not data:
             # Empty data file. Maybe the game hasn't started yet.
             return
@@ -189,22 +182,10 @@ class Plays(object):
         home_abbr = home_box['abbr']
         away_abbr = away_box['abbr']
 
-        passers = (set(home_box['stats'].get('passing', {}).keys()) |
-                   set(away_box['stats'].get('passing', {}).keys()))
-
-        def is_qb(pid):
-            return (pid in passers and
-                    self.player_cache.lookup_position(pid) == 'QB')
-
-        # Actually, this component of the path doesn't seem to matter at all, as
-        # long as it's non-empty. NFL.com puts the team nicknames in there
-        # ('patriots@falcons'), but it appears to be purely for URL aesthetics.
-        at_code = '{0}@{1}'.format(away_abbr, home_abbr)
-        box_url = ('http://www.nfl.com/gamecenter/{0}/{1}/{2}/{3}'
-                   '#tab=analyze&analyze=boxscore'
-                   .format(game_id, season, nflcom_week(week), at_code))
-        self.outcomes_by_team[home_abbr]['URL'] = box_url
-        self.outcomes_by_team[away_abbr]['URL'] = box_url
+        self.outcomes_by_team[home_abbr]['ID'] = game_id
+        self.outcomes_by_team[away_abbr]['ID'] = game_id
+        self.outcomes_by_team[home_abbr]['OPP'] = away_abbr
+        self.outcomes_by_team[away_abbr]['OPP'] = home_abbr
 
         quarter = data['qtr']
         if quarter == 'Final':
@@ -214,8 +195,13 @@ class Plays(object):
                 time=data['clock'], quarter=ordinal(quarter))
         self.outcomes_by_team[home_abbr]['CLOCK'] = clock
         self.outcomes_by_team[away_abbr]['CLOCK'] = clock
-        self.outcomes_by_team[home_abbr]['OPP'] = away_abbr
-        self.outcomes_by_team[away_abbr]['OPP'] = home_abbr
+
+        passers = (set(home_box['stats'].get('passing', {}).keys()) |
+                   set(away_box['stats'].get('passing', {}).keys()))
+
+        def is_qb(pid):
+            return (pid in passers and
+                    self.player_cache.lookup_position(pid) == 'QB')
 
         # Read box score stats.
         for k, v in parse_box(home_box['stats'], is_qb).items():
