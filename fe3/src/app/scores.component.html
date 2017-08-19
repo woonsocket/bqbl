@@ -7,10 +7,10 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let user of userList">
-      <td>{{user.name}}</td>
-      <td><span>{{user.team1}}</span><span>{{user.score1}}</span></td>
-      <td><span>{{user.team2}}</span><span>{{user.score2}}</span></td>
+    <tr *ngFor="let row of scoreRows">
+      <td>{{row.name}}</td>
+      <td><span>{{row.team1}}</span>&nbsp;<span>{{row.score1}}</span></td>
+      <td><span>{{row.team2}}</span>&nbsp;<span>{{row.score2}}</span></td>
     </tr>
   </tbody>
 </table>

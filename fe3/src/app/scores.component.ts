@@ -11,22 +11,68 @@ import * as firebase from 'firebase/app';
 })
 export class ScoresComponent {
 	userDataList: FirebaseListObservable<any>;
+	scoresList: FirebaseListObservable<any>;
 	db = null;
 	user: Observable<firebase.User>;
-	userList = [];
+	userToTeams = {};
+	teamToScores = {};
+	scoreRows = [];
 	constructor(db: AngularFireDatabase, private afAuth: AngularFireAuth) {
 		this.db = db;
 		this.user = afAuth.authState;
 		this.user.subscribe(value => {
-			this.userDataList = this.db.list('/tmp/');
+			this.userDataList = this.db.list('/tmp');
 			this.userDataList.subscribe(users => {
-				console.log(users);
-				for (var i = 0; i < users.length; i++) {
-					console.log(users[i]);
-					this.userList.push({'name': users[i].name});
+				for (var user of users) {
+					var week = user.weeks[1];
+					var activeTeams = [];
+					for (var team of week.teams) {
+						if (team.selected) {
+							activeTeams.push(team.name);
+						}
+					}
+					// TODO(harveyj): Make this uid keyed.
+					this.userToTeams[user.name] = activeTeams;
 				}
+				this.updateScores();
 			});
+			// TODO(harveyj): Make path variable-driven.
+			this.scoresList = this.db.list('/scores/2017/P1');
+			this.scoresList.subscribe(scores => {
+				for (var score of scores) {
+					this.teamToScores[score.$key] = score.total;
+				}
+				this.teamToScores['N/A'] = 0;
+				this.updateScores();
+			});
+
 		});
-	};
+	}
+
+	updateScores() : void {
+		this.scoreRows = [];
+		for (var name in this.userToTeams) {
+			var teams = this.userToTeams[name];
+			teams[0] = teams[0] || 'N/A';
+			teams[1] = teams[1] || 'N/A';
+
+			var scoreRow = {
+				'name':  name,
+				'team1': teams[0],
+				'score1': this.getScore(teams[0]),
+				'team2': teams[1],
+				'score2': this.getScore(teams[1]),
+			}
+			this.scoreRows.push(scoreRow);
+		}
+	}
+
+	getScore(teamName : string) : number {
+		if (!this.teamToScores[teamName]) {
+			return 0;
+		}
+		return this.teamToScores[teamName];
+	}
 }
+
 
