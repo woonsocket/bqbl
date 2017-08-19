@@ -7,5 +7,4 @@ events/BQBL-2c621a7cef1f.json
 fe3/src/environments/environment.prod.ts
 private-keys
 sandbox/*
-
-fe3/src/environments/environment.prod.ts
+functions/node_modules/*

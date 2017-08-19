@@ -10,14 +10,22 @@ import * as firebase from 'firebase/app';
 	templateUrl: './scores.component.html',
 })
 export class ScoresComponent {
-	userDataList: FirebaseListObservable<any[]>;
+	userDataList: FirebaseListObservable<any>;
 	db = null;
 	user: Observable<firebase.User>;
+	userList = [];
 	constructor(db: AngularFireDatabase, private afAuth: AngularFireAuth) {
 		this.db = db;
 		this.user = afAuth.authState;
 		this.user.subscribe(value => {
 			this.userDataList = this.db.list('/tmp/');
+			this.userDataList.subscribe(users => {
+				console.log(users);
+				for (var i = 0; i < users.length; i++) {
+					console.log(users[i]);
+					this.userList.push({'name': users[i].name});
+				}
+			});
 		});
 	};
 }
