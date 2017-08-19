@@ -25,22 +25,23 @@ export class ScoresComponent {
 	constructor(db: AngularFireDatabase, private afAuth: AngularFireAuth, route: ActivatedRoute, router: Router) {
 		this.db = db;
 		this.user = afAuth.authState;
-		this.week =	route.snapshot.queryParams['week'];
+		this.week =	route.snapshot.queryParams['week'] || this.week;
 		this.route = route;
 
 		this.user.subscribe(value => {
 			this.userDataList = this.db.list('/tmp');
 			this.userDataList.subscribe(users => {
 				for (var user of users) {
-					// TODO(harveyj): make this read correct week.
-					var week = user.weeks[1];
-					var activeTeams = [];
-					for (var team of week.teams) {
-						if (team.selected) {
-							activeTeams.push(team.name);
+					this.userToTeams[user.$key] = {};
+					for (var week of user.weeks) {
+						var activeTeams = [];
+						for (var team of week.teams) {
+							if (team.selected) {
+								activeTeams.push(team.name);
+							}
 						}
+						this.userToTeams[user.$key][week.id] = {'name': user.name, 'teams':activeTeams};
 					}
-					this.userToTeams[user.$key] = {'name': user.name, 'teams':activeTeams};
 				}
 				this.updateScores();
 			});
@@ -52,6 +53,7 @@ export class ScoresComponent {
 		this.route.queryParams.subscribe((params: Params) => {
 	      this.week = params.week || "1";
 	      this.year = params.year || "2017"
+	      console.log(this.week);
 	      this.loadScoresDb();
     	});
 	}
@@ -65,14 +67,15 @@ export class ScoresComponent {
 			}
 			this.teamToScores['N/A'] = 0;
 			this.updateScores();
+			console.log(this.teamToScores);
 		});
 	}
 
 	updateScores() : void {
 		this.scoreRows = [];
 		for (var uid in this.userToTeams) {
-			var name = this.userToTeams[uid].name;
-			var teams = this.userToTeams[uid].teams;
+			var name = this.userToTeams[uid][this.week].name;
+			var teams = this.userToTeams[uid][this.week].teams;
 			teams[0] = teams[0] || 'N/A';
 			teams[1] = teams[1] || 'N/A';
 
