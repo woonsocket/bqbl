@@ -12,15 +12,11 @@ import { Router } from '@angular/router';
   styleUrls: ['./lineup.component.css']
 })
 export class LineupComponent {
-  title = 'lineup works!';
-  teams = [];
   userData: FirebaseObjectObservable<any>;
-  db = null;
   user: Observable<firebase.User>;
   uid: string;
   displayName: string;
-  constructor(db: AngularFireDatabase, private afAuth: AngularFireAuth, private router: Router) {
-    this.db = db;
+  constructor(private db: AngularFireDatabase, private afAuth: AngularFireAuth, private router: Router) {
     this.user = afAuth.authState;
     this.user.subscribe(value => {
       if (!value) {
