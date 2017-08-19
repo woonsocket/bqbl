@@ -35,7 +35,8 @@ export class ScoresComponent {
 						}
 					}
 					// TODO(harveyj): Make this uid keyed.
-					this.userToTeams[user.name] = activeTeams;
+					this.userToTeams[user.$key] = {'name': user.name, 'teams':activeTeams};
+					console.log(user.$key);
 				}
 				this.updateScores();
 			});
@@ -54,8 +55,9 @@ export class ScoresComponent {
 
 	updateScores() : void {
 		this.scoreRows = [];
-		for (var name in this.userToTeams) {
-			var teams = this.userToTeams[name];
+		for (var uid in this.userToTeams) {
+			var name = this.userToTeams[uid].name;
+			var teams = this.userToTeams[uid].teams;
 			teams[0] = teams[0] || 'N/A';
 			teams[1] = teams[1] || 'N/A';
 
