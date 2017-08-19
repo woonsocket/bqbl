@@ -1,9 +1,9 @@
 
-import { Component } from '@angular/core';
-import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
-import { Observable } from 'rxjs/Observable';
 import * as firebase from 'firebase/app';
 import { ActivatedRoute, Params } from '@angular/router';
+import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
+import { Component } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
 
 @Component({
   templateUrl: './nflscores.component.html',
