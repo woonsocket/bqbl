@@ -6,7 +6,10 @@
 			<span class="mdl-layout-title">BQBL</span>
 			<!-- Add spacer, to align navigation to the right -->
 			<div class="mdl-layout-spacer"></div>
-			<!-- Navigation. We hide it in small screens. -->
+			<select [(ngModel)]="selectedWeek" class="mdl-navigation__link"
+			        (change)="onWeekChange()">
+				<option *ngFor="let w of allWeeks" [ngValue]="w.val">{{w.name}}</option>
+			</select>
 			<a class="mdl-navigation__link" (click)=login()><span>{{displayName}}</span></a>
 		</div>
 	</header>

@@ -13,6 +13,7 @@ import { ConsoleComponent } from './console.component';
 import { RouterModule, Routes } from '@angular/router';
 import { environment } from '../environments/environment';
 import { routing } from './app.routes';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
 	declarations: [
@@ -26,6 +27,7 @@ import { routing } from './app.routes';
 	],
 	imports: [
 		BrowserModule,
+		FormsModule,
 		AngularFireModule.initializeApp(environment.firebase),
 		AngularFireDatabaseModule,
 		AngularFireAuthModule,

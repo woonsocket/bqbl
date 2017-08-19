@@ -5,7 +5,8 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
 import { Observable } from 'rxjs/Observable';
 import { AngularFireAuth } from 'angularfire2/auth';
 import * as firebase from 'firebase/app';
-import { ActivatedRoute }  from '@angular/router';
+import { ActivatedRoute, Router, NavigationEnd, Event, Params }  from '@angular/router';
+import 'rxjs/add/operator/switchMap';
 
 @Component({
 	templateUrl: './scores.component.html',
@@ -19,14 +20,19 @@ export class ScoresComponent {
 	teamToScores = {};
 	scoreRows = [];
 	week = "1";
-	constructor(db: AngularFireDatabase, private afAuth: AngularFireAuth, private route: ActivatedRoute) {
+	year = "2017"
+	route: ActivatedRoute;
+	constructor(db: AngularFireDatabase, private afAuth: AngularFireAuth, route: ActivatedRoute, router: Router) {
 		this.db = db;
 		this.user = afAuth.authState;
 		this.week =	route.snapshot.queryParams['week'];
+		this.route = route;
+
 		this.user.subscribe(value => {
 			this.userDataList = this.db.list('/tmp');
 			this.userDataList.subscribe(users => {
 				for (var user of users) {
+					// TODO(harveyj): make this read correct week.
 					var week = user.weeks[1];
 					var activeTeams = [];
 					for (var team of week.teams) {
@@ -34,22 +40,31 @@ export class ScoresComponent {
 							activeTeams.push(team.name);
 						}
 					}
-					// TODO(harveyj): Make this uid keyed.
 					this.userToTeams[user.$key] = {'name': user.name, 'teams':activeTeams};
-					console.log(user.$key);
 				}
 				this.updateScores();
 			});
+			this.loadScoresDb();
+		});
+	}
 
-			this.scoresList = this.db.list('/scores/2017/' + this.week);
-			this.scoresList.subscribe(scores => {
-				for (var score of scores) {
-					this.teamToScores[score.$key] = score.total;
-				}
-				this.teamToScores['N/A'] = 0;
-				this.updateScores();
-			});
+	ngOnInit() {
+		this.route.queryParams.subscribe((params: Params) => {
+	      this.week = params.week || "1";
+	      this.year = params.year || "2017"
+	      this.loadScoresDb();
+    	});
+	}
 
+	loadScoresDb() : void {
+		this.teamToScores = {};
+		this.scoresList = this.db.list('/scores/'+this.year+'/' + this.week);
+		this.scoresList.subscribe(scores => {
+			for (var score of scores) {
+				this.teamToScores[score.$key] = score.total;
+			}
+			this.teamToScores['N/A'] = 0;
+			this.updateScores();
 		});
 	}
 
