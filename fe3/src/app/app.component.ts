@@ -14,40 +14,15 @@ import { ActivatedRoute, Router, NavigationEnd, Event, Params} from '@angular/ro
 })
 export class AppComponent {
   userData: FirebaseObjectObservable<any>;
-  db = null;
   user: Observable<firebase.User>;
   uid = '';
   displayName = 'Login';
   week = '1';
-  allWeeks = [
-  {'name': 'Preseason 1', 'val': 'P1'},
-  {'name': 'Preseason 2', 'val': 'P2'},
-  {'name': 'Preseason 3', 'val': 'P3'},
-  {'name': 'Preseason 4', 'val': 'P4'},
-  {'name': 'Week 1', 'val': '1'},
-  {'name': 'Week 2', 'val': '2'},
-  {'name': 'Week 3', 'val': '3'},
-  {'name': 'Week 4', 'val': '4'},
-  {'name': 'Week 5', 'val': '5'},
-  {'name': 'Week 6', 'val': '6'},
-  {'name': 'Week 7', 'val': '7'},
-  {'name': 'Week 8', 'val': '8'},
-  {'name': 'Week 9', 'val': '9'},
-  {'name': 'Week 10', 'val': '10'},
-  {'name': 'Week 11', 'val': '11'},
-  {'name': 'Week 12', 'val': '12'},
-  {'name': 'Week 13', 'val': '13'},
-  {'name': 'Week 14', 'val': '14'},
-  {'name': 'Week 15', 'val': '15'},
-  {'name': 'Week 16', 'val': '16'},
-  {'name': 'Week 17', 'val': '17'},
-  ];
+  allWeeks = ALL_WEEKS;
   selectedWeek = 'P1';
   year = '2017';
   constructor(db: AngularFireDatabase, private afAuth: AngularFireAuth, private router: Router, private route: ActivatedRoute) {
     this.user = afAuth.authState;
-    this.router = router;
-    this.route = route;
     this.user.subscribe(value => {
       if (!value) {
         this.displayName = 'Login';
@@ -58,7 +33,6 @@ export class AppComponent {
       this.uid = value.uid;
     });
   }
-
 
   ngOnInit() {
     this.route.queryParams.subscribe((params: Params) => {
@@ -86,4 +60,28 @@ export class AppComponent {
     this.router.navigate([], {'queryParams': {'week': this.selectedWeek}});
   }
 }
+
+let ALL_WEEKS = [
+  {'name': 'Preseason 1', 'val': 'P1'},
+  {'name': 'Preseason 2', 'val': 'P2'},
+  {'name': 'Preseason 3', 'val': 'P3'},
+  {'name': 'Preseason 4', 'val': 'P4'},
+  {'name': 'Week 1', 'val': '1'},
+  {'name': 'Week 2', 'val': '2'},
+  {'name': 'Week 3', 'val': '3'},
+  {'name': 'Week 4', 'val': '4'},
+  {'name': 'Week 5', 'val': '5'},
+  {'name': 'Week 6', 'val': '6'},
+  {'name': 'Week 7', 'val': '7'},
+  {'name': 'Week 8', 'val': '8'},
+  {'name': 'Week 9', 'val': '9'},
+  {'name': 'Week 10', 'val': '10'},
+  {'name': 'Week 11', 'val': '11'},
+  {'name': 'Week 12', 'val': '12'},
+  {'name': 'Week 13', 'val': '13'},
+  {'name': 'Week 14', 'val': '14'},
+  {'name': 'Week 15', 'val': '15'},
+  {'name': 'Week 16', 'val': '16'},
+  {'name': 'Week 17', 'val': '17'},
+  ];
 
