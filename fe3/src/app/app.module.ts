@@ -5,6 +5,7 @@ import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 import { ScoresComponent } from './scores.component';
+import { NFLScoresComponent } from './nflscores.component';
 import { NewUserComponent } from './newuser.component';
 import { LineupComponent } from './lineup.component';
 import { LoginComponent } from './login.component';
@@ -17,9 +18,10 @@ import { routing } from './app.routes';
 	declarations: [
 		AppComponent,
 		ScoresComponent,
+		NFLScoresComponent,
 		NewUserComponent,
-		LineupComponent, 
-		ConsoleComponent, 
+		LineupComponent,
+		ConsoleComponent,
 		LoginComponent,
 	],
 	imports: [

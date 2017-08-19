@@ -4,13 +4,8 @@
 {
   "rules": {
     ".read": "auth != null",
-    "score": {
+    "scores": {
       ".read": true,
-      "$season": {
-        // Writes are enabled only for the current season so that we don't
-        // accidentally overwrite historical data.
-        ".write": "auth.uid == 'score-scraper' && $season == '2017'"
-      }
     },
     "stats": {
       ".read": true,
@@ -21,12 +16,12 @@
     "events": {
       ".read": true,
       "$season": {
-	  	  ".write": "auth.uid == 'score-scraper' && $season == '2017'"
+        ".write": "auth.uid == 'score-scraper' && $season == '2017'"
       }
     },
     "tmp": {
-	  	".read": true,
-	  	".write": true
+      ".read": true,
+      ".write": true
     },
     "playerpositions": {
       ".write": "auth.uid == 'score-scraper'"

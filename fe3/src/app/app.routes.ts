@@ -4,6 +4,7 @@ import { NewUserComponent } from './newuser.component';
 import { LineupComponent } from './lineup.component';
 import { ConsoleComponent } from './console.component';
 import { ScoresComponent } from './scores.component';
+import { NFLScoresComponent } from './nflscores.component';
 import { LoginComponent } from './login.component';
 import { AppComponent } from './app.component';
 
@@ -19,6 +20,9 @@ export const routes: Routes = [
   { path: 'scores',
   	component: ScoresComponent
   },
+  { path: 'nflscores',
+  	component: NFLScoresComponent
+  },
   { path: 'login',
   	component: LoginComponent
   },
@@ -30,4 +34,3 @@ export const routes: Routes = [
 export const routing: ModuleWithProviders = RouterModule.forRoot(routes,
 //	    	  { enableTracing: true } // <-- debugging purposes only
 );
-
