@@ -7,16 +7,23 @@ admin.initializeApp(functions.config().firebase);
 
 exports.score = functions.database.ref('/stats/{year}/{week}/{team}')
     .onWrite(event => {
+      let {year, week, team} = event.params;
+
       // Grab the current value of what was written to the Realtime Database.
       const original = event.data.val();
-      console.log('Scoring', event.params.team, original);
-      var components = bqbl.computeScoreComponents(event.data.val());
-      var score = 0;
-      for (var i = 0; i < components.length; i++) {
-        score += components[i].pointValue;
-      }
+      console.log('Scoring', team, original);
+      let components = bqbl.computeScoreComponents(event.data.val());
+      let compObjs = [];
+      let score = 0;
+      components.forEach((c) => {
+        score += c.pointValue;
+        compObjs.push({'value': c.pointValue, 'desc': c.description});
+      });
 
-      return event.data.ref.child('score').set(score);
+      admin.database().ref(`/scores/${year}/${week}/${team}`).update({
+        'total': score,
+        'components': compObjs,
+      });
     });
 
 
