@@ -41,7 +41,7 @@ ScoreComponent = function(pointValue, description) {
 };
 
 /**
- * @return {!Array.<!bqbl.ScoreComponent>} A list of ScoreComponents.
+ * @return {!Array.<!ScoreComponent>} A list of ScoreComponents.
  */
 bqbl.computeScoreComponents = function(qbScore) {
   keys = ['ATT', 'INT', 'INT6', 'INT6OT', 'FUM6', 'FUM6OT', 'FUML', 'TD', 'PASSYD', 'SACKYD', 'SACK', 'SAF',
@@ -67,11 +67,11 @@ bqbl.computeScoreComponents = function(qbScore) {
     bqbl.simpleMultiple(20, qbScore['FREEAGENT'], 'free agent starter')
   ];
   if (qbScore['LONG'] < 25)
-    pointsList.push(new bqbl.ScoreComponent(10, 'no pass of 25+ yards'));
+    pointsList.push(new ScoreComponent(10, 'no pass of 25+ yards'));
   if (qbScore['RUSHYD'] >= 75)
-    pointsList.push(new bqbl.ScoreComponent(-8, '75+ rushing yards'));
+    pointsList.push(new ScoreComponent(-8, '75+ rushing yards'));
   if (qbScore['INT6OT'])
-    pointsList.push(new bqbl.ScoreComponent(50, 'game-losing pick six in OT'));
+    pointsList.push(new ScoreComponent(50, 'game-losing pick six in OT'));
   return pointsList.filter(function(x) { return x.pointValue != 0; });
 };
 
@@ -132,7 +132,7 @@ bqbl.touchdownPoints = function(tds) {
  * @param {number} quantity How many Ys there are.
  * @param {string} description A description of what Y is. Probably should be
  *     for the singular form of Y.
- * @return {!bqbl.ScoreComponent} A ScoreComponent for the points described.
+ * @return {!ScoreComponent} A ScoreComponent for the points described.
  */
 bqbl.simpleMultiple = function(pointsPer, quantity, description) {
   quantity = quantity || 0;
