@@ -5,6 +5,7 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
 import { Observable } from 'rxjs/Observable';
 import { AngularFireAuth } from 'angularfire2/auth';
 import * as firebase from 'firebase/app';
+import { ActivatedRoute }  from '@angular/router';
 
 @Component({
 	templateUrl: './scores.component.html',
@@ -17,9 +18,11 @@ export class ScoresComponent {
 	userToTeams = {};
 	teamToScores = {};
 	scoreRows = [];
-	constructor(db: AngularFireDatabase, private afAuth: AngularFireAuth) {
+	week = "1";
+	constructor(db: AngularFireDatabase, private afAuth: AngularFireAuth, private route: ActivatedRoute) {
 		this.db = db;
 		this.user = afAuth.authState;
+		this.week =	route.snapshot.queryParams['week'];
 		this.user.subscribe(value => {
 			this.userDataList = this.db.list('/tmp');
 			this.userDataList.subscribe(users => {
@@ -36,8 +39,8 @@ export class ScoresComponent {
 				}
 				this.updateScores();
 			});
-			// TODO(harveyj): Make path variable-driven.
-			this.scoresList = this.db.list('/scores/2017/P1');
+
+			this.scoresList = this.db.list('/scores/2017/' + this.week);
 			this.scoresList.subscribe(scores => {
 				for (var score of scores) {
 					this.teamToScores[score.$key] = score.total;
