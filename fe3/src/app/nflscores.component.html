@@ -1,14 +1,14 @@
 <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-  <thead>
-    <tr>
-      <th>Team</th>
-      <th>BQBL points</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let score of scores | async">
-      <td>{{ score['$key'] }}</td>
-      <td>{{ score['total'] }}</td>
-    </tr>
-  </tbody>
+ <thead>
+  <tr>
+   <th>Team</th>
+   <th>BQBL points</th>
+  </tr>
+ </thead>
+ <tbody>
+  <tr *ngFor="let score of scores | async">
+   <td>{{ score['$key'] }}</td>
+   <td>{{ score['total'] }}</td>
+  </tr>
+ </tbody>
 </table>

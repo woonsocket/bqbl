@@ -1,9 +1,9 @@
 <ul>
 <li *ngFor="let week of (userData|async)?.weeks; let i = index">
-    <span style="width:30px;">{{week.id}}</span>
-    <span *ngFor="let team of week.teams" 
-    [class.selected]="team.selected" (click)="onSelect(week, team, i)">
-        {{team.name}}
-    </span> 
-  </li>
+  <span style="width:30px;">{{week.id}}</span>
+  <span *ngFor="let team of week.teams" 
+  [class.selected]="team.selected" (click)="onSelect(week, team, i)">
+    {{team.name}}
+  </span> 
+ </li>
 </ul>

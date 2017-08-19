@@ -16,25 +16,25 @@ import { routing } from './app.routes';
 import { FormsModule } from '@angular/forms';
 
 @NgModule({
-	declarations: [
-		AppComponent,
-		ScoresComponent,
-		NFLScoresComponent,
-		NewUserComponent,
-		LineupComponent,
-		ConsoleComponent,
-		LoginComponent,
-	],
-	imports: [
-		BrowserModule,
-		FormsModule,
-		AngularFireModule.initializeApp(environment.firebase),
-		AngularFireDatabaseModule,
-		AngularFireAuthModule,
-		routing,
-	],
-	providers: [],
-	bootstrap: [AppComponent]
+  declarations: [
+    AppComponent,
+    ScoresComponent,
+    NFLScoresComponent,
+    NewUserComponent,
+    LineupComponent,
+    ConsoleComponent,
+    LoginComponent,
+  ],
+  imports: [
+    BrowserModule,
+    FormsModule,
+    AngularFireModule.initializeApp(environment.firebase),
+    AngularFireDatabaseModule,
+    AngularFireAuthModule,
+    routing,
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
 })
 
 export class AppModule { }

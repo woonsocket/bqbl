@@ -1,16 +1,16 @@
 <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-  <thead>
-    <tr>
-      <th>Player</th>
-      <th>Team 1</th>
-      <th>Team 2</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let row of scoreRows">
-      <td>{{row.name}}</td>
-      <td><span>{{row.team1}}</span>&nbsp;<span>{{row.score1}}</span></td>
-      <td><span>{{row.team2}}</span>&nbsp;<span>{{row.score2}}</span></td>
-    </tr>
-  </tbody>
+ <thead>
+  <tr>
+   <th>Player</th>
+   <th>Team 1</th>
+   <th>Team 2</th>
+  </tr>
+ </thead>
+ <tbody>
+  <tr *ngFor="let row of scoreRows">
+   <td>{{row.name}}</td>
+   <td><span>{{row.team1}}</span>&nbsp;<span>{{row.score1}}</span></td>
+   <td><span>{{row.team2}}</span>&nbsp;<span>{{row.score2}}</span></td>
+  </tr>
+ </tbody>
 </table>
