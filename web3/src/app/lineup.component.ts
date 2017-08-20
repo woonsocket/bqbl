@@ -47,6 +47,9 @@ export class LineupComponent {
 
   onSelect(week: Week, team: Team, weekId: string): void {
     if (!team.selected && !this.isLegalAdd(week)) {
+      let snackbarContainer : any = document.querySelector('#error-toast');
+      let data = {message: 'You can only select two teams per week'};
+      snackbarContainer.MaterialSnackbar.showSnackbar(data);
       return;
     }
     team.selected = !team.selected;
