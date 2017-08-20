@@ -17,9 +17,5 @@ export class ConsoleComponent {
       // if logged in redirect to /
     });
   }
-
-  onLogin() {
-    this.afAuth.auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
-  }
 }
 
