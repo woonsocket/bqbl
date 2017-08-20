@@ -7,6 +7,7 @@ import { Observable } from 'rxjs/Observable';
 
 @Component({
   templateUrl: './nflscores.component.html',
+  styleUrls: ['./nflscores.component.css'],
 })
 export class NFLScoresComponent {
   scores: FirebaseListObservable<any>;

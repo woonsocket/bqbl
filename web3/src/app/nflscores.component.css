@@ -1,0 +1,55 @@
+.score-card-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.score-card {
+  margin: 10px;
+  width: 250px;
+  min-width: 250px;
+  min-height: 100px;
+  position: relative;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 150px;
+}
+
+.score-card-fade-bg {
+  z-index: -65535;
+  background-color: #fff;
+  opacity: 0.8;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.score-card > .mdl-card__supporting-text {
+  color: #000;
+}
+
+.score-card-total {
+  font-weight: bold;
+  font-size: 14pt;
+  text-transform: uppercase;
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+.score-card-comp {
+  display: flex;
+}
+
+.score-card-comp-desc {
+  flex-grow: 1;
+}
+
+.score-card-comp-val {
+  flex-grow: 0;
+  text-align: right;
+}
+
+.score-card-neg {
+  color: #f33;
+}

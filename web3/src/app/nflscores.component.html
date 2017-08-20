@@ -1,14 +1,24 @@
-<table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
- <thead>
-  <tr>
-   <th>Team</th>
-   <th>BQBL points</th>
-  </tr>
- </thead>
- <tbody>
-  <tr *ngFor="let score of scores | async">
-   <td>{{ score['$key'] }}</td>
-   <td>{{ score['total'] }}</td>
-  </tr>
- </tbody>
-</table>
+<div class="score-card-container">
+ <div *ngFor="let score of scores | async"
+      class="mdl-card score-card mdl-shadow--4dp"
+      [ngStyle]="{'background-image': 'url(https://static.nfl.com/static/site/img/logos/svg/teams/' + score['$key'] + '.svg)'}">
+  <div class="score-card-fade-bg"></div>
+
+  <div class="mdl-card__title">
+   <h1 class="mdl-card__title-text">
+    {{ score['$key'] }}
+   </h1>
+  </div>
+  <div class="mdl-card__supporting-text">
+   <div class="score-card-comp score-card-total">
+    <div class="score-card-comp-desc">Total</div>
+    <div [ngClass]="{'score-card-comp-val': true, 'score-card-neg': score.total < 0}">{{ score.total }}</div>
+   </div>
+   <div *ngFor="let comp of score.components"
+        class="score-card-comp">
+    <div class="score-card-comp-desc">{{ comp.desc }}</div>
+    <div [ngClass]="{'score-card-comp-val': true, 'score-card-neg': comp.value < 0}">{{ comp.value }}</div>
+   </div>
+  </div>
+ </div>
+</div>
