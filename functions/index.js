@@ -4,19 +4,15 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
 
-exports.score = functions.database.ref('/stats/{year}/{week}')
+exports.score = functions.database.ref('/stats/{year}/{week}/{team}')
     .onWrite(event => {
       let {year, week, team} = event.params;
 
-      // Grab the current value of what was written to the Realtime Database.
-      const weekStats = event.data.val();
+      const stats = event.data.val();
+      console.log('Scoring', team, stats);
 
-      let allScores = {};
-      entries(weekStats).forEach(([team, stats]) => {
-        console.log('Scoring', team, stats);
-        allScores[team] = computeScore(stats);
-      });
-      admin.database().ref(`/scores/${year}/${week}`).update(allScores);
+      const score = computeScore(stats);
+      admin.database().ref(`/scores/${year}/${week}/${team}`).update(score);
     });
 
 
