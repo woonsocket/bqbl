@@ -1,0 +1,15 @@
+- Add a console with benching and safety support
+- Suppress week selector where it doesn't make sense
+- Add year as a URL parameter where it makes sense
+- Move all of the fancy new stuff from the /tmp path
+- Inject a router module extension (terminology?) that reads week and year from the url
+- Add DH support to the lineup setter
+- MDL error bar support for <2 teams in a week
+- Check for illegal team setup (>13, <5)
+- Automatically advance the correct default week
+- Add a running total to the scoreboard
+- Add a whole-year per-team stats view
+- Add a whole-year per-user stats view
+- Lock down when teams can be selected
+- Pre-populate new users with legal team selections
+- Add multiple league support because Jason is very reasonable
