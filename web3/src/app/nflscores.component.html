@@ -6,18 +6,25 @@
 
   <div class="mdl-card__title">
    <h1 class="mdl-card__title-text">
-    {{ score['$key'] }}
+    {{ score.$key }}
    </h1>
+   <div class="mdl-card__subtitle-text mdl-color-text--grey-900">
+    {{ score.lineScore }}
+   </div>
   </div>
-  <div class="mdl-card__supporting-text">
+  <div class="mdl-card__supporting-text mdl-color-text--grey-900">
    <div class="score-card-comp score-card-total">
     <div class="score-card-comp-desc">Total</div>
-    <div [ngClass]="{'score-card-comp-val': true, 'score-card-neg': score.total < 0}">{{ score.total }}</div>
+    <div [ngClass]="{'score-card-comp-val': true, 'mdl-color-text--red-900': score.total < 0}">
+     {{ score.total }}
+    </div>
    </div>
    <div *ngFor="let comp of score.components"
         class="score-card-comp">
     <div class="score-card-comp-desc">{{ comp.desc }}</div>
-    <div [ngClass]="{'score-card-comp-val': true, 'score-card-neg': comp.value < 0}">{{ comp.value }}</div>
+    <div [ngClass]="{'score-card-comp-val': true, 'mdl-color-text--red-900': comp.value < 0}">
+     {{ comp.value }}
+    </div>
    </div>
   </div>
  </div>

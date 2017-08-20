@@ -18,7 +18,7 @@ export class NFLScoresComponent {
   ngOnInit() {
     this.route.queryParams.subscribe((params: Params) => {
       this.selectedWeek = params.week || '1';
-      this.scores = this.db.list('/scores/2017/' + this.selectedWeek, {
+      this.scores = this.db.list(`/scores/${this.year}/${this.selectedWeek}`, {
         query: {
           orderByChild: 'total'
         }

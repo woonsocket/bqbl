@@ -26,10 +26,6 @@
   right: 0;
 }
 
-.score-card > .mdl-card__supporting-text {
-  color: #000;
-}
-
 .score-card-total {
   font-weight: bold;
   font-size: 14pt;
@@ -49,8 +45,4 @@
 .score-card-comp-val {
   flex-grow: 0;
   text-align: right;
-}
-
-.score-card-neg {
-  color: #f33;
 }

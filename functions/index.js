@@ -11,20 +11,32 @@ exports.score = functions.database.ref('/stats/{year}/{week}/{team}')
 
       // Grab the current value of what was written to the Realtime Database.
       const original = event.data.val();
-      console.log('Scoring', team, original);
-      let components = bqbl.computeScoreComponents(event.data.val());
-      let compObjs = [];
-      let score = 0;
-      components.forEach((c) => {
-        score += c.pointValue;
-        compObjs.push({'value': c.pointValue, 'desc': c.description});
-      });
 
-      admin.database().ref(`/scores/${year}/${week}/${team}`).update({
-        'total': score,
-        'components': compObjs,
-      });
+      console.log('Scoring', team, original);
+      writeScore(year, week, team, original);
     });
+
+
+function writeScore(year, week, team, stats) {
+  let components = bqbl.computeScoreComponents(stats);
+  let lineScore =
+      `${stats['CMP']}/${stats['ATT']},
+       ${stats['PASSYD']} yd,
+       ${stats['TD']} TD,
+       ${stats['INT']} INT`;
+  let compObjs = [];
+  let score = 0;
+  components.forEach((c) => {
+    score += c.pointValue;
+    compObjs.push({'value': c.pointValue, 'desc': c.description});
+  });
+
+  admin.database().ref(`/scores/${year}/${week}/${team}`).update({
+    'total': score,
+    'components': compObjs,
+    'lineScore': lineScore,
+  });
+}
 
 
 bqbl = {};
