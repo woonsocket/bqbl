@@ -11,7 +11,11 @@
    <div class="mdl-card__subtitle-text mdl-color-text--white">
     {{ score.lineScore }}
    </div>
+   <div class="mdl-card__subtitle-text mdl-color-text--white">
+    {{ score.gameInfo.clock }}
+   </div>
   </div>
+
   <div class="mdl-card__supporting-text mdl-color-text--grey-700">
    <div class="score-card-comp score-card-total">
     <div class="score-card-comp-desc">Total</div>
@@ -26,6 +30,13 @@
      {{ comp.value }}
     </div>
    </div>
+  </div>
+
+  <div class="mdl-card__actions mdl-card--border">
+   <a class="mdl-button mdl-button--colored"
+      href="{{ boxScoreLink(score) }}">
+    Box score
+   </a>
   </div>
  </div>
 </div>

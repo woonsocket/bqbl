@@ -24,6 +24,10 @@ function writeScore(year, week, team, stats) {
        ${stats['PASSYD']} yd,
        ${stats['TD']} TD,
        ${stats['INT']} INT`;
+  let gameInfo = {
+    'clock': stats['CLOCK'],
+    'id': stats['ID'],
+  };
   let compObjs = [];
   let score = 0;
   components.forEach((c) => {
@@ -35,6 +39,7 @@ function writeScore(year, week, team, stats) {
     'total': score,
     'components': compObjs,
     'lineScore': lineScore,
+    'gameInfo': gameInfo,
   });
 }
 

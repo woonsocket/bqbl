@@ -25,4 +25,20 @@ export class NFLScoresComponent {
       });
     });
   }
+
+  boxScoreLink(scoreObj: object) {
+    let gameId = scoreObj['gameInfo'] && scoreObj['gameInfo'].id;
+    if (!gameId) {
+      return 'http://www.nfl.com';
+    }
+    let week = this.selectedWeek;
+    let nflWeek = week.startsWith('P') ? `PRE${week.slice(1)}` : `REG${week}`;
+    // Actually, this component of the path doesn't seem to matter at all, as
+    // long as it's non-empty. NFL.com puts the team nicknames in there
+    // ('patriots@falcons'), but it appears to be purely for URL aesthetics.
+    let atCode = 'score';
+    return 'http://www.nfl.com/gamecenter/' +
+        `${gameId}/${this.year}/${nflWeek}/${atCode}` +
+        '#tab=analyze&analyze=boxscore';
+  }
 }
