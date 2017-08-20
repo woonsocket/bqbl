@@ -6,13 +6,17 @@ admin.initializeApp(functions.config().firebase);
 
 exports.score = functions.database.ref('/stats/{year}/{week}/{team}')
     .onWrite(event => {
-      let {year, week, team} = event.params;
+      const {year, week, team} = event.params;
+      const statsRef = admin.database().ref(`/scores/${year}/${week}/${team}`);
 
       const stats = event.data.val();
+      if (stats == null) {
+        console.log('Removing', team, stats);
+        statsRef.remove();
+        return;
+      }
       console.log('Scoring', team, stats);
-
-      const score = computeScore(stats);
-      admin.database().ref(`/scores/${year}/${week}/${team}`).update(score);
+      statsRef.update(computeScore(stats));
     });
 
 
