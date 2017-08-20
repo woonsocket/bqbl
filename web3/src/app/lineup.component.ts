@@ -88,16 +88,28 @@ export class LineupComponent {
         event.srcElement.value = '';
         return;
       }
-      let team = new Team();
-      team.name = event.srcElement.value;
-      team.selected = true;
-      week.teams[4] = team;
+      this.pushTeamFromInput(event.srcElement, week.teams);
       console.log(week);
     } else {
-      week.teams.pop();
-      console.log(week);
+      let dh1 = event.srcElement.parentElement.parentElement.querySelector('.dh1 input');
+      let dh2 = event.srcElement.parentElement.parentElement.querySelector('.dh2 input');
+      week.teams = week.teams.splice(0,4);
+      if (dh1.value != '') {
+        this.pushTeamFromInput(dh1, week.teams);
+      }
+      if (dh2.value != '') {
+        this.pushTeamFromInput(dh2, week.teams);
+      }
     }
+    console.log(week);
     this.db.object('/tmp/' + this.uid + '/weeks/' + weekId + '/teams').set(week.teams);
+  }
+
+  pushTeamFromInput(elem, teams) {
+      let team = new Team();
+      team.name = elem.value;
+      team.selected = true;
+      teams.push(team);
   }
 
 }
