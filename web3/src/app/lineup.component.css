@@ -1,13 +1,21 @@
 .selected {
-  background:#b3d4fc;
+	background:#b3d4fc;
 }
 
-li {
-  display: block;
+td.week {
+	text-align:right;
+	width:20px;
+	padding: 10px;
 }
-
-li span {
-  padding: 10px;
-  display: inline-block;
-  margin:auto;
+td.team {
+	min-width:30px;
+	text-align: center;
+}
+tr.head {
+	font-weight: bold;
+}
+tr:nth-child(even) {background: #f8f8f8}
+table {
+	width:90%;
+	margin:auto;
 }

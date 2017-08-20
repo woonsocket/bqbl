@@ -1,15 +1,20 @@
-<ul>
-<li *ngFor="let week of (userData|async)?.weeks; let i = index">
-  <span style="width:30px;">{{week.id}}</span>
-  <span *ngFor="let team of week.teams" 
+<table>
+ <thead>
+  <tr class=head>
+   <td class=week>Week</td><td class=team>Team</td><td class=team>Team</td><td class=team>Team</td><td class=team>Team</td>
+  </tr>
+ </thead>
+ <tr *ngFor="let week of (userData|async)?.weeks; let i = index">
+  <td class=week>{{week.id}}</td>
+  <td *ngFor="let team of week.teams" class=team
   [class.selected]="team.selected" (click)="onSelect(week, team, i)">
-    {{team.name}}
-  </span> 
- </li>
-</ul>
+  {{team.name}}
+ </td> 
+</tr>
+</table>
 
 
 <div id="error-toast" class="mdl-js-snackbar mdl-snackbar">
-  <div class="mdl-snackbar__text"></div>
-  <button class="mdl-snackbar__action" type="button"></button>
+ <div class="mdl-snackbar__text"></div>
+ <button class="mdl-snackbar__action" type="button"></button>
 </div>
