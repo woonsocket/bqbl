@@ -5,7 +5,7 @@
   "rules": {
     ".read": "auth != null",
     "scores": {
-      ".read": true,
+      ".read": true
     },
     "stats": {
       ".read": true,
