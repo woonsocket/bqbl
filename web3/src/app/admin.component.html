@@ -1,0 +1,18 @@
+<div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+ <div class="mdl-tabs__tab-bar">
+  <a href="#weeks-panel" class="mdl-tabs__tab is-active">Weeks</a>
+ </div>
+
+ <div class="mdl-tabs__panel is-active" id="weeks-panel">
+  <ul class="demo-list-control mdl-list">
+   <li class="mdl-list__item" *ngFor="let week of weeks">
+    <span class="mdl-list__item-primary-content">
+     {{week.name}}
+    </span>
+    <span class="mdl-list__item-secondary-action">
+      <input type="button" class="mdl-checkbox__input" (click)="onClick(week.val)" value="Create">
+    </span>
+   </li>
+  </ul>
+ </div>
+</div>

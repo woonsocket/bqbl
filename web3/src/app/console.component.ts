@@ -7,7 +7,7 @@ import { Component } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
 @Component({
-  templateUrl: './login.component.html',
+  templateUrl: './console.component.html',
 })
 export class ConsoleComponent {
   user: Observable<firebase.User>;

@@ -6,6 +6,7 @@ import { ConsoleComponent } from './console.component';
 import { ScoresComponent } from './scores.component';
 import { NFLScoresComponent } from './nflscores.component';
 import { LoginComponent } from './login.component';
+import { AdminComponent } from './admin.component';
 import { AppComponent } from './app.component';
 
 // Route Configuration
@@ -30,6 +31,9 @@ export const routes: Routes = [
  },
  { path: 'console',
    component: ConsoleComponent
+ },
+ { path: 'admin',
+   component: AdminComponent
  },
 ];
 
