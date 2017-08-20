@@ -18,3 +18,4 @@
 - Inject a router module extension (terminology?) that reads week and year from the url
 - Inject a module that redirects to login when you're not logged in
 - Move ALL_WEEKS into the db, start having things deal with it sensibly
+- ADD TESTS

@@ -1,17 +1,11 @@
-<div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
-  <div class="mdl-tabs__tab-bar">
-      <a href="#safeties-panel" class="mdl-tabs__tab is-active">Safeties</a>
-      <a href="#benchings-panel" class="mdl-tabs__tab">Benchings</a>
-  </div>
-
-  <div class="mdl-tabs__panel is-active" id="safeties-panel">
-    <ul>
-      <li></li>
-    </ul>
-  </div>
-  <div class="mdl-tabs__panel" id="benchings-panel">
-    <ul>
-      <li></li>
-    </ul>
-  </div>
-</div>
+<ul>
+ <li class="mdl-list__item" *ngFor="let benching of benchings | async">
+  <span class="mdl-list__item-primary-content">
+   {{benching.$key}}
+  </span>
+  <span class="mdl-list__item-secondary-action">
+   <input type="checkbox" class="mdl-checkbox__input" (click)="onClick(benching)" 
+  [checked]="benching.$value">
+  </span>
+ </li>
+</ul>
