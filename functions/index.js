@@ -1,23 +1,26 @@
-// The Cloud Functions for Firebase SDK to create Cloud Functions and setup triggers.
+const entries = require('object.entries');
 const functions = require('firebase-functions');
 
-// The Firebase Admin SDK to access the Firebase Realtime Database. 
 const admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
 
-exports.score = functions.database.ref('/stats/{year}/{week}/{team}')
+exports.score = functions.database.ref('/stats/{year}/{week}')
     .onWrite(event => {
       let {year, week, team} = event.params;
 
       // Grab the current value of what was written to the Realtime Database.
-      const original = event.data.val();
+      const weekStats = event.data.val();
 
-      console.log('Scoring', team, original);
-      writeScore(year, week, team, original);
+      let allScores = {};
+      entries(weekStats).forEach(([team, stats]) => {
+        console.log('Scoring', team, stats);
+        allScores[team] = computeScore(stats);
+      });
+      admin.database().ref(`/scores/${year}/${week}`).update(allScores);
     });
 
 
-function writeScore(year, week, team, stats) {
+function computeScore(stats) {
   let components = bqbl.computeScoreComponents(stats);
   let lineScore =
       `${stats['CMP']}/${stats['ATT']},
@@ -35,12 +38,12 @@ function writeScore(year, week, team, stats) {
     compObjs.push({'value': c.pointValue, 'desc': c.description});
   });
 
-  admin.database().ref(`/scores/${year}/${week}/${team}`).update({
+  return {
     'total': score,
     'components': compObjs,
     'lineScore': lineScore,
     'gameInfo': gameInfo,
-  });
+  };
 }
 
 
