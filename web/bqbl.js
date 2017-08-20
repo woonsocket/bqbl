@@ -323,8 +323,15 @@ bqbl.writeScores = function(jsonData, opt_sortOrder) {
 };
 
 
+bqbl.scoreKeys = new Set([
+  'ATT', 'INT', 'INT6', 'INT6OT', 'FUM6', 'FUM6OT', 'FUML', 'TD', 'PASSYD',
+  'SACKYD', 'SACK', 'SAF', 'BENCH', 'FREEAGENT', 'FUM', 'PASSYD', 'CMP',
+  'LONG', 'RUSHYD', 'INT6OT'
+]);
+
+
 /**
- * Creates an object proxy that, on property access:
+ * Creates an object proxy that, on property access for a valid score key:
  *  - if the property does not exist, returns 0
  *  - if the property value is a numeric string, returns it as a number
  *  - otherwise, returns the value.
@@ -334,6 +341,9 @@ bqbl.writeScores = function(jsonData, opt_sortOrder) {
 bqbl.numberify = function(qbScore) {
   return new Proxy(qbScore, {
     get: (target, name) => {
+      if (!bqbl.scoreKeys.has(name)) {
+        return target[name];
+      }
       if (!(name in target)) {
         return 0;
       }
@@ -680,15 +690,15 @@ bqbl._STUPID_PROJECTION_TARGET = {
  */
 bqbl.computeStupidProjection = function(qbScore, elapsedFrac) {
   var projected = {};
+  Object.entries(bqbl._STUPID_PROJECTION_TARGET).forEach(([stat, val]) => {
+    var currentStat = parseInt(qbScore[stat], 10);
+    var targetStat = val;
+    projected[stat] =
+        Math.round(currentStat + (1 - elapsedFrac) * targetStat);
+    console.log(stat + ' ' + projected[stat]);
+  });
   for (var stat in qbScore) {
-    if (stat in bqbl._STUPID_PROJECTION_TARGET && elapsedFrac < 1) {
-      var currentStat = parseInt(qbScore[stat], 10);
-      var targetStat = bqbl._STUPID_PROJECTION_TARGET[stat];
-      projected[stat] =
-          Math.round(currentStat + (1 - elapsedFrac) * targetStat);
-    } else {
-      projected[stat] = qbScore[stat];
-    }
+    projected[stat] = qbScore[stat];
   }
   return bqbl.numberify(projected);
 };
@@ -713,6 +723,9 @@ bqbl.parseElapsedFraction = function(gameStatus) {
     } else if (gameStatus.toLowerCase().indexOf('half') > -1) {
       quarterNumber = 2;
       secondsLeftInQuarter = 0;
+    } else if (gameStatus.toLowerCase().indexOf('pregame') > -1) {
+      quarterNumber = 1;
+      secondsLeftInQuarter = 900;
     } else {
       // Otherwise, it's likely OT or game over.
       return 1;
