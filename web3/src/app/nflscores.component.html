@@ -1,28 +1,28 @@
 <div class="score-card-container">
  <div *ngFor="let score of scores | async"
-      class="mdl-card score-card mdl-shadow--4dp"
-      [ngStyle]="{'background-image': 'url(https://static.nfl.com/static/site/img/logos/svg/teams/' + score['$key'] + '.svg)'}">
-  <div class="score-card-fade-bg"></div>
-
-  <div class="mdl-card__title">
+      class="mdl-card score-card mdl-shadow--4dp">
+  <div class="mdl-card__title mdl-color-text--white">
+   <div class="score-card-bg"
+        [ngStyle]="{'background-image': 'url(http://i.nflcdn.com/static/site/7.5/img/logos/svg/teams-matte/' + score['$key'] + '.svg)'}"></div>
+   <div class="score-card-fade-bg"></div>
    <h1 class="mdl-card__title-text">
     {{ score.$key }}
    </h1>
-   <div class="mdl-card__subtitle-text mdl-color-text--grey-900">
+   <div class="mdl-card__subtitle-text mdl-color-text--white">
     {{ score.lineScore }}
    </div>
   </div>
-  <div class="mdl-card__supporting-text mdl-color-text--grey-900">
+  <div class="mdl-card__supporting-text mdl-color-text--grey-700">
    <div class="score-card-comp score-card-total">
     <div class="score-card-comp-desc">Total</div>
-    <div [ngClass]="{'score-card-comp-val': true, 'mdl-color-text--red-900': score.total < 0}">
+    <div [ngClass]="{'score-card-comp-val': true, 'mdl-color-text--red-700': score.total < 0}">
      {{ score.total }}
     </div>
    </div>
    <div *ngFor="let comp of score.components"
         class="score-card-comp">
     <div class="score-card-comp-desc">{{ comp.desc }}</div>
-    <div [ngClass]="{'score-card-comp-val': true, 'mdl-color-text--red-900': comp.value < 0}">
+    <div [ngClass]="{'score-card-comp-val': true, 'mdl-color-text--red-700': comp.value < 0}">
      {{ comp.value }}
     </div>
    </div>
