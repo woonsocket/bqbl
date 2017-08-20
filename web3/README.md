@@ -1,14 +1,19 @@
 ## Quickstart
+
+```
 # Install node.js
-$ git clone https://github.com/woonsocket/bqbl.git
-$ cd bqbl/web3
-$ npm install
-$ firebase login
-$ ng serve
+git clone https://github.com/woonsocket/bqbl.git
+cd bqbl
+npm install
+firebase login
+ng serve
 # Navigate to localhost:4200
+```
 
 ## Deploy
+```
 ng build --prod && firebase deploy
+```
 
 ## Running unit tests
 
