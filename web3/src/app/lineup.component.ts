@@ -44,6 +44,14 @@ export class LineupComponent {
         selectedTeams++;
       }
     }
+    const legalAdd = selectedTeams < 2;
+
+    if (!legalAdd) {
+      let snackbarContainer : any = document.querySelector('#error-toast');
+      let data = {message: 'You can only select two teams per week'};
+      snackbarContainer.MaterialSnackbar.showSnackbar(data);
+    }
+
     return selectedTeams < 2;
   }
 
@@ -61,9 +69,6 @@ export class LineupComponent {
 
   onSelect(week: Week, team: Team, weekId: string): void {
     if (!team.selected && !this.isLegalAddForWeek(week)) {
-      let snackbarContainer : any = document.querySelector('#error-toast');
-      let data = {message: 'You can only select two teams per week'};
-      snackbarContainer.MaterialSnackbar.showSnackbar(data);
       return;
     }
 
@@ -74,6 +79,24 @@ export class LineupComponent {
       return;
     }
     team.selected = !team.selected;
+    this.db.object('/tmp/' + this.uid + '/weeks/' + weekId + '/teams').set(week.teams);
+  }
+
+  onChange(event, week, weekId) {
+    if (event.srcElement.value) {
+      if (!this.isLegalAddForWeek(week)) {
+        event.srcElement.value = '';
+        return;
+      }
+      let team = new Team();
+      team.name = event.srcElement.value;
+      team.selected = true;
+      week.teams[4] = team;
+      console.log(week);
+    } else {
+      week.teams.pop();
+      console.log(week);
+    }
     this.db.object('/tmp/' + this.uid + '/weeks/' + weekId + '/teams').set(week.teams);
   }
 

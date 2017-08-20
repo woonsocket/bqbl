@@ -1,15 +1,20 @@
 <table>
  <thead>
   <tr class=head>
-   <td class=week>Week</td><td class=team>Team</td><td class=team>Team</td><td class=team>Team</td><td class=team>Team</td>
+   <td class=week>Week</td><td class=team>Team</td><td class=team>Team</td><td class=team>Team</td><td class=team>Team</td><td class=team>DH</td>
   </tr>
  </thead>
  <tr *ngFor="let week of (userData|async)?.weeks; let i = index">
   <td class=week>{{week.id}}</td>
-  <td *ngFor="let team of week.teams" class=team
+  <!-- Limit to 4. When there's a DH, don't list it as normal cell -->
+  <td *ngFor="let team of week.teams | slice:0:4;" class=team
   [class.selected]="team.selected" (click)="onSelect(week, team, i)">
   {{team.name}}
- </td> 
+  </td> 
+ <td class=team [class.selected]="week.teams[4]?.name">
+ <input type="text" placeholder="DH" (change)="onChange($event, week, i)"
+ value={{week.teams[4]?.name}}>
+ </td>
 </tr>
 </table>
 

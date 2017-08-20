@@ -10,6 +10,8 @@ td.week {
 td.team {
 	min-width:30px;
 	text-align: center;
+  width:20%;
+
 }
 tr.head {
 	font-weight: bold;
@@ -19,3 +21,9 @@ table {
 	width:90%;
 	margin:auto;
 }
+
+td input {
+  width:30px;
+  font-size:14px;
+}
+
