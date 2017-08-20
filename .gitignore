@@ -4,7 +4,6 @@
 \#*
 __pycache__
 events/BQBL-2c621a7cef1f.json
-fe3/src/environments/environment.prod.ts
 private-keys
 sandbox/*
 functions/node_modules/*
