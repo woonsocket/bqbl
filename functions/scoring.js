@@ -1,12 +1,30 @@
+const entries = require('object.entries');
+
 const SCORE_KEYS = [
   'ATT', 'INT', 'INT6', 'INT6OT', 'FUM6', 'FUM6OT', 'FUML', 'TD', 'PASSYD',
   'SACKYD', 'SACK', 'SAF', 'BENCH', 'FREEAGENT', 'FUM', 'PASSYD', 'CMP', 'LONG',
   'RUSHYD', 'INT6OT'
 ];
 
+/**
+ * A score object containing keys from SCORE_KEYS. Represents "average" stats
+ * for a QB. Fields that are absent are ignored by the projection.
+ */
+const STUPID_PROJECTION_TARGET = {
+  // These numbers are a little arbitrary. They're approximated from the average
+  // stats for all 32 teams in Week 3 of the 2014 season.
+  'PASSYD': 250,
+  'TD': 1.6,
+  'CMP': 22,
+  'ATT': 35,
+  // This one has the effect of only making the 'No 25+ yard pass' line show up
+  // late in the game.
+  'LONG': 40,
+};
 
 exports.computeScore = function(stats) {
-  let components = computeScoreComponents(stats);
+  let score = computeScoreComponents(stats);
+  let projScore = computeScoreComponents(computeStupidProjection(stats));
   let lineScore =
       `${stats['CMP']}/${stats['ATT']},
        ${stats['PASSYD']} yd,
@@ -16,19 +34,83 @@ exports.computeScore = function(stats) {
     'clock': stats['CLOCK'],
     'id': stats['ID'],
   };
-  let compObjs = [];
-  let score = 0;
-  components.forEach((c) => {
-    score += c.pointValue;
-    compObjs.push({'value': c.pointValue, 'desc': c.description});
-  });
 
   return {
-    'total': score,
-    'components': compObjs,
+    'total': score['total'],
+    'components': score['components'],
     'lineScore': lineScore,
     'gameInfo': gameInfo,
+    'projection': projScore,
   };
+};
+
+/**
+ * Makes a naive projection by assuming the QB will play the rest of the game at
+ * an average level.
+ * @param {!Object<string, *>} stats Quarterback stats.
+ * @param {number} elapsedFrac The fraction of regulation time that has
+ *     elapsed. Equal to 0 at the start of the game, and 1 during overtime and
+ *     when the game is over.
+ * @return {!Object<string, *>} Projected stats. The parameter object is not
+ *     modified.
+ */
+function computeStupidProjection(stats) {
+  const elapsedFrac = parseElapsedFraction('' + stats['CLOCK']);
+  const projected = {};
+  entries(stats).forEach(([stat, val]) => {
+    projected[stat] = val;
+  });
+  entries(STUPID_PROJECTION_TARGET).forEach(([stat, val]) => {
+    const currentStat = parseInt(stats[stat] || 0, 10);
+    projected[stat] = Math.round(currentStat + (1 - elapsedFrac) * val);
+  });
+  return projected;
+};
+
+
+/**
+ * @param {string} gameStatus String describing the game time remaining.
+ * @return {number} The fraction of regulation time that has elapsed, between 0
+ *     and 1.
+ */
+function parseElapsedFraction(gameStatus) {
+  var timeParts = gameStatus.match(/([^ ]*) - ([1-4])/);
+  var quarterNumber;
+  var secondsLeftInQuarter;
+
+  if (!timeParts) {
+    // May be "End 1st" or "End of 1st". Thanks, ESPN.
+    var quarterEnd = gameStatus.match(/End.*([1-4])../);
+    if (quarterEnd) {
+      quarterNumber = parseInt(quarterEnd[1], 10);
+      secondsLeftInQuarter = 0;
+    } else if (gameStatus.toLowerCase().indexOf('half') > -1) {
+      quarterNumber = 2;
+      secondsLeftInQuarter = 0;
+    } else if (gameStatus.toLowerCase().indexOf('pregame') > -1) {
+      quarterNumber = 1;
+      secondsLeftInQuarter = 900;
+    } else {
+      // Otherwise, it's likely OT or game over.
+      return 1;
+    }
+  } else {
+    quarterNumber = timeParts[2];
+    var clock = timeParts[1];
+
+    if (clock.indexOf(':') > -1) {
+      var clockParts = clock.split(':');
+      var minutesLeft = parseInt(clockParts[0], 10);
+      var secondsLeft = parseInt(clockParts[1], 10);
+      secondsLeftInQuarter = 60 * minutesLeft + secondsLeft;
+    } else {
+      // If the clock doesn't look like a time, it's probably the word "End".
+      secondsLeftInQuarter = 0;
+    }
+  }
+
+  var secsElapsed = 900 * quarterNumber - secondsLeftInQuarter;
+  return secsElapsed / 3600;
 };
 
 /**
@@ -52,7 +134,7 @@ class ScoreComponent {
 };
 
 /**
- * @return {!Array<!ScoreComponent>} A list of ScoreComponents.
+ * @return {{components: !Array<!ScoreComponent>, total: number}}
  */
 function computeScoreComponents(qbScore) {
   // Zero out any undefined keys
@@ -81,7 +163,13 @@ function computeScoreComponents(qbScore) {
     pointsList.push(new ScoreComponent(-8, '75+ rushing yards'));
   if (qbScore['INT6OT'])
     pointsList.push(new ScoreComponent(50, 'game-losing pick six in OT'));
-  return pointsList.filter(function(x) { return x.pointValue != 0; });
+
+  pointsList = pointsList.filter((x) => x.pointValue != 0);
+  let total = pointsList.reduce((sum, p) => sum + p.pointValue, 0);
+  return {
+    'components': pointsList,
+    'total': total,
+  };
 };
 
 function turnoverPoints(qbScore) {
