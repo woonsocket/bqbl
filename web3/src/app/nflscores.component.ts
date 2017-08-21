@@ -19,6 +19,7 @@ export class NFLScoresComponent {
   selectedWeek = 'P1';
   year = '2017';
   sortOrder = 'score';
+  projectScores = true;
 
   constructor(private db: AngularFireDatabase, private route: ActivatedRoute) {}
 
@@ -37,11 +38,27 @@ export class NFLScoresComponent {
   }
 
   getScores() {
+    if (!this.scores) {
+      return [];
+    }
     let sorter = SORT_ORDERS[this.sortOrder];
     if (!sorter) {
       return this.scores;
     }
-    return this.scores.sort(sorter);
+    return this.scores.slice().sort(sorter);
+  }
+
+  // These seem like needlessly verbose ways of switching to/from projections.
+  getTotal(scoreObj: object) {
+    return this.projectScores && scoreObj['projection'] ?
+        scoreObj['projection']['total'] :
+        scoreObj['total'];
+  }
+
+  getComponents(scoreObj: object) {
+    return this.projectScores && scoreObj['projection'] ?
+        scoreObj['projection']['components'] :
+        scoreObj['components'];
   }
 
   boxScoreLink(scoreObj: object) {

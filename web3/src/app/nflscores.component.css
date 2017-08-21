@@ -2,9 +2,26 @@
   text-align: center;
 }
 
-.sort-controls > label {
+.sort-control {
+  display: inline-block;
+  margin: 6px;
+  padding: 6px;
+}
+
+.sort-control.mdl-switch__label {
+  display: inline;
+}
+
+.sort-control > label {
   margin-left: 6px;
   margin-right: 6px;
+}
+
+/* This is a hack. The switch label has left:24px set for some reason, which
+   makes the label text overflow the parent div. Whatever. */
+.dumb-buffer {
+  display: inline-block;
+  width: 24px;
 }
 
 .score-card-container {

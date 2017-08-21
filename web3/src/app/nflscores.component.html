@@ -1,16 +1,29 @@
 <div class="sort-controls">
- <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect"
-        for="sort-score">
-  <input type="radio" id="sort-score" class="mdl-radio__button"
-         value="score" [(ngModel)]="sortOrder">
-  <span class="mdl-radio__label">Sort by score</span>
- </label>
- <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect"
-        for="sort-team">
-  <input type="radio" id="sort-team" class="mdl-radio__button"
-         value="team" [(ngModel)]="sortOrder">
-  <span class="mdl-radio__label">Sort by team name</span>
- </label>
+ <div class="sort-control mdl-shadow--2dp">
+  <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="proj">
+   <input type="checkbox" id="proj" class="mdl-switch__input"
+          [(ngModel)]="projectScores">
+   <span class="mdl-switch__label">
+    Show projected scores
+    <span class="dumb-buffer">&nbsp;</span>
+   </span>
+  </label>
+ </div>
+
+ <div class="sort-control mdl-shadow--2dp">
+  <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect"
+         for="sort-score">
+   <input type="radio" id="sort-score" class="mdl-radio__button"
+          value="score" [(ngModel)]="sortOrder">
+   <span class="mdl-radio__label">Sort by score</span>
+  </label>
+  <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect"
+         for="sort-team">
+   <input type="radio" id="sort-team" class="mdl-radio__button"
+          value="team" [(ngModel)]="sortOrder">
+   <span class="mdl-radio__label">Sort by team name</span>
+  </label>
+ </div>
 </div>
 
 <div class="score-card-container">
@@ -35,10 +48,10 @@
    <div class="score-card-comp score-card-total">
     <div class="score-card-comp-desc">Total</div>
     <div [ngClass]="{'score-card-comp-val': true, 'mdl-color-text--red-700': score.total < 0}">
-     {{ score.total }}
+     {{ getTotal(score) }}
     </div>
    </div>
-   <div *ngFor="let comp of score.components"
+   <div *ngFor="let comp of getComponents(score)"
         class="score-card-comp">
     <div class="score-card-comp-desc">{{ comp.desc }}</div>
     <div [ngClass]="{'score-card-comp-val': true, 'mdl-color-text--red-700': comp.value < 0}">
