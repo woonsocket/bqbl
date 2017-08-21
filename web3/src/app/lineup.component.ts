@@ -89,7 +89,6 @@ export class LineupComponent {
         return;
       }
       this.pushTeamFromInput(event.srcElement, week.teams);
-      console.log(week);
     } else {
       let dh1 = event.srcElement.parentElement.parentElement.querySelector('.dh1 input');
       let dh2 = event.srcElement.parentElement.parentElement.querySelector('.dh2 input');
@@ -101,7 +100,6 @@ export class LineupComponent {
         this.pushTeamFromInput(dh2, week.teams);
       }
     }
-    console.log(week);
     this.db.object('/tmp/' + this.uid + '/weeks/' + weekId + '/teams').set(week.teams);
   }
 

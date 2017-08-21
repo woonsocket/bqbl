@@ -52,7 +52,6 @@ export class ScoresComponent {
     this.route.queryParams.subscribe((params: Params) => {
      this.week = params.week || '1';
      this.year = params.year || '2017';
-     console.log(this.week);
      this.loadScoresDb();
     });
   }
@@ -66,7 +65,6 @@ export class ScoresComponent {
       }
       this.teamToScores['N/A'] = 0;
       this.updateScores();
-      console.log(this.teamToScores);
     });
   }
 
@@ -96,5 +94,3 @@ export class ScoresComponent {
     return this.teamToScores[teamName];
   }
 }
-
-
