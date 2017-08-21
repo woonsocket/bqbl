@@ -118,18 +118,18 @@ function parseElapsedFraction(gameStatus) {
  * @constructor
  */
 class ScoreComponent {
-  constructor(pointValue, description) {
+  constructor(value, desc) {
     /**
      * @type {number}
      * @const
      */
-    this.pointValue = pointValue;
+    this.value = value;
 
     /**
      * @type {string}
      * @const
      */
-    this.description = description;
+    this.desc = desc;
   }
 };
 
@@ -164,8 +164,8 @@ function computeScoreComponents(qbScore) {
   if (qbScore['INT6OT'])
     pointsList.push(new ScoreComponent(50, 'game-losing pick six in OT'));
 
-  pointsList = pointsList.filter((x) => x.pointValue != 0);
-  let total = pointsList.reduce((sum, p) => sum + p.pointValue, 0);
+  pointsList = pointsList.filter((x) => x.value != 0);
+  let total = pointsList.reduce((sum, p) => sum + p.value, 0);
   return {
     'components': pointsList,
     'total': total,
