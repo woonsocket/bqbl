@@ -1,5 +1,20 @@
+<div class="sort-controls">
+ <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect"
+        for="sort-score">
+  <input type="radio" id="sort-score" class="mdl-radio__button"
+         value="score" [(ngModel)]="sortOrder">
+  <span class="mdl-radio__label">Sort by score</span>
+ </label>
+ <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect"
+        for="sort-team">
+  <input type="radio" id="sort-team" class="mdl-radio__button"
+         value="team" [(ngModel)]="sortOrder">
+  <span class="mdl-radio__label">Sort by team name</span>
+ </label>
+</div>
+
 <div class="score-card-container">
- <div *ngFor="let score of scores | async"
+ <div *ngFor="let score of getScores()"
       class="mdl-card score-card mdl-shadow--4dp">
   <div class="mdl-card__title mdl-color-text--white">
    <div class="score-card-bg"

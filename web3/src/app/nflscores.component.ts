@@ -1,29 +1,47 @@
-
 import * as firebase from 'firebase/app';
 import { ActivatedRoute, Params } from '@angular/router';
-import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
+import { AngularFireDatabase } from 'angularfire2/database';
 import { Component } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+
+
+const SORT_ORDERS = {
+  'score': (a, b) => b['total'] - a['total'],
+  'team': (a, b) => a['$key'].localeCompare(b['$key']),
+};
+
 
 @Component({
   templateUrl: './nflscores.component.html',
   styleUrls: ['./nflscores.component.css'],
 })
 export class NFLScoresComponent {
-  scores: FirebaseListObservable<any>;
+  scores = [];
   selectedWeek = 'P1';
   year = '2017';
+  sortOrder = 'score';
+
   constructor(private db: AngularFireDatabase, private route: ActivatedRoute) {}
 
   ngOnInit() {
     this.route.queryParams.subscribe((params: Params) => {
       this.selectedWeek = params.week || '1';
-      this.scores = this.db.list(`/scores/${this.year}/${this.selectedWeek}`, {
+      let query = this.db.list(`/scores/${this.year}/${this.selectedWeek}`, {
         query: {
           orderByChild: 'total'
         }
       });
+      query.subscribe((items) => {
+        this.scores = items;
+      });
     });
+  }
+
+  getScores() {
+    let sorter = SORT_ORDERS[this.sortOrder];
+    if (!sorter) {
+      return this.scores;
+    }
+    return this.scores.sort(sorter);
   }
 
   boxScoreLink(scoreObj: object) {
