@@ -20,6 +20,21 @@ exports.score = functions.database.ref('/stats/{year}/{week}/{team}')
     });
 
 
+/** Same as score(), but via HTTP. Sorta useful for local debugging. */
+exports.scoreHttp = functions.https.onRequest((req, res) => {
+  const {year, week, team} = req.body;
+  admin.database().ref(`/stats/${year}/${week}/${team}`)
+      .once('value', (data) => {
+        let stats = data.val();
+        if (stats == null) {
+          res.status(400).send();
+          return;
+        }
+        res.status(200).send(computeScore(stats));
+      });
+});
+
+
 function computeScore(stats) {
   let components = bqbl.computeScoreComponents(stats);
   let lineScore =
