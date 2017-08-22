@@ -15,13 +15,19 @@
          for="sort-score">
    <input type="radio" id="sort-score" class="mdl-radio__button"
           value="score" [(ngModel)]="sortOrder">
-   <span class="mdl-radio__label">Sort by score</span>
+   <span class="mdl-radio__label">By score</span>
   </label>
   <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect"
          for="sort-team">
    <input type="radio" id="sort-team" class="mdl-radio__button"
           value="team" [(ngModel)]="sortOrder">
-   <span class="mdl-radio__label">Sort by team name</span>
+   <span class="mdl-radio__label">A-Z</span>
+  </label>
+  <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect"
+         for="sort-active">
+   <input type="radio" id="sort-active" class="mdl-radio__button"
+          value="active" [(ngModel)]="sortOrder">
+   <span class="mdl-radio__label">Active first</span>
   </label>
  </div>
 </div>

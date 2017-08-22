@@ -31,24 +31,49 @@ export class NFLScoresComponent {
     });
   }
 
+  byScore(a, b) {
+    return this.projectScores ?
+        b['projection']['total'] - a['projection']['total'] :
+        b['total'] - a['total'];
+  }
+
+  byTeamName(a, b) {
+    return a['$key'].localeCompare(b['$key']);
+  }
+
+  byActiveFirst(a, b) {
+    const aClock = a['gameInfo'] && a['gameInfo']['clock'];
+    const bClock = b['gameInfo'] && b['gameInfo']['clock'];
+    const aFinal = aClock && aClock.toLowerCase().includes('final');
+    const bFinal = bClock && bClock.toLowerCase().includes('final');
+    return (aFinal ? 1 : 0) - (bFinal ? 1 : 0);
+  }
+
+  sortScores(scores, cmps) {
+    return scores.slice().sort((a, b) => {
+      for (let cmp of cmps) {
+        let v = cmp.call(this, a, b);
+        if (v != 0) {
+          return v;
+        }
+      }
+      return 0;
+    });
+  }
+
   getScores() {
     if (!this.scores) {
       return [];
     }
-    let cmp;
     if (this.sortOrder == 'score') {
-      if (this.projectScores) {
-        cmp = (a, b) => b['projection']['total'] - a['projection']['total'];
-      } else {
-        cmp = (a, b) => b['total'] - a['total'];
-      }
+      return this.sortScores(this.scores, [this.byScore, this.byTeamName]);
     } else if (this.sortOrder == 'team') {
-      cmp = (a, b) => a['$key'].localeCompare(b['$key']);
-    } else {
-      console.warn(`unknown sort order ${this.sortOrder}`)
-      return this.scores;
+      return this.sortScores(this.scores, [this.byTeamName]);
+    } else if (this.sortOrder == 'active') {
+      return this.sortScores(this.scores, [this.byActiveFirst, this.byScore]);
     }
-    return this.scores.slice().sort(cmp);
+    console.warn(`unknown sort order ${this.sortOrder}`)
+    return this.scores;
   }
 
   // These seem like needlessly verbose ways of switching to/from projections.
