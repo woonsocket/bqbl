@@ -1,5 +1,4 @@
 - Add safety support to the console
-- Suppress week selector where it doesn't make sense
 - Add year as a URL parameter where it makes sense
 - Move all of the fancy new stuff from the /tmp path
 - Add a running total to the scoreboard
@@ -19,3 +18,4 @@
 If there's time:
 - Check for <5. Lower priority because we can just force it the last five weeks of the year.
 - Make DH support league-dependent
+- Preserve week selection as you move between pages

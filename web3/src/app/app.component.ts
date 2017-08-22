@@ -21,6 +21,10 @@ export class AppComponent {
   allWeeks = ALL_WEEKS;
   selectedWeek = 'P1';
   year = '2017';
+  weekDropdownSuppressPaths = [
+    '/newuser', '/admin'
+  ];
+  suppressWeekDropdown = false;
   constructor(db: AngularFireDatabase, private afAuth: AngularFireAuth, private router: Router, private route: ActivatedRoute) {
     this.user = afAuth.authState;
     this.user.subscribe(value => {
@@ -39,6 +43,12 @@ export class AppComponent {
       this.selectedWeek = params.week || '1';
       this.year = params.year || '2017';
     });
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        this.suppressWeekDropdown = 
+          this.weekDropdownSuppressPaths.includes(event.url.trim());
+      }
+    })
   }
 
   closeDrawer() {
