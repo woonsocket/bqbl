@@ -5,20 +5,20 @@
     <span>Benchings</span>
   </mdl-tab-panel-title>
   <mdl-tab-panel-content>
-    
-    <ul>
-     <li class="mdl-list__item" *ngFor="let benching of benchings | async">
-      <span class="mdl-list__item-primary-content">
-       {{benching.$key}}
-     </span>
-     <span class="mdl-list__item-secondary-action">
-       <input type="checkbox" class="mdl-checkbox__input" (click)="onClick(benching)" 
-       [checked]="benching.$value">
-     </span>
-   </li>
- </ul>
-
-</mdl-tab-panel-content>
+    <mdl-list>
+      <mdl-list-item *ngFor="let benching of benchings | async">
+        <mdl-list-item-primary-content>
+          <mdl-icon mdl-list-item-avatar>person</mdl-icon>
+          {{benching.$key}}
+        </mdl-list-item-primary-content>
+        <mdl-list-item-secondary-action>
+         <input type="checkbox" class="mdl-checkbox__input" 
+         (click)="onClick(benching)" 
+         [checked]="benching.$value">
+       </mdl-list-item-secondary-action>
+     </mdl-list-item>
+     </mdl-list>
+ </mdl-tab-panel-content>
 </mdl-tab-panel>
 <mdl-tab-panel mdl-tab-panel-title="Safeties">
  <ul>
