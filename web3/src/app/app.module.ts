@@ -15,6 +15,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { environment } from '../environments/environment';
 import { routing } from './app.routes';
 import { FormsModule } from '@angular/forms';
+import { MdlModule } from '@angular-mdl/core';
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import { FormsModule } from '@angular/forms';
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireDatabaseModule,
     AngularFireAuthModule,
+    MdlModule,
     routing,
   ],
   providers: [],

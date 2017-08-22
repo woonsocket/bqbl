@@ -33,5 +33,7 @@ export class ConsoleComponent {
     this.db.object('/tmp2/events/2017/' + this.selectedWeek + '/benchings/' + benching.$key)
       .set(benching.$value);
   }
+
+  tabChanged() {}
 }
 
