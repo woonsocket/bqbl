@@ -8,7 +8,8 @@
       <div class="mdl-layout-spacer"></div>
       <select [(ngModel)]="selectedWeek"
           (change)="onWeekChange()"
-          *ngIf="!suppressWeekDropdown">
+          *ngIf="!suppressWeekDropdown"
+          class=weekdropdown>
         <option *ngFor="let w of allWeeks" [ngValue]="w.val">{{w.name}}</option>
       </select>
       <a class="mdl-navigation__link" (click)=login()><span>{{displayName}}</span></a>

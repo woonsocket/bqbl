@@ -10,3 +10,9 @@ li {
 li span{
   padding:10px;
 }
+
+.weekdropdown {
+	background-color: white;
+	border-radius: 0;
+    font-size: 16px;
+}
