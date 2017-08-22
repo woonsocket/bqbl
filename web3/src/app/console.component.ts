@@ -20,7 +20,7 @@ export class ConsoleComponent {
   ngOnInit() {
     this.route.queryParams.subscribe((params: Params) => {
       this.selectedWeek = params.week || 'P1';
-      this.benchings = this.db.list(`/tmp/${this.year}/${this.selectedWeek}/benchings`, {
+      this.benchings = this.db.list(`/tmp2/events/${this.year}/${this.selectedWeek}/benchings`, {
         query: {
           orderByChild: 'total'
         }
@@ -30,7 +30,7 @@ export class ConsoleComponent {
 
   onClick(benching: any) {
     benching.$value = !benching.$value;
-    this.db.object('/tmp/2017/' + this.selectedWeek + '/benchings/' + benching.$key)
+    this.db.object('/tmp2/events/2017/' + this.selectedWeek + '/benchings/' + benching.$key)
       .set(benching.$value);
   }
 }

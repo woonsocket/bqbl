@@ -23,6 +23,10 @@
       ".read": true,
       ".write": true
     },
+    "tmp2": {
+      ".read": true,
+      ".write": true
+    },
     "playerpositions": {
       ".write": "auth.uid == 'score-scraper'"
     },

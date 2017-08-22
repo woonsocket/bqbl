@@ -24,7 +24,7 @@ export class AdminComponent {
     for (let team of ALL_TEAMS) {
       benchingMap[team] = false;
     }
-    this.db.object('/tmp/2017/' + val + '/benchings').set(benchingMap);
+    this.db.object('/tmp2/events/2017/' + val + '/benchings').set(benchingMap);
   }
 }
 
