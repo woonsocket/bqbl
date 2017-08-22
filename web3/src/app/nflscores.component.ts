@@ -4,12 +4,6 @@ import { AngularFireDatabase } from 'angularfire2/database';
 import { Component } from '@angular/core';
 
 
-const SORT_ORDERS = {
-  'score': (a, b) => b['total'] - a['total'],
-  'team': (a, b) => a['$key'].localeCompare(b['$key']),
-};
-
-
 @Component({
   templateUrl: './nflscores.component.html',
   styleUrls: ['./nflscores.component.css'],
@@ -41,11 +35,20 @@ export class NFLScoresComponent {
     if (!this.scores) {
       return [];
     }
-    let sorter = SORT_ORDERS[this.sortOrder];
-    if (!sorter) {
+    let cmp;
+    if (this.sortOrder == 'score') {
+      if (this.projectScores) {
+        cmp = (a, b) => b['projection']['total'] - a['projection']['total'];
+      } else {
+        cmp = (a, b) => b['total'] - a['total'];
+      }
+    } else if (this.sortOrder == 'team') {
+      cmp = (a, b) => a['$key'].localeCompare(b['$key']);
+    } else {
+      console.warn(`unknown sort order ${this.sortOrder}`)
       return this.scores;
     }
-    return this.scores.slice().sort(sorter);
+    return this.scores.slice().sort(cmp);
   }
 
   // These seem like needlessly verbose ways of switching to/from projections.
