@@ -1,13 +1,12 @@
+P0 Add multiple league support because Jason is very reasonable
+P0 Move all of the fancy new stuff from the /tmp path
 - Add safety support to the console
-- Add year as a URL parameter where it makes sense
-- Move all of the fancy new stuff from the /tmp path
+P1 Add year as a URL parameter where it makes sense
 - Add a running total to the scoreboard
 - Add a whole-year per-team stats view
 - Add a whole-year per-user stats view
 - Lock down when teams can be selected
 - Pre-populate new users with legal team selections
-- Add multiple league support because Jason is very reasonable
-- Hide the week dropdown where it doesn't make sense
 
 - Inject a "default week" component, automatically advance it
 - Inject a router module extension (terminology?) that reads week and year from the url

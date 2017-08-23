@@ -1,18 +1,23 @@
-<div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
- <div class="mdl-tabs__tab-bar">
-  <a href="#weeks-panel" class="mdl-tabs__tab is-active">Weeks</a>
- </div>
-
- <div class="mdl-tabs__panel is-active" id="weeks-panel">
-  <ul class="demo-list-control mdl-list">
-   <li class="mdl-list__item" *ngFor="let week of weeks">
-    <span class="mdl-list__item-primary-content">
+<mdl-tabs mdl-ripple mdl-tab-active-index="0" 
+(mdl-tab-active-changed)="tabChanged($event)">
+<mdl-tab-panel>
+ <mdl-tab-panel-title>
+  <span>Weeks</span>
+ </mdl-tab-panel-title>
+ <mdl-tab-panel-content>
+  <mdl-list>
+   <mdl-list-item *ngFor="let week of weeks">
+    <mdl-list-item-primary-content>
+     <mdl-icon mdl-list-item-avatar>person</mdl-icon>
      {{week.name}}
-    </span>
-    <span class="mdl-list__item-secondary-action">
-      <input type="button" class="mdl-checkbox__input" (click)="onClick(week.val)" value="Create">
-    </span>
-   </li>
-  </ul>
- </div>
-</div>
+    </mdl-list-item-primary-content>
+    <mdl-list-item-secondary-action>
+     <input type="button" class="mdl-checkbox__input" 
+     (click)="onClick(week.val)" 
+     [checked]="week.val" value="Create">
+    </mdl-list-item-secondary-action>
+   </mdl-list-item>>
+  </mdl-list>
+ </mdl-tab-panel-content>
+</mdl-tab-panel>
+</mdl-tabs>
