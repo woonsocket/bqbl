@@ -13,6 +13,9 @@
         ".write": "auth.uid == 'score-scraper' && $season == '2017'"
       }
     },
+    "scrapestatus": {
+      ".write": "auth.uid == 'score-scraper'"
+    },
     "events": {
       ".read": true,
       "$season": {

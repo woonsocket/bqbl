@@ -16,6 +16,12 @@ import linescore
 import slack
 
 
+# Default time to wait between scrapes for a given game ID. Scrapes may occur
+# more frequently if we think an "interesting" event has occurred (e.g., if the
+# line score shows that a TD was scored).
+SCRAPE_INTERVAL = datetime.timedelta(seconds=150)
+
+
 parser = optparse.OptionParser(
     usage=("Usage: %prog [options] [file with list of NFL game IDs]"))
 parser.add_option("-f", "--firebase", dest="firebase", default=False,
@@ -169,7 +175,6 @@ class Plays(object):
         self.notifier = notifier
 
     def process(self, season, week, game_id, data):
-        game_id = str(game_id)
         data = data.get(game_id)
         if not data:
             # Empty data file. Maybe the game hasn't started yet.
@@ -302,7 +307,18 @@ def main():
     events_ref = db.reference('/events/{0}/{1}'.format(season, week))
     events = event.Events.create_from_dict(events_ref.get() or {})
     plays = Plays(player_cache, events, notifier)
+    scrape_status_ref = db.reference(
+        '/scrapestatus/{0}/{1}'.format(season, week))
+    scrape_status = collections.defaultdict(dict, scrape_status_ref.get() or {})
+    now = datetime.datetime.now(tz=datetime.timezone.utc)
     for id in game_ids:
+        # IDs might be integers if we read them out of JSON, but we always use
+        # string keys in the database.
+        id = str(id)
+        last_scrape = datetime.datetime.fromtimestamp(
+            scrape_status[id].get('lastScrape', 0), tz=datetime.timezone.utc)
+        if last_scrape + SCRAPE_INTERVAL > now:
+            continue
         url = ('http://www.nfl.com/liveupdate/game-center/{0}/{0}_gtd.json'
                .format(id))
         resp = requests.get(url)
@@ -311,12 +327,23 @@ def main():
                 print('error fetching {url}: {err}'.format(url=url, err=e),
                       file=sys.stderr)
             continue
-        plays.process(season, week, id, resp.json())
+        data = resp.json()
+        plays.process(season, week, id, data)
+        # TODO(aerion): If game is over, record that in scrape status so we
+        # don't scrape it again.
+        scrape_status[id]['lastScrape'] = now.timestamp()
 
-    if player_cache.new_keys:
-        db.reference('/playerpositions').update(player_cache.new_keys)
+    # Log which teams were updated. In prod, we'll write this to disk for later
+    # inspection.
+    print('{0} {1}'.format(datetime.datetime.now(),
+                           ' '.join(sorted(plays.outcomes_by_team.keys()))))
 
     if options.firebase:
+        if player_cache.new_keys:
+            db.reference('/playerpositions').update(player_cache.new_keys)
+
+        scrape_status_ref.update(scrape_status)
+
         events_ref = db.reference('/events/{0}/{1}'.format(season, week))
         events_ref.set({
             'fumbles': plays.events.fumbles,
@@ -328,12 +355,19 @@ def main():
             db.reference('/stats/%s/%s' % (season, week)).update(
                 plays.outcomes_by_team)
     else:
+        print('-- scrape status--')
+        statuses = sorted(scrape_status.items(),
+                          key=lambda it: it[1]['lastScrape'])
+        for id, status in statuses:
+            print('{0}: {1}'.format(id, status['lastScrape']))
+        print('-- events --')
         all_events = itertools.chain(
             plays.events.fumbles.items(),
             plays.events.safeties.items(),
             plays.events.interceptions.items())
         for id, ev in all_events:
             print('{0}: {1}'.format(id, ev))
+        print('-- scraped stats --')
         print(json.dumps(plays.outcomes_by_team))
 
 
