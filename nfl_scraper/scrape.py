@@ -342,7 +342,8 @@ def main():
         if player_cache.new_keys:
             db.reference('/playerpositions').update(player_cache.new_keys)
 
-        scrape_status_ref.update(scrape_status)
+        if scrape_status:
+            scrape_status_ref.update(scrape_status)
 
         events_ref = db.reference('/events/{0}/{1}'.format(season, week))
         events_ref.set({
