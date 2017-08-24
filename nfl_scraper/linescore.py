@@ -17,7 +17,7 @@ _SCORES_URL = 'https://feeds.nfl.com/feeds-rs/scores.json'
 Game = collections.namedtuple(
     'Game',
     ('id', 'home', 'hscore', 'away', 'ascore', 'poss', 'start_time', 'clock',
-     'is_over'))
+     'alert', 'is_over'))
 Game.__doc__ = """The score and schedule for a game.
 
 Attributes:
@@ -35,6 +35,9 @@ Attributes:
     clock: Number of seconds elapsed on the game clock since the start of the
         game. 0 if the game hasn't started. This value is not well-defined if
         the game is over. Check is_over instead.
+    alert: A "big play" that just happened. Usually the empty string, but is
+        populated for a few minutes after a major event. Known values include:
+        FG, FOURTH_FAIL, FUM_LOST, INT, PAT, TD
     is_over: Whether this game is over.
 """
 
@@ -50,12 +53,14 @@ def parse_game_json(json_obj):
         away_score = score['visitorTeamScore']['pointTotal']
         poss = score['possessionTeamAbbr'] or ''
         clock = parse_game_clock(score['phase'], score['time'])
+        alert = score['alertPlayType']
         is_over = score['phase'].upper() == 'FINAL'
     else:
         home_score = None
         away_score = None
         poss = ''
         clock = 0
+        alert = ''
         is_over = False
     start_time = datetime.datetime.fromtimestamp(sched['isoTime'] / 1000)
     return Game(id=game_id,
@@ -66,6 +71,7 @@ def parse_game_json(json_obj):
                 poss=poss,
                 start_time=start_time,
                 clock=clock,
+                alert=alert,
                 is_over=is_over)
 
 
@@ -81,6 +87,8 @@ def parse_game_clock(phase, clock):
         game. For example, 920 means the clock shows 14:40 in the 2nd quarter.
         If the game is over, returns some large value.
     """
+    if not clock:
+        return 0
     # TODO: Find out what the phase is for overtime. Also, whether overtime
     # finals are shown differently ('F/OT'?)
     if phase.upper() == 'FINAL':
@@ -130,30 +138,3 @@ def fetch(url=_SCORES_URL):
     if data['seasonType'] == 'PRE':
         week = 'P{0}'.format(week)
     return data['season'], week, games
-
-
-def compare(old_games, new_games):
-    """Find games that have changed in an "interesting" way.
-
-    We consider it interesting if the game's score changed, if possession
-    changed, or if the game has ended.
-
-    Args:
-        old_games: A dict that maps game IDs to Games.
-        new_games: A dict that maps game IDs to Games.
-    Returns:
-        A list of interesting game IDs.
-    """
-    changed_ids = set()
-    for new_id, new_game in new_games.items():
-        old_game = old_games.get(new_id)
-        if not old_game:
-            changed_ids.add(new_id)
-        elif (old_game.ascore != new_game.ascore or
-            old_game.hscore != new_game.hscore):
-            changed_ids.add(new_id)
-        elif old_game.poss != new_game.poss:
-            changed_ids.add(new_id)
-        elif not old_game.is_over and new_game.is_over:
-            changed_ids.add(new_id)
-    return changed_ids
