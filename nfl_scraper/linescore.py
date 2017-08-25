@@ -53,7 +53,7 @@ def parse_game_json(json_obj):
         away_score = score['visitorTeamScore']['pointTotal']
         poss = score['possessionTeamAbbr'] or ''
         clock = parse_game_clock(score['phase'], score['time'])
-        alert = score['alertPlayType']
+        alert = score['alertPlayType'] or ''
         is_over = score['phase'].upper() == 'FINAL'
     else:
         home_score = None
