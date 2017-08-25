@@ -277,6 +277,7 @@ def main():
                   file=sys.stderr)
             sys.exit(1)
         game_ids = [gid.strip() for gid in open(args[0])]
+        games_with_alerts = set()
     else:
         if options.year or options.week:
             print('must not set --year and --week without game ID file',
@@ -285,6 +286,7 @@ def main():
         season, week, games = linescore.fetch()
         game_ids = [g.id for g in games.values()
                     if g.start_time < datetime.datetime.now()]
+        games_with_alerts = {g.id for g in games.values() if g.alert}
 
     if not options.firebase_cred_file:
         sys.stderr.write('must supply --firebase_creds\n')
@@ -317,7 +319,7 @@ def main():
         id = str(id)
         last_scrape = datetime.datetime.fromtimestamp(
             scrape_status[id].get('lastScrape', 0), tz=datetime.timezone.utc)
-        if last_scrape + SCRAPE_INTERVAL > now:
+        if last_scrape + SCRAPE_INTERVAL > now and id not in games_with_alerts:
             continue
         url = ('http://www.nfl.com/liveupdate/game-center/{0}/{0}_gtd.json'
                .format(id))
