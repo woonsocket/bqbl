@@ -45,7 +45,7 @@ Attributes:
 def parse_game_json(json_obj):
     sched = json_obj.get('gameSchedule')
     score = json_obj.get('score')
-    game_id = sched['gameId']
+    game_id = str(sched['gameId'])
     home_team = sched['homeTeamAbbr']
     away_team = sched['visitorTeamAbbr']
     if score:
