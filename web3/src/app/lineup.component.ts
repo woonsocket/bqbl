@@ -6,7 +6,8 @@ import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable }
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Router } from '@angular/router';
-import {MdlSnackbarService} from '@angular-mdl/core';
+import { MdlSnackbarService} from '@angular-mdl/core';
+import { User, Week, Team } from './structs';
 
 @Component({
   templateUrl: './lineup.component.html',
@@ -114,16 +115,3 @@ export class LineupComponent {
 
 }
 
-export class User {
-  name: string;
-  teams: Team[];
-  weeks: {};
-}
-export class Week {
-  id: string;
-  teams: Team[];
-}
-export class Team {
-  name: string;
-  selected: boolean;
-}

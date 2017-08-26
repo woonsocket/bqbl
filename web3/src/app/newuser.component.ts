@@ -6,6 +6,7 @@ import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable }
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Router } from '@angular/router';
+import { User, Week, Team } from './structs';
 
 @Component({
   templateUrl: './newuser.component.html',
@@ -67,20 +68,6 @@ export class NewUserComponent {
   }
 }
 
-export class User {
-  name: string;
-  teams: Team[];
-  weeks: {};
-  dh: boolean;
-}
-export class Week {
-  id: string;
-  teams: Team[];
-}
-export class Team {
-  name: string;
-  selected: boolean;
-}
 const WEEK_NAMES: string[] = ['P1', 'P2', 'P3', 'P4', '1', '2', '3', '4', '5', '6',
     '7', '8', '9', '10', '11', '12', '13', '14', '15', '16'];
 
