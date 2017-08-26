@@ -20,7 +20,7 @@ export class NewUserComponent {
   router: Router;
   selectedLeague: null;
   selectedLeagueKey: null;
-  selectedTeam: null;
+  selectedUser = [];
 
   constructor(db: AngularFireDatabase, private afAuth: AngularFireAuth, router: Router) {
     this.db = db;
@@ -41,17 +41,12 @@ export class NewUserComponent {
     this.router = router;
   }
 
-  teamsAsString(user) {
-    let ret = '';
-    for (let team of user) {
-      ret += team.name + ",";
-    }
-    return ret;
+  userAsString(teams) {
+    return `${teams[0].name}, ${teams[1].name}, ${teams[2].name}, ${teams[3].name}`;
   }
-  onCreate(team1: string, team2: string, team3: string, team4: string,
-      name: string): void {
+
+  onCreate(name: string): void {
     const user = new User();
-    const teamNames = [team1, team2, team3, team4];
     user.name = name;
     user.teams = [];
     user.weeks = [];
@@ -59,9 +54,9 @@ export class NewUserComponent {
       const newWeek = new Week();
       newWeek.id = WEEK_NAMES[weekNum];
       newWeek.teams = [];
-      for (const teamNum in teamNames) {
+      for (let team of this.selectedUser) {
         const newTeam = new Team();
-        newTeam.name = teamNames[teamNum];
+        newTeam.name = team.name;
         newTeam.selected = false;
         newWeek.teams.push(newTeam);
       }
