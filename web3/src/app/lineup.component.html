@@ -1,9 +1,14 @@
 <table>
  <thead>
   <tr class=head>
-   <td class=week>Week</td><td class=team>Team</td><td class=team>Team</td><td class=team>Team</td><td class=team>Team</td>
-   <ng-template *ngIf="userData.dh"> 
-    <td class=team>DH</td><td class=team>DH2</td>
+   <td class=week>Week</td>
+   <td class=team>Team</td>
+   <td class=team>Team</td>
+   <td class=team>Team</td>
+   <td class=team>Team</td>
+   <ng-template *ngIf="(userData|async)?.dh"> 
+    <td class=team>DH</td>
+    <td class=team>DH2</td>
    </ng-template>
   </tr>
  </thead>
@@ -26,9 +31,3 @@
  </ng-template>
 </tr>
 </table>
-
-
-<div id="error-toast" class="mdl-js-snackbar mdl-snackbar">
- <div class="mdl-snackbar__text"></div>
- <button class="mdl-snackbar__action" type="button"></button>
-</div>

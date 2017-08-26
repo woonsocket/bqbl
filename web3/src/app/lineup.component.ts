@@ -6,6 +6,7 @@ import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable }
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Router } from '@angular/router';
+import {MdlSnackbarService} from '@angular-mdl/core';
 
 @Component({
   templateUrl: './lineup.component.html',
@@ -17,7 +18,8 @@ export class LineupComponent {
   user: Observable<firebase.User>;
   uid: string;
   displayName: string;
-  constructor(private db: AngularFireDatabase, private afAuth: AngularFireAuth, private router: Router) {
+  constructor(private db: AngularFireDatabase, private afAuth: AngularFireAuth, private router: Router,
+    private mdlSnackbarService: MdlSnackbarService) {
     this.user = afAuth.authState;
     this.user.subscribe(value => {
       if (!value) {
@@ -47,9 +49,10 @@ export class LineupComponent {
     const legalAdd = selectedTeams < 2;
 
     if (!legalAdd) {
-      let snackbarContainer : any = document.querySelector('#error-toast');
-      let data = {message: 'You can only select two teams per week'};
-      snackbarContainer.MaterialSnackbar.showSnackbar(data);
+      this.mdlSnackbarService.showSnackbar({
+        message:'You can only select two teams per week',
+      });
+
     }
 
     return selectedTeams < 2;
@@ -73,10 +76,9 @@ export class LineupComponent {
     }
 
     if (!team.selected && !this.isLegalMaxTeams(team)) {
-      let snackbarContainer : any = document.querySelector('#error-toast');
-      let data = {message: 'Max 13 plays per year'};
-      snackbarContainer.MaterialSnackbar.showSnackbar(data);
-      return;
+      this.mdlSnackbarService.showSnackbar({
+        message:'Max 13 plays per year',
+      });      return;
     }
     team.selected = !team.selected;
     this.db.object('/tmp/' + this.uid + '/weeks/' + weekId + '/teams').set(week.teams);
@@ -104,10 +106,10 @@ export class LineupComponent {
   }
 
   pushTeamFromInput(elem, teams) {
-      let team = new Team();
-      team.name = elem.value;
-      team.selected = true;
-      teams.push(team);
+    let team = new Team();
+    team.name = elem.value;
+    team.selected = true;
+    teams.push(team);
   }
 
 }
