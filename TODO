@@ -1,5 +1,4 @@
 Features:
-P0 Finish league support (see below)
 P0 Move all of the fancy new stuff from the /tmp path
 P1 Add year as a URL parameter where it makes sense
 - Add safety support to the console
@@ -8,11 +7,6 @@ P1 Add year as a URL parameter where it makes sense
 - Add a whole-year per-user stats view
 - Lock down when teams can be selected
 - Pre-populate new users with legal team selections
-
-Leagues:
-- Allow new users to select their league
-- Allow users to "claim" their team once they select a league
-- Disable DH-ing for leagues that disallow it
 
 Cleanup:
 - MDL-ize everything
