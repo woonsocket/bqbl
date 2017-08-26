@@ -7,16 +7,19 @@ td.week {
 	width:20px;
 	padding: 10px;
 }
+
 td.team {
 	min-width:30px;
 	text-align: center;
   width:20%;
-
 }
+
 tr.head {
 	font-weight: bold;
 }
+
 tr:nth-child(even) {background: #f8f8f8}
+
 table {
 	width:90%;
 	margin:auto;

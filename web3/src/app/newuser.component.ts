@@ -19,7 +19,6 @@ export class NewUserComponent {
   uid: string;
   router: Router;
   selectedLeague: null;
-  selectedLeagueKey: null;
   selectedUser = [];
 
   constructor(db: AngularFireDatabase, private afAuth: AngularFireAuth, router: Router) {
@@ -34,7 +33,6 @@ export class NewUserComponent {
     leagues.subscribe(snapshots => {
       snapshots.forEach(snapshot => {
         this.leagues.push(snapshot.val());
-//        this.leagues[snapshot.val().name] = snapshot.val();
       })
     });
 

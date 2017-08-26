@@ -1,7 +1,10 @@
 <table>
  <thead>
   <tr class=head>
-   <td class=week>Week</td><td class=team>Team</td><td class=team>Team</td><td class=team>Team</td><td class=team>Team</td><td class=team>DH</td><td class=team>DH2</td>
+   <td class=week>Week</td><td class=team>Team</td><td class=team>Team</td><td class=team>Team</td><td class=team>Team</td>
+   <ng-template *ngIf="userData.dh"> 
+    <td class=team>DH</td><td class=team>DH2</td>
+   </ng-template>
   </tr>
  </thead>
  <tr *ngFor="let week of (userData|async)?.weeks; let i = index">
@@ -10,15 +13,17 @@
   <td *ngFor="let team of week.teams | slice:0:4;" class=team
   [class.selected]="team.selected" (click)="onSelect(week, team, i)">
   {{team.name}}
-  </td> 
- <td class="team dh1" [class.selected]="week.teams[4]?.name">
- <input type="text" placeholder="DH" (change)="onChange($event, week, i)"
- value={{week.teams[4]?.name}}>
- </td>
+ </td> 
+ <ng-template *ngIf="userData.dh"> 
+  <td class="team dh1" [class.selected]="week.teams[4]?.name">
+   <input type="text" placeholder="DH" (change)="onChange($event, week, i)"
+   value={{week.teams[4]?.name}}>
+  </td>
   <td class="team dh2" [class.selected]="week.teams[5]?.name">
- <input type="text" placeholder="DH" (change)="onChange($event, week, i)"
- value={{week.teams[5]?.name}}>
- </td>
+   <input type="text" placeholder="DH" (change)="onChange($event, week, i)"
+   value={{week.teams[5]?.name}}>
+  </td>
+ </ng-template>
 </tr>
 </table>
 
