@@ -21,14 +21,14 @@ export class AdminComponent {
 
   // https://stackoverflow.com/questions/38423663/angular2-ngmodel-inside-of-ngfor
   users = [
-  [{'value': ''}, {'value': ''}, {'value': ''}, {'value': ''}], 
-  [{'value': ''}, {'value': ''}, {'value': ''}, {'value': ''}], 
-  [{'value': ''}, {'value': ''}, {'value': ''}, {'value': ''}], 
-  [{'value': ''}, {'value': ''}, {'value': ''}, {'value': ''}], 
-  [{'value': ''}, {'value': ''}, {'value': ''}, {'value': ''}], 
-  [{'value': ''}, {'value': ''}, {'value': ''}, {'value': ''}], 
-  [{'value': ''}, {'value': ''}, {'value': ''}, {'value': ''}], 
-  [{'value': ''}, {'value': ''}, {'value': ''}, {'value': ''}], 
+  [{'name': ''}, {'name': ''}, {'name': ''}, {'name': ''}], 
+  [{'name': ''}, {'name': ''}, {'name': ''}, {'name': ''}], 
+  [{'name': ''}, {'name': ''}, {'name': ''}, {'name': ''}], 
+  [{'name': ''}, {'name': ''}, {'name': ''}, {'name': ''}], 
+  [{'name': ''}, {'name': ''}, {'name': ''}, {'name': ''}], 
+  [{'name': ''}, {'name': ''}, {'name': ''}, {'name': ''}], 
+  [{'name': ''}, {'name': ''}, {'name': ''}, {'name': ''}], 
+  [{'name': ''}, {'name': ''}, {'name': ''}, {'value': ''}], 
   ];
 
   // https://stackoverflow.com/questions/36095496/angular-2-how-to-write-a-for-loop-not-a-foreach-loop

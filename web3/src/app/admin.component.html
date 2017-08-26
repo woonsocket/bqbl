@@ -35,7 +35,7 @@
    <tr *ngFor="let user of users; let i = index">
     <td>Team {{i}}</td>
     <td *ngFor="let team of user; let j = index">
-     <input type="text" placeholder="NYJ" name=team{{i}}{{j}} [(ngModel)]="users[i][j].value" (change)=onChange()>
+     <input type="text" placeholder="NYJ" name=team{{i}}{{j}} [(ngModel)]="users[i][j].name" (change)=onChange()>
     </td> 
    </tr>
    </tbody>
