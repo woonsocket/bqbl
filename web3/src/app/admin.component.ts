@@ -15,7 +15,7 @@ export class AdminComponent {
   weeks = ALL_WEEKS;
   
   // TODO pull this into subcomponent
-  leagueName = "NBQBL";
+  leagueName = "";
 
   hasDh = false;
 
@@ -31,6 +31,7 @@ export class AdminComponent {
   [{'name': ''}, {'name': ''}, {'name': ''}, {'value': ''}], 
   ];
 
+
   // https://stackoverflow.com/questions/36095496/angular-2-how-to-write-a-for-loop-not-a-foreach-loop
   createRange(number){
     var items: number[] = [];
@@ -44,6 +45,9 @@ export class AdminComponent {
     this.user = afAuth.authState;
     this.user.subscribe(value => {
     });
+
+    // Populate by default for testing iteration.
+    this.users = FULLY_POPULATED_LEAGUE_USERS;
   }
 
   onClick(val: string) {
@@ -95,3 +99,15 @@ let ALL_WEEKS = [
 let ALL_TEAMS = ["ARI","ATL","BAL","BUF","CAR","CHI","CIN","CLE","DAL","DEN","DET",
 "GB","HOU","IND","JAX","KC","LA","MIA","MIN","NE","NO","NYG","NYJ",
 "OAK", "PHI","PIT","SD","SEA","SF","TB","TEN","WSH"];
+
+let FULLY_POPULATED_LEAGUE_USERS = [
+  [{'name': 'ARI'}, {'name': 'ATL'}, {'name': 'BAL'}, {'name': 'BUF'}], 
+  [{'name': 'CAR'}, {'name': 'CHI'}, {'name': 'CIN'}, {'name': 'CLE'}], 
+  [{'name': 'DAL'}, {'name': 'DEN'}, {'name': 'DET'}, {'name': 'GB'}], 
+  [{'name': 'HOU'}, {'name': 'IND'}, {'name': 'JAX'}, {'name': 'KC'}], 
+  [{'name': 'LAC'}, {'name': 'LAR'}, {'name': 'MIA'}, {'name': 'MIN'}], 
+  [{'name': 'NE'}, {'name': 'NO'}, {'name': 'NYG'}, {'name': 'NYJ'}], 
+  [{'name': 'OAK'}, {'name': 'PHI'}, {'name': 'PIT'}, {'name': 'SEA'}], 
+  [{'name': 'SF'}, {'name': 'TB'}, {'name': 'TEN'}, {'value': 'WAS'}]
+  ];
+

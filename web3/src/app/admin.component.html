@@ -24,11 +24,11 @@
   <span>Create League</span>
  </mdl-tab-panel-title>
  <mdl-tab-panel-content>
-  <input type="text" placeholder="NYJ" [(ngModel)]=leagueName>
+  <input type="text" placeholder="League name" [(ngModel)]=leagueName>
   <table>
    <thead>
     <tr class=head>
-     <td class=week>Name</td><td class=team>Team</td><td class=team>Team</td><td class=team>Team</td><td class=team>Team</td>
+     <td class=week style="min-width:5em">Name</td><td class=team>Team</td><td class=team>Team</td><td class=team>Team</td><td class=team>Team</td>
     </tr>
    </thead>
    <tbody>
@@ -41,7 +41,7 @@
    </tbody>
   </table>
 
-  <mdl-checkbox  [mdl-ripple]="true" [(ngModel)]="hasDh"></mdl-checkbox>
+  <mdl-checkbox  [mdl-ripple]="true" [(ngModel)]="hasDh">League has a DH</mdl-checkbox>
 
  <button mdl-button mdl-button-type="raised" mdl-colored="accent" (click)="onCreateLeague()">
     Create
