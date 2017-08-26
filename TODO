@@ -7,9 +7,10 @@ P1 Add year as a URL parameter where it makes sense
 - Add a whole-year per-user stats view
 - Lock down when teams can be selected
 - Pre-populate new users with legal team selections
+- Make the scoreboard per-league
 
 Cleanup:
-- MDL-ize everything
+- MDL-ize the scary stuff (app, nflscores)
 - Inject a "default week" component, automatically advance it
 - Inject a router module extension (terminology?) that reads week and year from the url
 - Inject a module that redirects to login when you're not logged in

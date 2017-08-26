@@ -10,6 +10,7 @@ import { NewUserComponent } from './newuser.component';
 import { LineupComponent } from './lineup.component';
 import { LoginComponent } from './login.component';
 import { ConsoleComponent } from './console.component';
+import { ConstantsService } from './constants.service';
 import { AdminComponent } from './admin.component';
 import { RouterModule, Routes } from '@angular/router';
 import { environment } from '../environments/environment';
@@ -38,7 +39,7 @@ import { MdlModule } from '@angular-mdl/core';
     MdlModule,
     routing,
   ],
-  providers: [],
+  providers: [ConstantsService],
   bootstrap: [AppComponent]
 })
 
