@@ -6,22 +6,21 @@
 
 <div style="margin:20px;">
  League<br>
- <select [(ngModel)]=selectedLeague>
-  <option [ngValue]=league *ngFor="let league of leagues" >{{league.name}}</option>
- </select>
+ <div *ngFor="let league of leagues">
+  <mdl-radio name="leagues" [(ngModel)]=selectedLeague mdl-ripple [value]=league>
+   {{league.name}}
+  </mdl-radio>
+ </div>
 
 </div>
 
 
 <div style="margin:20px;">
  Team<br>
-{{selectedUser|json}}
- <select [(ngModel)]=selectedUser>
-  <option [ngValue]=user *ngFor="let user of selectedLeague?.users">
-   {{userAsString(user)}}
-  </option>
- </select>
-
+ <div *ngFor="let user of selectedLeague?.users">
+  <mdl-radio name="teams" [(ngModel)]=selectedUser mdl-ripple [value]=user>   {{userAsString(user)}}
+  </mdl-radio>
+ </div>
 </div>
 
 <div style="padding-top:20px; display:flex">
