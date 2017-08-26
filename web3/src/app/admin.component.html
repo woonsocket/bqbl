@@ -1,5 +1,4 @@
-<mdl-tabs mdl-ripple mdl-tab-active-index="0" 
-(mdl-tab-active-changed)="tabChanged($event)">
+<mdl-tabs mdl-ripple mdl-tab-active-index="0">
 <mdl-tab-panel>
  <mdl-tab-panel-title>
   <span>Weeks</span>
@@ -16,8 +15,37 @@
      (click)="onClick(week.val)" 
      [checked]="week.val" value="Create">
     </mdl-list-item-secondary-action>
-   </mdl-list-item>>
+   </mdl-list-item>
   </mdl-list>
+ </mdl-tab-panel-content>
+</mdl-tab-panel>
+<mdl-tab-panel>
+  <mdl-tab-panel-title>
+  <span>Create League</span>
+ </mdl-tab-panel-title>
+ <mdl-tab-panel-content>
+  <input type="text" placeholder="NYJ" [(ngModel)]=leagueName>
+  <table>
+   <thead>
+    <tr class=head>
+     <td class=week>Name</td><td class=team>Team</td><td class=team>Team</td><td class=team>Team</td><td class=team>Team</td>
+    </tr>
+   </thead>
+   <tbody>
+   <tr *ngFor="let user of users; let i = index">
+    <td>Team {{i}}</td>
+    <td *ngFor="let team of user; let j = index">
+     <input type="text" placeholder="NYJ" name=team{{i}}{{j}} [(ngModel)]="users[i][j].value" (change)=onChange()>
+    </td> 
+   </tr>
+   </tbody>
+  </table>
+
+  <mdl-checkbox  [mdl-ripple]="true" [(ngModel)]="hasDh"></mdl-checkbox>
+
+ <button mdl-button mdl-button-type="raised" mdl-colored="accent" (click)="onCreateLeague()">
+    Create
+  </button>
  </mdl-tab-panel-content>
 </mdl-tab-panel>
 </mdl-tabs>

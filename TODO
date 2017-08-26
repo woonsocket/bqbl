@@ -1,7 +1,7 @@
 P0 Add multiple league support because Jason is very reasonable
 P0 Move all of the fancy new stuff from the /tmp path
-- Add safety support to the console
 P1 Add year as a URL parameter where it makes sense
+- Add safety support to the console
 - Add a running total to the scoreboard
 - Add a whole-year per-team stats view
 - Add a whole-year per-user stats view

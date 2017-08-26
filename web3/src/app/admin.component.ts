@@ -5,6 +5,7 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
 import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
+import { NgModel } from '@angular/forms';
 
 @Component({
   templateUrl: './admin.component.html',
@@ -12,10 +13,36 @@ import { Observable } from 'rxjs/Observable';
 export class AdminComponent {
   user: Observable<firebase.User>;
   weeks = ALL_WEEKS;
+  
+  // TODO pull this into subcomponent
+  leagueName = "NBQBL";
+
+  hasDh = false;
+
+  // https://stackoverflow.com/questions/38423663/angular2-ngmodel-inside-of-ngfor
+  users = [
+  [{'value': ''}, {'value': ''}, {'value': ''}, {'value': ''}], 
+  [{'value': ''}, {'value': ''}, {'value': ''}, {'value': ''}], 
+  [{'value': ''}, {'value': ''}, {'value': ''}, {'value': ''}], 
+  [{'value': ''}, {'value': ''}, {'value': ''}, {'value': ''}], 
+  [{'value': ''}, {'value': ''}, {'value': ''}, {'value': ''}], 
+  [{'value': ''}, {'value': ''}, {'value': ''}, {'value': ''}], 
+  [{'value': ''}, {'value': ''}, {'value': ''}, {'value': ''}], 
+  [{'value': ''}, {'value': ''}, {'value': ''}, {'value': ''}], 
+  ];
+
+  // https://stackoverflow.com/questions/36095496/angular-2-how-to-write-a-for-loop-not-a-foreach-loop
+  createRange(number){
+    var items: number[] = [];
+    for(var i = 1; i <= number; i++){
+      items.push(i);
+    }
+    return items;
+  }
+
   constructor(private afAuth: AngularFireAuth, private db: AngularFireDatabase) {
     this.user = afAuth.authState;
     this.user.subscribe(value => {
-      // if logged in redirect to /
     });
   }
 
@@ -25,6 +52,19 @@ export class AdminComponent {
       benchingMap[team] = false;
     }
     this.db.object('/tmp2/events/2017/' + val + '/benchings').set(benchingMap);
+  }
+
+  onChange() {
+    console.log(this.users);
+    return false;
+  }
+  
+  onCreateLeague() {
+    this.db.list('/tmp2/leagues/').push({
+      'name': this.leagueName,
+      'dh': this.hasDh,
+      'users': this.users
+    });
   }
 }
 
