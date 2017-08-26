@@ -1,37 +1,58 @@
 <div style="margin:20px;">
-Name<br>
-<input class="mdl-textfield__input" type="text" #nameInput placeholder="Blaine">
-  
+ Name<br>
+ <input class="mdl-textfield__input" type="text" #nameInput placeholder="Blaine">
+ 
 </div>
+
+<div style="margin:20px;">
+ League<br>
+ <select [(ngModel)]=selectedLeague>
+  <option [ngValue]=league *ngFor="let league of leagues" >{{league.name}}</option>
+ </select>
+ 
+</div>
+
+
+<div style="margin:20px;">
+ Team<br>
+
+ <select [(ngModel)]=selectedTeam>
+  <option [ngValue]=user *ngFor="let user of selectedLeague?.users">
+   {{teamsAsString(user)}}
+  </option>
+ </select>
+
+</div>
+
 <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-  <thead>
-    <tr>
-      <th class="mdl-data-table__cell--non-numeric">Team 1</th>
-      <th class="mdl-data-table__cell--non-numeric">Team 2</th>
-      <th class="mdl-data-table__cell--non-numeric">Team 3</th>
-      <th class="mdl-data-table__cell--non-numeric">Team 4</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td class="mdl-data-table__cell--non-numeric">
-        <input class="mdl-textfield__input" type="text" #team1 value="ARI" />
-      </td>
-      <td class="mdl-data-table__cell--non-numeric">
-        <input class="mdl-textfield__input" type="text" #team2 value="CLE" />
-      </td>
-      <td class="mdl-data-table__cell--non-numeric">
-        <input class="mdl-textfield__input" type="text" #team3 value="SF" />
-      </td>
-      <td class="mdl-data-table__cell--non-numeric">
-        <input class="mdl-textfield__input" type="text" #team4 value="HOU" />
-      </td>
-    </tr>
-  </tbody>
+ <thead>
+  <tr>
+   <th class="mdl-data-table__cell--non-numeric">Team 1</th>
+   <th class="mdl-data-table__cell--non-numeric">Team 2</th>
+   <th class="mdl-data-table__cell--non-numeric">Team 3</th>
+   <th class="mdl-data-table__cell--non-numeric">Team 4</th>
+  </tr>
+ </thead>
+ <tbody>
+  <tr>
+   <td class="mdl-data-table__cell--non-numeric">
+    <input class="mdl-textfield__input" type="text" #team1 value="ARI" />
+   </td>
+   <td class="mdl-data-table__cell--non-numeric">
+    <input class="mdl-textfield__input" type="text" #team2 value="CLE" />
+   </td>
+   <td class="mdl-data-table__cell--non-numeric">
+    <input class="mdl-textfield__input" type="text" #team3 value="SF" />
+   </td>
+   <td class="mdl-data-table__cell--non-numeric">
+    <input class="mdl-textfield__input" type="text" #team4 value="HOU" />
+   </td>
+  </tr>
+ </tbody>
 </table>
 <div style="padding-top:20px; display:flex">
-<button style="margin:auto" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" 
-(click)="onCreate(team1.value, team2.value, team3.value, team4.value, nameInput.value)">
-Create User
+ <button style="margin:auto" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" 
+ (click)="onCreate(team1.value, team2.value, team3.value, team4.value, nameInput.value)">
+ Create User
 </button>
 </div>

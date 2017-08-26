@@ -13,10 +13,14 @@ import { Router } from '@angular/router';
 })
 export class NewUserComponent {
   userData: FirebaseObjectObservable<any>;
+  leagues = [];
   db = null;
   user: Observable<firebase.User>;
   uid: string;
   router: Router;
+  selectedLeague: null;
+  selectedLeagueKey: null;
+  selectedTeam: null;
 
   constructor(db: AngularFireDatabase, private afAuth: AngularFireAuth, router: Router) {
     this.db = db;
@@ -25,9 +29,25 @@ export class NewUserComponent {
       this.userData = this.db.object('/tmp/' + value.uid);
       this.uid = value.uid;
     });
+
+    let leagues = this.db.list('/tmp2/leagues', { preserveSnapshot: true });
+    leagues.subscribe(snapshots => {
+      snapshots.forEach(snapshot => {
+        this.leagues.push(snapshot.val());
+//        this.leagues[snapshot.val().name] = snapshot.val();
+      })
+    });
+
     this.router = router;
   }
 
+  teamsAsString(user) {
+    let ret = '';
+    for (let team of user) {
+      ret += team.name + ",";
+    }
+    return ret;
+  }
   onCreate(team1: string, team2: string, team3: string, team4: string,
       name: string): void {
     const user = new User();
