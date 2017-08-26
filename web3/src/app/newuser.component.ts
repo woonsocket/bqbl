@@ -18,7 +18,7 @@ export class NewUserComponent {
   user: Observable<firebase.User>;
   uid: string;
   router: Router;
-  selectedLeague: null;
+  selectedLeague: any = {};
   selectedUser = [];
 
   constructor(db: AngularFireDatabase, private afAuth: AngularFireAuth, router: Router) {
@@ -48,6 +48,7 @@ export class NewUserComponent {
     user.name = name;
     user.teams = [];
     user.weeks = [];
+    user.dh = this.selectedLeague.dh || false;
     for (const weekNum in WEEK_NAMES) {
       const newWeek = new Week();
       newWeek.id = WEEK_NAMES[weekNum];
@@ -70,6 +71,7 @@ export class User {
   name: string;
   teams: Team[];
   weeks: {};
+  dh: boolean;
 }
 export class Week {
   id: string;
