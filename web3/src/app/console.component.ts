@@ -12,6 +12,7 @@ import { Observable } from 'rxjs/Observable';
 })
 export class ConsoleComponent {
   benchings: FirebaseListObservable<any>;
+  safeties: FirebaseListObservable<any>;
   selectedWeek = 'P1';
   year = '2017';
 
@@ -25,13 +26,25 @@ export class ConsoleComponent {
           orderByChild: 'total'
         }
       });
+      this.safeties = this.db.list(`/events/${this.year}/${this.selectedWeek}/safeties`, {
+        query: {
+          orderByChild: 'total'
+        }
+      });
+
     })
   }
 
-  onClick(benching: any) {
+  onBenchingClick(benching: any) {
     benching.$value = !benching.$value;
     this.db.object('/tmp2/events/2017/' + this.selectedWeek + '/benchings/' + benching.$key)
       .set(benching.$value);
+  }
+
+  onSafetyClick(safety: any) {
+    safety.$value = !safety.$value || true;
+    this.db.object('/events/2017/' + this.selectedWeek + '/safeties/' + safety.$key)
+      .set(safety.$value);
   }
 
   tabChanged() {}

@@ -21,9 +21,20 @@
  </mdl-tab-panel-content>
 </mdl-tab-panel>
 <mdl-tab-panel mdl-tab-panel-title="Safeties">
- <ul>
-  TODO
-</ul>
+    <mdl-list>
+      <mdl-list-item *ngFor="let safety of safeties | async">
+        <mdl-list-item-primary-content>
+          <mdl-icon mdl-list-item-avatar>person</mdl-icon>
+          {{safety.desc}}
+        </mdl-list-item-primary-content>
+        <mdl-list-item-secondary-action>
+         <input type="checkbox" class="mdl-checkbox__input" 
+         (click)="onSafetyClick(safety)" 
+         [checked]="safety.$value">
+       </mdl-list-item-secondary-action>
+     </mdl-list-item>
+   </mdl-list>
+
 </mdl-tab-panel>
 </mdl-tabs>
 
