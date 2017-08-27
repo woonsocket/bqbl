@@ -16,9 +16,11 @@ export class ScoresComponent {
   scoresList: FirebaseListObservable<any>;
   db = null;
   user: Observable<firebase.User>;
+  leagueToUsers = {};
+  leagueToNames = {};
   userToTeams = {};
   teamToScores = {};
-  scoreRows = [];
+  scoreRows = {};
   selectedWeek = '1';
   year = '2017';
   route: ActivatedRoute;
@@ -32,6 +34,12 @@ export class ScoresComponent {
       this.userDataList = this.db.list('/tmp');
       this.userDataList.subscribe(users => {
         for (const user of users) {
+          let league = this.leagueToUsers[user.leagueId] || [];
+          league.push(user);
+          this.leagueToUsers[user.leagueId] = league;
+          console.log(this.leagueToUsers)
+
+          this.leagueToNames[user.leagueId] = user.leagueName;
           this.userToTeams[user.$key] = {};
           for (const week of user.weeks) {
             const activeTeams = [];
@@ -51,10 +59,14 @@ export class ScoresComponent {
 
   ngOnInit() {
     this.route.queryParams.subscribe((params: Params) => {
-     this.selectedWeek = params.week || this.constants.getDefaultWeek();
-     this.year = params.year || '2017';
-     this.loadScoresDb();
+      this.selectedWeek = params.week || this.constants.getDefaultWeek();
+      this.year = params.year || '2017';
+      this.loadScoresDb();
     });
+  }
+
+  getIterable(val) {
+    return Object.keys(val);
   }
 
   loadScoresDb(): void {
@@ -70,22 +82,28 @@ export class ScoresComponent {
   }
 
   updateScores(): void {
-    this.scoreRows = [];
-    for (const uid in this.userToTeams) {
-      const name = this.userToTeams[uid][this.selectedWeek].name;
-      const teams = this.userToTeams[uid][this.selectedWeek].teams;
-      teams[0] = teams[0] || 'N/A';
-      teams[1] = teams[1] || 'N/A';
+    this.scoreRows = {};
+    for (const leagueKey in this.leagueToUsers) {
+      for (const user of this.leagueToUsers[leagueKey]) {
+        console.log(user);
+        const name = this.userToTeams[user.$key][this.selectedWeek].name;
+        const teams = this.userToTeams[user.$key][this.selectedWeek].teams;
+        teams[0] = teams[0] || 'N/A';
+        teams[1] = teams[1] || 'N/A';
 
-      const scoreRow = {
-        'name': name,
-        'team1': teams[0],
-        'score1': this.getScore(teams[0]),
-        'team2': teams[1],
-        'score2': this.getScore(teams[1]),
-      };
-      this.scoreRows.push(scoreRow);
+        const scoreRow = {
+          'name': name,
+          'team1': teams[0],
+          'score1': this.getScore(teams[0]),
+          'team2': teams[1],
+          'score2': this.getScore(teams[1]),
+        };
+        let league = this.scoreRows[leagueKey] || [];
+        league.push(scoreRow);
+        this.scoreRows[leagueKey] = league;
+      }
     }
+    console.log(this.scoreRows)
   }
 
   getScore(teamName: string): number {

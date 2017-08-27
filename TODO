@@ -6,7 +6,6 @@ P0 Move all of the fancy new stuff from the /tmp path
 - Add a whole-year per-user "Standings" view
 - Lock down when teams can be selected
 - Pre-populate new users with legal team selections
-- Make the scoreboard per-league
 
 Cleanup:
 - MDL-ize the scary stuff (app, nflscores)
