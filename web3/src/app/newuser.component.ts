@@ -7,6 +7,7 @@ import { Component } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Router } from '@angular/router';
 import { User, Week, Team } from './structs';
+import * as paths from './paths'
 
 @Component({
   templateUrl: './newuser.component.html',
@@ -26,11 +27,11 @@ export class NewUserComponent {
     this.db = db;
     this.user = afAuth.authState;
     this.user.subscribe(value => {
-      this.userData = this.db.object('/tmp/' + value.uid);
+      this.userData = this.db.object(paths.getUserPath(value.uid));
       this.uid = value.uid;
     });
 
-    let leagues = this.db.list('/tmp2/leagues', { preserveSnapshot: true });
+    let leagues = this.db.list(paths.getLeaguesPath(), { preserveSnapshot: true });
     leagues.subscribe(snapshots => {
       snapshots.forEach(snapshot => {
         let val = snapshot.val();
@@ -66,6 +67,7 @@ export class NewUserComponent {
       }
       user.weeks[weekNum] = newWeek;
     }
+    // Automatically fill teams' selections to a legal state.
     for (let weekKey in user.weeks) {
       let curWeek = user.weeks[weekKey];
       if (WEEKS_AUTOFILL_01.includes(curWeek.id)) {
@@ -76,7 +78,7 @@ export class NewUserComponent {
         curWeek.teams[3].selected = true;
       }
     }
-    this.db.object('/tmp/' + this.uid).set(user).then( _ => {
+    this.db.object(paths.getUserPath(this.uid)).set(user).then( _ => {
       this.router.navigate(['lineup']);
     });
   }

@@ -7,6 +7,7 @@ import { Component } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { NgModel } from '@angular/forms';
 import { ConstantsService } from './constants.service';
+import * as paths from './paths'
 
 @Component({
   templateUrl: './admin.component.html',
@@ -52,7 +53,7 @@ export class AdminComponent {
     for (let team of this.constants.getAllTeams()) {
       benchingMap[team] = false;
     }
-    this.db.object('/tmp2/events/2017/' + val + '/benchings').set(benchingMap);
+    this.db.object(paths.getEventsPath() + '2017/' + val + '/benchings').set(benchingMap);
   }
 
   onChange() {
@@ -61,7 +62,7 @@ export class AdminComponent {
   }
   
   onCreateLeague() {
-    this.db.list('/tmp2/leagues/').push({
+    this.db.list(paths.getLeaguesPath()).push({
       'name': this.leagueName,
       'dh': this.hasDh,
       'users': this.users

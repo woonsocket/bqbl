@@ -8,6 +8,7 @@ import { Observable } from 'rxjs/Observable';
 import { Router } from '@angular/router';
 import { MdlSnackbarService} from '@angular-mdl/core';
 import { User, Week, Team } from './structs';
+import * as paths from './paths'
 
 @Component({
   templateUrl: './lineup.component.html',
@@ -27,7 +28,7 @@ export class LineupComponent {
         this.displayName = '';
         return;
       }
-      this.userData = this.db.object('/tmp/' + value.uid);
+      this.userData = this.db.object(paths.getUserPath(value.uid));
       this.userData.subscribe(userData => {
         this.userDataSnapshot = userData;
         if (!userData.$exists()) {
@@ -82,7 +83,7 @@ export class LineupComponent {
       });      return;
     }
     team.selected = !team.selected;
-    this.db.object('/tmp/' + this.uid + '/weeks/' + weekId + '/teams').set(week.teams);
+    this.db.object(paths.getUserPath(this.uid) + '/weeks/' + weekId + '/teams').set(week.teams);
   }
 
   onChange(event, week, weekId) {
@@ -103,7 +104,7 @@ export class LineupComponent {
         this.pushTeamFromInput(dh2, week.teams);
       }
     }
-    this.db.object('/tmp/' + this.uid + '/weeks/' + weekId + '/teams').set(week.teams);
+    this.db.object(paths.getUserPath(this.uid) + '/weeks/' + weekId + '/teams').set(week.teams);
   }
 
   pushTeamFromInput(elem, teams) {

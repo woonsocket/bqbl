@@ -7,6 +7,7 @@ import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable }
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { ConstantsService } from './constants.service'
+import * as paths from './paths'
 
 @Component({
   templateUrl: './standings.component.html',
