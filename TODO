@@ -2,7 +2,6 @@ Features:
 - Add a running total to the scoreboard
 - Add a whole-year per-team "Stats" view
 - Lock down when teams can be selected
-- Pre-populate new users with legal team selections
 
 Cleanup:
 P0 Move all of the fancy new stuff from the /tmp path
