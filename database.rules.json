@@ -24,7 +24,24 @@
     },
     "tmp": {
       ".read": true,
-      ".write": true
+      "$user_id": {
+        // TODO harveyj - clean this up so there's just a week object
+        // and a userdata object.
+        "leagueid" : {
+          ".write": "$user_id === auth.uid"
+        },
+        "leaguename" : {
+          ".write": "$user_id === auth.uid"
+        },
+        "name" : {
+          ".write": "$user_id === auth.uid"
+        },
+        "weeks": {
+          "$week_id" : {
+            ".write": "$user_id === auth.uid && root.child('unlockedweeks').hasChild(newData.child('id').val())"
+          }
+        }
+      }
     },
     "tmp2": {
       ".read": true,
