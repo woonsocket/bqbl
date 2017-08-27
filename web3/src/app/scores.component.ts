@@ -6,6 +6,7 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
 import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
+import { ConstantsService } from './constants.service'
 
 @Component({
   templateUrl: './scores.component.html',
@@ -18,13 +19,13 @@ export class ScoresComponent {
   userToTeams = {};
   teamToScores = {};
   scoreRows = [];
-  week = '1';
+  selectedWeek = '1';
   year = '2017';
   route: ActivatedRoute;
-  constructor(db: AngularFireDatabase, private afAuth: AngularFireAuth, route: ActivatedRoute, router: Router) {
+  constructor(db: AngularFireDatabase, private afAuth: AngularFireAuth, route: ActivatedRoute, router: Router, private constants: ConstantsService) {
     this.db = db;
     this.user = afAuth.authState;
-    this.week = route.snapshot.queryParams['week'] || this.week;
+    this.selectedWeek = route.snapshot.queryParams['week'] || this.selectedWeek;
     this.route = route;
 
     this.user.subscribe(value => {
@@ -50,7 +51,7 @@ export class ScoresComponent {
 
   ngOnInit() {
     this.route.queryParams.subscribe((params: Params) => {
-     this.week = params.week || '1';
+     this.selectedWeek = params.week || this.constants.getDefaultWeek();
      this.year = params.year || '2017';
      this.loadScoresDb();
     });
@@ -58,7 +59,7 @@ export class ScoresComponent {
 
   loadScoresDb(): void {
     this.teamToScores = {};
-    this.scoresList = this.db.list('/scores/' + this.year + '/' + this.week);
+    this.scoresList = this.db.list('/scores/' + this.year + '/' + this.selectedWeek);
     this.scoresList.subscribe(scores => {
       for (const score of scores) {
         this.teamToScores[score.$key] = score.total;
@@ -71,8 +72,8 @@ export class ScoresComponent {
   updateScores(): void {
     this.scoreRows = [];
     for (const uid in this.userToTeams) {
-      const name = this.userToTeams[uid][this.week].name;
-      const teams = this.userToTeams[uid][this.week].teams;
+      const name = this.userToTeams[uid][this.selectedWeek].name;
+      const teams = this.userToTeams[uid][this.selectedWeek].teams;
       teams[0] = teams[0] || 'N/A';
       teams[1] = teams[1] || 'N/A';
 

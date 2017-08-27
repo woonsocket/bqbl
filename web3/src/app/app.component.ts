@@ -18,15 +18,14 @@ export class AppComponent {
   user: Observable<firebase.User>;
   uid = '';
   displayName = 'Login';
-  week = '1';
   allWeeks = [];
-  selectedWeek = 'P1';
+  selectedWeek = '';
   year = '2017';
   weekDropdownSuppressPaths = [
     '/newuser', '/admin'
   ];
   suppressWeekDropdown = false;
-  constructor(db: AngularFireDatabase, private afAuth: AngularFireAuth, private router: Router, private route: ActivatedRoute, constants: ConstantsService) {
+  constructor(db: AngularFireDatabase, private afAuth: AngularFireAuth, private router: Router, private route: ActivatedRoute, private constants: ConstantsService) {
     this.user = afAuth.authState;
     this.allWeeks = constants.getAllWeeks();
     this.user.subscribe(value => {
@@ -42,7 +41,7 @@ export class AppComponent {
 
   ngOnInit() {
     this.route.queryParams.subscribe((params: Params) => {
-      this.selectedWeek = params.week || '1';
+      this.selectedWeek = params.week || this.constants.getDefaultWeek();
       this.year = params.year || '2017';
     });
     this.router.events.subscribe(event => {

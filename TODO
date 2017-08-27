@@ -1,10 +1,9 @@
 Features:
 P0 Move all of the fancy new stuff from the /tmp path
-P1 Add year as a URL parameter where it makes sense
 - Add safety support to the console
 - Add a running total to the scoreboard
-- Add a whole-year per-team stats view
-- Add a whole-year per-user stats view
+- Add a whole-year per-team "Stats" view
+- Add a whole-year per-user "Standings" view
 - Lock down when teams can be selected
 - Pre-populate new users with legal team selections
 - Make the scoreboard per-league
@@ -21,3 +20,4 @@ Cleanup:
 If there's time:
 - Check for <5 teams played. Lower priority because we can just force it the last five weeks of the year.
 - Preserve week selection as you move between pages
+- Add year as a URL parameter where it makes sense
