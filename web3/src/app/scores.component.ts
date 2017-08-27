@@ -21,14 +21,12 @@ export class ScoresComponent {
   userToTeams = {};
   teamToScores = {};
   scoreRows = {};
-  selectedWeek = '1';
+  selectedWeek: number;
   year = '2017';
-  route: ActivatedRoute;
-  constructor(db: AngularFireDatabase, private afAuth: AngularFireAuth, route: ActivatedRoute, router: Router, private constants: ConstantsService) {
+  constructor(db: AngularFireDatabase, private afAuth: AngularFireAuth, private route: ActivatedRoute,
+              private router: Router, private constants: ConstantsService) {
     this.db = db;
     this.user = afAuth.authState;
-    this.selectedWeek = route.snapshot.queryParams['week'] || this.selectedWeek;
-    this.route = route;
 
     this.user.subscribe(value => {
       this.userDataList = this.db.list('/tmp');
@@ -37,7 +35,6 @@ export class ScoresComponent {
           let league = this.leagueToUsers[user.leagueId] || [];
           league.push(user);
           this.leagueToUsers[user.leagueId] = league;
-          console.log(this.leagueToUsers)
 
           this.leagueToNames[user.leagueId] = user.leagueName;
           this.userToTeams[user.$key] = {};
@@ -85,7 +82,6 @@ export class ScoresComponent {
     this.scoreRows = {};
     for (const leagueKey in this.leagueToUsers) {
       for (const user of this.leagueToUsers[leagueKey]) {
-        console.log(user);
         const name = this.userToTeams[user.$key][this.selectedWeek].name;
         const teams = this.userToTeams[user.$key][this.selectedWeek].teams;
         teams[0] = teams[0] || 'N/A';
@@ -103,7 +99,6 @@ export class ScoresComponent {
         this.scoreRows[leagueKey] = league;
       }
     }
-    console.log(this.scoreRows)
   }
 
   getScore(teamName: string): number {
