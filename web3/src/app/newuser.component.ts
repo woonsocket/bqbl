@@ -66,12 +66,23 @@ export class NewUserComponent {
       }
       user.weeks[weekNum] = newWeek;
     }
+    for (let weekKey in user.weeks) {
+      let curWeek = user.weeks[weekKey];
+      if (WEEKS_AUTOFILL_01.includes(curWeek.id)) {
+        curWeek.teams[0].selected = true;
+        curWeek.teams[1].selected = true;
+      } else {
+        curWeek.teams[2].selected = true;
+        curWeek.teams[3].selected = true;
+      }
+    }
     this.db.object('/tmp/' + this.uid).set(user).then( _ => {
       this.router.navigate(['lineup']);
     });
   }
 }
 
+const WEEKS_AUTOFILL_01: string[] = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11'];
 const WEEK_NAMES: string[] = ['P1', 'P2', 'P3', 'P4', '1', '2', '3', '4', '5', '6',
     '7', '8', '9', '10', '11', '12', '13', '14', '15', '16'];
 
