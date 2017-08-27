@@ -9,9 +9,9 @@ import { Observable } from 'rxjs/Observable';
 import { ConstantsService } from './constants.service'
 
 @Component({
-  templateUrl: './scores.component.html',
+  templateUrl: './standings.component.html',
 })
-export class ScoresComponent {
+export class StandingsComponent {
   userDataList: FirebaseListObservable<any>;
   scoresList: FirebaseListObservable<any>;
   db: AngularFireDatabase;
@@ -20,8 +20,7 @@ export class ScoresComponent {
   leagueToNames = {};
   userToTeams = {};
   teamToScores = {};
-  scoreRows = {};
-  selectedWeek: number;
+  userRows = {};
   year = '2017';
   constructor(db: AngularFireDatabase, private afAuth: AngularFireAuth, private route: ActivatedRoute,
               private router: Router, private constants: ConstantsService) {
@@ -56,7 +55,6 @@ export class ScoresComponent {
 
   ngOnInit() {
     this.route.queryParams.subscribe((params: Params) => {
-      this.selectedWeek = params.week || this.constants.getDefaultWeek();
       this.year = params.year || '2017';
       this.loadScoresDb();
     });
@@ -68,7 +66,7 @@ export class ScoresComponent {
 
   loadScoresDb(): void {
     this.teamToScores = {};
-    this.scoresList = this.db.list('/scores/' + this.year + '/' + this.selectedWeek);
+    this.scoresList = this.db.list('/scores/' + this.year + '/');
     this.scoresList.subscribe(scores => {
       for (const score of scores) {
         this.teamToScores[score.$key] = score.total;
@@ -79,32 +77,18 @@ export class ScoresComponent {
   }
 
   updateScores(): void {
-    this.scoreRows = {};
+    this.userRows = {};
     for (const leagueKey in this.leagueToUsers) {
       for (const user of this.leagueToUsers[leagueKey]) {
-        const name = this.userToTeams[user.$key][this.selectedWeek].name;
-        const teams = this.userToTeams[user.$key][this.selectedWeek].teams;
-        teams[0] = teams[0] || 'N/A';
-        teams[1] = teams[1] || 'N/A';
 
-        const scoreRow = {
-          'name': name,
-          'team1': teams[0],
-          'score1': this.getScore(teams[0]),
-          'team2': teams[1],
-          'score2': this.getScore(teams[1]),
+        const userRow = {
+          'name': user.name,
+          'total': 0,
         };
-        let league = this.scoreRows[leagueKey] || [];
-        league.push(scoreRow);
-        this.scoreRows[leagueKey] = league;
+        let league = this.userRows[leagueKey] || [];
+        league.push(userRow);
+        this.userRows[leagueKey] = league;
       }
     }
-  }
-
-  getScore(teamName: string): number {
-    if (!this.teamToScores[teamName]) {
-      return 0;
-    }
-    return this.teamToScores[teamName];
   }
 }

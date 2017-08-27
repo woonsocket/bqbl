@@ -1,0 +1,15 @@
+<table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp"
+  *ngFor="let key of getIterable(userRows)">
+ <thead>
+  <tr>
+   <th>Player</th>
+   <th>Total</th>
+  </tr>
+ </thead>
+ <tbody>
+  <tr *ngFor="let row of userRows[key]">
+   <td>{{row.name}}</td>
+   <td><span>{{row.score}}</span></td>
+  </tr>
+ </tbody>
+</table>

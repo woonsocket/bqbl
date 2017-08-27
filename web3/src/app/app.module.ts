@@ -10,6 +10,7 @@ import { NewUserComponent } from './newuser.component';
 import { LineupComponent } from './lineup.component';
 import { LoginComponent } from './login.component';
 import { ConsoleComponent } from './console.component';
+import { StandingsComponent } from './standings.component';
 import { ConstantsService } from './constants.service';
 import { AdminComponent } from './admin.component';
 import { RouterModule, Routes } from '@angular/router';
@@ -28,6 +29,7 @@ import { MdlModule } from '@angular-mdl/core';
     ConsoleComponent,
     ConsoleComponent,
     AdminComponent,
+    StandingsComponent,
     LoginComponent
   ],
   imports: [
