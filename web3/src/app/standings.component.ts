@@ -13,7 +13,7 @@ import { ConstantsService } from './constants.service'
 })
 export class StandingsComponent {
   userDataList: FirebaseListObservable<any>;
-  scoresList: FirebaseListObservable<any>;
+  scoresList: FirebaseObjectObservable<any>;
   db: AngularFireDatabase;
   user: Observable<firebase.User>;
   leagueToUsers = {};
@@ -21,7 +21,9 @@ export class StandingsComponent {
   userToTeams = {};
   teamToScores = {};
   userRows = {};
+  scores = {};
   year = '2017';
+
   constructor(db: AngularFireDatabase, private afAuth: AngularFireAuth, private route: ActivatedRoute,
               private router: Router, private constants: ConstantsService) {
     this.db = db;
@@ -66,24 +68,36 @@ export class StandingsComponent {
 
   loadScoresDb(): void {
     this.teamToScores = {};
-    this.scoresList = this.db.list('/scores/' + this.year + '/');
+    this.scoresList = this.db.object('/scores/' + this.year + '/');
     this.scoresList.subscribe(scores => {
-      for (const score of scores) {
-        this.teamToScores[score.$key] = score.total;
-      }
-      this.teamToScores['N/A'] = 0;
+      console.log(scores);
+      this.scores = scores;
       this.updateScores();
     });
   }
 
+  // TODO doing a join by hand feels terrible.
   updateScores(): void {
     this.userRows = {};
     for (const leagueKey in this.leagueToUsers) {
       for (const user of this.leagueToUsers[leagueKey]) {
-
+        let userTotal = 0;
+        for (const userWeek of user.weeks) {
+          if (this.scores[userWeek.id]) {
+            for (let userTeam of userWeek.teams) {
+              if (userTeam.selected) {
+                if (this.scores[userWeek.id][userTeam.name]) {
+                  userTotal += this.scores[userWeek.id][userTeam.name].total;
+                } else {
+                  console.log("ERROR: couldn't find score")
+                }
+              }
+            }
+          }
+        }
         const userRow = {
           'name': user.name,
-          'total': 0,
+          'total': userTotal,
         };
         let league = this.userRows[leagueKey] || [];
         league.push(userRow);
