@@ -33,7 +33,9 @@ export class NewUserComponent {
     let leagues = this.db.list('/tmp2/leagues', { preserveSnapshot: true });
     leagues.subscribe(snapshots => {
       snapshots.forEach(snapshot => {
-        this.leagues.push(snapshot.val());
+        let val = snapshot.val();
+        val.key = snapshot.key;
+        this.leagues.push(val);
       })
     });
 
@@ -49,6 +51,8 @@ export class NewUserComponent {
     user.name = name;
     user.teams = [];
     user.weeks = [];
+    user.leagueName = this.selectedLeague.name;
+    user.leagueId = this.selectedLeague.key;
     user.dh = this.selectedLeague.dh || false;
     for (const weekNum in WEEK_NAMES) {
       const newWeek = new Week();
