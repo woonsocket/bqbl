@@ -12,5 +12,5 @@ export function getLeaguesPath() : string {
 }
 
 export function getEventsPath() : string {
-  return '/tmp2/events/';
+  return '/events';
 }

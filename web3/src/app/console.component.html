@@ -1,4 +1,4 @@
-<mdl-tabs mdl-ripple mdl-tab-active-index="0" 
+<mdl-tabs mdl-ripple mdl-tab-active-index="0"
 (mdl-tab-active-changed)="tabChanged($event)">
 <mdl-tab-panel>
   <mdl-tab-panel-title>
@@ -12,8 +12,8 @@
           {{benching.$key}}
         </mdl-list-item-primary-content>
         <mdl-list-item-secondary-action>
-         <input type="checkbox" class="mdl-checkbox__input" 
-         (click)="onBenchingClick(benching)" 
+         <input type="checkbox" class="mdl-checkbox__input"
+         (click)="onBenchingClick(benching)"
          [checked]="benching.$value">
        </mdl-list-item-secondary-action>
      </mdl-list-item>
@@ -25,17 +25,15 @@
       <mdl-list-item *ngFor="let safety of safeties | async">
         <mdl-list-item-primary-content>
           <mdl-icon mdl-list-item-avatar>person</mdl-icon>
-          {{safety.desc}}
+          {{safety.team}} - {{safety.desc}}
         </mdl-list-item-primary-content>
         <mdl-list-item-secondary-action>
-         <input type="checkbox" class="mdl-checkbox__input" 
-         (click)="onSafetyClick(safety)" 
-         [checked]="safety.$value">
+         <input #valid type="checkbox" class="mdl-checkbox__input"
+                (click)="onSafetyClick(safety.$key, valid.checked)"
+                [checked]="safetyOverrides[safety.$key]">
        </mdl-list-item-secondary-action>
      </mdl-list-item>
    </mdl-list>
 
 </mdl-tab-panel>
 </mdl-tabs>
-
-
