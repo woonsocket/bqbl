@@ -19,7 +19,7 @@ import { routing } from './app.routes';
 import { FormsModule } from '@angular/forms';
 import { MdlModule } from '@angular-mdl/core';
 
-import { NflLogoPipe } from './nfl-logo.pipe';
+import { NflIconPipe, NflLogoPipe } from './nfl-logo.pipe';
 
 @NgModule({
   declarations: [
@@ -33,6 +33,7 @@ import { NflLogoPipe } from './nfl-logo.pipe';
     AdminComponent,
     StandingsComponent,
     LoginComponent,
+    NflIconPipe,
     NflLogoPipe,
   ],
   imports: [

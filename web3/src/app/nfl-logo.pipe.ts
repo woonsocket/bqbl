@@ -7,3 +7,10 @@ export class NflLogoPipe implements PipeTransform {
         `teams-matte/${team}.svg`
   }
 }
+
+@Pipe({name: 'nflIcon'})
+export class NflIconPipe implements PipeTransform {
+  transform(team: string): string {
+    return `https://static.nfl.com/static/site/img/logos/svg/teams/${team}.svg`;
+  }
+}

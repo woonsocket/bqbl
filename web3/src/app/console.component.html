@@ -6,32 +6,42 @@
   </mdl-tab-panel-title>
   <mdl-tab-panel-content>
     <mdl-list>
-      <mdl-list-item *ngFor="let passer of passers | async">
+      <mdl-list-item lines="3" *ngFor="let passer of passers | async">
         <mdl-list-item-primary-content>
-          <mdl-icon mdl-list-item-avatar>person</mdl-icon>
-          {{passer.team}} - {{passer.name}}
+         <img class="mdl-list__item-avatar" [src]="passer.team | nflIcon">
+         <span>{{passer.team}}</span>
+         <mdl-list-item-text-body>
+          {{passer.name}}
+         </mdl-list-item-text-body>
         </mdl-list-item-primary-content>
-        <mdl-list-item-secondary-action>
-         <input #valid type="checkbox" class="mdl-checkbox__input"
-                (click)="onBenchingClick(passer, valid.checked)"
-                [checked]="overrideVal(passer.team, 'benchings', passer.$key)">
-       </mdl-list-item-secondary-action>
-     </mdl-list-item>
-   </mdl-list>
- </mdl-tab-panel-content>
+        <mdl-list-item-secondary-content>
+         <mdl-list-item-secondary-action>
+          <input #valid type="checkbox" class="mdl-checkbox__input"
+                 (click)="onBenchingClick(passer, valid.checked)"
+                 [checked]="overrideVal(passer.team, 'benchings', passer.$key)">
+         </mdl-list-item-secondary-action>
+        </mdl-list-item-secondary-content>
+      </mdl-list-item>
+    </mdl-list>
+  </mdl-tab-panel-content>
 </mdl-tab-panel>
 <mdl-tab-panel mdl-tab-panel-title="Safeties">
     <mdl-list>
-      <mdl-list-item *ngFor="let safety of safeties | async">
+      <mdl-list-item lines="3" *ngFor="let safety of safeties | async">
         <mdl-list-item-primary-content>
-          <mdl-icon mdl-list-item-avatar>person</mdl-icon>
-          {{safety.team}} - {{safety.desc}}
+          <img class="mdl-list__item-avatar" [src]="safety.team | nflIcon">
+          <span>{{safety.team}}</span>
+          <mdl-list-item-text-body>
+           {{safety.desc}}
+          </mdl-list-item-text-body>
         </mdl-list-item-primary-content>
-        <mdl-list-item-secondary-action>
-         <input #valid type="checkbox" class="mdl-checkbox__input"
-                (click)="onSafetyClick(safety, valid.checked)"
-                [checked]="overrideVal(safety.team, 'safeties', safety.$key)">
-       </mdl-list-item-secondary-action>
+        <mdl-list-item-secondary-content>
+         <mdl-list-item-secondary-action>
+          <input #valid type="checkbox" class="mdl-checkbox__input"
+                 (click)="onSafetyClick(safety, valid.checked)"
+                 [checked]="overrideVal(safety.team, 'safeties', safety.$key)">
+         </mdl-list-item-secondary-action>
+        </mdl-list-item-secondary-content>
      </mdl-list-item>
    </mdl-list>
 
