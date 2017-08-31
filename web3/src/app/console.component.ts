@@ -5,6 +5,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
 import { Component } from '@angular/core';
+import { MdlSnackbarService } from '@angular-mdl/core';
 import { Observable } from 'rxjs/Observable';
 import * as paths from './paths'
 
@@ -18,7 +19,10 @@ export class ConsoleComponent {
   selectedWeek = 'P1';
   year = '2017';
 
-  constructor(private db: AngularFireDatabase, private route: ActivatedRoute) {}
+  constructor(
+    private db: AngularFireDatabase,
+    private route: ActivatedRoute,
+    private mdlSnackbarService: MdlSnackbarService) {}
 
   ngOnInit() {
     this.route.queryParams.subscribe((params: Params) => {
@@ -47,12 +51,21 @@ export class ConsoleComponent {
 
   onBenchingClick(passer: any, valid: boolean) {
     this.db.object(paths.getEventsPath() + `/${this.year}/${this.selectedWeek}/overrides/${passer.team}/benchings/${passer.$key}`)
-        .set(valid);
+      .set(valid)
+      .catch((err) => {
+        let msg = `Unknown error: ${err}`;
+        if (err['code'] == 'PERMISSION_DENIED') {
+          msg = 'Permission denied. Are you an admin?';
+        }
+        this.mdlSnackbarService.showSnackbar({
+          message: msg,
+        });
+      });
   }
 
   onSafetyClick(safety: any, valid: boolean) {
     this.db.object(paths.getEventsPath() + `/${this.year}/${this.selectedWeek}/overrides/${safety.team}/safeties/${safety.$key}`)
-        .set(valid);
+      .set(valid);
   }
 
   tabChanged() {}
