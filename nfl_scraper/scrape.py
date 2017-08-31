@@ -33,6 +33,8 @@ parser.add_option("-y", "--year", dest="year",
                   help="Year")
 parser.add_option("-d", "--dump", dest="dump", action="store_true",
                   help="Dump data?")
+parser.add_option("--all", dest="all", action="store_true",
+                  help="Scrape all games, not just those that are 'due'")
 parser.add_option("--firebase_creds", dest="firebase_cred_file",
                   help="File containing Firebase service account credentials")
 parser.add_option("--slack_config", dest="slack_config",
@@ -321,12 +323,18 @@ def main():
     plays = Plays(player_cache, events, notifier)
     scrape_status_ref = db.reference(
         '/scrapestatus/{0}/{1}'.format(season, week))
-    scrape_status = collections.defaultdict(dict, scrape_status_ref.get() or {})
+    if options.all:
+        scrape_status = collections.defaultdict(dict)
+    else:
+        scrape_status = collections.defaultdict(dict,
+                                                scrape_status_ref.get() or {})
     now = datetime.datetime.now(tz=datetime.timezone.utc)
     for id in game_ids:
         # IDs might be integers if we read them out of JSON, but we always use
         # string keys in the database.
         id = str(id)
+        if scrape_status[id].get('isFinal'):
+            continue
         last_scrape = datetime.datetime.fromtimestamp(
             scrape_status[id].get('lastScrape', 0), tz=datetime.timezone.utc)
         if last_scrape + SCRAPE_INTERVAL > now and id not in games_with_alerts:
@@ -341,9 +349,9 @@ def main():
             continue
         data = resp.json()
         plays.process(season, week, id, data)
-        # TODO(aerion): If game is over, record that in scrape status so we
-        # don't scrape it again.
         scrape_status[id]['lastScrape'] = now.timestamp()
+        # TODO: We shouldn't be parsing data here.
+        scrape_status[id]['isFinal'] = data[id]['qtr'] == 'Final'
 
     # Log which teams were updated. In prod, we'll write this to disk for later
     # inspection.
