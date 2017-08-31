@@ -30,7 +30,7 @@
         <mdl-list-item-secondary-action>
          <input #valid type="checkbox" class="mdl-checkbox__input"
                 (click)="onSafetyClick(safety, valid.checked)"
-                [checked]="safetyOverrides[safety.$key]">
+                [checked]="overrideVal(safety.team, 'safeties', safety.$key)">
        </mdl-list-item-secondary-action>
      </mdl-list-item>
    </mdl-list>

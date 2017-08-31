@@ -14,7 +14,7 @@ import * as paths from './paths'
 export class ConsoleComponent {
   benchings: FirebaseListObservable<any>;
   safeties: FirebaseListObservable<any>;
-  safetyOverrides: object;
+  overrides: object;
   selectedWeek = 'P1';
   year = '2017';
 
@@ -33,10 +33,16 @@ export class ConsoleComponent {
           orderByChild: 'total'
         }
       });
-      this.db.object(paths.getEventsPath() + `/${this.year}/${this.selectedWeek}/overrides/safeties`).subscribe((val) => {
-        this.safetyOverrides = val;
+      this.db.object(paths.getEventsPath() + `/${this.year}/${this.selectedWeek}/overrides`).subscribe((val) => {
+        this.overrides = val;
       });
     })
+  }
+
+  overrideVal(team: string, eventType: string, id: string) {
+    const teamOverrides = this.overrides[team] || {};
+    const events = teamOverrides[eventType] || {};
+    return events[id] || false;
   }
 
   onBenchingClick(benching: any) {
