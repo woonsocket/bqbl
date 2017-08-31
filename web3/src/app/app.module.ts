@@ -19,6 +19,8 @@ import { routing } from './app.routes';
 import { FormsModule } from '@angular/forms';
 import { MdlModule } from '@angular-mdl/core';
 
+import { NflLogoPipe } from './nfl-logo.pipe';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -30,7 +32,8 @@ import { MdlModule } from '@angular-mdl/core';
     ConsoleComponent,
     AdminComponent,
     StandingsComponent,
-    LoginComponent
+    LoginComponent,
+    NflLogoPipe,
   ],
   imports: [
     BrowserModule,
