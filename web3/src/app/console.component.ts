@@ -45,9 +45,9 @@ export class ConsoleComponent {
       .set(benching.$value);
   }
 
-  onSafetyClick(key: string, value: boolean) {
-    this.db.object(paths.getEventsPath() + `/${this.year}/${this.selectedWeek}/overrides/safeties/${key}`)
-        .set(value);
+  onSafetyClick(safety: any, valid: boolean) {
+    this.db.object(paths.getEventsPath() + `/${this.year}/${this.selectedWeek}/overrides/${safety.team}/safeties/${safety.$key}`)
+        .set(valid);
   }
 
   tabChanged() {}
