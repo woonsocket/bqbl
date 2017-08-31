@@ -30,6 +30,12 @@ exports.computeScore = function(stats, overrides) {
         .length;
     stats['SAF'] = (stats['SAF'] || 0) + safeties;
   }
+  if (overrides.benchings) {
+    const benchings = entries(overrides.benchings)
+        .filter(([_, value]) => value)
+        .length;
+    stats['BENCH'] = (stats['BENCH'] || 0) + benchings;
+  }
 
   let score = computeScoreComponents(stats);
   let projScore = computeScoreComponents(computeStupidProjection(stats));

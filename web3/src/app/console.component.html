@@ -6,15 +6,15 @@
   </mdl-tab-panel-title>
   <mdl-tab-panel-content>
     <mdl-list>
-      <mdl-list-item *ngFor="let benching of benchings | async">
+      <mdl-list-item *ngFor="let passer of passers | async">
         <mdl-list-item-primary-content>
           <mdl-icon mdl-list-item-avatar>person</mdl-icon>
-          {{benching.$key}}
+          {{passer.team}} - {{passer.name}}
         </mdl-list-item-primary-content>
         <mdl-list-item-secondary-action>
-         <input type="checkbox" class="mdl-checkbox__input"
-         (click)="onBenchingClick(benching)"
-         [checked]="benching.$value">
+         <input #valid type="checkbox" class="mdl-checkbox__input"
+                (click)="onBenchingClick(passer, valid.checked)"
+                [checked]="overrideVal(passer.team, 'benchings', passer.$key)">
        </mdl-list-item-secondary-action>
      </mdl-list-item>
    </mdl-list>

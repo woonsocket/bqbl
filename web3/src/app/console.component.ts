@@ -12,7 +12,7 @@ import * as paths from './paths'
   templateUrl: './console.component.html',
 })
 export class ConsoleComponent {
-  benchings: FirebaseListObservable<any>;
+  passers: FirebaseListObservable<any>;
   safeties: FirebaseListObservable<any>;
   overrides: object;
   selectedWeek = 'P1';
@@ -23,9 +23,9 @@ export class ConsoleComponent {
   ngOnInit() {
     this.route.queryParams.subscribe((params: Params) => {
       this.selectedWeek = params.week || 'P1';
-      this.benchings = this.db.list(paths.getEventsPath() + `/${this.year}/${this.selectedWeek}/benchings`, {
+      this.passers = this.db.list(paths.getEventsPath() + `/${this.year}/${this.selectedWeek}/passers`, {
         query: {
-          orderByChild: 'total'
+          orderByChild: 'team'
         }
       });
       this.safeties = this.db.list(paths.getEventsPath() + `/${this.year}/${this.selectedWeek}/safeties`, {
@@ -45,10 +45,9 @@ export class ConsoleComponent {
     return events[id] || false;
   }
 
-  onBenchingClick(benching: any) {
-    benching.$value = !benching.$value;
-    this.db.object(paths.getEventsPath() + `/${this.year}/${this.selectedWeek}/benchings/${benching.$key}`)
-      .set(benching.$value);
+  onBenchingClick(passer: any, valid: boolean) {
+    this.db.object(paths.getEventsPath() + `/${this.year}/${this.selectedWeek}/overrides/${passer.team}/benchings/${passer.$key}`)
+        .set(valid);
   }
 
   onSafetyClick(safety: any, valid: boolean) {
