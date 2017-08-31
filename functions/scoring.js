@@ -22,7 +22,15 @@ const STUPID_PROJECTION_TARGET = {
   'LONG': 40,
 };
 
-exports.computeScore = function(stats) {
+exports.computeScore = function(stats, overrides) {
+  stats = Object.assign({}, stats);  // Don't mutate the argument object.
+  if (overrides.safeties) {
+    const safeties = entries(overrides.safeties)
+        .filter(([_, value]) => value)
+        .length;
+    stats['SAF'] = (stats['SAF'] || 0) + safeties;
+  }
+
   let score = computeScoreComponents(stats);
   let projScore = computeScoreComponents(computeStupidProjection(stats));
   let lineScore =
