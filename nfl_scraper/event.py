@@ -19,10 +19,11 @@ class Type(enum.Enum):
 class Events(object):
     """Data object for holding "interesting" events."""
 
-    def __init__(self, fumbles, safeties, interceptions):
+    def __init__(self, fumbles, safeties, interceptions, passers):
         self.fumbles = fumbles
         self.safeties = safeties
         self.interceptions = interceptions
+        self.passers = passers
 
     @staticmethod
     def _id(game_id, play_id):
@@ -98,6 +99,25 @@ class Events(object):
         self.safeties[Events._id(game_id, play_id)] = summary
         return is_new
 
+    def add_passer(self, team, player_id, name):
+        """Adds a passer.
+
+        This means that the player threw a pass for the given team. The frontend
+        provides a way for admins to mark a passer as having been benched, which
+        is worth points for the team.
+
+        Args:
+            team: The team abbreviation.
+            player_id: The ID of the player.
+            name: The human-readable name of the player, e.g., "J. Edelman".
+        Returns:
+            Whether this passer is new (i.e., the player ID was not previously
+            known to this Events object).
+        """
+        is_new = player_id not in self.passers
+        self.passers[player_id] = {'team': team, 'name': name}
+        return is_new
+
     @staticmethod
     def create_from_dict(d):
         """Initializes an Events from a dict.
@@ -108,5 +128,6 @@ class Events(object):
         return Events(
             fumbles=d.get('fumbles', {}),
             safeties=d.get('safeties', {}),
-            interceptions=d.get('interceptions', {}))
+            interceptions=d.get('interceptions', {}),
+            passers=d.get('passers', {}))
 

@@ -201,8 +201,18 @@ class Plays(object):
         self.outcomes_by_team[home_abbr]['CLOCK'] = clock
         self.outcomes_by_team[away_abbr]['CLOCK'] = clock
 
-        passers = (set(home_box['stats'].get('passing', {}).keys()) |
-                   set(away_box['stats'].get('passing', {}).keys()))
+        passers = set()
+
+        home_passers = home_box['stats'].get('passing', {})
+        passers |= home_passers.keys()
+        if len(home_passers) > 1:
+            for id, p in home_passers.items():
+                self.events.add_passer(home_abbr, id, p.get('name', 'UNKNOWN'))
+        away_passers = away_box['stats'].get('passing', {})
+        passers |= away_passers.keys()
+        if len(away_passers) > 1:
+            for id, p in away_passers.items():
+                self.events.add_passer(away_abbr, id, p.get('name', 'UNKNOWN'))
 
         def is_qb(pid):
             return (pid in passers and
@@ -352,6 +362,7 @@ def main():
             'fumbles': plays.events.fumbles,
             'safeties': plays.events.safeties,
             'interceptions': plays.events.interceptions,
+            'passers': plays.events.passers,
         })
 
         if plays.outcomes_by_team:
@@ -367,7 +378,8 @@ def main():
         all_events = itertools.chain(
             plays.events.fumbles.items(),
             plays.events.safeties.items(),
-            plays.events.interceptions.items())
+            plays.events.interceptions.items(),
+            plays.events.passers.items())
         for id, ev in all_events:
             print('{0}: {1}'.format(id, ev))
         print('-- scraped stats --')
