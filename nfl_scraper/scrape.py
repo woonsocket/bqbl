@@ -358,7 +358,7 @@ def main():
             scrape_status_ref.update(scrape_status)
 
         events_ref = db.reference('/events/{0}/{1}'.format(season, week))
-        events_ref.set({
+        events_ref.update({
             'fumbles': plays.events.fumbles,
             'safeties': plays.events.safeties,
             'interceptions': plays.events.interceptions,
