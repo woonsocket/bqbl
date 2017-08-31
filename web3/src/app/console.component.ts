@@ -52,20 +52,23 @@ export class ConsoleComponent {
   onBenchingClick(passer: any, valid: boolean) {
     this.db.object(paths.getEventsPath() + `/${this.year}/${this.selectedWeek}/overrides/${passer.team}/benchings/${passer.$key}`)
       .set(valid)
-      .catch((err) => {
-        let msg = `Unknown error: ${err}`;
-        if (err['code'] == 'PERMISSION_DENIED') {
-          msg = 'Permission denied. Are you an admin?';
-        }
-        this.mdlSnackbarService.showSnackbar({
-          message: msg,
-        });
-      });
+      .catch((err) => this.showError(err));
   }
 
   onSafetyClick(safety: any, valid: boolean) {
     this.db.object(paths.getEventsPath() + `/${this.year}/${this.selectedWeek}/overrides/${safety.team}/safeties/${safety.$key}`)
-      .set(valid);
+      .set(valid)
+      .catch((err) => this.showError(err));
+  }
+
+  showError(err: Error) {
+    let msg = `Unknown error: ${err}`;
+    if (err['code'] == 'PERMISSION_DENIED') {
+      msg = 'Permission denied. Are you an admin?';
+    }
+    this.mdlSnackbarService.showSnackbar({
+      message: msg,
+    });
   }
 
   tabChanged() {}
