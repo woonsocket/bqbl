@@ -22,8 +22,7 @@
         ".write": "auth.uid == 'score-scraper' && $season == '2017'",
         "$week": {
           "overrides": {
-            // TODO: Allow only admins to write here.
-            ".write": true
+            ".write": "root.child('roles/admins/' + auth.uid).exists()"
           }
         }
       }
@@ -38,6 +37,11 @@
     },
     "playerpositions": {
       ".write": "auth.uid == 'score-scraper'"
+    },
+    "roles": {
+      "admins": {
+        ".write": "root.child('roles/admins/' + auth.uid).exists()"
+      }
     },
     "users": {
       ".read": true,
