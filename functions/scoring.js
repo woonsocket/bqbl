@@ -24,6 +24,7 @@ const STUPID_PROJECTION_TARGET = {
 
 exports.computeScore = function(stats, overrides) {
   stats = Object.assign({}, stats);  // Don't mutate the argument object.
+  overrides = overrides || {};
   if (overrides.safeties) {
     const safeties = entries(overrides.safeties)
         .filter(([_, value]) => value)
