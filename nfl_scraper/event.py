@@ -13,7 +13,7 @@ class Type(enum.Enum):
     INT_TD = 2
     FUM = 3
     FUM_TD = 4
-    SAFETY = 3
+    SAFETY = 5
 
 
 class Events(object):
