@@ -1,7 +1,7 @@
 Features:
 - Add a running total to the scoreboard
 - Add a whole-year per-team "Stats" view
-- Lock down when teams can be selected
+- 24/7 points
 
 Cleanup:
 P0 Move all of the fancy new stuff from the /tmp path
@@ -11,6 +11,9 @@ P0 Move all of the fancy new stuff from the /tmp path
 - Move ALL_WEEKS into the db, start having things deal with it sensibly
 - Move ad-hoc schema (leagues, scores?) into explicit TypeScript classes
 - ADD TESTS
+- Use input binding to ensure consistent weeks, inject years? 
+- EventEmitter to decide when to hide week selector
+
 
 If there's time:
 - Check for <5 teams played. Lower priority because we can just force it the last five weeks of the year.

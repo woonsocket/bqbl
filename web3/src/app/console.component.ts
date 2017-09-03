@@ -47,7 +47,5 @@ export class ConsoleComponent {
     this.db.object(paths.getEventsPath() + '2017/' + this.selectedWeek + '/safeties/' + safety.$key)
       .set(safety.$value);
   }
-
-  tabChanged() {}
 }
 
