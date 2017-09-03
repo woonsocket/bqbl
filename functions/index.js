@@ -10,19 +10,37 @@ exports.score = functions.database.ref('/stats/{year}/{week}/{team}')
     .onWrite(event => {
       const {year, week, team} = event.params;
       const stats = event.data.val();
-      doScore(stats, year, week, team);
+      const overrides = admin.database()
+          .ref(`/events/${year}/${week}/overrides/${team}`)
+          .once('value')
+          .then(d => d.val());
+      doScore(stats, overrides, year, week, team);
     });
 
 
-function doScore(stats, year, week, team) {
-  const statsRef = admin.database().ref(`/scores/${year}/${week}/${team}`);
-  if (stats == null) {
-    console.log('Removing', team, stats);
-    statsRef.remove();
-    return;
-  }
-  console.log('Scoring', team, stats);
-  statsRef.update(scoring.computeScore(stats));
+exports.rescoreOnOverride = functions.database.ref('/events/{year}/{week}/overrides/{team}')
+    .onWrite(event => {
+      const {year, week, team} = event.params;
+      const stats = admin.database()
+          .ref(`/stats/${year}/${week}/${team}`)
+          .once('value')
+          .then(d => d.val());
+      const overrides = event.data.val();
+      doScore(stats, overrides, year, week, team);
+    });
+
+
+function doScore(stats, overrides, year, week, team) {
+  return Promise.all([stats, overrides]).then(([stats, overrides]) => {
+    const scoreRef = admin.database().ref(`/scores/${year}/${week}/${team}`);
+    if (stats == null) {
+      console.log('Removing', team);
+      scoreRef.remove();
+      return;
+    }
+    console.log('Scoring', team, stats);
+    scoreRef.update(scoring.computeScore(stats, overrides));
+  });
 }
 
 
@@ -32,14 +50,23 @@ function doScore(stats, year, week, team) {
  */
 exports.scoreHttp = functions.https.onRequest((req, res) => {
   const {year, week, team} = req.body;
-  admin.database().ref(`/stats/${year}/${week}/${team}`)
-      .once('value', (data) => {
-        let stats = data.val();
-        if (stats == null) {
+  const statsPromise = admin.database()
+      .ref(`/stats/${year}/${week}/${team}`).once('value');
+  const overridesPromise = admin.database()
+      .ref(`/events/${year}/${week}/overrides/${team}`).once('value');
+
+  return Promise.all([statsPromise, overridesPromise])
+      .then(([statsData, overridesData]) => {
+        if (!statsData.exists()) {
           res.status(400).send();
           return;
         }
-        res.status(200).send(scoring.computeScore(stats));
+        const stats = statsData.val();
+        const overrides = overridesData.val() || {};
+        res.status(200).send(scoring.computeScore(stats, overrides));
+      })
+      .catch((err) => {
+        res.status(500).send(err);
       });
 });
 
@@ -53,6 +80,10 @@ exports.scoreHttp = functions.https.onRequest((req, res) => {
  */
 exports.rescoreAll = functions.https.onRequest((req, res) => {
   const {year, week} = req.body;
+  const overrides = admin.database()
+      .ref(`/events/${year}/${week}/overrides`)
+      .once('value')
+      .then(d => d.val() || {});
   admin.database().ref(`/stats/${year}/${week}`)
       .once('value', (data) => {
         let weekStats = data.val();
@@ -61,7 +92,7 @@ exports.rescoreAll = functions.https.onRequest((req, res) => {
           return;
         }
         entries(weekStats).forEach(([team, stats]) => {
-          doScore(stats, year, week, team);
+          doScore(stats, overrides.then(v => v[team] || {}), year, week, team);
         });
         res.status(200).send(`wrote ${Object.keys(weekStats).join(' ')}`);
       });

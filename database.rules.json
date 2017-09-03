@@ -19,7 +19,12 @@
     "events": {
       ".read": true,
       "$season": {
-        ".write": "auth.uid == 'score-scraper' && $season == '2017'"
+        ".write": "auth.uid == 'score-scraper' && $season == '2017'",
+        "$week": {
+          "overrides": {
+            ".write": "root.child('roles/admins/' + auth.uid).exists()"
+          }
+        }
       }
     },
     "tmp": {
@@ -49,6 +54,11 @@
     },
     "playerpositions": {
       ".write": "auth.uid == 'score-scraper'"
+    },
+    "roles": {
+      "admins": {
+        ".write": "root.child('roles/admins/' + auth.uid).exists()"
+      }
     },
     "users": {
       ".read": true,

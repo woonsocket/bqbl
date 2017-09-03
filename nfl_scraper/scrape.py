@@ -33,6 +33,8 @@ parser.add_option("-y", "--year", dest="year",
                   help="Year")
 parser.add_option("-d", "--dump", dest="dump", action="store_true",
                   help="Dump data?")
+parser.add_option("--all", dest="all", action="store_true",
+                  help="Scrape all games, not just those that are 'due'")
 parser.add_option("--firebase_creds", dest="firebase_cred_file",
                   help="File containing Firebase service account credentials")
 parser.add_option("--slack_config", dest="slack_config",
@@ -201,8 +203,18 @@ class Plays(object):
         self.outcomes_by_team[home_abbr]['CLOCK'] = clock
         self.outcomes_by_team[away_abbr]['CLOCK'] = clock
 
-        passers = (set(home_box['stats'].get('passing', {}).keys()) |
-                   set(away_box['stats'].get('passing', {}).keys()))
+        passers = set()
+
+        home_passers = home_box['stats'].get('passing', {})
+        passers |= home_passers.keys()
+        if len(home_passers) > 1:
+            for id, p in home_passers.items():
+                self.events.add_passer(home_abbr, id, p.get('name', 'UNKNOWN'))
+        away_passers = away_box['stats'].get('passing', {})
+        passers |= away_passers.keys()
+        if len(away_passers) > 1:
+            for id, p in away_passers.items():
+                self.events.add_passer(away_abbr, id, p.get('name', 'UNKNOWN'))
 
         def is_qb(pid):
             return (pid in passers and
@@ -311,12 +323,18 @@ def main():
     plays = Plays(player_cache, events, notifier)
     scrape_status_ref = db.reference(
         '/scrapestatus/{0}/{1}'.format(season, week))
-    scrape_status = collections.defaultdict(dict, scrape_status_ref.get() or {})
+    if options.all:
+        scrape_status = collections.defaultdict(dict)
+    else:
+        scrape_status = collections.defaultdict(dict,
+                                                scrape_status_ref.get() or {})
     now = datetime.datetime.now(tz=datetime.timezone.utc)
     for id in game_ids:
         # IDs might be integers if we read them out of JSON, but we always use
         # string keys in the database.
         id = str(id)
+        if scrape_status[id].get('isFinal'):
+            continue
         last_scrape = datetime.datetime.fromtimestamp(
             scrape_status[id].get('lastScrape', 0), tz=datetime.timezone.utc)
         if last_scrape + SCRAPE_INTERVAL > now and id not in games_with_alerts:
@@ -331,9 +349,9 @@ def main():
             continue
         data = resp.json()
         plays.process(season, week, id, data)
-        # TODO(aerion): If game is over, record that in scrape status so we
-        # don't scrape it again.
         scrape_status[id]['lastScrape'] = now.timestamp()
+        # TODO: We shouldn't be parsing data here.
+        scrape_status[id]['isFinal'] = data[id]['qtr'] == 'Final'
 
     # Log which teams were updated. In prod, we'll write this to disk for later
     # inspection.
@@ -348,10 +366,11 @@ def main():
             scrape_status_ref.update(scrape_status)
 
         events_ref = db.reference('/events/{0}/{1}'.format(season, week))
-        events_ref.set({
+        events_ref.update({
             'fumbles': plays.events.fumbles,
             'safeties': plays.events.safeties,
             'interceptions': plays.events.interceptions,
+            'passers': plays.events.passers,
         })
 
         if plays.outcomes_by_team:
@@ -367,7 +386,8 @@ def main():
         all_events = itertools.chain(
             plays.events.fumbles.items(),
             plays.events.safeties.items(),
-            plays.events.interceptions.items())
+            plays.events.interceptions.items(),
+            plays.events.passers.items())
         for id, ev in all_events:
             print('{0}: {1}'.format(id, ev))
         print('-- scraped stats --')

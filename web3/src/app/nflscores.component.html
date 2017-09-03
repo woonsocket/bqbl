@@ -37,7 +37,8 @@
       class="mdl-card score-card mdl-shadow--4dp">
   <div class="mdl-card__title mdl-color-text--white">
    <div class="score-card-bg"
-        [ngStyle]="{'background-image': 'url(http://i.nflcdn.com/static/site/7.5/img/logos/svg/teams-matte/' + score['$key'] + '.svg)'}"></div>
+        [ngStyle]="{'background-image': 'url(' + (score.$key | nflLogo) + ')'}">
+   </div>
    <div class="score-card-fade-bg"></div>
    <h1 class="mdl-card__title-text">
     {{ score.$key }}
