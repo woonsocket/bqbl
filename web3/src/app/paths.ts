@@ -8,9 +8,9 @@ export function getUserPath(uid: string) : string {
 }
 
 export function getLeaguesPath() : string {
-  return '/leagues';
+  return '/leagues/';
 }
 
 export function getEventsPath() : string {
-  return '/events';
+  return '/events/';
 }

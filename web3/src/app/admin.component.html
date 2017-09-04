@@ -1,25 +1,5 @@
 <mdl-tabs mdl-ripple mdl-tab-active-index="0">
 <mdl-tab-panel>
- <mdl-tab-panel-title>
-  <span>Weeks</span>
- </mdl-tab-panel-title>
- <mdl-tab-panel-content>
-  <mdl-list>
-   <mdl-list-item *ngFor="let week of weeks">
-    <mdl-list-item-primary-content>
-     <mdl-icon mdl-list-item-avatar>person</mdl-icon>
-     {{week.name}}
-    </mdl-list-item-primary-content>
-    <mdl-list-item-secondary-action>
-     <input type="button" class="mdl-checkbox__input" 
-     (click)="onClick(week.val)" 
-     [checked]="week.val" value="Create">
-    </mdl-list-item-secondary-action>
-   </mdl-list-item>
-  </mdl-list>
- </mdl-tab-panel-content>
-</mdl-tab-panel>
-<mdl-tab-panel>
   <mdl-tab-panel-title>
   <span>Create League</span>
  </mdl-tab-panel-title>

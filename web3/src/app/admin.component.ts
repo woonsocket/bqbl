@@ -18,11 +18,10 @@ export class AdminComponent {
   weeks = [];
   leagueName = "";   // TODO pull this into subcomponent
   hasDh = false;
-  constants: ConstantsService;
   // https://stackoverflow.com/questions/38423663/angular2-ngmodel-inside-of-ngfor
   // https://stackoverflow.com/questions/36095496/angular-2-how-to-write-a-for-loop-not-a-foreach-loop
   users = [];
-  
+
   createRange(number){
     var items: number[] = [];
     for(var i = 1; i <= number; i++){
@@ -31,20 +30,12 @@ export class AdminComponent {
     return items;
   }
 
-  constructor(private afAuth: AngularFireAuth, private db: AngularFireDatabase, constants: ConstantsService) {
+  constructor(private afAuth: AngularFireAuth, private db: AngularFireDatabase, private constants: ConstantsService) {
     this.user = afAuth.authState;
 
     // Populate by default for testing iteration.
     this.users = constants.getDummyLeague();
     this.weeks = constants.getAllWeeks();
-  }
-
-  onClick(val: string) {
-    let benchingMap = {};
-    for (let team of this.constants.getAllTeams()) {
-      benchingMap[team] = false;
-    }
-    this.db.object(paths.getEventsPath() + '2017/' + val + '/benchings').set(benchingMap);
   }
 
   onChange() {
