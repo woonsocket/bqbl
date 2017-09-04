@@ -28,7 +28,6 @@ let ALL_TEAMS = ["ARI","ATL","BAL","BUF","CAR","CHI","CIN","CLE","DAL","DEN","DE
 "GB","HOU","IND","JAX","KC","LA","MIA","MIN","NE","NO","NYG","NYJ",
 "OAK", "PHI","PIT","SD","SEA","SF","TB","TEN","WSH"];
 
-
 let NBQBL_USERS = [
   [{'name': 'NYJ'}, {'name': 'MIN'}, {'name': 'CIN'}, {'name': 'NE'}], 
   [{'name': 'LA'},  {'name': 'ARI'}, {'name': 'NYG'}, {'name': 'ATL'}], 
@@ -37,7 +36,7 @@ let NBQBL_USERS = [
   [{'name': 'PHI'}, {'name': 'TEN'}, {'name': 'CAR'}, {'name': 'SEA'}], 
   [{'name': 'SF'},  {'name': 'BUF'}, {'name': 'WSH'}, {'name': 'PIT'}], 
   [{'name': 'MIA'}, {'name': 'HOU'}, {'name': 'LAC'}, {'name': 'TB'}], 
-  [{'name': 'BAL'}, {'name': 'CHI'}, {'name': 'NO'}, {'value': 'DAL'}], 
+  [{'name': 'BAL'}, {'name': 'CHI'}, {'name': 'NO'}, {'name': 'DAL'}], 
   ];
 
 @Injectable()
