@@ -17,8 +17,8 @@ export let mockAngularFireDb = {
   'object': function () {
     console.log("hello");
     return {
-      subscribe: function(fn) {
-        fn({'$exists': _ => {return true;}});
+      subscribe: function(foo) {
+        console.log(foo)
       }
     }
   }

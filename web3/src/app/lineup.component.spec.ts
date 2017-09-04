@@ -7,6 +7,7 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
 import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
 import { ActivatedRoute, Router, NavigationEnd, Event, Params} from '@angular/router';
 import { MdlSnackbarService } from '@angular-mdl/core';
+import { APP_BASE_HREF } from '@angular/common';
 
 import { mockAngularFireAuth } from './mockangularfire';
 import { mockAngularFireDb } from './mockangularfire';
@@ -18,7 +19,7 @@ describe('LineupComponent', () => {
 
   let comp:    LineupComponent;
   let fixture: ComponentFixture<LineupComponent>;
-  let de:      DebugElement;
+  let team:      DebugElement;
   let el:      HTMLElement;
 
   beforeEach(() => {
@@ -34,6 +35,8 @@ describe('LineupComponent', () => {
       { provide: ActivatedRoute, useValue: true },
       { provide: ConstantsService, useValue: true },
       { provide: MdlSnackbarService, useValue: true },
+            {provide: APP_BASE_HREF, useValue: '/'},
+
       ]
     });
 
@@ -41,13 +44,13 @@ describe('LineupComponent', () => {
 
     comp = fixture.componentInstance;
 
-    de = fixture.debugElement.query(By.css('table'));
-    el = de.nativeElement;
+    team = fixture.debugElement.query(By.css('td.team'));
+    el = team.nativeElement;
   });
 
 
   it('should have a header', () => {
     fixture.detectChanges();
-    expect(el.querySelector('td.team').textContent).toContain("Team");
+    expect(el.textContent).toContain("Team");
   });
 });
