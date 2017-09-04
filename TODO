@@ -4,7 +4,6 @@ Features:
 - 24/7 points
 
 Cleanup:
-P0 Move all of the fancy new stuff from the /tmp path
 - MDL-ize the scary stuff (app, nflscores)
 - Inject a router module extension (terminology?) that reads week and year from the url
 - Inject a module that redirects to login when you're not logged in

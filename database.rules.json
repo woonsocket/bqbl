@@ -29,8 +29,22 @@
     },
     "tmp": {
       ".read": true,
+      ".write": true,
+    },
+    "playerpositions": {
+      ".write": "auth.uid == 'score-scraper'"
+    },
+    "roles": {
+      "admins": {
+        ".write": "root.child('roles/admins/' + auth.uid).exists()"
+      }
+    },
+    "users": {
+      ".read": true,
+      // TODO(harveyj): Clean this up when users have all created
+      ".write": true,
       "$user_id": {
-        // TODO harveyj - clean this up so there's just a week object
+        // TODO(harveyj): clean this up so there's just a week object
         // and a userdata object.
         "leagueid" : {
           ".write": "$user_id === auth.uid"
@@ -48,25 +62,9 @@
         }
       }
     },
-    "tmp2": {
+    "leagues": {
       ".read": true,
-      ".write": true
-    },
-    "playerpositions": {
-      ".write": "auth.uid == 'score-scraper'"
-    },
-    "roles": {
-      "admins": {
-        ".write": "root.child('roles/admins/' + auth.uid).exists()"
-      }
-    },
-    "users": {
-      ".read": true,
-      "$user_id": {
-        // grants write access to the owner of this user account
-        // whose uid must exactly match the key ($user_id)
-        ".write": "$user_id === auth.uid"
-      }
+      ".write": "root.child('roles/admins/' + auth.uid).exists()"
     }
   }
 }

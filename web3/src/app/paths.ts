@@ -1,14 +1,14 @@
 
 export function getUsersPath() : string {
-  return "/tmp/users";
+  return "/users";
 };
 
 export function getUserPath(uid: string) : string {
-  return '/tmp/' + uid;
+  return '/users/' + uid;
 }
 
 export function getLeaguesPath() : string {
-  return '/tmp2/leagues';
+  return '/leagues';
 }
 
 export function getEventsPath() : string {
