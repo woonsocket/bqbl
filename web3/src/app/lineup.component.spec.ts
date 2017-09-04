@@ -39,9 +39,8 @@ describe('LineupComponent', () => {
 
     fixture = TestBed.createComponent(LineupComponent);
 
-    comp = fixture.componentInstance; // BannerComponent test instance
+    comp = fixture.componentInstance;
 
-    // query for the title <h1> by CSS element selector
     de = fixture.debugElement.query(By.css('table'));
     el = de.nativeElement;
   });
