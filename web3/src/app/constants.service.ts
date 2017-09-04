@@ -28,22 +28,23 @@ let ALL_TEAMS = ["ARI","ATL","BAL","BUF","CAR","CHI","CIN","CLE","DAL","DEN","DE
 "GB","HOU","IND","JAX","KC","LA","MIA","MIN","NE","NO","NYG","NYJ",
 "OAK", "PHI","PIT","SD","SEA","SF","TB","TEN","WSH"];
 
-let FULLY_POPULATED_LEAGUE_USERS = [
-  [{'name': 'ARI'}, {'name': 'ATL'}, {'name': 'BAL'}, {'name': 'BUF'}], 
-  [{'name': 'CAR'}, {'name': 'CHI'}, {'name': 'CIN'}, {'name': 'CLE'}], 
-  [{'name': 'DAL'}, {'name': 'DEN'}, {'name': 'DET'}, {'name': 'GB'}], 
-  [{'name': 'HOU'}, {'name': 'IND'}, {'name': 'JAX'}, {'name': 'KC'}], 
-  [{'name': 'LAC'}, {'name': 'LAR'}, {'name': 'MIA'}, {'name': 'MIN'}], 
-  [{'name': 'NE'}, {'name': 'NO'}, {'name': 'NYG'}, {'name': 'NYJ'}], 
-  [{'name': 'OAK'}, {'name': 'PHI'}, {'name': 'PIT'}, {'name': 'SEA'}], 
-  [{'name': 'SF'}, {'name': 'TB'}, {'name': 'TEN'}, {'value': 'WAS'}]
+
+let NBQBL_USERS = [
+  [{'name': 'NYJ'}, {'name': 'MIN'}, {'name': 'CIN'}, {'name': 'NE'}], 
+  [{'name': 'LA'},  {'name': 'ARI'}, {'name': 'NYG'}, {'name': 'ATL'}], 
+  [{'name': 'CLE'}, {'name': 'DET'}, {'name': 'KC'}, {'name': 'GB'}], 
+  [{'name': 'JAX'}, {'name': 'DEN'}, {'name': 'IND'}, {'name': 'OAK'}], 
+  [{'name': 'PHI'}, {'name': 'TEN'}, {'name': 'CAR'}, {'name': 'SEA'}], 
+  [{'name': 'SF'},  {'name': 'BUF'}, {'name': 'WSH'}, {'name': 'PIT'}], 
+  [{'name': 'MIA'}, {'name': 'HOU'}, {'name': 'LAC'}, {'name': 'TB'}], 
+  [{'name': 'BAL'}, {'name': 'CHI'}, {'name': 'NO'}, {'value': 'DAL'}], 
   ];
 
 @Injectable()
 export class ConstantsService {
   getAllWeeks() { return ALL_WEEKS; }
   getAllTeams() { return ALL_TEAMS; }
-  getDummyLeague() { return FULLY_POPULATED_LEAGUE_USERS; }
+  getDummyLeague() { return NBQBL_USERS; }
   getDefaultWeek() {
     let now = new Date(Date.now());
     let i = 0;

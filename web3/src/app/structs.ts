@@ -1,4 +1,3 @@
-
 export class User {
   name: string;
   teams: Team[];
