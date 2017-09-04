@@ -48,13 +48,12 @@ export class LineupComponent {
         selectedTeams++;
       }
     }
-    const legalAdd = selectedTeams < 2;
 
+    const legalAdd = selectedTeams < 2;
     if (!legalAdd) {
       this.mdlSnackbarService.showSnackbar({
         message:'You can only select two teams per week',
       });
-
     }
 
     return selectedTeams < 2;
@@ -80,7 +79,8 @@ export class LineupComponent {
     if (!team.selected && !this.isLegalMaxTeams(team)) {
       this.mdlSnackbarService.showSnackbar({
         message:'Max 13 plays per year',
-      });      return;
+      });
+      return;
     }
     team.selected = !team.selected;
     this.db.object(paths.getUserPath(this.uid) + '/weeks/' + weekId + '/teams').set(week.teams);
