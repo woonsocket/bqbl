@@ -6,7 +6,7 @@
    <td class=team>Team</td>
    <td class=team>Team</td>
    <td class=team>Team</td>
-   <ng-template *ngIf="(userData|async)?.dh">
+   <ng-template [ngIf]="(userData|async)?.dh">
     <td class=team>DH</td>
     <td class=team>DH2</td>
    </ng-template>
@@ -19,7 +19,7 @@
       [class.selected]="team.selected" (click)="onSelect(week, team, i)">
    {{team.name}}
   </td>
-  <ng-template *ngIf="userData.dh">
+  <ng-template [ngIf]="(userData|async)?.dh">
    <td class="team dh1" [class.selected]="week.teams[4]?.name">
     <input type="text" placeholder="DH" (change)="onChange($event, week, i)"
            value={{week.teams[4]?.name}}>
