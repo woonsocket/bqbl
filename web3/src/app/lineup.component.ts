@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { MdlSnackbarService} from '@angular-mdl/core';
 import { User, Week, Team } from './structs';
 import * as paths from './paths'
+import 'rxjs/add/operator/take'
 
 @Component({
   templateUrl: './lineup.component.html',
@@ -17,6 +18,8 @@ import * as paths from './paths'
 export class LineupComponent {
   userData: FirebaseObjectObservable<any>;
   userDataSnapshot: any;
+  leagueRules: LeagueRules;
+
   user: Observable<firebase.User>;
   uid: string;
   displayName: string;
@@ -37,7 +40,15 @@ export class LineupComponent {
         if (!userData.$exists()) {
           this.router.navigate(['/newuser']);
         }
-        this.setWarnings();
+        this.db.object(paths.getLeaguesPath() + userData.leagueId)
+          .take(1)
+          .subscribe((league) => {
+            this.leagueRules = {
+              dh: league.dh,
+              maxPlays: league.maxPlays || Number.MAX_SAFE_INTEGER,
+            };
+            this.setWarnings();
+          });
       });
 
       this.uid = value.uid;
@@ -77,7 +88,7 @@ export class LineupComponent {
       }
     }
     teamCounts.forEach((count, team) => {
-      if (count > 13) {
+      if (count > this.leagueRules.maxPlays) {
         warnings.overMax.push(team);
       }
     });
@@ -125,4 +136,9 @@ export class LineupComponent {
 
 interface Warnings {
   overMax: string[],
+}
+
+interface LeagueRules {
+  dh: boolean,
+  maxPlays: number,
 }

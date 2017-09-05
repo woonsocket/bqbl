@@ -4,7 +4,9 @@
   <span>Create League</span>
  </mdl-tab-panel-title>
  <mdl-tab-panel-content>
-  <input type="text" placeholder="League name" [(ngModel)]=leagueName>
+  <mdl-textfield type="text" label="League name" floating-label
+                 [(ngModel)]="leagueName">
+  </mdl-textfield>
   <table>
    <thead>
     <tr class=head>
@@ -16,16 +18,27 @@
     <td>Team {{i}}</td>
     <td *ngFor="let team of user; let j = index">
      <input type="text" placeholder="NYJ" name=team{{i}}{{j}} [(ngModel)]="users[i][j].name" (change)=onChange()>
-    </td> 
+    </td>
    </tr>
    </tbody>
   </table>
 
-  <mdl-checkbox  [mdl-ripple]="true" [(ngModel)]="hasDh">League has a DH</mdl-checkbox>
+  <div>
+   <mdl-checkbox [mdl-ripple]="true" [(ngModel)]="hasDh">
+    League has a DH
+   </mdl-checkbox>
+   <mdl-textfield type="number" label="Max plays" floating-label
+                  min="1" step="1" error-msg="Must be a positive integer"
+                  maxlength="3"
+                  [(ngModel)]="maxPlays">
+   </mdl-textfield>
+  </div>
 
- <button mdl-button mdl-button-type="raised" mdl-colored="accent" (click)="onCreateLeague()">
+  <div>
+   <button mdl-button mdl-button-type="raised" mdl-colored="accent" (click)="onCreateLeague()">
     Create
-  </button>
+   </button>
+  </div>
  </mdl-tab-panel-content>
 </mdl-tab-panel>
 </mdl-tabs>
