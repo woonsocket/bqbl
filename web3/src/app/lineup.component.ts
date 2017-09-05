@@ -130,10 +130,16 @@ export class LineupComponent {
     if (this.countSelectedTeams(teams) > 2) {
       return 'You can only select two teams per week';
     }
+    const usedTeams = new Set();
     for (let team of teams) {
-      if (!this.constants.getAllTeams().has(team.name)) {
-        return `${team.name} is not a valid team name`;
+      const name = team.name;
+      if (!this.constants.getAllTeams().has(name)) {
+        return `${name} is not a valid team name`;
       }
+      if (usedTeams.has(name)) {
+        return `${name} cannot be used more than once`;
+      }
+      usedTeams.add(name);
     }
     return '';
   }
