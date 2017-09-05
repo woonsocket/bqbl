@@ -1,4 +1,3 @@
-
 import * as firebase from 'firebase/app';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFireAuthModule } from 'angularfire2/auth';
@@ -62,22 +61,14 @@ export class LineupComponent {
     this.warnings = {overMax: []};
   }
 
-  isLegalAddForWeek(week: Week): boolean {
+  countSelectedTeams(teams: Team[]): number {
     let selectedTeams = 0;
-    for (const teamNum in week.teams) {
-      if (week.teams[teamNum].selected) {
+    teams.forEach((team) => {
+      if (team.selected) {
         selectedTeams++;
       }
-    }
-
-    const legalAdd = selectedTeams < 2;
-    if (!legalAdd) {
-      this.mdlSnackbarService.showSnackbar({
-        message:'You can only select two teams per week',
-      });
-    }
-
-    return selectedTeams < 2;
+    });
+    return selectedTeams;
   }
 
   setWarnings(): void {
@@ -101,51 +92,58 @@ export class LineupComponent {
   }
 
   onSelect(week: Week, team: Team, weekId: string): void {
-    if (!team.selected && !this.isLegalAddForWeek(week)) {
+    team.selected = !team.selected;
+
+    const err = this.validateWeek(week.teams);
+    if (err) {
+      // Undo and abort.
+      team.selected = !team.selected;
+      this.mdlSnackbarService.showSnackbar({message: err});
       return;
     }
-    team.selected = !team.selected;
+
     this.db.object(paths.getUserPath(this.uid) + '/weeks/' + weekId + '/teams').set(week.teams);
     this.setWarnings();
   }
 
-  onChange(event, week, weekId) {
-    if (event.srcElement.value) {
-      if (!this.isLegalAddForWeek(week)) {
-        event.srcElement.value = '';
-        return;
-      }
-      try {
-        this.pushTeamFromInput(event.srcElement, week.teams);
-      } catch (err) {
-        this.mdlSnackbarService.showSnackbar({message: err});
-        event.srcElement.value = '';
-      }
-    } else {
-      let dh1 = event.srcElement.parentElement.parentElement.querySelector('.dh1 input');
-      let dh2 = event.srcElement.parentElement.parentElement.querySelector('.dh2 input');
-      week.teams = week.teams.splice(0,4);
-      if (dh1.value != '') {
-        this.pushTeamFromInput(dh1, week.teams);
-      }
-      if (dh2.value != '') {
-        this.pushTeamFromInput(dh2, week.teams);
-      }
+  onChange(dh1, dh2, week, weekId) {
+    const newTeams = week.teams.slice(0,4);
+    if (dh1) {
+      this.pushTeam(dh1, newTeams);
     }
-    this.db.object(paths.getUserPath(this.uid) + '/weeks/' + weekId + '/teams').set(week.teams);
+    if (dh2) {
+      this.pushTeam(dh2, newTeams);
+    }
+    const err = this.validateWeek(newTeams);
+    if (err) {
+      this.mdlSnackbarService.showSnackbar({message: err});
+      return;
+    }
+    this.db
+      .object(paths.getUserPath(this.uid) + '/weeks/' + weekId + '/teams')
+      .set(newTeams);
   }
 
-  pushTeamFromInput(elem, teams) {
-    let team = new Team();
-    const name = elem.value.toUpperCase();
-    if (!this.constants.getAllTeams().has(name)) {
-      throw new Error(`${name} is not a valid team code`);
+  // Returns an error message as a string. If returned string is empty, the team
+  // list is valid.
+  validateWeek(teams: Team[]): string {
+    if (this.countSelectedTeams(teams) > 2) {
+      return 'You can only select two teams per week';
     }
-    team.name = name;
+    for (let team of teams) {
+      if (!this.constants.getAllTeams().has(team.name)) {
+        return `${team.name} is not a valid team name`;
+      }
+    }
+    return '';
+  }
+
+  pushTeam(name: string, teams: Team[]) {
+    let team = new Team();
+    team.name = name.toUpperCase().trim();
     team.selected = true;
     teams.push(team);
   }
-
 }
 
 interface Warnings {

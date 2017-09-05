@@ -24,7 +24,7 @@ table {
   margin:auto;
 }
 
-td input {
+td.dh input {
   width: 30px;
   font-size: 14px;
   text-align: center;
