@@ -6,7 +6,7 @@
    <td class=team>Team</td>
    <td class=team>Team</td>
    <td class=team>Team</td>
-   <ng-template *ngIf="(userData|async)?.dh"> 
+   <ng-template *ngIf="(userData|async)?.dh">
     <td class=team>DH</td>
     <td class=team>DH2</td>
    </ng-template>
@@ -16,18 +16,18 @@
   <td class=week>{{week.id}}</td>
   <!-- Limit to 4. When there's a DH, don't list it as normal cell -->
   <td *ngFor="let team of week.teams | slice:0:4;" class=team
-  [class.selected]="team.selected" (click)="onSelect(week, team, i)">
-  {{team.name}}
- </td> 
- <ng-template *ngIf="userData.dh"> 
-  <td class="team dh1" [class.selected]="week.teams[4]?.name">
-   <input type="text" placeholder="DH" (change)="onChange($event, week, i)"
-   value={{week.teams[4]?.name}}>
+      [class.selected]="team.selected" (click)="onSelect(week, team, i)">
+   {{team.name}}
   </td>
-  <td class="team dh2" [class.selected]="week.teams[5]?.name">
-   <input type="text" placeholder="DH" (change)="onChange($event, week, i)"
-   value={{week.teams[5]?.name}}>
-  </td>
- </ng-template>
-</tr>
+  <ng-template *ngIf="userData.dh">
+   <td class="team dh1" [class.selected]="week.teams[4]?.name">
+    <input type="text" placeholder="DH" (change)="onChange($event, week, i)"
+           value={{week.teams[4]?.name}}>
+   </td>
+   <td class="team dh2" [class.selected]="week.teams[5]?.name">
+    <input type="text" placeholder="DH" (change)="onChange($event, week, i)"
+           value={{week.teams[5]?.name}}>
+   </td>
+  </ng-template>
+ </tr>
 </table>
