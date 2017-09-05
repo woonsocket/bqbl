@@ -6,7 +6,9 @@ import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable }
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Router } from '@angular/router';
-import { MdlSnackbarService} from '@angular-mdl/core';
+import { MdlSnackbarService } from '@angular-mdl/core';
+
+import { ConstantsService } from './constants.service';
 import { User, Week, Team } from './structs';
 import * as paths from './paths'
 import 'rxjs/add/operator/take'
@@ -26,8 +28,11 @@ export class LineupComponent {
 
   warnings: Warnings;
 
-  constructor(private db: AngularFireDatabase, private afAuth: AngularFireAuth, private router: Router,
-    private mdlSnackbarService: MdlSnackbarService) {
+  constructor(private db: AngularFireDatabase,
+              private afAuth: AngularFireAuth,
+              private router: Router,
+              private mdlSnackbarService: MdlSnackbarService,
+              private constants: ConstantsService) {
     this.user = afAuth.authState;
     this.user.subscribe(value => {
       if (!value) {
@@ -110,7 +115,12 @@ export class LineupComponent {
         event.srcElement.value = '';
         return;
       }
-      this.pushTeamFromInput(event.srcElement, week.teams);
+      try {
+        this.pushTeamFromInput(event.srcElement, week.teams);
+      } catch (err) {
+        this.mdlSnackbarService.showSnackbar({message: err});
+        event.srcElement.value = '';
+      }
     } else {
       let dh1 = event.srcElement.parentElement.parentElement.querySelector('.dh1 input');
       let dh2 = event.srcElement.parentElement.parentElement.querySelector('.dh2 input');
@@ -127,7 +137,11 @@ export class LineupComponent {
 
   pushTeamFromInput(elem, teams) {
     let team = new Team();
-    team.name = elem.value;
+    const name = elem.value.toUpperCase();
+    if (!this.constants.getAllTeams().has(name)) {
+      throw new Error(`${name} is not a valid team code`);
+    }
+    team.name = name;
     team.selected = true;
     teams.push(team);
   }

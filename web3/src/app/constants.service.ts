@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Set } from 'immutable';
 
 let ALL_WEEKS = [
 {'name': 'Preseason 1', 'val': 'P1', 'displayUntil': new Date('2017-08-16')},
@@ -24,30 +25,32 @@ let ALL_WEEKS = [
 {'name': 'Week 17', 'val': '17', 'displayUntil': new Date('2018-08-01')},
 ];
 
-let ALL_TEAMS = ["ARI","ATL","BAL","BUF","CAR","CHI","CIN","CLE","DAL","DEN","DET",
-"GB","HOU","IND","JAX","KC","LA","MIA","MIN","NE","NO","NYG","NYJ",
-"OAK", "PHI","PIT","SD","SEA","SF","TB","TEN","WAS"];
+let ALL_TEAMS = Set([
+  'ARI', 'ATL', 'BAL', 'BUF', 'CAR', 'CHI', 'CIN', 'CLE', 'DAL', 'DEN', 'DET',
+  'GB', 'HOU', 'IND', 'JAX', 'KC', 'LA', 'LAC', 'MIA', 'MIN', 'NE', 'NO',
+  'NYG', 'NYJ', 'OAK', 'PHI', 'PIT', 'SEA', 'SF', 'TB', 'TEN', 'WAS',
+]);
 
 let NBQBL_USERS = [
-  [{'name': 'NYJ'}, {'name': 'MIN'}, {'name': 'CIN'}, {'name': 'NE'}], 
-  [{'name': 'LA'},  {'name': 'ARI'}, {'name': 'NYG'}, {'name': 'ATL'}], 
-  [{'name': 'CLE'}, {'name': 'DET'}, {'name': 'KC'}, {'name': 'GB'}], 
-  [{'name': 'JAX'}, {'name': 'DEN'}, {'name': 'IND'}, {'name': 'OAK'}], 
-  [{'name': 'PHI'}, {'name': 'TEN'}, {'name': 'CAR'}, {'name': 'SEA'}], 
-  [{'name': 'SF'},  {'name': 'BUF'}, {'name': 'WAS'}, {'name': 'PIT'}], 
-  [{'name': 'MIA'}, {'name': 'HOU'}, {'name': 'LAC'}, {'name': 'TB'}], 
-  [{'name': 'BAL'}, {'name': 'CHI'}, {'name': 'NO'}, {'name': 'DAL'}], 
+  [{'name': 'NYJ'}, {'name': 'MIN'}, {'name': 'CIN'}, {'name': 'NE'}],
+  [{'name': 'LA'},  {'name': 'ARI'}, {'name': 'NYG'}, {'name': 'ATL'}],
+  [{'name': 'CLE'}, {'name': 'DET'}, {'name': 'KC'}, {'name': 'GB'}],
+  [{'name': 'JAX'}, {'name': 'DEN'}, {'name': 'IND'}, {'name': 'OAK'}],
+  [{'name': 'PHI'}, {'name': 'TEN'}, {'name': 'CAR'}, {'name': 'SEA'}],
+  [{'name': 'SF'},  {'name': 'BUF'}, {'name': 'WAS'}, {'name': 'PIT'}],
+  [{'name': 'MIA'}, {'name': 'HOU'}, {'name': 'LAC'}, {'name': 'TB'}],
+  [{'name': 'BAL'}, {'name': 'CHI'}, {'name': 'NO'}, {'name': 'DAL'}],
   ];
 
 let ABQBL_USERS = [
-  [{'name': 'NYJ'}, {'name': 'NYG'}, {'name': 'KC'}, {'name': 'NE'}], 
-  [{'name': 'CLE'},  {'name': 'PHI'}, {'name': 'SEA'}, {'name': 'ATL'}], 
-  [{'name': 'LAR'}, {'name': 'IND'}, {'name': 'CIN'}, {'name': 'GB'}], 
-  [{'name': 'CHI'}, {'name': 'ARI'}, {'name': 'CAR'}, {'name': 'NO'}], 
-  [{'name': 'SF'}, {'name': 'MIN'}, {'name': 'WAS'}, {'name': 'OAK'}], 
-  [{'name': 'JAX'},  {'name': 'DEN'}, {'name': 'TEN'}, {'name': 'DET'}], 
-  [{'name': 'HOU'}, {'name': 'MIA'}, {'name': 'LAC'}, {'name': 'TB'}], 
-  [{'name': 'BUF'}, {'name': 'BAL'}, {'name': 'DAL'}, {'name': 'PIT'}], 
+  [{'name': 'NYJ'}, {'name': 'NYG'}, {'name': 'KC'}, {'name': 'NE'}],
+  [{'name': 'CLE'},  {'name': 'PHI'}, {'name': 'SEA'}, {'name': 'ATL'}],
+  [{'name': 'LAR'}, {'name': 'IND'}, {'name': 'CIN'}, {'name': 'GB'}],
+  [{'name': 'CHI'}, {'name': 'ARI'}, {'name': 'CAR'}, {'name': 'NO'}],
+  [{'name': 'SF'}, {'name': 'MIN'}, {'name': 'WAS'}, {'name': 'OAK'}],
+  [{'name': 'JAX'},  {'name': 'DEN'}, {'name': 'TEN'}, {'name': 'DET'}],
+  [{'name': 'HOU'}, {'name': 'MIA'}, {'name': 'LAC'}, {'name': 'TB'}],
+  [{'name': 'BUF'}, {'name': 'BAL'}, {'name': 'DAL'}, {'name': 'PIT'}],
   ];
 
 @Injectable()

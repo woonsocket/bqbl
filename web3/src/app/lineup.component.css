@@ -25,9 +25,10 @@ table {
 }
 
 td input {
-  width:30px;
-  font-size:14px;
+  width: 30px;
+  font-size: 14px;
   text-align: center;
+  text-transform: uppercase;
 }
 
 .warnings {
