@@ -1,3 +1,7 @@
+<div class="warnings" *ngIf="(warnings.overMax)?.length">
+ Over the maximum number of plays: {{ warnings.overMax.join(', ') }}
+</div>
+
 <table>
  <thead>
   <tr class=head>

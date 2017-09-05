@@ -20,6 +20,9 @@ export class LineupComponent {
   user: Observable<firebase.User>;
   uid: string;
   displayName: string;
+
+  warnings: Warnings;
+
   constructor(private db: AngularFireDatabase, private afAuth: AngularFireAuth, private router: Router,
     private mdlSnackbarService: MdlSnackbarService) {
     this.user = afAuth.authState;
@@ -34,14 +37,16 @@ export class LineupComponent {
         if (!userData.$exists()) {
           this.router.navigate(['/newuser']);
         }
+        this.setWarnings();
       });
 
       this.uid = value.uid;
     });
 
+    this.warnings = {overMax: []};
   }
 
-  isLegalAddForWeek (week: Week): boolean {
+  isLegalAddForWeek(week: Week): boolean {
     let selectedTeams = 0;
     for (const teamNum in week.teams) {
       if (week.teams[teamNum].selected) {
@@ -59,31 +64,33 @@ export class LineupComponent {
     return selectedTeams < 2;
   }
 
-  isLegalMaxTeams (team: Team): boolean {
-    let plays = 0
+  setWarnings(): void {
+    let warnings = {
+      overMax: [],
+    };
+    let teamCounts = new Map();
     for (let week of this.userDataSnapshot.weeks) {
-      for (let dbTeam of week.teams) {
-        if (dbTeam.name == team.name && dbTeam.selected) {
-          plays++;
+      for (let team of week.teams) {
+        if (team.selected) {
+          teamCounts.set(team.name, (teamCounts.get(team.name) || 0) + 1);
         }
       }
     }
-    return plays < 13;
+    teamCounts.forEach((count, team) => {
+      if (count > 13) {
+        warnings.overMax.push(team);
+      }
+    });
+    this.warnings = warnings;
   }
 
   onSelect(week: Week, team: Team, weekId: string): void {
     if (!team.selected && !this.isLegalAddForWeek(week)) {
       return;
     }
-
-    if (!team.selected && !this.isLegalMaxTeams(team)) {
-      this.mdlSnackbarService.showSnackbar({
-        message:'Max 13 plays per year',
-      });
-      return;
-    }
     team.selected = !team.selected;
     this.db.object(paths.getUserPath(this.uid) + '/weeks/' + weekId + '/teams').set(week.teams);
+    this.setWarnings();
   }
 
   onChange(event, week, weekId) {
@@ -116,3 +123,6 @@ export class LineupComponent {
 
 }
 
+interface Warnings {
+  overMax: string[],
+}

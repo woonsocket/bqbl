@@ -28,3 +28,9 @@ td input {
   width:30px;
   font-size:14px;
 }
+
+.warnings {
+  margin: 12px;
+  text-align: center;
+  color: #F44336;
+}
