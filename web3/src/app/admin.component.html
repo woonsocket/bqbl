@@ -1,8 +1,19 @@
 <mdl-tabs mdl-ripple mdl-tab-active-index="0">
+
 <mdl-tab-panel>
-  <mdl-tab-panel-title>
-  <span>Create League</span>
- </mdl-tab-panel-title>
+ <mdl-tab-panel-title>24/7 Points</mdl-tab-panel-title>
+ <mdl-tab-panel-content>
+  <mdl-table [table-model]="mdlTable247"></mdl-table>
+  <button #add247button
+          mdl-button mdl-button-type="raised" mdl-colored="accent" mdl-ripple
+          (click)="add247dialog.show()">
+   Add
+  </button>
+ </mdl-tab-panel-content>
+</mdl-tab-panel>
+
+<mdl-tab-panel>
+ <mdl-tab-panel-title>Create League</mdl-tab-panel-title>
  <mdl-tab-panel-content>
   <mdl-textfield type="text" label="League name" floating-label
                  [(ngModel)]="leagueName">
@@ -41,4 +52,38 @@
   </div>
  </mdl-tab-panel-content>
 </mdl-tab-panel>
+
 </mdl-tabs>
+
+<mdl-dialog #add247dialog
+            [mdl-dialog-config]="{
+              clickOutsideToClose: true,
+              styles:{'width': '300px'},
+              isModal:true,
+              openFrom: add247button,
+              enterTransitionDuration: 400,
+              leaveTransitionDuration: 400}">
+  <h3 class="mdl-dialog__title">Add 24/7 Points</h3>
+  <div class="mdl-dialog__content">
+   <mdl-textfield #team type="text" label="Team" floating-label autofocus>
+   </mdl-textfield>
+   <mdl-textfield #points type="number" label="Points" floating-label
+                  min="1" step="1" error-msg="Must be a positive integer"
+                  maxlength="3">
+   </mdl-textfield>
+   <mdl-textfield #desc type="text" label="Description" floating-label>
+   </mdl-textfield>
+   <mdl-textfield #notes type="text" label="Notes, source, etc." floating-label>
+   </mdl-textfield>
+  </div>
+  <div class="mdl-dialog__actions">
+   <button mdl-button
+           (click)="onAdd247(add247dialog, team.value, points.value, desc.value, notes.value)"
+           mdl-button-type="raised" mdl-colored="primary" mdl-ripple>
+    Save
+   </button>
+   <button mdl-button (click)="add247dialog.close()" mdl-ripple>
+    Cancel
+   </button>
+  </div>
+</mdl-dialog>

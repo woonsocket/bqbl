@@ -5,7 +5,7 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
 import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
 import { Component } from '@angular/core';
 import { NgModel } from '@angular/forms';
-import { MdlSnackbarService } from '@angular-mdl/core';
+import { MdlDefaultTableModel, MdlSnackbarService } from '@angular-mdl/core';
 import { Observable } from 'rxjs/Observable';
 import { ConstantsService } from './constants.service';
 
@@ -24,6 +24,15 @@ export class AdminComponent {
   // https://stackoverflow.com/questions/36095496/angular-2-how-to-write-a-for-loop-not-a-foreach-loop
   users = [];
 
+  year = '2017';
+  points247: FirebaseListObservable<any>;
+  mdlTable247 = new MdlDefaultTableModel([
+    {key: 'team', name: 'Team', sortable: true},
+    {key: 'points', name: 'Points', sortable: true, numeric: true},
+    {key: 'desc', name: 'Description'},
+    {key: 'notes', name: 'Notes'},
+  ]);
+
   createRange(number){
     var items: number[] = [];
     for(var i = 1; i <= number; i++){
@@ -41,6 +50,15 @@ export class AdminComponent {
     // Populate by default for testing iteration.
     this.users = constants.getDummyLeague();
     this.weeks = constants.getAllWeeks();
+
+    this.points247 = this.db.list(`/scores247/${this.year}`);
+    this.points247.subscribe((d) => this.mdlTable247.data = d || []);
+  }
+
+  onAdd247(dialog: any, team: string, points: number, desc: string,
+           notes: string) {
+    this.points247.push({team: team, points: points, desc: desc, notes: notes});
+    dialog.close();
   }
 
   onChange() {
