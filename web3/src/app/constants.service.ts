@@ -45,7 +45,7 @@ let NBQBL_USERS = [
 let ABQBL_USERS = [
   [{'name': 'NYJ'}, {'name': 'NYG'}, {'name': 'KC'}, {'name': 'NE'}],
   [{'name': 'CLE'},  {'name': 'PHI'}, {'name': 'SEA'}, {'name': 'ATL'}],
-  [{'name': 'LAR'}, {'name': 'IND'}, {'name': 'CIN'}, {'name': 'GB'}],
+  [{'name': 'LA'}, {'name': 'IND'}, {'name': 'CIN'}, {'name': 'GB'}],
   [{'name': 'CHI'}, {'name': 'ARI'}, {'name': 'CAR'}, {'name': 'NO'}],
   [{'name': 'SF'}, {'name': 'MIN'}, {'name': 'WAS'}, {'name': 'OAK'}],
   [{'name': 'JAX'},  {'name': 'DEN'}, {'name': 'TEN'}, {'name': 'DET'}],
