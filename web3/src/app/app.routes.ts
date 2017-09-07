@@ -5,6 +5,7 @@ import { LineupComponent } from './lineup.component';
 import { ConsoleComponent } from './console.component';
 import { ScoresComponent } from './scores.component';
 import { NFLScoresComponent } from './nflscores.component';
+import { NFLStandingsComponent } from './nflstandings.component';
 import { LoginComponent } from './login.component';
 import { StandingsComponent } from './standings.component';
 import { AdminComponent } from './admin.component';
@@ -27,6 +28,9 @@ export const routes: Routes = [
  { path: 'nflscores',
    component: NFLScoresComponent
  },
+ { path: 'nflstandings',
+   component: NFLStandingsComponent
+ },
  { path: 'login',
    component: LoginComponent
  },
@@ -35,7 +39,7 @@ export const routes: Routes = [
  },
  { path: 'admin',
    component: AdminComponent
- }, 
+ },
  { path: 'standings',
    component: StandingsComponent
  },
