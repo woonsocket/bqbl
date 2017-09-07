@@ -3,9 +3,9 @@ import * as firebase from 'firebase/app';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { NgModel } from '@angular/forms';
-import { MdlDefaultTableModel, MdlSnackbarService } from '@angular-mdl/core';
+import { MdlDefaultTableModel, MdlDialogComponent, MdlSnackbarService, MdlTextFieldComponent } from '@angular-mdl/core';
 import { Observable } from 'rxjs/Observable';
 import { ConstantsService } from './constants.service';
 
@@ -15,6 +15,17 @@ import * as paths from './paths'
   templateUrl: './admin.component.html',
 })
 export class AdminComponent {
+  @ViewChild(MdlDialogComponent)
+  private dialog: MdlDialogComponent;
+  @ViewChild('team')
+  private teamField: MdlTextFieldComponent;
+  @ViewChild('points')
+  private pointsField: MdlTextFieldComponent;
+  @ViewChild('desc')
+  private descField: MdlTextFieldComponent;
+  @ViewChild('notes')
+  private notesField: MdlTextFieldComponent;
+
   user: Observable<firebase.User>;
   weeks = [];
   leagueName = "";   // TODO pull this into subcomponent
@@ -55,10 +66,22 @@ export class AdminComponent {
     this.points247.subscribe((d) => this.mdlTable247.data = d || []);
   }
 
-  onAdd247(dialog: any, team: string, points: number, desc: string,
-           notes: string) {
-    this.points247.push({team: team, points: points, desc: desc, notes: notes});
-    dialog.close();
+  onAdd247() {
+    this.points247.push({
+      team: this.teamField.value,
+      points: this.pointsField.value,
+      desc: this.descField.value || '',
+      notes: this.notesField.value || '',
+    });
+    this.close247Dialog();
+  }
+
+  close247Dialog() {
+    this.dialog.close();
+    this.teamField.value = '';
+    this.pointsField.value = '';
+    this.descField.value = '';
+    this.notesField.value = '';
   }
 
   onChange() {
