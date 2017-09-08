@@ -53,7 +53,7 @@
 
   <div class="mdl-card__supporting-text mdl-color-text--grey-700">
    <div class="score-card-comp score-card-total">
-    <div class="score-card-comp-desc">Total</div>
+    <div class="score-card-comp-desc">{{ projectScores ? 'Projected ' : '' }}Total</div>
     <div [ngClass]="{'score-card-comp-val': true, 'mdl-color-text--red-700': score.total < 0}">
      {{ getTotal(score) }}
     </div>
