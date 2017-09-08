@@ -42,11 +42,7 @@ export class NFLScoresComponent {
   }
 
   byActiveFirst(a, b) {
-    const aClock = a['gameInfo'] && a['gameInfo']['clock'];
-    const bClock = b['gameInfo'] && b['gameInfo']['clock'];
-    const aFinal = aClock && aClock.toLowerCase().includes('final');
-    const bFinal = bClock && bClock.toLowerCase().includes('final');
-    return (aFinal ? 1 : 0) - (bFinal ? 1 : 0);
+    return (this.isFinal(a) ? 1 : 0) - (this.isFinal(b) ? 1 : 0);
   }
 
   sortScores(scores, cmps) {
@@ -87,6 +83,11 @@ export class NFLScoresComponent {
     return this.projectScores && scoreObj['projection'] ?
         scoreObj['projection']['components'] :
         scoreObj['components'];
+  }
+
+  isFinal(scoreObj: object): boolean {
+    const clock = scoreObj['gameInfo'] && scoreObj['gameInfo']['clock'];
+    return clock && clock.toLowerCase().includes('final');
   }
 
   boxScoreLink(scoreObj: object) {
