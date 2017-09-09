@@ -11,6 +11,7 @@ import * as paths from './paths'
 
 @Component({
   templateUrl: './scores.component.html',
+  styleUrls: ['./scores.component.css']
 })
 export class ScoresComponent {
   userDataList: FirebaseListObservable<any>;
@@ -21,7 +22,7 @@ export class ScoresComponent {
   leagueToNames = {};
   userToTeams = {};
   teamToScores = {};
-  scoreRows = {};
+  displayLeagues = [];
   selectedWeek: number;
   year = '2017';
   constructor(db: AngularFireDatabase, private afAuth: AngularFireAuth, private route: ActivatedRoute,
@@ -80,9 +81,12 @@ export class ScoresComponent {
   }
 
   updateScores(): void {
-    this.scoreRows = {};
+    this.displayLeagues = [];
     for (const leagueKey in this.leagueToUsers) {
+      let league = {'name': '', 'scoreRows': []};
+
       for (const user of this.leagueToUsers[leagueKey]) {
+        const leagueName = user.leagueName;
         const name = this.userToTeams[user.$key][this.selectedWeek].name;
         const teams = this.userToTeams[user.$key][this.selectedWeek].teams;
         teams[0] = teams[0] || 'N/A';
@@ -95,10 +99,10 @@ export class ScoresComponent {
           'team2': teams[1],
           'score2': this.getScore(teams[1]),
         };
-        let league = this.scoreRows[leagueKey] || [];
-        league.push(scoreRow);
-        this.scoreRows[leagueKey] = league;
+        league.name = leagueName;
+        league.scoreRows.push(scoreRow);
       }
+      this.displayLeagues.push(league);
     }
   }
 
