@@ -47,6 +47,7 @@ class Notifier(object):
                       '>{desc}'
                       .format(qb=player_name, team=team, what=what,
                               desc=description)),
+            'username': 'BQBL Red Zone Channel ({team})'.format(team=team),
             'channel': self.channel,
             'icon_url': icon_url,
         }
