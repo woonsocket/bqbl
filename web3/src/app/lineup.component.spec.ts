@@ -9,27 +9,29 @@ import { ActivatedRoute, Router, NavigationEnd, Event, Params} from '@angular/ro
 import { MdlSnackbarService } from '@angular-mdl/core';
 import { APP_BASE_HREF } from '@angular/common';
 
-import { mockAngularFireAuth } from './mockangularfire';
-import { MockAngularFireDb } from './mockangularfire';
+import { MockAngularFireDb, MockAngularFireAuth } from './mockangularfire';
 
 import { ConstantsService } from './constants.service';
 import { LineupComponent } from './lineup.component';
 
 describe('LineupComponent', () => {
 
-  let comp: LineupComponent;
+  let mockDb: MockAngularFireDb;
+  let mockAuth: MockAngularFireAuth;
   let fixture: ComponentFixture<LineupComponent>;
   let selected: DebugElement[];
 
   beforeEach(() => {
 
+    this.mockDb = new MockAngularFireDb();
+    this.mockAuth = new MockAngularFireAuth('30', 'Harvey');
 
     TestBed.configureTestingModule({
       declarations: [ LineupComponent ], // declare the test component
       providers: [
       { provide: ComponentFixtureAutoDetect, useValue: true },
-      { provide: AngularFireAuth, useValue: mockAngularFireAuth },
-      { provide: AngularFireDatabase, useClass: MockAngularFireDb },
+      { provide: AngularFireAuth, useValue: this.mockAuth },
+      { provide: AngularFireDatabase, useValue: this.mockDb },
       { provide: Router, useValue: true },
       { provide: ActivatedRoute, useValue: true },
       { provide: ConstantsService, useValue: true },
@@ -38,18 +40,40 @@ describe('LineupComponent', () => {
       ]
     });
 
-    fixture = TestBed.createComponent(LineupComponent);
-
-    comp = fixture.componentInstance;
-
-    selected = fixture.debugElement.queryAll(By.css('.selected'));
   });
 
 
   it('should render the played teams', () => {
+    this.mockDb.data = dbData;
+
+    fixture = TestBed.createComponent(LineupComponent);
+    selected = fixture.debugElement.queryAll(By.css('.selected'));
     fixture.detectChanges();
 
     expect(selected[0].nativeElement.textContent).toContain("HOU");
     expect(selected[1].nativeElement.textContent).toContain("NYJ");
   });
 });
+
+let dbData = {
+  'users': {
+    '30': {
+      'leagueId': 'nbqbl',
+      'weeks': [{
+        'id': '1',
+        'teams': [
+        {'name': 'CLE', 'selected': false},
+        {'name': 'HOU', 'selected': true},
+        {'name': 'NYJ', 'selected': true},
+        {'name': 'CHI', 'selected': false},
+        ]
+      }]
+    }
+  },
+  'leagues': {
+    'nbqbl': {
+      'dh': false,
+      'maxPlays': 13
+    }
+  },
+};

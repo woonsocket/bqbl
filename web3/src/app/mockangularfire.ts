@@ -1,10 +1,7 @@
-
-export let fakeAuthState = {
-  'uid': '30',
-  'displayName': 'Harvey'
-};
-
 export class MockAngularFireDbSnapshot {  
+  
+  // Take all of the fields of data and make them fields of the snapshot.  
+  // data: a plain Javascript object.
   constructor(data: any) {
     for (let prop in data) {
       this[prop] = data[prop];
@@ -23,6 +20,8 @@ export class MockAngularFireDbResponse {
     this.data = data;
   }
 
+  
+  // Call fn with a snapshot constructed from this.data
   subscribe(fn) {
     // TODO(harveyj): Figure out what's going on here
     if (fn.next) {
@@ -32,46 +31,34 @@ export class MockAngularFireDbResponse {
     }
   }
 
+  // NOTE(harveyj): I don't understand this. I had to mock it out because
+  // template renderer's async stuff was expecting it to be there.
   take() {
     return this;
   } 
 }; 
 
-export let mockAngularFireAuth = {
-  'authState': {
-    'uid': '30',
-    subscribe: function(fn) {
-      fn(fakeAuthState);
-    }
+export class MockAngularFireAuthState {
+  constructor (public uid: string, public displayName: string) {}
+
+  subscribe(fn) {
+      fn({
+        'uid': this.uid,
+        'displayName': this.displayName
+      });
+  }
+};
+
+export class MockAngularFireAuth {
+  authState: MockAngularFireAuthState;
+  constructor(public uid: string, public displayName: string) {
+    this.authState = new MockAngularFireAuthState(uid, displayName);
   }
 };
 
 export class MockAngularFireDb {
   data: {};
-  constructor() {
-    this.data = {
-      'users': {
-        '30': {
-          'leagueId': 'nbqbl',
-          'weeks': [{
-            'id': '1',
-            'teams': [
-              {'name': 'CLE', 'selected': false},
-              {'name': 'HOU', 'selected': true},
-              {'name': 'NYJ', 'selected': true},
-              {'name': 'CHI', 'selected': false},
-            ]
-          }]
-        }
-      },
-      'leagues': {
-        'nbqbl': {
-          'dh': false,
-          'maxPlays': 13
-        }
-      },
-    };
-  }
+  constructor() {}
 
   object(path: string) {
     let obj = this.data;
@@ -87,6 +74,4 @@ export class MockAngularFireDb {
     } 
     return new MockAngularFireDbResponse(obj);
   }
-
-
 };

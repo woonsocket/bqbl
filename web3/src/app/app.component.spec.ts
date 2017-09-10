@@ -22,13 +22,15 @@ import { ConstantsService } from './constants.service';
 import { AdminComponent } from './admin.component';
 import { environment } from '../environments/environment';
 import { routes } from './app.routes';
-import { mockAngularFireAuth } from './mockangularfire';
+import { MockAngularFireAuth } from './mockangularfire';
 import { NflIconPipe, NflLogoPipe } from './nfl-logo.pipe';
 
 import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
+
   beforeEach(async(() => {
+    let mockAuth = new MockAngularFireAuth('30', 'Harvey');
     TestBed.configureTestingModule({
       declarations: [
       AppComponent,
@@ -55,7 +57,7 @@ describe('AppComponent', () => {
       ],
       providers: [ConstantsService, 
       {provide: APP_BASE_HREF, useValue: '/'},
-      {provide: AngularFireAuth, useValue: mockAngularFireAuth }
+      {provide: AngularFireAuth, useValue: mockAuth }
       ]
     }).compileComponents();
   }));
