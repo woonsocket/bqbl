@@ -12,6 +12,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 
 import { ScoresComponent } from './scores.component';
 import { NFLScoresComponent } from './nflscores.component';
+import { NFLStandingsComponent } from './nflstandings.component';
 import { NewUserComponent } from './newuser.component';
 import { LineupComponent } from './lineup.component';
 import { LoginComponent } from './login.component';
@@ -33,6 +34,7 @@ describe('AppComponent', () => {
       AppComponent,
       ScoresComponent,
       NFLScoresComponent,
+      NFLStandingsComponent,
       NewUserComponent,
       LineupComponent,
       ConsoleComponent,

@@ -1,7 +1,6 @@
 Features:
 - Add a running total to the scoreboard
-- Add a whole-year per-team "Stats" view
-- 24/7 points
+- Clicking on a line-score item should pop up a card explaining the score
 
 Cleanup:
 - MDL-ize the scary stuff (app, nflscores)

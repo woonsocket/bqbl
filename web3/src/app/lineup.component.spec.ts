@@ -10,17 +10,16 @@ import { MdlSnackbarService } from '@angular-mdl/core';
 import { APP_BASE_HREF } from '@angular/common';
 
 import { mockAngularFireAuth } from './mockangularfire';
-import { mockAngularFireDb } from './mockangularfire';
+import { MockAngularFireDb } from './mockangularfire';
 
 import { ConstantsService } from './constants.service';
 import { LineupComponent } from './lineup.component';
 
 describe('LineupComponent', () => {
 
-  let comp:    LineupComponent;
+  let comp: LineupComponent;
   let fixture: ComponentFixture<LineupComponent>;
-  let team:      DebugElement;
-  let el:      HTMLElement;
+  let selected: DebugElement[];
 
   beforeEach(() => {
 
@@ -30,13 +29,12 @@ describe('LineupComponent', () => {
       providers: [
       { provide: ComponentFixtureAutoDetect, useValue: true },
       { provide: AngularFireAuth, useValue: mockAngularFireAuth },
-      { provide: AngularFireDatabase, useValue: mockAngularFireDb },
+      { provide: AngularFireDatabase, useClass: MockAngularFireDb },
       { provide: Router, useValue: true },
       { provide: ActivatedRoute, useValue: true },
       { provide: ConstantsService, useValue: true },
       { provide: MdlSnackbarService, useValue: true },
-            {provide: APP_BASE_HREF, useValue: '/'},
-
+      { provide: APP_BASE_HREF, useValue: '/'},
       ]
     });
 
@@ -44,13 +42,14 @@ describe('LineupComponent', () => {
 
     comp = fixture.componentInstance;
 
-    team = fixture.debugElement.query(By.css('td.team'));
-    el = team.nativeElement;
+    selected = fixture.debugElement.queryAll(By.css('.selected'));
   });
 
 
-  it('should have a header', () => {
+  it('should render the played teams', () => {
     fixture.detectChanges();
-    expect(el.textContent).toContain("Team");
+
+    expect(selected[0].nativeElement.textContent).toContain("HOU");
+    expect(selected[1].nativeElement.textContent).toContain("NYJ");
   });
 });
