@@ -62,7 +62,8 @@ separate competition.
 
     * Each interception returned for TD ("pick six"): **25 points**
 
-        * If in overtime: **50 additional points**
+        * If in overtime: **50 points** total (i.e., 25 additional points beyond
+          a normal pick six)
 
     * Each interception (no TD): **5 points**
 
