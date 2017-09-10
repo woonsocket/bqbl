@@ -4,12 +4,11 @@ These rules are an adaptation of
 [the original Grantland rules](http://grantland.com/the-triangle/introducing-grantlands-bad-quarterback-league/)
 from 2011.
 
-Rule changes for 2016:
+Rule changes for 2017:
 
-* Limit ABQBL DH usages to 6 times per season
-* Sacks worth 1 point each
-* Extend Special Tebow rules to apply to Manziel as well
-* Trump-related 24/7 points
+* Street free agent points are now 24/7 points. The bonus is 35 points on the
+  first time a team starts a given player, rather than 20 (on-field) points
+  every time they start.
 
 ## General rules
 
@@ -151,8 +150,6 @@ separate competition.
       is generally agreed to have played poorly, and is replaced without having
       suffered an obvious injury, then the points will count.
 
-* Starting QB was not on any NFL 53-man roster on opening day: **20 points**
-
 ## 24/7 points
 
 * Arrested: **50 points**
@@ -244,6 +241,9 @@ separate competition.
     * Your team works out Kurt Warner: **20 points**
 
     * These points may also be awarded for Brett Favre, etc.
+
+* Team starts a QB who was not on any NFL 53-man roster on opening day: **35
+  points** per QB, awarded only for the first time the QB starts for that team
 
 * Trump
 
