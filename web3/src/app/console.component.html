@@ -7,8 +7,11 @@
     <mdl-list>
       <mdl-list-item *ngFor="let passer of passers | async">
         <mdl-list-item-primary-content>
-          <mdl-icon mdl-list-item-avatar>person</mdl-icon>
-          {{passer.team}} - {{passer.name}}
+          <img class="mdl-list__item-avatar" [src]="passer.team | nflIcon"
+               alt="{{passer.team}}">
+          <mdl-list-item-text-body>
+            {{passer.name}}
+          </mdl-list-item-text-body>
         </mdl-list-item-primary-content>
         <mdl-list-item-secondary-action>
          <input #valid type="checkbox" class="mdl-checkbox__input"
@@ -23,12 +26,15 @@
     <mdl-list>
       <mdl-list-item *ngFor="let safety of safeties | async">
         <mdl-list-item-primary-content>
-          <mdl-icon mdl-list-item-avatar>person</mdl-icon>
-          {{safety.desc}}
+          <img class="mdl-list__item-avatar" [src]="safety.team | nflIcon"
+               alt="{{safety.team}}">
+          <mdl-list-item-text-body>
+            {{safety.desc}}
+          </mdl-list-item-text-body>
         </mdl-list-item-primary-content>
         <mdl-list-item-secondary-action>
-         <input type="checkbox" class="mdl-checkbox__input" 
-         (click)="onSafetyClick(safety)" 
+         <input type="checkbox" class="mdl-checkbox__input"
+         (click)="onSafetyClick(safety)"
          [checked]="safety.$value">
        </mdl-list-item-secondary-action>
      </mdl-list-item>
@@ -36,5 +42,3 @@
 
 </mdl-tab-panel>
 </mdl-tabs>
-
-
