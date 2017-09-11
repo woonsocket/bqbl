@@ -4,7 +4,9 @@
   "dependencies": {
     "firebase-admin": "~4.2.1",
     "firebase-functions": "^0.5.7",
-    "object.entries": "^1.0.4"
+    "object.entries": "^1.0.4",
+    "request": "^2.81.0",
+    "request-promise-native": "^1.0.4"
   },
   "private": true
 }
