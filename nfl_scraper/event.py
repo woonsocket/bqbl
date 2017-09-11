@@ -80,7 +80,7 @@ class Events(object):
         self.interceptions[id] = summary
         return is_new
 
-    def add_safety(self, game_id, play_id, play):
+    def add_safety(self, game_id, play_id, play, is_qb_fault):
         """Adds a safety event.
 
         Args:
@@ -89,11 +89,15 @@ class Events(object):
                 represented as a key-value pairs, with play's key being a
                 distinct integer ID.
             play: A play dict, decoded from JSON.
+            is_qb_fault: Whether the QB is clearly at fault. We may have some
+                false negatives here; the frontend provides a way to override
+                this so you can blame a QB in non-obvious cases.
         Returns:
             Whether this event is new (i.e., the play ID was not previously
             known to this Events object).
         """
         summary = Events._summary(play)
+        summary['qbFault'] = is_qb_fault
         id = Events._id(game_id, play_id)
         is_new = id not in self.safeties
         self.safeties[Events._id(game_id, play_id)] = summary

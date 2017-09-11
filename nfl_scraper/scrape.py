@@ -156,8 +156,8 @@ def parse_play(game_id, play_id, play, is_qb, events, notifier):
         # Add all safeties to the events list, even if we're not sure that they
         # should count for BQBL points. Some might be false negatives, and
         # putting them in the events feed lets us easily override them later.
-        is_new = events.add_safety(game_id, play_id, play)
         is_qb_fault = is_sack or is_qb_fumble
+        is_new = events.add_safety(game_id, play_id, play, is_qb_fault)
 
         if is_qb_fault:
             outcomes['SAF'] += 1
