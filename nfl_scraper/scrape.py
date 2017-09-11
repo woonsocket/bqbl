@@ -13,7 +13,6 @@ from firebase_admin import db
 
 import event
 import linescore
-import slack
 
 
 # Default time to wait between scrapes for a given game ID. Scrapes may occur
@@ -38,7 +37,7 @@ parser.add_option("--all", dest="all", action="store_true",
 parser.add_option("--firebase_creds", dest="firebase_cred_file",
                   help="File containing Firebase service account credentials")
 parser.add_option("--slack_config", dest="slack_config",
-                  help="JSON config file containing a Slack webhook URL")
+                  help="DEPRECATED. This is a no-op and will be removed.")
 
 
 def init_firebase(cred_file):
@@ -80,7 +79,7 @@ def parse_box(box, is_qb):
     return outcomes
 
 
-def parse_play(game_id, play_id, play, is_qb, events, notifier):
+def parse_play(game_id, play_id, play, is_qb, events):
     """Parse a play and count BQBL-relevant events such as turnovers.
 
     We count turnovers here, because we can get info about whether the turnover
@@ -96,7 +95,6 @@ def parse_play(game_id, play_id, play, is_qb, events, notifier):
         play: JSON data for one play.
         is_qb: Predicate that returns whether a player ID is a QB.
         events: An Events object in which to record turnovers.
-        notifier: A slack.Notifier.
     """
     offense_team = play['posteam']
     qb_stats = []
@@ -132,11 +130,7 @@ def parse_play(game_id, play_id, play, is_qb, events, notifier):
                 outcomes['INT6'] += 1
                 if play['qtr'] > 4:
                     outcomes['INT6OT'] += 1
-            is_new = events.add_interception(
-                game_id, play_id, player, play, opp_td)
-            if is_new:
-                etype = event.Type.INT_TD if opp_td else event.Type.INT
-                notifier.notify(etype, player, team, desc)
+            events.add_interception(game_id, play_id, player, play, opp_td)
         elif sid in (52, 53):
             is_qb_fumble = True
             outcomes['FUM'] += 1
@@ -147,10 +141,7 @@ def parse_play(game_id, play_id, play, is_qb, events, notifier):
                 filter(lambda s: s.get('statId') in (60, 62), def_stats))
             if opp_td:
                 outcomes['FUM6'] += 1
-            is_new = events.add_fumble(game_id, play_id, player, play, opp_td)
-            if is_new:
-                etype = event.Type.FUM_TD if opp_td else event.Type.FUM
-                notifier.notify(etype, player, team, desc)
+            events.add_fumble(game_id, play_id, player, play, opp_td)
 
     is_safety = any(filter(lambda s: s.get('statId') == 89, def_stats))
     if is_safety:
@@ -158,24 +149,21 @@ def parse_play(game_id, play_id, play, is_qb, events, notifier):
         # should count for BQBL points. Some might be false negatives, and
         # putting them in the events feed lets us easily override them later.
         is_qb_fault = is_sack or is_qb_fumble
-        is_new = events.add_safety(game_id, play_id, player, play, is_qb_fault)
+        events.add_safety(game_id, play_id, player, play, is_qb_fault)
 
         if is_qb_fault:
             outcomes['SAF'] += 1
-            if is_new:
-                notifier.notify(event.Type.SAFETY, player, team, desc)
 
     return outcomes
 
 
 class Plays(object):
 
-    def __init__(self, player_cache, events, notifier):
+    def __init__(self, player_cache, events):
         self.events = events
         self.outcomes_by_team = collections.defaultdict(
             lambda: collections.defaultdict(int))
         self.player_cache = player_cache
-        self.notifier = notifier
 
     def process(self, season, week, game_id, data):
         data = data.get(game_id)
@@ -236,8 +224,7 @@ class Plays(object):
             for play_id, play in drive['plays'].items():
                 desc = play['desc']
 
-                outcomes = parse_play(
-                    game_id, play_id, play, is_qb, self.events, self.notifier)
+                outcomes = parse_play(game_id, play_id, play, is_qb, self.events)
                 for k, v in outcomes.items():
                     if k == 'LONG':
                         old = self.outcomes_by_team[play['posteam']][k]
@@ -308,20 +295,11 @@ def main():
     # We need this even if --firebase is false because we read some cached data
     # from Firebase.
     init_firebase(options.firebase_cred_file)
-    if options.slack_config:
-        try:
-            notifier = slack.Notifier.from_json_file(options.slack_config)
-        except slack.ConfigError as e:
-            print('Error reading {0}: {1}'.format(options.slack_config, e),
-                  file=sys.stderr)
-            sys.exit(1)
-    else:
-        notifier = slack.NoOpNotifier()
 
     player_cache = PlayerCache(db.reference('/playerpositions').get() or {})
     events_ref = db.reference('/events/{0}/{1}'.format(season, week))
     events = event.Events.create_from_dict(events_ref.get() or {})
-    plays = Plays(player_cache, events, notifier)
+    plays = Plays(player_cache, events)
     scrape_status_ref = db.reference(
         '/scrapestatus/{0}/{1}'.format(season, week))
     if options.all:
