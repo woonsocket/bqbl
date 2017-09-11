@@ -2,6 +2,7 @@ const admin = require('firebase-admin');
 const entries = require('object.entries');
 const functions = require('firebase-functions');
 
+const eventTicker = require('./event-ticker.js');
 const scoring = require('./scoring.js');
 
 admin.initializeApp(functions.config().firebase);
@@ -28,6 +29,9 @@ exports.rescoreOnOverride = functions.database.ref('/events/{year}/{week}/overri
       const overrides = event.data.val();
       doScore(stats, overrides, year, week, team);
     });
+
+
+exports.addNewEventToTicker = eventTicker.onNewEvent;
 
 
 function doScore(stats, overrides, year, week, team) {
