@@ -27,10 +27,6 @@
         }
       }
     },
-    "tmp": {
-      ".read": true,
-      ".write": true,
-    },
     "playerpositions": {
       ".write": "auth.uid == 'score-scraper'"
     },
