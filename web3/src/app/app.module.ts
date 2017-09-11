@@ -7,6 +7,7 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
 import { ScoresComponent } from './scores.component';
 import { NFLScoresComponent } from './nflscores.component';
 import { NFLStandingsComponent } from './nflstandings.component';
+import { TickerComponent } from './ticker.component';
 import { NewUserComponent } from './newuser.component';
 import { LineupComponent } from './lineup.component';
 import { LoginComponent } from './login.component';
@@ -28,6 +29,7 @@ import { NflIconPipe, NflLogoPipe } from './nfl-logo.pipe';
     ScoresComponent,
     NFLScoresComponent,
     NFLStandingsComponent,
+    TickerComponent,
     NewUserComponent,
     LineupComponent,
     ConsoleComponent,
