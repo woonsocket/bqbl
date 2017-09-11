@@ -132,7 +132,8 @@ def parse_play(game_id, play_id, play, is_qb, events, notifier):
                 outcomes['INT6'] += 1
                 if play['qtr'] > 4:
                     outcomes['INT6OT'] += 1
-            is_new = events.add_interception(game_id, play_id, play, opp_td)
+            is_new = events.add_interception(
+                game_id, play_id, player, play, opp_td)
             if is_new:
                 etype = event.Type.INT_TD if opp_td else event.Type.INT
                 notifier.notify(etype, player, team, desc)
@@ -146,7 +147,7 @@ def parse_play(game_id, play_id, play, is_qb, events, notifier):
                 filter(lambda s: s.get('statId') in (60, 62), def_stats))
             if opp_td:
                 outcomes['FUM6'] += 1
-            is_new = events.add_fumble(game_id, play_id, play, opp_td)
+            is_new = events.add_fumble(game_id, play_id, player, play, opp_td)
             if is_new:
                 etype = event.Type.FUM_TD if opp_td else event.Type.FUM
                 notifier.notify(etype, player, team, desc)
@@ -157,7 +158,7 @@ def parse_play(game_id, play_id, play, is_qb, events, notifier):
         # should count for BQBL points. Some might be false negatives, and
         # putting them in the events feed lets us easily override them later.
         is_qb_fault = is_sack or is_qb_fumble
-        is_new = events.add_safety(game_id, play_id, play, is_qb_fault)
+        is_new = events.add_safety(game_id, play_id, player, play, is_qb_fault)
 
         if is_qb_fault:
             outcomes['SAF'] += 1

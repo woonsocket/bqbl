@@ -30,15 +30,16 @@ class Events(object):
         return '{g}-{p}'.format(g=game_id, p=play_id)
 
     @staticmethod
-    def _summary(play):
+    def _summary(player_name, play):
         return {
+            'name': player_name,
             'desc': play['desc'],
             'team': play['posteam'],
             'quarter': play['qtr'],
             'time': play['time'],
         }
 
-    def add_fumble(self, game_id, play_id, play, is_opponent_td):
+    def add_fumble(self, game_id, play_id, player_name, play, is_opponent_td):
         """Add a fumble event.
 
         Args:
@@ -46,20 +47,22 @@ class Events(object):
             play_id: The ID of the play. In the play-by-play data, each drive is
                 represented as a key-value pairs, with play's key being a
                 distinct integer ID.
+            player_name: A human-readable name of the QB.
             play: A play dict, decoded from JSON.
             is_opponent_td: Whether the fumble was returned for a touchdown.
         Returns:
             Whether this event is new (i.e., the play ID was not previously
             known to this Events object).
         """
-        summary = Events._summary(play)
+        summary = Events._summary(player_name, play)
         summary['td'] = is_opponent_td
         id = Events._id(game_id, play_id)
         is_new = id not in self.fumbles
         self.fumbles[id] = summary
         return is_new
 
-    def add_interception(self, game_id, play_id, play, is_opponent_td):
+    def add_interception(self, game_id, play_id, player_name, play,
+                         is_opponent_td):
         """Adds an interception event.
 
         Args:
@@ -67,20 +70,21 @@ class Events(object):
             play_id: The ID of the play. In the play-by-play data, each drive is
                 represented as a key-value pairs, with play's key being a
                 distinct integer ID.
+            player_name: A human-readable name of the QB.
             play: A play dict, decoded from JSON.
             is_opponent_td: Whether the fumble was returned for a touchdown.
         Returns:
             Whether this event is new (i.e., the play ID was not previously
             known to this Events object).
         """
-        summary = Events._summary(play)
+        summary = Events._summary(player_name, play)
         summary['td'] = is_opponent_td
         id = Events._id(game_id, play_id)
         is_new = id not in self.interceptions
         self.interceptions[id] = summary
         return is_new
 
-    def add_safety(self, game_id, play_id, play, is_qb_fault):
+    def add_safety(self, game_id, play_id, player_name, play, is_qb_fault):
         """Adds a safety event.
 
         Args:
@@ -88,6 +92,7 @@ class Events(object):
             play_id: The ID of the play. In the play-by-play data, each drive is
                 represented as a key-value pairs, with play's key being a
                 distinct integer ID.
+            player_name: A human-readable name of the QB.
             play: A play dict, decoded from JSON.
             is_qb_fault: Whether the QB is clearly at fault. We may have some
                 false negatives here; the frontend provides a way to override
@@ -96,14 +101,14 @@ class Events(object):
             Whether this event is new (i.e., the play ID was not previously
             known to this Events object).
         """
-        summary = Events._summary(play)
+        summary = Events._summary(player_name, play)
         summary['qbFault'] = is_qb_fault
         id = Events._id(game_id, play_id)
         is_new = id not in self.safeties
         self.safeties[Events._id(game_id, play_id)] = summary
         return is_new
 
-    def add_passer(self, team, player_id, name):
+    def add_passer(self, team, player_id, player_name):
         """Adds a passer.
 
         This means that the player threw a pass for the given team. The frontend
@@ -113,13 +118,13 @@ class Events(object):
         Args:
             team: The team abbreviation.
             player_id: The ID of the player.
-            name: The human-readable name of the player, e.g., "J. Edelman".
+            player_name: Human-readable name of the player, e.g., "J. Edelman".
         Returns:
             Whether this passer is new (i.e., the player ID was not previously
             known to this Events object).
         """
         is_new = player_id not in self.passers
-        self.passers[player_id] = {'team': team, 'name': name}
+        self.passers[player_id] = {'team': team, 'name': player_name}
         return is_new
 
     @staticmethod
