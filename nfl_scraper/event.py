@@ -19,11 +19,11 @@ class Type(enum.Enum):
 class Events(object):
     """Data object for holding "interesting" events."""
 
-    def __init__(self, fumbles, safeties, interceptions, passers):
-        self.fumbles = fumbles
-        self.safeties = safeties
-        self.interceptions = interceptions
-        self.passers = passers
+    def __init__(self):
+        self.fumbles = {}
+        self.safeties = {}
+        self.interceptions = {}
+        self.passers = {}
 
     @staticmethod
     def _id(game_id, play_id):
@@ -50,16 +50,10 @@ class Events(object):
             player_name: A human-readable name of the QB.
             play: A play dict, decoded from JSON.
             is_opponent_td: Whether the fumble was returned for a touchdown.
-        Returns:
-            Whether this event is new (i.e., the play ID was not previously
-            known to this Events object).
         """
         summary = Events._summary(player_name, play)
         summary['td'] = is_opponent_td
-        id = Events._id(game_id, play_id)
-        is_new = id not in self.fumbles
-        self.fumbles[id] = summary
-        return is_new
+        self.fumbles[Events._id(game_id, play_id)] = summary
 
     def add_interception(self, game_id, play_id, player_name, play,
                          is_opponent_td):
@@ -73,16 +67,10 @@ class Events(object):
             player_name: A human-readable name of the QB.
             play: A play dict, decoded from JSON.
             is_opponent_td: Whether the fumble was returned for a touchdown.
-        Returns:
-            Whether this event is new (i.e., the play ID was not previously
-            known to this Events object).
         """
         summary = Events._summary(player_name, play)
         summary['td'] = is_opponent_td
-        id = Events._id(game_id, play_id)
-        is_new = id not in self.interceptions
-        self.interceptions[id] = summary
-        return is_new
+        self.interceptions[Events._id(game_id, play_id)] = summary
 
     def add_safety(self, game_id, play_id, player_name, play, is_qb_fault):
         """Adds a safety event.
@@ -97,16 +85,10 @@ class Events(object):
             is_qb_fault: Whether the QB is clearly at fault. We may have some
                 false negatives here; the frontend provides a way to override
                 this so you can blame a QB in non-obvious cases.
-        Returns:
-            Whether this event is new (i.e., the play ID was not previously
-            known to this Events object).
         """
         summary = Events._summary(player_name, play)
         summary['qbFault'] = is_qb_fault
-        id = Events._id(game_id, play_id)
-        is_new = id not in self.safeties
         self.safeties[Events._id(game_id, play_id)] = summary
-        return is_new
 
     def add_passer(self, team, player_id, player_name):
         """Adds a passer.
@@ -119,24 +101,5 @@ class Events(object):
             team: The team abbreviation.
             player_id: The ID of the player.
             player_name: Human-readable name of the player, e.g., "J. Edelman".
-        Returns:
-            Whether this passer is new (i.e., the player ID was not previously
-            known to this Events object).
         """
-        is_new = player_id not in self.passers
         self.passers[player_id] = {'team': team, 'name': player_name}
-        return is_new
-
-    @staticmethod
-    def create_from_dict(d):
-        """Initializes an Events from a dict.
-
-        Each value in the dict is a dict mapping an event ID (see _id) to an
-        event (see _summary).
-        """
-        return Events(
-            fumbles=d.get('fumbles', {}),
-            safeties=d.get('safeties', {}),
-            interceptions=d.get('interceptions', {}),
-            passers=d.get('passers', {}))
-

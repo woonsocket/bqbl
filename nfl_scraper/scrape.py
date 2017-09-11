@@ -297,9 +297,7 @@ def main():
     init_firebase(options.firebase_cred_file)
 
     player_cache = PlayerCache(db.reference('/playerpositions').get() or {})
-    events_ref = db.reference('/events/{0}/{1}'.format(season, week))
-    events = event.Events.create_from_dict(events_ref.get() or {})
-    plays = Plays(player_cache, events)
+    plays = Plays(player_cache, event.Events())
     scrape_status_ref = db.reference(
         '/scrapestatus/{0}/{1}'.format(season, week))
     if options.all:
