@@ -45,6 +45,7 @@ function processEvent(event, rawType, year, week) {
   const tickerEntry = {
     'date': Date.now(),
     'team': event.team,
+    'name': event.name,
     'desc': event.desc,
     'quarter': event.quarter,
     'time': event.time,
