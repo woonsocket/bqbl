@@ -8,5 +8,10 @@
         {{ event.desc }}
       </mdl-list-item-text-body>
     </mdl-list-item-primary-content>
+    <mdl-list-item-secondary-content>
+      <mdl-list-item-secondary-info>
+        {{ event.date | date:'EEE hh:mm a' }}
+      </mdl-list-item-secondary-info>
+    </mdl-list-item-secondary-content>
  </mdl-list-item>
 </mdl-list>
