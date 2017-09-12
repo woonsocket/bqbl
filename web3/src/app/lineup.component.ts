@@ -24,8 +24,7 @@ export class LineupComponent {
   user: Observable<firebase.User>;
   uid: string;
   displayName: string;
-
-  warnings: Warnings;
+  teams: string[];
 
   constructor(private db: AngularFireDatabase,
               private afAuth: AngularFireAuth,
@@ -44,21 +43,21 @@ export class LineupComponent {
         if (!userData.$exists()) {
           this.router.navigate(['/newuser']);
         }
+        const firstWeek = userData.weeks && userData.weeks[0];
+        this.teams = firstWeek ? firstWeek.teams.map(t => t.name) : [];
         this.db.object(paths.getLeaguesPath() + userData.leagueId)
           .take(1)
           .subscribe((league) => {
             this.leagueRules = {
               dh: league.dh,
+              dhMax: league.dhMax || 0,
               maxPlays: league.maxPlays || Number.MAX_SAFE_INTEGER,
             };
-            this.setWarnings();
           });
       });
 
       this.uid = value.uid;
     });
-
-    this.warnings = {overMax: []};
   }
 
   countSelectedTeams(teams: Team[]): number {
@@ -71,24 +70,59 @@ export class LineupComponent {
     return selectedTeams;
   }
 
-  setWarnings(): void {
-    let warnings = {
-      overMax: [],
-    };
-    let teamCounts = new Map();
-    for (let week of this.userDataSnapshot.weeks) {
+  pickCounts(): TeamCount[] {
+    if (!this.teams) {
+      return [];
+    }
+    const counts = this.picksByTeam();
+    return this.teams.map(team => new TeamCount(team, counts.get(team)));
+  }
+
+  pickCountWarning(teamCount: TeamCount): string {
+    if (!this.leagueRules) {
+      return '';
+    }
+    return teamCount.count > this.leagueRules.maxPlays ?
+      `Over the maximum of ${this.leagueRules.maxPlays} picks per team` :
+      '';
+  }
+
+  dhCount(): number {
+    if (!this.leagueRules || !this.leagueRules.dh) {
+      return 0;
+    }
+    let count = 0;
+    this.picksByTeam().forEach((n, team) => {
+      if (!this.teams.includes(team)) {
+        count += n;
+      }
+    });
+    return count;
+  }
+
+  dhCountWarning(): string {
+    if (!this.leagueRules || !this.leagueRules.dh) {
+      return '';
+    }
+    return this.dhCount() > this.leagueRules.dhMax ?
+      `Over the maximum of ${this.leagueRules.dhMax} DH picks` :
+      '';
+  }
+
+  private picksByTeam(): Map<string, number> {
+    const weeks = this.userDataSnapshot && this.userDataSnapshot.weeks;
+    if (!weeks) {
+      return new Map();
+    }
+    let counts = new Map();
+    for (let week of weeks) {
       for (let team of week.teams) {
         if (team.selected) {
-          teamCounts.set(team.name, (teamCounts.get(team.name) || 0) + 1);
+          counts.set(team.name, (counts.get(team.name) || 0) + 1);
         }
       }
     }
-    teamCounts.forEach((count, team) => {
-      if (count > this.leagueRules.maxPlays) {
-        warnings.overMax.push(team);
-      }
-    });
-    this.warnings = warnings;
+    return counts;
   }
 
   onSelect(week: Week, team: Team, weekId: string): void {
@@ -103,7 +137,6 @@ export class LineupComponent {
     }
 
     this.db.object(paths.getUserPath(this.uid) + '/weeks/' + weekId + '/teams').set(week.teams);
-    this.setWarnings();
   }
 
   onChange(dh1, dh2, week, weekId) {
@@ -152,11 +185,12 @@ export class LineupComponent {
   }
 }
 
-interface Warnings {
-  overMax: string[],
-}
-
 interface LeagueRules {
   dh: boolean,
+  dhMax: number,
   maxPlays: number,
+}
+
+class TeamCount {
+  constructor(public name: string, public count: number) {}
 }

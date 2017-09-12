@@ -13,6 +13,12 @@ td.team {
   text-align: center;
 }
 
+td.team mdl-icon {
+  color: #F44336;
+  font-size: 18px;
+  vertical-align: middle;
+}
+
 tr.head {
   font-weight: bold;
 }
@@ -29,10 +35,4 @@ td.dh input {
   font-size: 14px;
   text-align: center;
   text-transform: uppercase;
-}
-
-.warnings {
-  margin: 12px;
-  text-align: center;
-  color: #F44336;
 }

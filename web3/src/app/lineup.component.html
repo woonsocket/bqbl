@@ -1,19 +1,27 @@
-<div class="warnings" *ngIf="(warnings.overMax)?.length">
- Over the limit of {{ leagueRules.maxPlays }} plays per year:
- {{ warnings.overMax.join(', ') }}
-</div>
-
 <table>
  <thead>
   <tr class=head>
    <td class=week>Week</td>
-   <td class=team>Team</td>
-   <td class=team>Team</td>
-   <td class=team>Team</td>
-   <td class=team>Team</td>
+   <td *ngFor="let count of pickCounts()" class="team">
+     <div>{{count.name}}</div>
+     <div>
+       {{count.count}}
+       <mdl-icon *ngIf="pickCountWarning(count)"
+                 title="{{ pickCountWarning(count) }}">
+         warning
+       </mdl-icon>
+     </div>
+   </td>
    <ng-template [ngIf]="leagueRules?.dh">
-    <td class=team>DH</td>
-    <td class=team>DH</td>
+     <td colspan="2" class="team">
+       <div>DH</div>
+       <div>
+         {{dhCount()}}
+         <mdl-icon *ngIf="dhCountWarning()" title="{{ dhCountWarning() }}">
+           warning
+         </mdl-icon>
+       </div>
+     </td>
    </ng-template>
   </tr>
  </thead>
