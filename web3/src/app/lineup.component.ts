@@ -75,7 +75,7 @@ export class LineupComponent {
       return [];
     }
     const counts = this.picksByTeam();
-    return this.teams.map(team => new TeamCount(team, counts.get(team)));
+    return this.teams.map(team => new TeamCount(team, counts.get(team) || 0));
   }
 
   pickCountWarning(teamCount: TeamCount): string {
