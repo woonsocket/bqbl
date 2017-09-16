@@ -5,10 +5,11 @@ import { ComponentFixtureAutoDetect } from '@angular/core/testing';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
-import { ActivatedRoute, Router, NavigationEnd, Event, Params} from '@angular/router';
+import { ActivatedRoute, Router, NavigationEnd, Params} from '@angular/router';
 import { MdlSnackbarService } from '@angular-mdl/core';
 import { APP_BASE_HREF } from '@angular/common';
 import { MdlModule } from '@angular-mdl/core';
+import { FormsModule } from '@angular/forms';
 
 import { MockAngularFireDb, MockAngularFireAuth } from './mockangularfire';
 import { DefaultData } from './fakedatabaseresponses'
@@ -31,7 +32,7 @@ describe('LineupComponent', () => {
 
     TestBed.configureTestingModule({
       declarations: [ LineupComponent ], // declare the test component
-      imports: [ MdlModule ],
+      imports: [ MdlModule, FormsModule ],
       providers: [
       { provide: ComponentFixtureAutoDetect, useValue: true },
       { provide: AngularFireAuth, useValue: this.mockAuth },
@@ -127,7 +128,17 @@ describe('LineupComponent', () => {
   });
 
   it ('should update db when DH selected', () => {
-    // TODO
+    this.mockDb.data = new DefaultData().get();
+    this.mockDb.data.leagues['nbqbl'].dh = true;
+    let week = this.mockDb.data.users['30'].weeks[0];
+    fixture = TestBed.createComponent(LineupComponent);
+    let dhEntries = fixture.debugElement.queryAll(By.css('input.dh'));
+    dhEntries[0].nativeElement.value = 'ARI';
+    dhEntries[0].nativeElement.dispatchEvent(new Event('input'));
+    fixture.componentInstance.onChange('ARI', '', week, '1');
+    let newTeamValue = this.mockDb.object(`/users/${USER_ID}`);
+    console.log(newTeamValue.data.weeks[0].teams.length);
+    //expect(newTeamValue.value).toEqual('ARI');  
   });
 
 });
