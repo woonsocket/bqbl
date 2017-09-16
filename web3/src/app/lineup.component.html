@@ -4,7 +4,7 @@
    <td class=week>Week</td>
    <td *ngFor="let count of pickCounts()" class="team">
      <div>{{count.name}}</div>
-     <div>
+     <div class=count>
        {{count.count}}
        <mdl-icon *ngIf="pickCountWarning(count)"
                  title="{{ pickCountWarning(count) }}">

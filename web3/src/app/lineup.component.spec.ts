@@ -11,6 +11,7 @@ import { APP_BASE_HREF } from '@angular/common';
 import { MdlModule } from '@angular-mdl/core';
 
 import { MockAngularFireDb, MockAngularFireAuth } from './mockangularfire';
+import { DefaultData } from './fakedatabaseresponses'
 
 import { ConstantsService } from './constants.service';
 import { LineupComponent } from './lineup.component';
@@ -46,9 +47,9 @@ describe('LineupComponent', () => {
   });
 
   it('should render the played teams', () => {
-    const dbData = emptyData;
-    dbData['users'][USER_ID] = harveyjData;
-    this.mockDb.data = dbData;
+    this.mockDb.data = new DefaultData().get();
+    this.mockDb.data.users[USER_ID].weeks[0].teams[1].selected = true;
+    this.mockDb.data.users[USER_ID].weeks[0].teams[2].selected = true; 
 
     fixture = TestBed.createComponent(LineupComponent);
     selected = fixture.debugElement.queryAll(By.css('.selected'));
@@ -59,9 +60,8 @@ describe('LineupComponent', () => {
   });
 
   it ('should update the db', () => {
-    const dbData = emptyData;
-    dbData['users'][USER_ID] = harveyjData;
-    this.mockDb.data = dbData;
+    this.mockDb.data = new DefaultData().get();
+    this.mockDb.data.users[USER_ID].weeks[0].teams[0].selected = true;
     fixture = TestBed.createComponent(LineupComponent);
     selected = fixture.debugElement.queryAll(By.css('.selected'));
     selected[0].nativeElement.click();
@@ -70,29 +70,42 @@ describe('LineupComponent', () => {
   });
 
   it ('should warn after > MAX selects', () => {
-    const dbData = emptyData;
-    const secondWeek = BLANK_WEEK;
-    // TODO(harveyj): Clean up db population logic
-    secondWeek.id = "2";
-    secondWeek.teams[0].selected = true;
-    harveyjData.weeks.push(secondWeek);
-    dbData['users'][USER_ID] = harveyjData;
-    dbData['leagues']['nbqbl'] = nbqblSpec;
+    const dbData = new DefaultData().get();
     this.mockDb.data = dbData;
     fixture = TestBed.createComponent(LineupComponent);
-    selected = fixture.debugElement.queryAll(By.css('.team'));
-    selected[0].nativeElement.click();
+    let teams = fixture.debugElement.queryAll(By.css('td.team'));
     // TODO(harveyj): Clean this magic number up.
-    selected[4].nativeElement.click();
+    teams[4].nativeElement.click();
+    teams[8].nativeElement.click();
+
+    fixture.detectChanges();
     expect(fixture.debugElement.queryAll(By.css('mdl-icon')).length).toBeGreaterThan(0);
   });
 
   it ('should prevent three starts in a week', () => {
-    // TODO
+    const dbData = new DefaultData().get();
+    this.mockDb.data = dbData;
+    fixture = TestBed.createComponent(LineupComponent);
+    let teams = fixture.debugElement.queryAll(By.css('td.team'));
+    // TODO(harveyj): Clean this magic number up.
+    teams[4].nativeElement.click();
+    teams[5].nativeElement.click();
+    teams[6].nativeElement.click();
+    fixture.detectChanges();
+    let selected = fixture.debugElement.queryAll(By.css('.selected'));
+    expect(selected.length).toEqual(2);
   });
 
   it ('should update the counts properly', () => {
-    // TODO
+    const dbData = new DefaultData().get();
+    this.mockDb.data = dbData;
+    fixture = TestBed.createComponent(LineupComponent);
+    let teams = fixture.debugElement.queryAll(By.css('td.team'));
+    // TODO(harveyj): Clean this magic number up.
+    teams[4].nativeElement.click();
+    teams[8].nativeElement.click();
+    fixture.detectChanges();
+    expect(fixture.debugElement.query(By.css('.count')).nativeElement.textContent).toContain('2');
   });
 
   it ('should show and hide DH when appopriate', () => {
@@ -105,35 +118,4 @@ describe('LineupComponent', () => {
 
 });
 
-const emptyData = {
-  'users': {},
-  'leagues': {},
-};
 
-const nbqblSpec = {
-  'dh': false,
-  'maxPlays': 1
-};
-
-const harveyjData = {
-  'leagueId': 'nbqbl',
-  'weeks': [{
-    'id': '1',
-    'teams': [
-    {'name': 'CLE', 'selected': false},
-    {'name': 'HOU', 'selected': true},
-    {'name': 'NYJ', 'selected': true},
-    {'name': 'CHI', 'selected': false},
-    ]
-  }]
-};
-
-const BLANK_WEEK = {
-    'id': 'n/a',
-    'teams': [
-    {'name': 'CLE', 'selected': false},
-    {'name': 'HOU', 'selected': false},
-    {'name': 'NYJ', 'selected': false},
-    {'name': 'CHI', 'selected': false},
-    ]
-  }
