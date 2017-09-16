@@ -20,6 +20,7 @@ import { ConsoleComponent } from './console.component';
 import { StandingsComponent } from './standings.component';
 import { ConstantsService } from './constants.service';
 import { AdminComponent } from './admin.component';
+import { TickerComponent } from './ticker.component';
 import { environment } from '../environments/environment';
 import { routes } from './app.routes';
 import { MockAngularFireAuth } from './mockangularfire';
@@ -46,6 +47,7 @@ describe('AppComponent', () => {
       LoginComponent,
       NflIconPipe,
       NflLogoPipe,
+      TickerComponent,
       ],
       imports: [
       BrowserModule,

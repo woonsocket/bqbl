@@ -8,6 +8,7 @@ import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable }
 import { ActivatedRoute, Router, NavigationEnd, Event, Params} from '@angular/router';
 import { MdlSnackbarService } from '@angular-mdl/core';
 import { APP_BASE_HREF } from '@angular/common';
+import { MdlModule } from '@angular-mdl/core';
 
 import { MockAngularFireDb, MockAngularFireAuth } from './mockangularfire';
 
@@ -29,6 +30,7 @@ describe('LineupComponent', () => {
 
     TestBed.configureTestingModule({
       declarations: [ LineupComponent ], // declare the test component
+      imports: [ MdlModule ],
       providers: [
       { provide: ComponentFixtureAutoDetect, useValue: true },
       { provide: AngularFireAuth, useValue: this.mockAuth },
