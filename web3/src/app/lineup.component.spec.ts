@@ -69,8 +69,22 @@ describe('LineupComponent', () => {
     expect(newTeamValue.selected).toEqual(false);
   });
 
-  it ('should prevent > MAX selects', () => {
-    // TODO
+  it ('should warn after > MAX selects', () => {
+    const dbData = emptyData;
+    const secondWeek = BLANK_WEEK;
+    // TODO(harveyj): Clean up db population logic
+    secondWeek.id = "2";
+    secondWeek.teams[0].selected = true;
+    harveyjData.weeks.push(secondWeek);
+    dbData['users'][USER_ID] = harveyjData;
+    dbData['leagues']['nbqbl'] = nbqblSpec;
+    this.mockDb.data = dbData;
+    fixture = TestBed.createComponent(LineupComponent);
+    selected = fixture.debugElement.queryAll(By.css('.team'));
+    selected[0].nativeElement.click();
+    // TODO(harveyj): Clean this magic number up.
+    selected[4].nativeElement.click();
+    expect(fixture.debugElement.queryAll(By.css('mdl-icon')).length).toBeGreaterThan(0);
   });
 
   it ('should prevent three starts in a week', () => {
@@ -98,7 +112,7 @@ const emptyData = {
 
 const nbqblSpec = {
   'dh': false,
-  'maxPlays': 13
+  'maxPlays': 1
 };
 
 const harveyjData = {
@@ -113,3 +127,13 @@ const harveyjData = {
     ]
   }]
 };
+
+const BLANK_WEEK = {
+    'id': 'n/a',
+    'teams': [
+    {'name': 'CLE', 'selected': false},
+    {'name': 'HOU', 'selected': false},
+    {'name': 'NYJ', 'selected': false},
+    {'name': 'CHI', 'selected': false},
+    ]
+  }
