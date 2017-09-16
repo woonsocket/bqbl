@@ -1,14 +1,15 @@
 Features:
 - Add a running total to the scoreboard
 - Clicking on a line-score item should pop up a card explaining the score
+- Add an anti-scoreboard
 
 Cleanup:
+- Add tests for all the other components
 - MDL-ize the scary stuff (app, nflscores)
 - Inject a router module extension (terminology?) that reads week and year from the url
 - Inject a module that redirects to login when you're not logged in
 - Move ALL_WEEKS into the db, start having things deal with it sensibly
 - Move ad-hoc schema (leagues, scores?) into explicit TypeScript classes
-- ADD TESTS
 - Use input binding to ensure consistent weeks, inject years? 
 - EventEmitter to decide when to hide week selector
 

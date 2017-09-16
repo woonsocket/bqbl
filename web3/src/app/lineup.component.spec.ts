@@ -66,7 +66,8 @@ describe('LineupComponent', () => {
     fixture = TestBed.createComponent(LineupComponent);
     selected = fixture.debugElement.queryAll(By.css('.selected'));
     selected[0].nativeElement.click();
-    expect(this.mockDb.data['users'][USER_ID]['weeks'][0]['teams'][1].selected).toEqual(false);
+    let newTeamValue = this.mockDb.object(`/users/${USER_ID}/weeks/0/teams/1`).data;
+    expect(newTeamValue.selected).toEqual(false);
   });
 });
 
