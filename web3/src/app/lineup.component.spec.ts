@@ -45,7 +45,6 @@ describe('LineupComponent', () => {
 
   });
 
-
   it('should render the played teams', () => {
     const dbData = emptyData;
     dbData['users'][USER_ID] = harveyjData;
@@ -69,6 +68,27 @@ describe('LineupComponent', () => {
     let newTeamValue = this.mockDb.object(`/users/${USER_ID}/weeks/0/teams/1`).data;
     expect(newTeamValue.selected).toEqual(false);
   });
+
+  it ('should prevent > MAX selects', () => {
+    // TODO
+  });
+
+  it ('should prevent three starts in a week', () => {
+    // TODO
+  });
+
+  it ('should update the counts properly', () => {
+    // TODO
+  });
+
+  it ('should show and hide DH when appopriate', () => {
+    // TODO
+  });
+
+  it ('should update db when dh selected', () => {
+    // TODO
+  });
+
 });
 
 const emptyData = {
