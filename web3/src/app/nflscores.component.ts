@@ -2,13 +2,14 @@ import * as firebase from 'firebase/app';
 import { ActivatedRoute, Params } from '@angular/router';
 import { AngularFireDatabase } from 'angularfire2/database';
 import { Component } from '@angular/core';
+import { OnInit } from '@angular/core';
 
 
 @Component({
   templateUrl: './nflscores.component.html',
   styleUrls: ['./nflscores.component.css'],
 })
-export class NFLScoresComponent {
+export class NFLScoresComponent implements OnInit {
   scores = [];
   selectedWeek = 'P1';
   year = '2017';
@@ -20,7 +21,7 @@ export class NFLScoresComponent {
   ngOnInit() {
     this.route.queryParams.subscribe((params: Params) => {
       this.selectedWeek = params.week || '1';
-      let query = this.db.list(`/scores/${this.year}/${this.selectedWeek}`, {
+      const query = this.db.list(`/scores/${this.year}/${this.selectedWeek}`, {
         query: {
           orderByChild: 'total'
         }
@@ -47,9 +48,9 @@ export class NFLScoresComponent {
 
   sortScores(scores, cmps) {
     return scores.slice().sort((a, b) => {
-      for (let cmp of cmps) {
-        let v = cmp.call(this, a, b);
-        if (v != 0) {
+      for (const cmp of cmps) {
+        const v = cmp.call(this, a, b);
+        if (v !== 0) {
           return v;
         }
       }
@@ -61,14 +62,14 @@ export class NFLScoresComponent {
     if (!this.scores) {
       return [];
     }
-    if (this.sortOrder == 'score') {
+    if (this.sortOrder === 'score') {
       return this.sortScores(this.scores, [this.byScore, this.byTeamName]);
-    } else if (this.sortOrder == 'team') {
+    } else if (this.sortOrder === 'team') {
       return this.sortScores(this.scores, [this.byTeamName]);
-    } else if (this.sortOrder == 'active') {
+    } else if (this.sortOrder === 'active') {
       return this.sortScores(this.scores, [this.byActiveFirst, this.byScore]);
     }
-    console.warn(`unknown sort order ${this.sortOrder}`)
+    console.warn(`unknown sort order ${this.sortOrder}`);
     return this.scores;
   }
 
@@ -91,16 +92,16 @@ export class NFLScoresComponent {
   }
 
   boxScoreLink(scoreObj: object) {
-    let gameId = scoreObj['gameInfo'] && scoreObj['gameInfo'].id;
+    const gameId = scoreObj['gameInfo'] && scoreObj['gameInfo'].id;
     if (!gameId) {
       return 'http://www.nfl.com';
     }
-    let week = this.selectedWeek;
-    let nflWeek = week.startsWith('P') ? `PRE${week.slice(1)}` : `REG${week}`;
+    const week = this.selectedWeek;
+    const nflWeek = week.startsWith('P') ? `PRE${week.slice(1)}` : `REG${week}`;
     // Actually, this component of the path doesn't seem to matter at all, as
     // long as it's non-empty. NFL.com puts the team nicknames in there
     // ('patriots@falcons'), but it appears to be purely for URL aesthetics.
-    let atCode = 'score';
+    const atCode = 'score';
     return 'http://www.nfl.com/gamecenter/' +
         `${gameId}/${this.year}/${nflWeek}/${atCode}` +
         '#tab=analyze&analyze=boxscore';

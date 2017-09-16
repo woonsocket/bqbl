@@ -1,17 +1,19 @@
-export class MockAngularFireDbSnapshot {  
-  
-  // Take all of the fields of data and make them fields of the snapshot.  
+export class MockAngularFireDbSnapshot {
+
+  // Take all of the fields of data and make them fields of the snapshot.
   // data: a plain Javascript object.
   constructor(data: any) {
-    for (let prop in data) {
-      this[prop] = data[prop];
+    for (const prop in data) {
+      if (data.hasOwnProperty(prop)) {
+        this[prop] = data[prop];
+      }
     }
   }
 
   $exists() {
     return true;
-  } 
-};
+  }
+}
 
 export class MockAngularFireDbResponse {
   data: {};
@@ -20,7 +22,7 @@ export class MockAngularFireDbResponse {
     this.data = data;
     this.path = path;
   }
-  
+
   // Call fn with a snapshot constructed from this.data
   subscribe(fn) {
     // TODO(harveyj): Figure out what's going on here
@@ -39,26 +41,26 @@ export class MockAngularFireDbResponse {
   // template renderer's async stuff was expecting it to be there.
   take() {
     return this;
-  } 
-}; 
+  }
+}
 
 export class MockAngularFireAuthState {
   constructor (public uid: string, public displayName: string) {}
 
   subscribe(fn) {
-      fn({
-        'uid': this.uid,
-        'displayName': this.displayName
-      });
+    fn({
+      'uid': this.uid,
+      'displayName': this.displayName
+    });
   }
-};
+}
 
 export class MockAngularFireAuth {
   authState: MockAngularFireAuthState;
   constructor(public uid: string, public displayName: string) {
     this.authState = new MockAngularFireAuthState(uid, displayName);
   }
-};
+}
 
 export class MockAngularFireDb {
   data: {};
@@ -67,7 +69,7 @@ export class MockAngularFireDb {
   object(path: string) {
     let obj = this.data;
     console.log('LOOKUP: ' + path);
-    for (let pathFrag of path.split('/')) {
+    for (const pathFrag of path.split('/')) {
       if (!pathFrag) {
         continue; // Skip leading / and elide '//'
       }
@@ -75,7 +77,7 @@ export class MockAngularFireDb {
         console.log(`PATH NOT FOUND: ${path}`);
       }
       obj = obj[pathFrag];
-    } 
+    }
     return new MockAngularFireDbResponse(path, obj);
   }
-};
+}

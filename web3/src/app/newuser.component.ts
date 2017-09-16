@@ -7,7 +7,7 @@ import { Component } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Router } from '@angular/router';
 import { User, Week, Team } from './structs';
-import * as paths from './paths'
+import * as paths from './paths';
 
 @Component({
   templateUrl: './newuser.component.html',
@@ -31,13 +31,13 @@ export class NewUserComponent {
       this.uid = value.uid;
     });
 
-    let leagues = this.db.list(paths.getLeaguesPath(), { preserveSnapshot: true });
+    const leagues = this.db.list(paths.getLeaguesPath(), { preserveSnapshot: true });
     leagues.subscribe(snapshots => {
       snapshots.forEach(snapshot => {
-        let val = snapshot.val();
+        const val = snapshot.val();
         val.key = snapshot.key;
         this.leagues.push(val);
-      })
+      });
     });
 
     this.router = router;
@@ -54,11 +54,11 @@ export class NewUserComponent {
     user.weeks = [];
     user.leagueName = this.selectedLeague.name;
     user.leagueId = this.selectedLeague.key;
-    for (const weekNum in WEEK_NAMES) {
+    for (let weekNum = 0; weekNum < WEEK_NAMES.length; weekNum++) {
       const newWeek = new Week();
       newWeek.id = WEEK_NAMES[weekNum];
       newWeek.teams = [];
-      for (let team of this.selectedUser) {
+      for (const team of this.selectedUser) {
         const newTeam = new Team();
         newTeam.name = team.name;
         newTeam.selected = false;
@@ -67,8 +67,8 @@ export class NewUserComponent {
       user.weeks[weekNum] = newWeek;
     }
     // Automatically fill teams' selections to a legal state.
-    for (let weekKey in user.weeks) {
-      let curWeek = user.weeks[weekKey];
+    for (const weekKey in user.weeks) {
+      const curWeek = user.weeks[weekKey];
       if (WEEKS_AUTOFILL_01.includes(curWeek.id)) {
         curWeek.teams[0].selected = true;
         curWeek.teams[1].selected = true;

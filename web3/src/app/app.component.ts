@@ -6,6 +6,8 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
 import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
+import { OnInit } from '@angular/core';
+
 import { ConstantsService } from './constants.service';
 
 @Component({
@@ -13,7 +15,7 @@ import { ConstantsService } from './constants.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   userData: FirebaseObjectObservable<any>;
   user: Observable<firebase.User>;
   uid = '';
@@ -25,7 +27,10 @@ export class AppComponent {
     '/newuser', '/admin'
   ];
   suppressWeekDropdown = false;
-  constructor(db: AngularFireDatabase, private afAuth: AngularFireAuth, private router: Router, private route: ActivatedRoute, private constants: ConstantsService) {
+  constructor(
+      db: AngularFireDatabase, private afAuth: AngularFireAuth,
+      private router: Router, private route: ActivatedRoute,
+      private constants: ConstantsService) {
     this.user = afAuth.authState;
     this.allWeeks = constants.getAllWeeks();
     this.user.subscribe(value => {
@@ -46,10 +51,10 @@ export class AppComponent {
     });
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
-        this.suppressWeekDropdown = 
+        this.suppressWeekDropdown =
           this.weekDropdownSuppressPaths.includes(event.url.trim());
       }
-    })
+    });
   }
 
   closeDrawer() {

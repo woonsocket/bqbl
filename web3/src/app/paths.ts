@@ -1,16 +1,16 @@
 
-export function getUsersPath() : string {
-  return "/users";
-};
+export function getUsersPath(): string {
+  return '/users';
+}
 
-export function getUserPath(uid: string) : string {
+export function getUserPath(uid: string): string {
   return '/users/' + uid;
 }
 
-export function getLeaguesPath() : string {
+export function getLeaguesPath(): string {
   return '/leagues/';
 }
 
-export function getEventsPath() : string {
+export function getEventsPath(): string {
   return '/events/';
 }

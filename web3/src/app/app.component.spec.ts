@@ -31,7 +31,7 @@ import { AppComponent } from './app.component';
 describe('AppComponent', () => {
 
   beforeEach(async(() => {
-    let mockAuth = new MockAngularFireAuth('30', 'Harvey');
+    const mockAuth = new MockAngularFireAuth('30', 'Harvey');
     TestBed.configureTestingModule({
       declarations: [
       AppComponent,
@@ -57,7 +57,7 @@ describe('AppComponent', () => {
       MdlModule,
       RouterTestingModule.withRoutes(routes),
       ],
-      providers: [ConstantsService, 
+      providers: [ConstantsService,
       {provide: APP_BASE_HREF, useValue: '/'},
       {provide: AngularFireAuth, useValue: mockAuth }
       ]

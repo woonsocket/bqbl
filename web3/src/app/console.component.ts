@@ -7,12 +7,13 @@ import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable }
 import { Component } from '@angular/core';
 import { MdlSnackbarService } from '@angular-mdl/core';
 import { Observable } from 'rxjs/Observable';
-import * as paths from './paths'
+import { OnInit } from '@angular/core';
+import * as paths from './paths';
 
 @Component({
   templateUrl: './console.component.html',
 })
-export class ConsoleComponent {
+export class ConsoleComponent implements OnInit {
   passers: FirebaseListObservable<any>;
   safeties: FirebaseListObservable<any>;
   overrides: object;
@@ -40,7 +41,7 @@ export class ConsoleComponent {
       this.db.object(paths.getEventsPath() + `/${this.year}/${this.selectedWeek}/overrides`).subscribe((val) => {
         this.overrides = val;
       });
-    })
+    });
   }
 
   overrideVal(team: string, eventType: string, id: string) {
@@ -63,7 +64,7 @@ export class ConsoleComponent {
 
   showError(err: Error) {
     let msg = `Unknown error: ${err}`;
-    if (err['code'] == 'PERMISSION_DENIED') {
+    if (err['code'] === 'PERMISSION_DENIED') {
       msg = 'Permission denied. Are you an admin?';
     }
     this.mdlSnackbarService.showSnackbar({

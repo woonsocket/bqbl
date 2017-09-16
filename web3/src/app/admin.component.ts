@@ -9,7 +9,7 @@ import { MdlDefaultTableModel, MdlDialogComponent, MdlSnackbarService, MdlTextFi
 import { Observable } from 'rxjs/Observable';
 import { ConstantsService } from './constants.service';
 
-import * as paths from './paths'
+import * as paths from './paths';
 
 @Component({
   templateUrl: './admin.component.html',
@@ -28,7 +28,7 @@ export class AdminComponent {
 
   user: Observable<firebase.User>;
   weeks = [];
-  leagueName = "";   // TODO pull this into subcomponent
+  leagueName = '';   // TODO pull this into subcomponent
   hasDh = false;
   maxPlays = 13;
   // https://stackoverflow.com/questions/38423663/angular2-ngmodel-inside-of-ngfor
@@ -44,9 +44,9 @@ export class AdminComponent {
     {key: 'notes', name: 'Notes'},
   ]);
 
-  createRange(number){
-    var items: number[] = [];
-    for(var i = 1; i <= number; i++){
+  createRange(number) {
+    const items: number[] = [];
+    for (let i = 1; i <= number; i++) {
       items.push(i);
     }
     return items;

@@ -9,8 +9,8 @@ import { MdlSnackbarService } from '@angular-mdl/core';
 
 import { ConstantsService } from './constants.service';
 import { User, Week, Team } from './structs';
-import * as paths from './paths'
-import 'rxjs/add/operator/take'
+import * as paths from './paths';
+import 'rxjs/add/operator/take';
 
 @Component({
   templateUrl: './lineup.component.html',
@@ -114,9 +114,9 @@ export class LineupComponent {
     if (!weeks) {
       return new Map();
     }
-    let counts = new Map();
-    for (let week of weeks) {
-      for (let team of week.teams) {
+    const counts = new Map();
+    for (const week of weeks) {
+      for (const team of week.teams) {
         if (team.selected) {
           counts.set(team.name, (counts.get(team.name) || 0) + 1);
         }
@@ -140,7 +140,7 @@ export class LineupComponent {
   }
 
   onChange(dh1, dh2, week, weekId) {
-    const newTeams = week.teams.slice(0,4);
+    const newTeams = week.teams.slice(0, 4);
     if (dh1) {
       this.pushTeam(dh1, newTeams);
     }
@@ -164,7 +164,7 @@ export class LineupComponent {
       return 'You can only select two teams per week';
     }
     const usedTeams = new Set();
-    for (let team of teams) {
+    for (const team of teams) {
       const name = team.name;
       if (!this.constants.getAllTeams().has(name)) {
         return `${name} is not a valid team name`;
@@ -178,7 +178,7 @@ export class LineupComponent {
   }
 
   pushTeam(name: string, teams: Team[]) {
-    let team = new Team();
+    const team = new Team();
     team.name = name.toUpperCase().trim();
     team.selected = true;
     teams.push(team);
@@ -186,9 +186,9 @@ export class LineupComponent {
 }
 
 interface LeagueRules {
-  dh: boolean,
-  dhMax: number,
-  maxPlays: number,
+  dh: boolean;
+  dhMax: number;
+  maxPlays: number;
 }
 
 class TeamCount {

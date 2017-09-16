@@ -6,8 +6,8 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
 import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { ConstantsService } from './constants.service'
-import * as paths from './paths'
+import { ConstantsService } from './constants.service';
+import * as paths from './paths';
 
 @Component({
   templateUrl: './scores.component.html',
@@ -34,7 +34,7 @@ export class ScoresComponent {
       this.userDataList = this.db.list(paths.getUsersPath());
       this.userDataList.subscribe(users => {
         for (const user of users) {
-          let league = this.leagueToUsers[user.leagueId] || [];
+          const league = this.leagueToUsers[user.leagueId] || [];
           league.push(user);
           this.leagueToUsers[user.leagueId] = league;
 
@@ -83,7 +83,7 @@ export class ScoresComponent {
   updateScores(): void {
     this.displayLeagues = [];
     for (const leagueKey in this.leagueToUsers) {
-      let league = {'name': '', 'scoreRows': []};
+      const league = {'name': '', 'scoreRows': []};
 
       for (const user of this.leagueToUsers[leagueKey]) {
         const leagueName = user.leagueName;

@@ -6,8 +6,8 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
 import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { ConstantsService } from './constants.service'
-import * as paths from './paths'
+import { ConstantsService } from './constants.service';
+import * as paths from './paths';
 
 @Component({
   templateUrl: './standings.component.html',
@@ -34,7 +34,7 @@ export class StandingsComponent {
       this.userDataList = this.db.list('/tmp');
       this.userDataList.subscribe(users => {
         for (const user of users) {
-          let league = this.leagueToUsers[user.leagueId] || [];
+          const league = this.leagueToUsers[user.leagueId] || [];
           league.push(user);
           this.leagueToUsers[user.leagueId] = league;
 
@@ -85,12 +85,12 @@ export class StandingsComponent {
         let userTotal = 0;
         for (const userWeek of user.weeks) {
           if (this.scores[userWeek.id]) {
-            for (let userTeam of userWeek.teams) {
+            for (const userTeam of userWeek.teams) {
               if (userTeam.selected) {
                 if (this.scores[userWeek.id][userTeam.name]) {
                   userTotal += this.scores[userWeek.id][userTeam.name].total;
                 } else {
-                  console.log("ERROR: couldn't find score")
+                  console.log('ERROR: couldn\'t find score');
                 }
               }
             }
@@ -100,7 +100,7 @@ export class StandingsComponent {
           'name': user.name,
           'total': userTotal,
         };
-        let league = this.userRows[leagueKey] || [];
+        const league = this.userRows[leagueKey] || [];
         league.push(userRow);
         this.userRows[leagueKey] = league;
       }

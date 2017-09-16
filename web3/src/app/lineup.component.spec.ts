@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By }              from '@angular/platform-browser';
-import { DebugElement }    from '@angular/core';
+import { By } from '@angular/platform-browser';
+import { DebugElement } from '@angular/core';
 import { ComponentFixtureAutoDetect } from '@angular/core/testing';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFireAuthModule } from 'angularfire2/auth';
@@ -47,20 +47,20 @@ describe('LineupComponent', () => {
 
 
   it('should render the played teams', () => {
-    let dbData = emptyData;
+    const dbData = emptyData;
     dbData['users'][USER_ID] = harveyjData;
     this.mockDb.data = dbData;
 
     fixture = TestBed.createComponent(LineupComponent);
     selected = fixture.debugElement.queryAll(By.css('.selected'));
-    fixture.detectChanges(); 
+    fixture.detectChanges();
 
-    expect(selected[0].nativeElement.textContent).toContain("HOU");
-    expect(selected[1].nativeElement.textContent).toContain("NYJ");
+    expect(selected[0].nativeElement.textContent).toContain('HOU');
+    expect(selected[1].nativeElement.textContent).toContain('NYJ');
   });
 
   it ('should update the db', () => {
-    let dbData = emptyData;
+    const dbData = emptyData;
     dbData['users'][USER_ID] = harveyjData;
     this.mockDb.data = dbData;
     fixture = TestBed.createComponent(LineupComponent);

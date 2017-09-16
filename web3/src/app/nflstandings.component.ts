@@ -4,13 +4,14 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { AngularFireDatabase } from 'angularfire2/database';
 import { Component } from '@angular/core';
 import { MdlDefaultTableModel } from '@angular-mdl/core';
+import { OnInit } from '@angular/core';
 
 import { ConstantsService } from './constants.service';
 
 @Component({
   templateUrl: './nflstandings.component.html',
 })
-export class NFLStandingsComponent {
+export class NFLStandingsComponent implements OnInit {
   year = '2017';
   scoreTable: any;
 
@@ -23,7 +24,7 @@ export class NFLStandingsComponent {
 
   ngOnInit() {
     this.db.list(`/scores/${this.year}`).subscribe((d) => {
-      let scores = {};
+      const scores = {};
       d.forEach((week) => {
         const weekNum = week.$key;
         if (weekNum.startsWith('P')) {
@@ -40,7 +41,7 @@ export class NFLStandingsComponent {
       this.computeScores();
     });
     this.db.list(`/scores247/${this.year}`).subscribe((d) => {
-      let scores = {};
+      const scores = {};
       d.forEach((entry) => {
         const name = entry['team'];
         if (!(name in scores)) {
@@ -52,7 +53,7 @@ export class NFLStandingsComponent {
       this.computeScores();
     });
 
-    let columns = [
+    const columns = [
       {key: 'team', name: 'Team', sortable: true},
       {key: 'total', name: 'Total', sortable: true, numeric: true},
       {key: '24x7', name: '24/7', sortable: true, numeric: true},
@@ -64,10 +65,10 @@ export class NFLStandingsComponent {
   }
 
   computeScores() {
-    let scores = {};
+    const scores = {};
     this.constants.getAllTeams().forEach((team) => {
-      let teamScores = this.scoresByTeam[team] || {};
-      let pts247 = this.scores247ByTeam[team] || 0;
+      const teamScores = this.scoresByTeam[team] || {};
+      const pts247 = this.scores247ByTeam[team] || 0;
       let total = pts247;
       scores[team] = {
         'team': team,
@@ -79,7 +80,7 @@ export class NFLStandingsComponent {
       });
       scores[team]['total'] = total;
     });
-    let sorted = Object.values(scores);
+    const sorted = Object.values(scores);
     sorted.sort((a, b) => a['team'].localeCompare(b['team']));
     this.scoreTable.data = sorted;
   }
