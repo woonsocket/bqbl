@@ -16,10 +16,10 @@ export class MockAngularFireDbSnapshot {
 export class MockAngularFireDbResponse {
   data: {};
 
-  constructor(data: any) {
+  constructor(public path: string, data: any) {
     this.data = data;
+    this.path = path;
   }
-
   
   // Call fn with a snapshot constructed from this.data
   subscribe(fn) {
@@ -29,6 +29,10 @@ export class MockAngularFireDbResponse {
     } else {
       fn(new MockAngularFireDbSnapshot(this.data));
     }
+  }
+
+  set(obj: any) {
+    this.data[this.path] = obj;
   }
 
   // NOTE(harveyj): I don't understand this. I had to mock it out because
@@ -72,6 +76,6 @@ export class MockAngularFireDb {
       }
       obj = obj[pathFrag];
     } 
-    return new MockAngularFireDbResponse(obj);
+    return new MockAngularFireDbResponse(path, obj);
   }
 };
