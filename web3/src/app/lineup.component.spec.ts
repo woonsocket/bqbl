@@ -108,11 +108,25 @@ describe('LineupComponent', () => {
     expect(fixture.debugElement.query(By.css('.count')).nativeElement.textContent).toContain('2');
   });
 
-  it ('should show and hide DH when appopriate', () => {
-    // TODO
+  it ('should show DH when appopriate', () => {
+    const dbData = new DefaultData().get();
+    this.mockDb.data = dbData;
+    this.mockDb.data.leagues['nbqbl'].dh = true;
+    fixture = TestBed.createComponent(LineupComponent);
+    let dhEntries = fixture.debugElement.queryAll(By.css('input.dh'));
+    expect(dhEntries.length).toEqual(4);
   });
 
-  it ('should update db when dh selected', () => {
+  it ('should hide DH when appopriate', () => {
+    const dbData = new DefaultData().get();
+    this.mockDb.data = dbData;
+    this.mockDb.data.leagues['nbqbl'].dh = false;
+    fixture = TestBed.createComponent(LineupComponent);
+    let dhEntries = fixture.debugElement.queryAll(By.css('input.dh'));
+    expect(dhEntries.length).toEqual(0);
+  });
+
+  it ('should update db when DH selected', () => {
     // TODO
   });
 

@@ -34,12 +34,12 @@
   </td>
   <ng-template [ngIf]="leagueRules?.dh">
    <td class="team dh" [class.selected]="week.teams[4]?.name">
-    <input #dh1 type="text" placeholder="DH"
+    <input #dh1 type="text" placeholder="DH" class=dh
            (change)="onChange(dh1.value, dh2.value, week, i)"
            [value]="week.teams[4]?.name">
    </td>
    <td class="team dh" [class.selected]="week.teams[5]?.name">
-    <input #dh2 type="text" placeholder="DH"
+    <input #dh2 type="text" placeholder="DH" class=dh
            (change)="onChange(dh1.value, dh2.value, week, i)"
            [value]="week.teams[5]?.name">
    </td>
