@@ -4,6 +4,7 @@ import { NewUserComponent } from './newuser.component';
 import { LineupComponent } from './lineup.component';
 import { ConsoleComponent } from './console.component';
 import { ScoresComponent } from './scores.component';
+import { AntiScoresComponent } from './antiscores.component';
 import { NFLScoresComponent } from './nflscores.component';
 import { NFLStandingsComponent } from './nflstandings.component';
 import { TickerComponent } from './ticker.component';
@@ -25,6 +26,9 @@ export const routes: Routes = [
  },
  { path: 'scores',
    component: ScoresComponent
+ },
+ { path: 'antiscores',
+   component: AntiScoresComponent
  },
  { path: 'nflscores',
    component: NFLScoresComponent

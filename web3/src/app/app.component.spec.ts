@@ -11,6 +11,7 @@ import { APP_BASE_HREF } from '@angular/common';
 import { RouterTestingModule } from '@angular/router/testing';
 
 import { ScoresComponent } from './scores.component';
+import { AntiScoresComponent } from './antiscores.component';
 import { NFLScoresComponent } from './nflscores.component';
 import { NFLStandingsComponent } from './nflstandings.component';
 import { NewUserComponent } from './newuser.component';
@@ -35,6 +36,7 @@ describe('AppComponent', () => {
     TestBed.configureTestingModule({
       declarations: [
       AppComponent,
+      AntiScoresComponent,
       ScoresComponent,
       NFLScoresComponent,
       NFLStandingsComponent,
