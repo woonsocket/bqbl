@@ -21,6 +21,7 @@ export class LineupComponent {
   userData: FirebaseObjectObservable<any>;
   userDataSnapshot: any;
   leagueRules: LeagueRules;
+  unlockedWeeks: Set<string>;
 
   user: Observable<firebase.User>;
   uid: string;
@@ -59,6 +60,35 @@ export class LineupComponent {
 
       this.uid = value.uid;
     });
+
+    this.db.list(paths.getUnlockedWeeksPath()).subscribe((weeks) => {
+      const unlockedWeeks = new Set();
+      for (let week of weeks) {
+        if (week.$value) {
+          unlockedWeeks.add(week.$key);
+        }
+      }
+      this.unlockedWeeks = unlockedWeeks;
+    });
+  }
+
+  isLocked(weekId: string): boolean {
+    return !this.unlockedWeeks.has(weekId);
+  }
+
+  checkLineupWriteError(err: Error, weekId: string): void {
+    if (err['code'] === 'PERMISSION_DENIED' && this.isLocked(weekId)) {
+      // TODO(aerion): In most cases, we can catch this earlier and just not
+      // even attempt the write if we think the week is locked. (But we still
+      // need to check the DB operation for an error, because the week may have
+      // become locked since the last time we checked.)
+      this.mdlSnackbarService.showSnackbar({
+        message: `Picks for week ${weekId} are locked`,
+      });
+      return;
+    }
+    // Propagate unrecognized errors so we see them and can debug them.
+    throw err;
   }
 
   countSelectedTeams(teams: TeamEntry[]): number {
@@ -137,7 +167,10 @@ export class LineupComponent {
       return;
     }
 
-    this.db.object(paths.getUserPath(this.uid) + '/weeks/' + weekId + '/teams').set(week.teams);
+    this.db
+      .object(paths.getUserPath(this.uid) + '/weeks/' + weekId + '/teams')
+      .set(week.teams)
+      .catch(err => this.checkLineupWriteError(err, weekId));
   }
 
   onChange(dh1, dh2, week, weekId) {
@@ -155,7 +188,9 @@ export class LineupComponent {
     }
     this.db
       .object(paths.getUserPath(this.uid) + '/weeks/' + weekId + '/teams')
-      .set(newTeams);
+      .set(newTeams)
+      .catch(err => this.checkLineupWriteError(err, weekId));
+
   }
 
   // Returns an error message as a string. If returned string is empty, the team

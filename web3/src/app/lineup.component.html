@@ -26,7 +26,10 @@
   </tr>
  </thead>
  <tr *ngFor="let week of (userData|async)?.weeks; let i = index">
-  <td class=week>{{week.id}}</td>
+  <td class="week">
+   <mdl-icon *ngIf="isLocked(week.id)">lock</mdl-icon>
+   {{week.id}}
+  </td>
   <!-- Limit to 4. When there's a DH, don't list it as normal cell -->
   <td *ngFor="let team of week.teams | slice:0:4;" class=team
       [class.selected]="team.selected" (click)="onSelect(week, team, i)">

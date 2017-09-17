@@ -13,10 +13,13 @@ td.team {
   text-align: center;
 }
 
-td.team mdl-icon {
-  color: #F44336;
+mdl-icon {
   font-size: 18px;
   vertical-align: middle;
+}
+
+td.team mdl-icon {
+  color: #F44336;
 }
 
 tr.head {

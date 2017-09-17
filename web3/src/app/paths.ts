@@ -14,3 +14,7 @@ export function getLeaguesPath(): string {
 export function getEventsPath(): string {
   return '/events/';
 }
+
+export function getUnlockedWeeksPath(): string {
+  return '/unlockedweeks/';
+}
