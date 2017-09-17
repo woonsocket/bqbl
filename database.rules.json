@@ -43,8 +43,6 @@
     },
     "users": {
       ".read": true,
-      // TODO(harveyj): Clean this up when users have all created
-      ".write": true,
       "$user_id": {
         // TODO(harveyj): clean this up so there's just a week object
         // and a userdata object.
