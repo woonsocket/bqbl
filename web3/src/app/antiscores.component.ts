@@ -14,6 +14,7 @@ import * as paths from './paths';
   styleUrls: ['./scores.component.css']
 })
 export class AntiScoresComponent {
+  // TODO(harveyj): ~all of this is forked from scores. Much of it could be decoupled.
   userDataList: FirebaseListObservable<any>;
   scoresList: FirebaseListObservable<any>;
   db: AngularFireDatabase;
@@ -58,7 +59,7 @@ export class AntiScoresComponent {
 
   ngOnInit() {
     this.route.queryParams.subscribe((params: Params) => {
-      this.selectedWeek = params.week || this.constants.getDefaultWeek();
+      this.selectedWeek = params.week || this.constants.getDefaultWeekId();
       this.year = params.year || '2017';
       this.loadScoresDb();
     });

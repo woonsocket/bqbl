@@ -4,6 +4,7 @@ export function emptyDb() {
   return {
     'users': {},
     'leagues': {},
+    'scores': {},
   }
 };
 
@@ -33,6 +34,15 @@ export function emptyWeek () {
   }
 }
 
+export function emptyScores () {
+  return {
+    'CLE': {total:30}, 
+    'HOU': {total:31}, 
+    'NYJ': {total:32}, 
+    'CHI': {total:33}, 
+  }
+}
+
 export class DefaultData {
 
   get() {
@@ -41,6 +51,8 @@ export class DefaultData {
     user.weeks.push(emptyWeek());
     user.weeks.push(emptyWeek());
 
+    retVal.scores['2017'] = {};
+    retVal.scores['2017']['1'] = emptyScores();
     retVal.leagues['nbqbl'] = nbqblLeague();
     retVal.users[USER_ID] = user;
     return retVal;
