@@ -5,6 +5,7 @@ Features:
 - Make the UI more responsive on desktop
 - Add the road teams to the lineup setter
 - Alphabetize the lineup columns?
+- Bold your team on the scoreboard
 
 Cleanup:
 - Add tests for all the other components
