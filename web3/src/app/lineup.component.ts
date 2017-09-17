@@ -76,14 +76,15 @@ export class LineupComponent {
     return !this.unlockedWeeks.has(weekId);
   }
 
-  checkLineupWriteError(err: Error, weekId: string): void {
+  checkLineupWriteError(err: Error, weekId: string, week: Week): void {
+    // TODO(aerion): weekId and week.id are different things, which seems :(
     if (err['code'] === 'PERMISSION_DENIED' && this.isLocked(weekId)) {
       // TODO(aerion): In most cases, we can catch this earlier and just not
       // even attempt the write if we think the week is locked. (But we still
       // need to check the DB operation for an error, because the week may have
       // become locked since the last time we checked.)
       this.mdlSnackbarService.showSnackbar({
-        message: `Picks for week ${weekId} are locked`,
+        message: `Picks for week ${week.id} are locked`,
       });
       return;
     }
@@ -170,7 +171,7 @@ export class LineupComponent {
     this.db
       .object(paths.getUserPath(this.uid) + '/weeks/' + weekId + '/teams')
       .set(week.teams)
-      .catch(err => this.checkLineupWriteError(err, weekId));
+      .catch(err => this.checkLineupWriteError(err, weekId, week));
   }
 
   onChange(dh1, dh2, week, weekId) {
@@ -189,7 +190,7 @@ export class LineupComponent {
     this.db
       .object(paths.getUserPath(this.uid) + '/weeks/' + weekId + '/teams')
       .set(newTeams)
-      .catch(err => this.checkLineupWriteError(err, weekId));
+      .catch(err => this.checkLineupWriteError(err, weekId, week));
 
   }
 
