@@ -49,10 +49,13 @@ export class MockAngularFireDbResponse {
 }
 
 export class MockAngularFireDbListResponse {
-  data: {};
+  data = [];
 
   constructor(public path: string, data: any) {
-    this.data = data;
+    for (let key of Object.keys(data)) {
+      data[key]['$key'] = key;
+      this.data.push(data[key]);
+    }
     this.path = path;
   }
 
@@ -60,15 +63,10 @@ export class MockAngularFireDbListResponse {
   subscribe(fn) {
     // TODO(harveyj): Figure out what's going on here
     if (fn.next) {
-      fn.next(new MockAngularFireDbSnapshot(this.data));
+      fn.next(this.data);
     } else {
-      fn(new MockAngularFireDbSnapshot(this.data));
+      fn(this.data);
     }
-  }
-
-  set(obj: any) {
-    console.log('SET:' + this.path + ' ' + obj);
-    Object.assign(this.data, obj);
   }
 
   // NOTE(harveyj): I don't understand this. I had to mock it out because

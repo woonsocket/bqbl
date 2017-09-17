@@ -25,7 +25,6 @@ describe('ScoresComponent', () => {
   let mockDb: MockAngularFireDb;
   let mockAuth: MockAngularFireAuth;
   let fixture: ComponentFixture<ScoresComponent>;
-  let selected: DebugElement[];
 
   beforeEach(() => {
 
@@ -54,14 +53,20 @@ describe('ScoresComponent', () => {
 
   it('should render the scores', () => {
     this.mockDb.data = new DefaultData().get();
+    this.mockDb.data.users[USER_ID].weeks[0].teams[1].selected = true;
+    this.mockDb.data.users[USER_ID].weeks[0].teams[2].selected = true; 
     console.log(this.mockDb.data);
 
     fixture = TestBed.createComponent(ScoresComponent);
-    selected = fixture.debugElement.queryAll(By.css('.selected'));
+    let teamName = fixture.debugElement.queryAll(By.css('.team-name'));
+    let teamScore = fixture.debugElement.queryAll(By.css('.team-score'));
     fixture.detectChanges();
 
     expect(fixture.componentInstance.selectedWeek).toEqual(1);
-    console.log(fixture.componentInstance.displayLeagues);
+    expect(teamName[0].nativeElement.textContent).toEqual('HOU');
+    expect(teamName[1].nativeElement.textContent).toEqual('NYJ');
+    expect(teamScore[0].nativeElement.textContent).toEqual('31');
+    expect(teamScore[1].nativeElement.textContent).toEqual('32');
   });
 
 });

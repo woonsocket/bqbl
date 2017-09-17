@@ -17,6 +17,7 @@ export function nbqblLeague() {
 
 export function emptyUser () {
   return {
+    'name': 'Blaine',
     'leagueId': 'nbqbl',
     'weeks': []
   };

@@ -23,7 +23,7 @@ export class ScoresComponent {
   userToTeams = {};
   teamToScores = {};
   displayLeagues = [];
-  selectedWeek: number;
+  selectedWeek = 1;
   year = '2017';
   constructor(db: AngularFireDatabase, private afAuth: AngularFireAuth, private route: ActivatedRoute,
               private router: Router, private constants: ConstantsService) {
@@ -52,7 +52,6 @@ export class ScoresComponent {
         }
         this.updateScores();
       });
-      this.loadScoresDb();
     });
   }
 
@@ -84,7 +83,6 @@ export class ScoresComponent {
     this.displayLeagues = [];
     for (const leagueKey in this.leagueToUsers) {
       const league = {'name': '', 'scoreRows': []};
-
       for (const user of this.leagueToUsers[leagueKey]) {
         const leagueName = user.leagueName;
         const name = this.userToTeams[user.$key][this.selectedWeek].name;
