@@ -38,10 +38,10 @@ export function emptyWeek (id: string) {
 
 export function emptyScores () {
   return {
-    'CLE': {total:30}, 
-    'HOU': {total:31}, 
-    'NYJ': {total:32}, 
-    'CHI': {total:33}, 
+    'CLE': {total:30, projection: {total: 1}, gameInfo: {clock: "Final"}}, 
+    'HOU': {total:31, projection: {total: 2}, gameInfo: {clock: "Final"}}, 
+    'NYJ': {total:32, projection: {total: 3}, gameInfo: {clock: "Final"}}, 
+    'CHI': {total:33, projection: {total: 4}, gameInfo: {clock: "Final"}}, 
   }
 }
 

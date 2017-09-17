@@ -1,12 +1,12 @@
 <div class="sort-controls">
   <div class="sort-control mdl-shadow--2dp">
-    <mdl-switch [(ngModel)]="projectScores" mdl-ripple>
+    <mdl-switch [(ngModel)]="projectScores" mdl-ripple id=projected-toggle>
       Show projected scores
       <span class="dumb-buffer">&nbsp;</span>
     </mdl-switch>
   </div>
 
-  <div class="sort-control mdl-shadow--2dp">
+  <div class="sort-control mdl-shadow--2dp" id=sort-radio>
     <mdl-radio value="score" [(ngModel)]="sortOrder">By score</mdl-radio>
     <mdl-radio value="team" [(ngModel)]="sortOrder">A-Z</mdl-radio>
     <mdl-radio value="active" [(ngModel)]="sortOrder">Active first</mdl-radio>
