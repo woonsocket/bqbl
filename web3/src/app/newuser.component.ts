@@ -6,8 +6,9 @@ import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable }
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Router } from '@angular/router';
-import { User, Week, Team } from './structs';
+import { User, Week, TeamEntry } from './structs';
 import * as paths from './paths';
+import { ConstantsService } from './constants.service'
 
 @Component({
   templateUrl: './newuser.component.html',
@@ -23,7 +24,7 @@ export class NewUserComponent {
   selectedLeague: any = {};
   selectedUser = [];
 
-  constructor(db: AngularFireDatabase, private afAuth: AngularFireAuth, router: Router) {
+  constructor(db: AngularFireDatabase, private afAuth: AngularFireAuth, router: Router, private constants : ConstantsService) {
     this.db = db;
     this.user = afAuth.authState;
     this.user.subscribe(value => {
@@ -59,7 +60,7 @@ export class NewUserComponent {
       newWeek.id = WEEK_NAMES[weekNum];
       newWeek.teams = [];
       for (const team of this.selectedUser) {
-        const newTeam = new Team();
+        const newTeam = new TeamEntry();
         newTeam.name = team.name;
         newTeam.selected = false;
         newWeek.teams.push(newTeam);

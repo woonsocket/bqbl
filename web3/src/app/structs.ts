@@ -1,6 +1,6 @@
 export class User {
   name: string;
-  teams: Team[];
+  teams: TeamSpec[];
   // TODO harveyj - make this a full-on league struct?
   leagueName: string;
   leagueId: string;
@@ -10,10 +10,14 @@ export class User {
 
 export class Week {
   id: string;
-  teams: Team[];
+  teams: TeamEntry[];
 }
 
-export class Team {
+export class TeamEntry {
   name: string;
   selected: boolean;
+}
+
+export class TeamSpec {
+  name: string;
 }

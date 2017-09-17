@@ -46,7 +46,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.route.queryParams.subscribe((params: Params) => {
-      this.selectedWeek = params.week || this.constants.getDefaultWeek();
+      this.selectedWeek = params.week || this.constants.getDefaultWeekId();
       this.year = params.year || '2017';
     });
     this.router.events.subscribe(event => {

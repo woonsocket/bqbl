@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Set } from 'immutable';
+import { WeekSpec } from './schema';
 
-const ALL_WEEKS = [
+const ALL_WEEKS : WeekSpec[] = [
 {'name': 'Preseason 1', 'val': 'P1', 'displayUntil': new Date('2017-08-16')},
 {'name': 'Preseason 2', 'val': 'P2', 'displayUntil': new Date('2017-08-23')},
 {'name': 'Preseason 3', 'val': 'P3', 'displayUntil': new Date('2017-08-30')},
@@ -43,22 +44,22 @@ const NBQBL_USERS = [
   ];
 
 const ABQBL_USERS = [
-  [{'name': 'NYJ'}, {'name': 'NYG'}, {'name': 'KC'}, {'name': 'NE'}],
-  [{'name': 'CLE'},  {'name': 'PHI'}, {'name': 'SEA'}, {'name': 'ATL'}],
-  [{'name': 'LA'}, {'name': 'IND'}, {'name': 'CIN'}, {'name': 'GB'}],
+  [{'name': 'NYJ'}, {'name': 'NYG'}, {'name': 'KC'},  {'name': 'NE'}],
+  [{'name': 'CLE'}, {'name': 'PHI'}, {'name': 'SEA'}, {'name': 'ATL'}],
+  [{'name': 'LA'},  {'name': 'IND'}, {'name': 'CIN'}, {'name': 'GB'}],
   [{'name': 'CHI'}, {'name': 'ARI'}, {'name': 'CAR'}, {'name': 'NO'}],
-  [{'name': 'SF'}, {'name': 'MIN'}, {'name': 'WAS'}, {'name': 'OAK'}],
-  [{'name': 'JAX'},  {'name': 'DEN'}, {'name': 'TEN'}, {'name': 'DET'}],
+  [{'name': 'SF'},  {'name': 'MIN'}, {'name': 'WAS'}, {'name': 'OAK'}],
+  [{'name': 'JAX'}, {'name': 'DEN'}, {'name': 'TEN'}, {'name': 'DET'}],
   [{'name': 'HOU'}, {'name': 'MIA'}, {'name': 'LAC'}, {'name': 'TB'}],
   [{'name': 'BUF'}, {'name': 'BAL'}, {'name': 'DAL'}, {'name': 'PIT'}],
   ];
 
 @Injectable()
 export class ConstantsService {
-  getAllWeeks() { return ALL_WEEKS; }
+  getAllWeeks() : WeekSpec[] { return ALL_WEEKS; }
   getAllTeams() { return ALL_TEAMS; }
   getDummyLeague() { return ABQBL_USERS; }
-  getDefaultWeek() {
+  getDefaultWeekId() : string {
     const now = new Date(Date.now());
     let i = 0;
     while (ALL_WEEKS[i].displayUntil < now) {

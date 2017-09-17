@@ -7,8 +7,9 @@ import { Observable } from 'rxjs/Observable';
 import { Router } from '@angular/router';
 import { MdlSnackbarService } from '@angular-mdl/core';
 
+import { LeagueRules } from './schema'
 import { ConstantsService } from './constants.service';
-import { User, Week, Team } from './structs';
+import { User, Week, TeamEntry } from './structs';
 import * as paths from './paths';
 import 'rxjs/add/operator/take';
 
@@ -60,7 +61,7 @@ export class LineupComponent {
     });
   }
 
-  countSelectedTeams(teams: Team[]): number {
+  countSelectedTeams(teams: TeamEntry[]): number {
     let selectedTeams = 0;
     teams.forEach((team) => {
       if (team.selected) {
@@ -125,7 +126,7 @@ export class LineupComponent {
     return counts;
   }
 
-  onSelect(week: Week, team: Team, weekId: string): void {
+  onSelect(week: Week, team: TeamEntry, weekId: string): void {
     team.selected = !team.selected;
 
     const err = this.validateWeek(week.teams);
@@ -159,7 +160,7 @@ export class LineupComponent {
 
   // Returns an error message as a string. If returned string is empty, the team
   // list is valid.
-  validateWeek(teams: Team[]): string {
+  validateWeek(teams: TeamEntry[]): string {
     if (this.countSelectedTeams(teams) > 2) {
       return 'You can only select two teams per week';
     }
@@ -177,18 +178,12 @@ export class LineupComponent {
     return '';
   }
 
-  pushTeam(name: string, teams: Team[]) {
-    const team = new Team();
+  pushTeam(name: string, teams: TeamEntry[]) {
+    const team = new TeamEntry();
     team.name = name.toUpperCase().trim();
     team.selected = true;
     teams.push(team);
   }
-}
-
-interface LeagueRules {
-  dh: boolean;
-  dhMax: number;
-  maxPlays: number;
 }
 
 class TeamCount {
