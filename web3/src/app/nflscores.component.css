@@ -8,11 +8,7 @@
   padding: 6px;
 }
 
-.sort-control.mdl-switch__label {
-  display: inline;
-}
-
-.sort-control > label {
+.sort-control mdl-radio {
   margin-left: 6px;
   margin-right: 6px;
 }
