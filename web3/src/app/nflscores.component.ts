@@ -4,6 +4,7 @@ import { AngularFireDatabase } from 'angularfire2/database';
 import { Component } from '@angular/core';
 import { OnInit } from '@angular/core';
 
+import { ConstantsService } from './constants.service';
 
 @Component({
   templateUrl: './nflscores.component.html',
@@ -16,11 +17,13 @@ export class NFLScoresComponent implements OnInit {
   sortOrder = 'score';
   projectScores = true;
 
-  constructor(private db: AngularFireDatabase, private route: ActivatedRoute) {}
+  constructor(private db: AngularFireDatabase,
+              private route: ActivatedRoute,
+              private constants: ConstantsService) {}
 
   ngOnInit() {
     this.route.queryParams.subscribe((params: Params) => {
-      this.selectedWeek = params.week || '1';
+      this.selectedWeek = params.week || this.constants.getDefaultWeekId();
       const query = this.db.list(`/scores/${this.year}/${this.selectedWeek}`, {
         query: {
           orderByChild: 'total'

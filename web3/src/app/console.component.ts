@@ -1,4 +1,3 @@
-
 import * as firebase from 'firebase/app';
 import { ActivatedRoute, Params } from '@angular/router';
 import { AngularFireAuth } from 'angularfire2/auth';
@@ -9,6 +8,8 @@ import { MdlSnackbarService } from '@angular-mdl/core';
 import { Observable } from 'rxjs/Observable';
 import { OnInit } from '@angular/core';
 import * as paths from './paths';
+
+import { ConstantsService } from './constants.service';
 
 @Component({
   templateUrl: './console.component.html',
@@ -23,11 +24,12 @@ export class ConsoleComponent implements OnInit {
   constructor(
     private db: AngularFireDatabase,
     private route: ActivatedRoute,
+    private constants: ConstantsService,
     private mdlSnackbarService: MdlSnackbarService) {}
 
   ngOnInit() {
     this.route.queryParams.subscribe((params: Params) => {
-      this.selectedWeek = params.week || 'P1';
+      this.selectedWeek = params.week || this.constants.getDefaultWeekId();
       this.passers = this.db.list(paths.getEventsPath() + `/${this.year}/${this.selectedWeek}/passers`, {
         query: {
           orderByChild: 'team'
