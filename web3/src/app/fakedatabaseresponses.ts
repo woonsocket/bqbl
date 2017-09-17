@@ -22,9 +22,9 @@ export function emptyUser () {
   };
 }
 
-export function emptyWeek () {
+export function emptyWeek (id: string) {
   return {
-    'id': 'n/a',
+    'id': id,
     'teams': [
     {'name': 'CLE', 'selected': false},
     {'name': 'HOU', 'selected': false},
@@ -48,8 +48,8 @@ export class DefaultData {
   get() {
     let retVal = emptyDb();
     let user = emptyUser();
-    user.weeks.push(emptyWeek());
-    user.weeks.push(emptyWeek());
+    user.weeks.push(emptyWeek('1'));
+    user.weeks.push(emptyWeek('2'));
 
     retVal.scores['2017'] = {};
     retVal.scores['2017']['1'] = emptyScores();

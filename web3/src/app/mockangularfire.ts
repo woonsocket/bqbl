@@ -1,3 +1,5 @@
+import { Observable } from 'rxjs/Observable';
+
 export class MockAngularFireDbSnapshot {
 
   // Take all of the fields of data and make them fields of the snapshot.
@@ -26,6 +28,7 @@ export class MockAngularFireDbResponse {
   // Call fn with a snapshot constructed from this.data
   subscribe(fn) {
     // TODO(harveyj): Figure out what's going on here
+    // Ohhhhhh, this is an iterable...
     if (fn.next) {
       fn.next(new MockAngularFireDbSnapshot(this.data));
     } else {
@@ -77,19 +80,12 @@ export class MockAngularFireDbListResponse {
 
 export class MockAngularFireAuthState {
   constructor (public uid: string, public displayName: string) {}
-
-  subscribe(fn) {
-    fn({
-      'uid': this.uid,
-      'displayName': this.displayName
-    });
-  }
 }
 
 export class MockAngularFireAuth {
-  authState: MockAngularFireAuthState;
+  authState: Observable<MockAngularFireAuthState>;
   constructor(public uid: string, public displayName: string) {
-    this.authState = new MockAngularFireAuthState(uid, displayName);
+    this.authState = Observable.of(new MockAngularFireAuthState(uid, displayName));
   }
 }
 
