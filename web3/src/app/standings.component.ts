@@ -31,7 +31,7 @@ export class StandingsComponent {
     this.user = afAuth.authState;
 
     this.user.subscribe(value => {
-      this.userDataList = this.db.list('/tmp');
+      this.userDataList = this.db.list(paths.getUsersPath());
       this.userDataList.subscribe(users => {
         for (const user of users) {
           const league = this.leagueToUsers[user.leagueId] || [];
