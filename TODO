@@ -1,7 +1,6 @@
 Features:
 - Add a running total to the scoreboard
 - Clicking on a line-score item should pop up a card explaining the score
-- Add an anti-scoreboard
 
 Cleanup:
 - Add tests for all the other components
