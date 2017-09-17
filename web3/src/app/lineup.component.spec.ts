@@ -135,10 +135,10 @@ describe('LineupComponent', () => {
     let dhEntries = fixture.debugElement.queryAll(By.css('input.dh'));
     dhEntries[0].nativeElement.value = 'ARI';
     dhEntries[0].nativeElement.dispatchEvent(new Event('input'));
-    fixture.componentInstance.onChange('ARI', '', week, '1');
-    let newTeamValue = this.mockDb.object(`/users/${USER_ID}`);
-    console.log(newTeamValue.data.weeks[0].teams.length);
-    //expect(newTeamValue.value).toEqual('ARI');  
+    fixture.componentInstance.onChange('ARI', '', week, '0');
+    let val = this.mockDb.object(`/users/${USER_ID}/weeks/0/teams/4`);
+    expect(val.data.name).toEqual('ARI');  
+    expect(val.data.selected).toEqual(true);  
   });
 
 });
