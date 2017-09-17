@@ -7,6 +7,12 @@
     "scores": {
       ".read": true
     },
+    "scores247": {
+      ".read": true,
+      "$season": {
+        ".write": "root.child('roles/admins/' + auth.uid).exists()"
+      }
+    },
     "stats": {
       ".read": true,
       "$season": {
