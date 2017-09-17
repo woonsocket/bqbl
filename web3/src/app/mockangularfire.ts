@@ -94,21 +94,16 @@ export class MockAngularFireDb {
   constructor() {}
 
   object(path: string) : MockAngularFireDbResponse {
-    let obj = this.data;
-    console.log('LOOKUP: ' + path);
-    for (const pathFrag of path.split('/')) {
-      if (!pathFrag) {
-        continue; // Skip leading / and elide '//'
-      }
-      if (!obj[pathFrag]) {
-        console.log(`PATH NOT FOUND: ${path}`);
-      }
-      obj = obj[pathFrag];
-    }
+    let obj = this.getDbObject(path);
     return new MockAngularFireDbResponse(path, obj);
   }
 
   list(path: string) : MockAngularFireDbListResponse {
+    let obj = this.getDbObject(path);
+    return new MockAngularFireDbListResponse(path, obj);
+  }
+
+  private getDbObject(path:string) {
     let obj = this.data;
     console.log('LOOKUP: ' + path);
     for (const pathFrag of path.split('/')) {
@@ -120,8 +115,6 @@ export class MockAngularFireDb {
       }
       obj = obj[pathFrag];
     }
-    return new MockAngularFireDbListResponse(path, obj);
+    return obj;
   }
-
-
 }
