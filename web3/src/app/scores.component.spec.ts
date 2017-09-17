@@ -44,27 +44,24 @@ describe('ScoresComponent', () => {
       { provide: MdlSnackbarService, useValue: true },
       { provide: APP_BASE_HREF, useValue: '/'},
       { provide: ActivatedRoute, useValue: {
-          queryParams: Observable.of({ week: '1' })
+          queryParams: Observable.of({ week: 1 })
         }
       },
-
       ]
     });
 
   });
 
-  it('should render the played teams', () => {
+  it('should render the scores', () => {
     this.mockDb.data = new DefaultData().get();
     console.log(this.mockDb.data);
-    this.mockDb.data.users[USER_ID].weeks[0].teams[1].selected = true;
-    this.mockDb.data.users[USER_ID].weeks[0].teams[2].selected = true; 
 
     fixture = TestBed.createComponent(ScoresComponent);
     selected = fixture.debugElement.queryAll(By.css('.selected'));
     fixture.detectChanges();
 
-    // expect(selected[0].nativeElement.textContent).toContain('HOU');
-    // expect(selected[1].nativeElement.textContent).toContain('NYJ');
+    expect(fixture.componentInstance.selectedWeek).toEqual(1);
+    console.log(fixture.componentInstance.displayLeagues);
   });
 
 });
