@@ -39,6 +39,11 @@ export class MockAngularFireDbResponse {
   set(obj: any) {
     console.log('SET:' + this.path + ' ' + obj);
     Object.assign(this.data, obj);
+    return {
+      catch() {
+        // TODO(harveyj): implement
+      }
+    }
   }
 
   // NOTE(harveyj): I don't understand this. I had to mock it out because

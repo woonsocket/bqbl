@@ -5,6 +5,7 @@ export function emptyDb() {
     'users': {},
     'leagues': {},
     'scores': {},
+    'unlockedweeks': [{}]
   }
 };
 
