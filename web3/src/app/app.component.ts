@@ -24,13 +24,13 @@ export class AppComponent implements OnInit {
   selectedWeek = '';
   year = '2017';
   weekDropdownSuppressPaths = [
-    '/newuser', '/admin'
+  '/newuser', '/admin'
   ];
   suppressWeekDropdown = false;
   constructor(
-      db: AngularFireDatabase, private afAuth: AngularFireAuth,
-      private router: Router, private route: ActivatedRoute,
-      private constants: ConstantsService) {
+    db: AngularFireDatabase, private afAuth: AngularFireAuth,
+    private router: Router, private route: ActivatedRoute,
+    private constants: ConstantsService) {
     this.user = afAuth.authState;
     this.allWeeks = constants.getAllWeeks();
     this.user.subscribe(value => {
@@ -52,14 +52,17 @@ export class AppComponent implements OnInit {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         this.suppressWeekDropdown =
-          this.weekDropdownSuppressPaths.includes(event.url.trim());
+        this.weekDropdownSuppressPaths.includes(event.url.trim());
       }
     });
   }
 
   closeDrawer() {
-    const d = document.querySelector('.mdl-layout');
-    d['MaterialLayout'].toggleDrawer();
+    const d : any = document.querySelector('.mdl-layout');
+    d.MaterialLayout.toggleDrawer();
+    if (window.innerWidth < 1024) {
+      d['MaterialLayout'].toggleDrawer();
+    }
   }
 
   login() {
