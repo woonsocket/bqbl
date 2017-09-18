@@ -12,6 +12,7 @@ releases alliteratively.
 - (harveyj) Fix the BQBL scoreboard page database path
 - (aerion) Fix week selector defaults on a few pages
 - (aerion) Fix locking of picks for past weeks
+- (harveyj) Turn on reactive design for side menu
 
 ## [0.2.0] - "Desperate Detmer" - 2017-09-16
 
