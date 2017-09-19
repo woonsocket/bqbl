@@ -1,15 +1,12 @@
-<table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp"
-       *ngFor="let key of getIterable(userRows)">
-  <thead>
-    <tr>
-      <th>Player</th>
-      <th>Total</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let row of userRows[key]">
-      <td>{{row.name}}</td>
-      <td><span>{{row.total}}</span></td>
-    </tr>
-  </tbody>
-</table>
+<div class="top">
+  <div class="league mdl-shadow--4dp"
+       *ngFor="let leagueKey of getIterable(leagues)">
+    <!-- TODO(aerion): Show league name here. -->
+    <div class="player" *ngFor="let player of leagues[leagueKey]">
+      <div class="player-name">{{player.name}}: {{player.total}}</div>
+      <mini-score *ngFor="let week of player.weeks"
+                  [name]="week.name" [scores]="week.scores">
+      </mini-score>
+    </div>
+  </div>
+</div>

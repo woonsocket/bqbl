@@ -11,6 +11,7 @@ import * as paths from './paths';
 
 @Component({
   templateUrl: './standings.component.html',
+  styleUrls: ['./standings.component.css']
 })
 export class StandingsComponent {
   userDataList: FirebaseListObservable<any>;
@@ -21,7 +22,7 @@ export class StandingsComponent {
   leagueToNames = {};
   userToTeams = {};
   teamToScores = {};
-  userRows = {};
+  leagues = {};
   scores = {};
   year = '2017';
 
@@ -71,7 +72,6 @@ export class StandingsComponent {
     this.teamToScores = {};
     this.scoresList = this.db.object('/scores/' + this.year + '/');
     this.scoresList.subscribe(scores => {
-      console.log(scores);
       this.scores = scores;
       this.updateScores();
     });
@@ -79,30 +79,43 @@ export class StandingsComponent {
 
   // TODO doing a join by hand feels terrible.
   updateScores(): void {
-    this.userRows = {};
+    this.leagues = {};
     for (const leagueKey in this.leagueToUsers) {
       for (const user of this.leagueToUsers[leagueKey]) {
         let userTotal = 0;
+        const weeks = [];
         for (const userWeek of user.weeks) {
           if (this.scores[userWeek.id]) {
+            const scoresForWeek = [];
             for (const userTeam of userWeek.teams) {
               if (userTeam.selected) {
-                if (this.scores[userWeek.id][userTeam.name]) {
-                  userTotal += this.scores[userWeek.id][userTeam.name].total;
+                const scoreForTeam = this.scores[userWeek.id][userTeam.name];
+                if (scoreForTeam) {
+                  const score = scoreForTeam.total;
+                  userTotal += score;
+                  scoresForWeek.push({
+                    name: userTeam.name,
+                    score: score,
+                  });
                 } else {
                   console.log('ERROR: couldn\'t find score');
                 }
               }
             }
+            weeks.push({
+              name: `Week ${userWeek.id}`,
+              scores: scoresForWeek,
+            });
           }
         }
         const userRow = {
           'name': user.name,
           'total': userTotal,
+          'weeks': weeks,
         };
-        const league = this.userRows[leagueKey] || [];
+        const league = this.leagues[leagueKey] || [];
         league.push(userRow);
-        this.userRows[leagueKey] = league;
+        this.leagues[leagueKey] = league;
       }
     }
   }

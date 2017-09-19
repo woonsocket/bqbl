@@ -8,6 +8,10 @@ releases alliteratively.
 
 ## [Unreleased]
 
+### Added
+- (aerion) More detailed standings page, including each player's scores for each
+  week. Still needs more UI work.
+
 ### Fixed
 - (harveyj) Fix the BQBL scoreboard page database path
 - (aerion) Fix week selector defaults on a few pages
