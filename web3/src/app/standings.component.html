@@ -3,10 +3,13 @@
        *ngFor="let leagueKey of getIterable(leagues)">
     <!-- TODO(aerion): Show league name here. -->
     <div class="player" *ngFor="let player of leagues[leagueKey]">
-      <div class="player-name">{{player.name}}: {{player.total}}</div>
-      <mini-score *ngFor="let week of player.weeks"
-                  [name]="week.name" [scores]="week.scores">
-      </mini-score>
+      <div class="player-name">{{player.name}}</div>
+      <div class="player-minis">
+        <mini-stat name="Total" [value]="player.total"></mini-stat>
+        <mini-score *ngFor="let week of player.weeks"
+                    [name]="week.name" [scores]="week.scores">
+        </mini-score>
+      </div>
     </div>
   </div>
 </div>

@@ -17,3 +17,13 @@
   font-size: 20px;
   font-weight: bold;
 }
+
+.player-minis {
+  display: flex;
+  flex-direction: row;
+  align-items: top;
+}
+
+.player-minis mini-stat {
+  align-self: center;
+}

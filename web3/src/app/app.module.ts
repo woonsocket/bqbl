@@ -5,6 +5,7 @@ import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 import { MiniScoreComponent } from './mini-score.component';
+import { MiniStatComponent } from './mini-stat.component';
 import { ScoreCellComponent } from './score-cell.component';
 import { ScoresComponent } from './scores.component';
 import { AntiScoresComponent } from './antiscores.component';
@@ -30,6 +31,7 @@ import { NflIconPipe, NflLogoPipe } from './nfl-logo.pipe';
   declarations: [
     AppComponent,
     MiniScoreComponent,
+    MiniStatComponent,
     ScoreCellComponent,
     AntiScoresComponent,
     ScoresComponent,
