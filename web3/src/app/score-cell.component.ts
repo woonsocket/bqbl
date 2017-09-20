@@ -1,5 +1,4 @@
 import { Component, Input } from '@angular/core';
-import { TeamScore } from './team-score';
 
 @Component({
   selector: 'score-cell',
