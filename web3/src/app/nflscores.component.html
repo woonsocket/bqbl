@@ -44,9 +44,7 @@
    <div *ngFor="let comp of getComponents(score)"
         class="score-card-comp">
     <div class="score-card-comp-desc">{{ comp.desc }}</div>
-    <div [ngClass]="{'score-card-comp-val': true, 'mdl-color-text--red-700': comp.value < 0}">
-     {{ comp.value }}
-    </div>
+    <score-cell [value]="comp.value"></score-cell>
    </div>
   </div>
 

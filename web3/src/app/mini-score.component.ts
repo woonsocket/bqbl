@@ -8,7 +8,7 @@ import { TeamScore } from './team-score';
       <div class="name" title="{{name}}">{{name}}</div>
       <div class="team" *ngFor="let score of scores">
         <img src="{{score.name|nflLogo}}" title="{{score.name}}">
-        <div class="score">{{score.score}}</div>
+        <score-cell class="score" [value]="score.score"></score-cell>
       </div>
     </div>
   `,
