@@ -16,7 +16,7 @@ import { TeamScore } from './team-score';
     `.top {
        display: inline-flex;
        flex-direction: column;
-       width: 60px;
+       width: 65px;
        padding: 4px;
     }`,
     `.name {
