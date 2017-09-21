@@ -18,6 +18,7 @@ import { LoginComponent } from './login.component';
 import { ConsoleComponent } from './console.component';
 import { StandingsComponent } from './standings.component';
 import { ConstantsService } from './constants.service';
+import { ScoreService } from './score.service';
 import { AdminComponent } from './admin.component';
 import { RouterModule, Routes } from '@angular/router';
 import { environment } from '../environments/environment';
@@ -57,7 +58,7 @@ import { NflIconPipe, NflLogoPipe } from './nfl-logo.pipe';
     MdlModule,
     routing,
   ],
-  providers: [ConstantsService],
+  providers: [ConstantsService, ScoreService],
   bootstrap: [AppComponent]
 })
 
