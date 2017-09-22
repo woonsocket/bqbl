@@ -1,23 +1,12 @@
-<div  *ngFor="let league of displayLeagues">
-<div class=league-title>{{league.name}}</div>
-<table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp score-table">
- <thead>
-  <tr>
-   <th class=player>Player</th>
-   <th class=team>Team 1</th>
-   <th class=team></th>
-   <th class=team>Team 2</th>
-   <th class=team></th>
-  </tr>
- </thead>
- <tbody>
-  <tr *ngFor="let row of league.scoreRows">
-   <td class=player>{{row.name}}</td>
-   <td class=team-name>{{row.team1}}</td>
-   <td class=team-score>{{row.score1}}</td>
-   <td class=team-name>{{row.team2}}</td>
-   <td class=team-score>{{row.score2}}</td>
-  </tr>
- </tbody>
-</table>
+<div class="top">
+
+<div *ngFor="let league of displayLeagues">
+  <div class="league-title">{{league.name}}</div>
+  <div class="minis">
+    <mini-score *ngFor="let player of league.scoreRows"
+                [name]="player.name" [scores]="player.scores|async">
+    </mini-score>
+  </div>
+</div>
+
 </div>

@@ -1,21 +1,7 @@
-.score-table{
-  width:90%;
-  margin:auto;
-}
-
-.player {
-  max-width: 10em;
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-
-.team-name {
-  width:3em;
-  text-align: left;
-}
-
-.team-score {
-  text-align:right;
+.top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .league-title {
@@ -24,4 +10,11 @@
   margin: auto;
   margin-top: 30px;
   margin-bottom: 10px;
+}
+
+.minis {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: top;
 }

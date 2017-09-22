@@ -6,7 +6,10 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
 import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/operator/map';
+
 import { ConstantsService } from './constants.service';
+import { ScoreService } from './score.service';
 import * as paths from './paths';
 
 @Component({
@@ -25,8 +28,12 @@ export class ScoresComponent {
   displayLeagues = [];
   selectedWeek = 1;
   year = '2017';
-  constructor(db: AngularFireDatabase, private afAuth: AngularFireAuth, private route: ActivatedRoute,
-              private router: Router, private constants: ConstantsService) {
+  constructor(db: AngularFireDatabase,
+              private afAuth: AngularFireAuth,
+              private route: ActivatedRoute,
+              private router: Router,
+              private constants: ConstantsService,
+              private scoreService: ScoreService) {
     this.db = db;
     this.user = afAuth.authState;
 
@@ -92,10 +99,14 @@ export class ScoresComponent {
 
         const scoreRow = {
           'name': name,
-          'team1': teams[0],
-          'score1': this.getScore(teams[0]),
-          'team2': teams[1],
-          'score2': this.getScore(teams[1]),
+          'scores': Observable
+            .combineLatest([this.getScore(teams[0]), this.getScore(teams[1])])
+            .map(([s0, s1]) => {
+              return [
+                {'name': teams[0], 'score': s0},
+                {'name': teams[1], 'score': s1},
+              ];
+            }),
         };
         league.name = leagueName;
         league.scoreRows.push(scoreRow);
@@ -104,10 +115,13 @@ export class ScoresComponent {
     }
   }
 
-  getScore(teamName: string): number {
-    if (!this.teamToScores[teamName]) {
-      return 0;
-    }
-    return this.teamToScores[teamName];
+  getScore(teamName: string): Observable<number> {
+    return this.scoreService.scoreFor(this.selectedWeek.toString(), teamName)
+      .map((v) => {
+        if (!v || !v.total) {
+          return 0;
+        }
+        return v.total;
+      });
   }
 }
