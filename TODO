@@ -6,8 +6,6 @@ Features:
 - Add the road teams to the lineup setter
 - Alphabetize the lineup columns?
 - Bold your team on the scoreboard
-- Make standings use ~cards~
-
 
 Cleanup:
 - Add tests for all the other components
@@ -18,7 +16,6 @@ Cleanup:
 - Move ad-hoc schema (leagues, scores?) into explicit TypeScript classes
 - Use input binding to ensure consistent weeks, inject years? 
 - EventEmitter to decide when to hide week selector
-
 
 If there's time:
 - Check for <5 teams played. Lower priority because we can just force it the last five weeks of the year.

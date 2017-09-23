@@ -28,3 +28,13 @@
 .player-minis mini-stat {
   align-self: center;
 }
+
+mdl-card-title div {
+  align-self: left;
+}
+
+mdl-card {
+  margin: auto;
+  margin-top: 15px;
+  width: 85%;
+}
