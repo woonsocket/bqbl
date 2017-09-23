@@ -93,7 +93,12 @@ export class AdminComponent {
   }
 
   changeWeek(weekNum: string, locked: boolean) {
-    this.unlockedWeeks.set(weekNum, locked);
+    this.unlockedWeeks.set(weekNum, locked)
+      .catch(err => {
+        this.snackbarService.showSnackbar({
+          message: `Write failed. Are you an admin?`,
+        });
+      });
   }
 
   onCreateLeague() {
