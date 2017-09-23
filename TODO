@@ -6,6 +6,8 @@ Features:
 - Add the road teams to the lineup setter
 - Alphabetize the lineup columns?
 - Bold your team on the scoreboard
+- Make standings use ~cards~
+
 
 Cleanup:
 - Add tests for all the other components

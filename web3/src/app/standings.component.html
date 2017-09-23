@@ -1,7 +1,9 @@
-<div class="top">
-  <div class="league mdl-shadow--4dp"
-       *ngFor="let leagueKey of getIterable(leagues)">
-    <!-- TODO(aerion): Show league name here. -->
+<mdl-tabs mdl-ripple mdl-tab-active-index="0">
+  <mdl-tab-panel *ngFor="let leagueKey of getIterable(leagues)">
+    <mdl-tab-panel-title>
+      <span>{{leagueIdToName[leagueKey]}}</span>
+    </mdl-tab-panel-title>
+    <mdl-tab-panel-content>
     <div class="player" *ngFor="let player of leagues[leagueKey]">
       <div class="player-name">{{player.name}}</div>
       <div class="player-minis">
@@ -11,5 +13,6 @@
         </mini-score>
       </div>
     </div>
-  </div>
-</div>
+  </mdl-tab-panel-content>
+</mdl-tab-panel>
+</mdl-tabs>

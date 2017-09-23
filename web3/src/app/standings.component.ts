@@ -6,7 +6,7 @@ import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable }
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/combineLatest';
-
+import { User } from './structs'
 import { ConstantsService } from './constants.service';
 import { ScoreService } from './score.service';
 import * as paths from './paths';
@@ -19,8 +19,8 @@ export class StandingsComponent {
   userDataList: FirebaseListObservable<any>;
   db: AngularFireDatabase;
   user: Observable<firebase.User>;
-  leagueToUsers = {};
-  leagueToNames = {};
+  leagueIdToUsers = new Map<string, User[]>();
+  leagueIdToName = new Map<string, string>();
   userToTeams = {};
   teamToScores = {};
   leagues = {};
@@ -39,11 +39,11 @@ export class StandingsComponent {
       this.userDataList = this.db.list(paths.getUsersPath());
       this.userDataList.subscribe(users => {
         for (const user of users) {
-          const league = this.leagueToUsers[user.leagueId] || [];
+          const league = this.leagueIdToUsers[user.leagueId] || [];
           league.push(user);
-          this.leagueToUsers[user.leagueId] = league;
+          this.leagueIdToUsers[user.leagueId] = league;
 
-          this.leagueToNames[user.leagueId] = user.leagueName;
+          this.leagueIdToName[user.leagueId] = user.leagueName;
           this.userToTeams[user.$key] = {};
           for (const week of user.weeks) {
             const activeTeams = [];
@@ -80,8 +80,8 @@ export class StandingsComponent {
   // TODO doing a join by hand feels terrible.
   updateScores(): void {
     this.leagues = {};
-    for (const leagueKey in this.leagueToUsers) {
-      for (const user of this.leagueToUsers[leagueKey]) {
+    for (const leagueKey in this.leagueIdToUsers) {
+      for (const user of this.leagueIdToUsers[leagueKey]) {
         const allScores: Observable<number>[] = [];
         const weeks: Observable<any>[] = [];
         for (const userWeek of user.weeks) {
@@ -90,7 +90,7 @@ export class StandingsComponent {
             if (userTeam.selected) {
               const score =
                 this.scoreService.scoreFor(userWeek.id, userTeam.name);
-              scoresForWeek.push(score.map((s) => {
+                scoresForWeek.push(score.map((s) => {
                 if (!s) {
                   return null;
                 }
