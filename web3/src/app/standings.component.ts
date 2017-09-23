@@ -21,8 +21,8 @@ export class StandingsComponent {
   user: Observable<firebase.User>;
   leagueIdToUsers = new Map<string, User[]>();
   leagueIdToName = new Map<string, string>();
-  userToTeams = new Map<string, any>();
-  leagues = {};
+  userToTeams = new Map<string, Array<any>>();
+  leagues = new Map<string, Array<any>>();
   year = '2017';
 
   constructor(db: AngularFireDatabase,
@@ -77,7 +77,7 @@ export class StandingsComponent {
 
   // TODO doing a join by hand feels terrible.
   updateScores(): void {
-    this.leagues = {};
+    this.leagues.clear();
     for (const leagueKey in this.leagueIdToUsers) {
       for (const user of this.leagueIdToUsers[leagueKey]) {
         const allScores: Observable<number>[] = [];

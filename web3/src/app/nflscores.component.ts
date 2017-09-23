@@ -11,7 +11,7 @@ import { ConstantsService } from './constants.service';
   styleUrls: ['./nflscores.component.css'],
 })
 export class NFLScoresComponent implements OnInit {
-  scores = [];
+  scores = new Array<any>();
   selectedWeek = 'P1';
   year = '2017';
   sortOrder = 'score';

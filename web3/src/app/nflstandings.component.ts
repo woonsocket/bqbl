@@ -15,16 +15,15 @@ export class NFLStandingsComponent implements OnInit {
   year = '2017';
   scoreTable: any;
 
-  // TODO(aerion): Add types to these.
-  scoresByTeam = {};
-  scores247ByTeam = {};
+  scoresByTeam = new Map<string, Map<string, number>>();
+  scores247ByTeam = new Map<string, Map<string, number>>();
 
   constructor(private db: AngularFireDatabase,
               private constants: ConstantsService) {}
 
   ngOnInit() {
     this.db.list(`/scores/${this.year}`).subscribe((d) => {
-      const scores = {};
+      const scores = new Map<string, Map<string, number>>();
       d.forEach((week) => {
         const weekNum = week.$key;
         if (weekNum.startsWith('P')) {
@@ -41,15 +40,15 @@ export class NFLStandingsComponent implements OnInit {
       this.computeScores();
     });
     this.db.list(`/scores247/${this.year}`).subscribe((d) => {
-      const scores = {};
+      const scores247 = new Map<string, Map<string, number>>();
       d.forEach((entry) => {
         const name = entry['team'];
-        if (!(name in scores)) {
-          scores[name] = 0;
+        if (!(name in scores247)) {
+          scores247[name] = 0;
         }
-        scores[name] += (entry['points'] || 0);
+        scores247[name] += (entry['points'] || 0);
       });
-      this.scores247ByTeam = scores;
+      this.scores247ByTeam = scores247;
       this.computeScores();
     });
 
