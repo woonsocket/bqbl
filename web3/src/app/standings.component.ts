@@ -21,8 +21,7 @@ export class StandingsComponent {
   user: Observable<firebase.User>;
   leagueIdToUsers = new Map<string, User[]>();
   leagueIdToName = new Map<string, string>();
-  userToTeams = {};
-  teamToScores = {};
+  userToTeams = new Map<string, any>();
   leagues = {};
   year = '2017';
 
@@ -73,7 +72,6 @@ export class StandingsComponent {
   }
 
   loadScoresDb(): void {
-    this.teamToScores = {};
     this.updateScores();
   }
 
