@@ -27,7 +27,6 @@ export class AdminComponent {
   private notesField: MdlTextFieldComponent;
 
   user: Observable<firebase.User>;
-  weeks = [];
   leagueName = '';   // TODO pull this into subcomponent
   hasDh = false;
   maxPlays = 13;
@@ -43,6 +42,9 @@ export class AdminComponent {
     {key: 'desc', name: 'Description'},
     {key: 'notes', name: 'Notes'},
   ]);
+
+  // Value is true if the week is unlocked. All absent values are false (locked).
+  unlockedWeeks: FirebaseListObservable<any>;
 
   createRange(number) {
     const items: number[] = [];
@@ -60,10 +62,11 @@ export class AdminComponent {
 
     // Populate by default for testing iteration.
     this.users = constants.getDummyLeague();
-    this.weeks = constants.getAllWeeks();
 
     this.points247 = this.db.list(`/scores247/${this.year}`);
     this.points247.subscribe((d) => this.mdlTable247.data = d || []);
+
+    this.unlockedWeeks = this.db.list('/unlockedweeks');
   }
 
   onAdd247() {
@@ -87,6 +90,10 @@ export class AdminComponent {
   onChange() {
     console.log(this.users);
     return false;
+  }
+
+  changeWeek(weekNum: string, locked: boolean) {
+    this.unlockedWeeks.set(weekNum, locked);
   }
 
   onCreateLeague() {

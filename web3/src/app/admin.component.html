@@ -13,6 +13,21 @@
 </mdl-tab-panel>
 
 <mdl-tab-panel>
+  <mdl-tab-panel-title>Lock Weeks</mdl-tab-panel-title>
+  <mdl-tab-panel-content>
+    <div *ngFor="let week of unlockedWeeks|async">
+      <!-- Using mdl-ripple here causes a bug where clicking Week N for the
+      first time causes the Week N+1 switch to receive the click. Dunno why. -->
+      <mdl-switch #locked
+                  [ngModel]="week.$value"
+                  (click)="changeWeek(week.$key.toString(), locked.value)">
+        Week {{week.$key}}
+      </mdl-switch>
+    </div>
+  </mdl-tab-panel-content>
+</mdl-tab-panel>
+
+<mdl-tab-panel>
  <mdl-tab-panel-title>Create League</mdl-tab-panel-title>
  <mdl-tab-panel-content>
   <mdl-textfield type="text" label="League name" floating-label
