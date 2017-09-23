@@ -57,10 +57,14 @@
         },
         "weeks": {
           "$week_id" : {
-            ".write": "$user_id === auth.uid && root.child('unlockedweeks').hasChild(newData.child('id').val())"
+            ".write": "$user_id === auth.uid && root.child('unlockedweeks/' + newData.child('id').val()).val() === true"
           }
         }
       }
+    },
+    "unlockedweeks": {
+      ".read": true,
+      ".write": "root.child('roles/admins/' + auth.uid).exists()"
     },
     "leagues": {
       ".read": true,
