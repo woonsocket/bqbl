@@ -18,3 +18,7 @@ export function getEventsPath(): string {
 export function getUnlockedWeeksPath(): string {
   return '/unlockedweeks/';
 }
+
+export function getScoresPath(year: string, week: string, team: string) : string {
+  return `/scores/${year}/${week}/${team}`;
+}

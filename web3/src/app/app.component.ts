@@ -24,7 +24,7 @@ export class AppComponent implements OnInit {
   selectedWeek = '';
   year = '2017';
   weekDropdownSuppressPaths = [
-  '/newuser', '/admin'
+  '/newuser', '/admin', '/lineup', '/standings', '/nflstandings'
   ];
   suppressWeekDropdown = false;
   constructor(

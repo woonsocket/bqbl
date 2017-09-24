@@ -13,9 +13,12 @@ import { FormsModule } from '@angular/forms';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/of';
 
+import { NflLogoPipe } from './nfl-logo.pipe';
 import { MockAngularFireDb, MockAngularFireAuth } from './mockangularfire';
 import { DefaultData } from './fakedatabaseresponses'
-
+import { MiniScoreComponent } from './mini-score.component';
+import { ScoreCellComponent } from './score-cell.component';
+import { ScoreService } from './score.service';
 import { ConstantsService } from './constants.service';
 import { ScoresComponent } from './scores.component';
 
@@ -32,12 +35,13 @@ describe('ScoresComponent', () => {
     this.mockAuth = new MockAngularFireAuth(USER_ID, 'Harvey');
 
     TestBed.configureTestingModule({
-      declarations: [ ScoresComponent ], // declare the test component
+      declarations: [ ScoresComponent, MiniScoreComponent, ScoreCellComponent, NflLogoPipe], // declare the test component
       imports: [ MdlModule, FormsModule ],
       providers: [
       { provide: ComponentFixtureAutoDetect, useValue: true },
       { provide: AngularFireAuth, useValue: this.mockAuth },
       { provide: AngularFireDatabase, useValue: this.mockDb },
+      { provide: ScoreService, useValue: new ScoreService(this.mockDb) },
       { provide: Router, useValue: true },
       { provide: ConstantsService, useValue: new ConstantsService() },
       { provide: MdlSnackbarService, useValue: true },

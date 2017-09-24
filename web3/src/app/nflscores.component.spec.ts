@@ -16,7 +16,9 @@ import 'rxjs/add/observable/of';
 import { MockAngularFireDb, MockAngularFireAuth } from './mockangularfire';
 import { DefaultData } from './fakedatabaseresponses'
 
-import { NflIconPipe, NflLogoPipe } from './nfl-logo.pipe';
+import { NflLogoPipe } from './nfl-logo.pipe';
+import { MiniScoreComponent } from './mini-score.component';
+import { ScoreCellComponent } from './score-cell.component';
 import { ConstantsService } from './constants.service';
 import { NFLScoresComponent } from './nflscores.component';
 
@@ -33,7 +35,7 @@ describe('NFLScoresComponent', () => {
     this.mockAuth = new MockAngularFireAuth(USER_ID, 'Harvey');
 
     TestBed.configureTestingModule({
-      declarations: [ NFLScoresComponent, NflLogoPipe ], // declare the test component
+      declarations: [ NFLScoresComponent, NflLogoPipe, MiniScoreComponent, ScoreCellComponent  ], // declare the test component
       imports: [ MdlModule, FormsModule ],
       providers: [
       { provide: ComponentFixtureAutoDetect, useValue: true },
