@@ -3,7 +3,7 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { AngularFireDatabase } from 'angularfire2/database';
 import { Component } from '@angular/core';
 import { OnInit } from '@angular/core';
-
+import * as paths from './paths'
 import { ConstantsService } from './constants.service';
 
 @Component({
@@ -24,7 +24,7 @@ export class NFLScoresComponent implements OnInit {
   ngOnInit() {
     this.route.queryParams.subscribe((params: Params) => {
       this.selectedWeek = params.week || this.constants.getDefaultWeekId();
-      const query = this.db.list(`/scores/${this.year}/${this.selectedWeek}`, {
+      const query = this.db.list(paths.getScoresPath(this.year, this.selectedWeek), {
         query: {
           orderByChild: 'total'
         }

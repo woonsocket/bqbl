@@ -10,8 +10,7 @@
           <h2 mdl-card-title-text>{{player.name}}</h2>
           <div style=align-self:left>
             Total: {{player.total|async}}
-          </div>  
-
+          </div>
         </mdl-card-title>
         <mdl-card-supporting-text>
           <mini-score *ngFor="let week of player.weeks|async"

@@ -77,7 +77,7 @@ export class AntiScoresComponent {
 
   loadScoresDb(): void {
     this.teamToScores = {};
-    this.scoresList = this.db.list('/scores/' + this.year + '/' + this.selectedWeek);
+    this.scoresList = this.db.list(paths.getScoresPath(this.year, `{this.selectedWeek}`));
     this.scoresList.subscribe(scores => {
       for (const score of scores) {
         this.teamToScores[score.$key] = score.total;

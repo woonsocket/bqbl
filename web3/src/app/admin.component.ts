@@ -63,10 +63,10 @@ export class AdminComponent {
     // Populate by default for testing iteration.
     this.users = constants.getDummyLeague();
 
-    this.points247 = this.db.list(`/scores247/${this.year}`);
+    this.points247 = this.db.list(paths.get247ScoresPath(this.year));
     this.points247.subscribe((d) => this.mdlTable247.data = d || []);
 
-    this.unlockedWeeks = this.db.list('/unlockedweeks');
+    this.unlockedWeeks = this.db.list(paths.getUnlockedWeeksPath());
   }
 
   onAdd247() {

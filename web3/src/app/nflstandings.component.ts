@@ -5,7 +5,7 @@ import { AngularFireDatabase } from 'angularfire2/database';
 import { Component } from '@angular/core';
 import { MdlDefaultTableModel } from '@angular-mdl/core';
 import { OnInit } from '@angular/core';
-
+import * as paths from './paths'
 import { ConstantsService } from './constants.service';
 
 @Component({
@@ -22,7 +22,7 @@ export class NFLStandingsComponent implements OnInit {
               private constants: ConstantsService) {}
 
   ngOnInit() {
-    this.db.list(`/scores/${this.year}`).subscribe((d) => {
+    this.db.list(paths.getScoresPath(this.year)).subscribe((d) => {
       const scores = new Map<string, Map<string, number>>();
       d.forEach((week) => {
         const weekNum = week.$key;
@@ -39,7 +39,7 @@ export class NFLStandingsComponent implements OnInit {
       this.scoresByTeam = scores;
       this.computeScores();
     });
-    this.db.list(`/scores247/${this.year}`).subscribe((d) => {
+    this.db.list(paths.get247ScoresPath(this.year)).subscribe((d) => {
       const scores247 = new Map<string, Map<string, number>>();
       d.forEach((entry) => {
         const name = entry['team'];

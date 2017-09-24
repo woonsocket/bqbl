@@ -2,6 +2,7 @@ import { AngularFireDatabase, FirebaseObjectObservable } from 'angularfire2/data
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
+import * as paths from './paths'
 
 @Injectable()
 export class ScoreService {
@@ -14,7 +15,7 @@ export class ScoreService {
    * team. If the week/team combo does not exist, the Observable emits null.
    */
   scoreFor(week: string, team: string): Observable<any> {
-    return this.db.object(`/scores/${this.year}/${week}/${team}`)
+    return this.db.object(paths.getScoresPath(this.year, week, team))
       .map(v => v.$exists() ? v : null);
   }
 }
