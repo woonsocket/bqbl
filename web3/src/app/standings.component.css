@@ -37,4 +37,9 @@ mdl-card {
   margin: auto;
   margin-top: 15px;
   width: 85%;
+  min-height: 0px;
+}
+
+mdl-card-supporting-text {
+  padding-top: 0px;
 }
