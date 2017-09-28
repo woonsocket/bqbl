@@ -37,9 +37,7 @@
     <div class="score-card-comp-desc">
      {{ projectScores && !isFinal(score) ? 'Projected ' : '' }}Total
     </div>
-    <div [ngClass]="{'score-card-comp-val': true, 'mdl-color-text--red-700': score.total < 0}">
-     {{ getTotal(score) }}
-    </div>
+    <score-cell [value]="getTotal(score)"></score-cell>
    </div>
    <div *ngFor="let comp of getComponents(score)"
         class="score-card-comp">
