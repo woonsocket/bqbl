@@ -341,12 +341,14 @@ def main():
             scrape_status_ref.update(scrape_status)
 
         events_ref = db.reference('/events/{0}/{1}'.format(season, week))
-        events_ref.update({
-            'fumbles': plays.events.fumbles,
-            'safeties': plays.events.safeties,
-            'interceptions': plays.events.interceptions,
-            'passers': plays.events.passers,
-        })
+        if plays.events.fumbles:
+            events_ref.child('fumbles').update(plays.events.fumbles)
+        if plays.events.safeties:
+            events_ref.child('safeties').update(plays.events.safeties)
+        if plays.events.interceptions:
+            events_ref.child('interceptions').update(plays.events.interceptions)
+        if plays.events.passers:
+            events_ref.child('passers').update(plays.events.passers)
 
         if plays.outcomes_by_team:
             db.reference('/stats/%s/%s' % (season, week)).update(
