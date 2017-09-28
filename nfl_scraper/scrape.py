@@ -36,8 +36,6 @@ parser.add_option("--all", dest="all", action="store_true",
                   help="Scrape all games, not just those that are 'due'")
 parser.add_option("--firebase_creds", dest="firebase_cred_file",
                   help="File containing Firebase service account credentials")
-parser.add_option("--slack_config", dest="slack_config",
-                  help="DEPRECATED. This is a no-op and will be removed.")
 
 
 def init_firebase(cred_file):
