@@ -109,4 +109,12 @@ export class NFLScoresComponent implements OnInit {
         `${gameId}/${this.year}/${nflWeek}/${atCode}` +
         '#tab=analyze&analyze=boxscore';
   }
+
+  boxScoreLinkText(scoreObj: object) {
+    const {aName, hName, aScore, hScore} = scoreObj['gameInfo'];
+    if (!(aName && hName)) {
+      return `Box Score`;
+    }
+    return `${aName} ${aScore} @ ${hName} ${hScore}`;
+  }
 }
