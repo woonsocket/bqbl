@@ -4,7 +4,8 @@
   <div class="league-title">{{league.name}}</div>
   <div class="minis">
     <mini-score *ngFor="let player of league.scoreRows"
-                [name]="player.name" [scores]="player.scores|async">
+                [name]="player.name" [scores]="player.scores|async"
+                showTotal="true">
     </mini-score>
   </div>
 </div>

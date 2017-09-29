@@ -8,6 +8,12 @@ releases alliteratively.
 
 ## [Unreleased]
 
+### Added
+- (aerion) Sum the two teams' scores on the scoreboard.
+
+### Fixed
+- (aerion) Fix 24/7 points console.
+
 ## [0.3.0] - "Woeful Wynn" - 2017-09-28
 
 ### Added
