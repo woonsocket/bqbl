@@ -31,6 +31,5 @@ export function getScoresPath(year: string, week?: string, team?: string) : stri
 }
 
 export function get247ScoresPath(year: string) : string {
-  return `/scores/${year}`;
+  return `/scores247/${year}`;
 }
-
