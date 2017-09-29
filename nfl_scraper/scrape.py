@@ -190,6 +190,17 @@ class Plays(object):
         self.outcomes_by_team[home_abbr]['CLOCK'] = clock
         self.outcomes_by_team[away_abbr]['CLOCK'] = clock
 
+        home_score = home_box['score']['T']
+        away_score = away_box['score']['T']
+        score_obj = {
+            'HOME': home_abbr,
+            'AWAY': away_abbr,
+            'HSCORE': home_score,
+            'ASCORE': away_score,
+        }
+        self.outcomes_by_team[home_abbr]['SCORE'] = score_obj
+        self.outcomes_by_team[away_abbr]['SCORE'] = score_obj
+
         passers = set()
 
         home_passers = home_box['stats'].get('passing', {})
