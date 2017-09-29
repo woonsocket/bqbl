@@ -13,6 +13,7 @@ releases alliteratively.
   week. Still needs more UI work.
 - (aerion) More compact scores page, using the same needs-work UI elements as
   above.
+- (aerion) Show game score on the scoreboard.
 
 ### Fixed
 - (harveyj) Fix the BQBL scoreboard page database path
