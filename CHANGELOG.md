@@ -8,6 +8,8 @@ releases alliteratively.
 
 ## [Unreleased]
 
+## [0.3.0] - "Woeful Wynn" - 2017-09-28
+
 ### Added
 - (aerion) More detailed standings page, including each player's scores for each
   week. Still needs more UI work.
