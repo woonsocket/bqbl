@@ -49,6 +49,13 @@ exports.computeScore = function(stats, overrides) {
     'clock': stats['CLOCK'],
     'id': stats['ID'],
   };
+  let gameScore = stats['SCORE'];
+  if (gameScore) {
+    gameInfo['hName'] = gameScore['HOME'];
+    gameInfo['aName'] = gameScore['AWAY'];
+    gameInfo['hScore'] = gameScore['HSCORE'];
+    gameInfo['aScore'] = gameScore['ASCORE'];
+  }
 
   return {
     'total': score['total'],
