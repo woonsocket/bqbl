@@ -8,6 +8,8 @@ releases alliteratively.
 
 ## [Unreleased]
 
+## [0.3.1] - 2017-09-28
+
 ### Added
 - (aerion) Sum the two teams' scores on the scoreboard.
 
