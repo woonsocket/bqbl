@@ -50,7 +50,8 @@ def init_firebase(cred_file):
 
 def ordinal(n):
     """Ordinals for quarter numbers."""
-    return {'1': '1st', '2': '2nd', '3': '3rd', '4': '4th'}.get(n) or str(n)
+    return ({'1': '1st', '2': '2nd', '3': '3rd', '4': '4th', '5': 'OT'}.get(n)
+            or str(n))
 
 
 def parse_box(box, is_qb):
