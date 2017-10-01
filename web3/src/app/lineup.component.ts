@@ -22,6 +22,7 @@ export class LineupComponent {
   userDataSnapshot: any;
   leagueRules: LeagueRules;
   unlockedWeeks: Set<string>;
+  schedule: any;
 
   user: Observable<firebase.User>;
   uid: string;
@@ -34,6 +35,7 @@ export class LineupComponent {
               private mdlSnackbarService: MdlSnackbarService,
               private constants: ConstantsService) {
     this.user = afAuth.authState;
+    this.schedule = constants.getSchedule();
     this.user.subscribe(value => {
       if (!value) {
         this.displayName = '';
