@@ -12,6 +12,7 @@ releases alliteratively.
 
 ### Added
 - (aerion) Sum the two teams' scores on the scoreboard.
+- (harveyj) Show road teams on the lineup setter.
 
 ### Fixed
 - (aerion) Fix 24/7 points console.
