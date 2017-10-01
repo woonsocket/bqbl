@@ -17,14 +17,16 @@ import * as paths from './paths';
 export class AdminComponent {
   @ViewChild(MdlDialogComponent)
   private dialog: MdlDialogComponent;
+  @ViewChild('week')
+  private weekField: MdlTextFieldComponent;
   @ViewChild('team')
   private teamField: MdlTextFieldComponent;
   @ViewChild('points')
   private pointsField: MdlTextFieldComponent;
   @ViewChild('desc')
   private descField: MdlTextFieldComponent;
-  @ViewChild('notes')
-  private notesField: MdlTextFieldComponent;
+  @ViewChild('url')
+  private urlField: MdlTextFieldComponent;
 
   user: Observable<firebase.User>;
   leagueName = '';   // TODO pull this into subcomponent
@@ -37,10 +39,11 @@ export class AdminComponent {
   year = '2017';
   points247: FirebaseListObservable<any>;
   mdlTable247 = new MdlDefaultTableModel([
+    {key: 'week', name: 'Week', sortable: true},
     {key: 'team', name: 'Team', sortable: true},
     {key: 'points', name: 'Points', sortable: true, numeric: true},
     {key: 'desc', name: 'Description'},
-    {key: 'notes', name: 'Notes'},
+    {key: 'url', name: 'Url'},
   ]);
 
   // Value is true if the week is unlocked. All absent values are false (locked).
@@ -71,10 +74,11 @@ export class AdminComponent {
 
   onAdd247() {
     this.points247.push({
+      week: this.weekField.value,
       team: this.teamField.value,
       points: this.pointsField.value,
       desc: this.descField.value || '',
-      notes: this.notesField.value || '',
+      url: this.urlField.value || '',
     });
     this.close247Dialog();
   }
@@ -84,7 +88,7 @@ export class AdminComponent {
     this.teamField.value = '';
     this.pointsField.value = '';
     this.descField.value = '';
-    this.notesField.value = '';
+    this.urlField.value = '';
   }
 
   onChange() {
