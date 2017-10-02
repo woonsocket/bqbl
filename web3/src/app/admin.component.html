@@ -3,7 +3,7 @@
 <mdl-tab-panel>
  <mdl-tab-panel-title>24/7 Points</mdl-tab-panel-title>
  <mdl-tab-panel-content>
-  <mdl-table [table-model]="mdlTable247"></mdl-table>
+  <table-247 [entries]="points247 | async"></table-247>
   <button #add247button
           mdl-button mdl-button-type="raised" mdl-colored="accent" mdl-ripple
           (click)="add247dialog.show()">

@@ -20,6 +20,7 @@ import { StandingsComponent } from './standings.component';
 import { ConstantsService } from './constants.service';
 import { ScoreService } from './score.service';
 import { AdminComponent } from './admin.component';
+import { Table247Component } from './247/table-247.component';
 import { RouterModule, Routes } from '@angular/router';
 import { environment } from '../environments/environment';
 import { routing } from './app.routes';
@@ -44,6 +45,7 @@ import { NflIconPipe, NflLogoPipe } from './nfl-logo.pipe';
     ConsoleComponent,
     ConsoleComponent,
     AdminComponent,
+    Table247Component,
     StandingsComponent,
     LoginComponent,
     NflIconPipe,

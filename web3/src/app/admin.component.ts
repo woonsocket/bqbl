@@ -38,13 +38,6 @@ export class AdminComponent {
 
   year = '2017';
   points247: FirebaseListObservable<any>;
-  mdlTable247 = new MdlDefaultTableModel([
-    {key: 'week', name: 'Week', sortable: true},
-    {key: 'team', name: 'Team', sortable: true},
-    {key: 'points', name: 'Points', sortable: true, numeric: true},
-    {key: 'desc', name: 'Description'},
-    {key: 'url', name: 'Url'},
-  ]);
 
   // Value is true if the week is unlocked. All absent values are false (locked).
   unlockedWeeks: FirebaseListObservable<any>;
@@ -67,7 +60,6 @@ export class AdminComponent {
     this.users = constants.getDummyLeague();
 
     this.points247 = this.db.list(paths.get247ScoresPath(this.year));
-    this.points247.subscribe((d) => this.mdlTable247.data = d || []);
 
     this.unlockedWeeks = this.db.list(paths.getUnlockedWeeksPath());
   }
