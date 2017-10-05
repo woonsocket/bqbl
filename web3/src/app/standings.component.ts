@@ -21,7 +21,7 @@ export class StandingsComponent {
   user: Observable<firebase.User>;
   leagueIdToUsers = new Map<string, User[]>();
   leagueIdToName = new Map<string, string>();
-  userToTeams = new Map<string, Array<any>>();
+  userToTeams = new Map<string, any>();
   leagues = new Map<string, Array<any>>();
   year = '2017';
 
@@ -37,13 +37,14 @@ export class StandingsComponent {
     this.user.subscribe(value => {
       this.userDataList = this.db.list(paths.getUsersPath());
       this.userDataList.subscribe(users => {
+        this.leagueIdToUsers = new Map();
         for (const user of users) {
-          const league = this.leagueIdToUsers[user.leagueId] || [];
+          const league = this.leagueIdToUsers.get(user.leagueId) || [];
           league.push(user);
-          this.leagueIdToUsers[user.leagueId] = league;
+          this.leagueIdToUsers.set(user.leagueId, league);
 
-          this.leagueIdToName[user.leagueId] = user.leagueName;
-          this.userToTeams[user.$key] = {};
+          this.leagueIdToName.set(user.leagueId, user.leagueName);
+          this.userToTeams.set(user.$key, {});
           for (const week of user.weeks) {
             const activeTeams = [];
             for (const team of week.teams) {
@@ -51,7 +52,10 @@ export class StandingsComponent {
                 activeTeams.push(team.name);
               }
             }
-            this.userToTeams[user.$key][week.id] = {'name': user.name, 'teams': activeTeams};
+            this.userToTeams.get(user.$key)[week.id] = {
+              'name': user.name,
+              'teams': activeTeams,
+            };
           }
         }
         this.updateScores();
@@ -67,19 +71,19 @@ export class StandingsComponent {
     });
   }
 
-  getIterable(val) {
-    return Object.keys(val);
-  }
-
   loadScoresDb(): void {
     this.updateScores();
+  }
+
+  leagueKeys(): string[] {
+    return Array.from(this.leagues.keys());
   }
 
   // TODO doing a join by hand feels terrible.
   updateScores(): void {
     this.leagues.clear();
-    for (const leagueKey in this.leagueIdToUsers) {
-      for (const user of this.leagueIdToUsers[leagueKey]) {
+    for (const leagueKey of Array.from(this.leagueIdToUsers.keys())) {
+      for (const user of this.leagueIdToUsers.get(leagueKey)) {
         const allScores: Observable<number>[] = [];
         const weeks: Observable<any>[] = [];
         for (const userWeek of user.weeks) {
@@ -119,9 +123,9 @@ export class StandingsComponent {
           'weeks': Observable.combineLatest(weeks)
             .map((arr) => arr.filter((v) => v.scores.length > 0)),
         };
-        const league = this.leagues[leagueKey] || [];
+        const league = this.leagues.get(leagueKey) || [];
         league.push(userRow);
-        this.leagues[leagueKey] = league;
+        this.leagues.set(leagueKey, league);
       }
     }
   }

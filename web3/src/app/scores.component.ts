@@ -40,6 +40,7 @@ export class ScoresComponent {
     this.user.subscribe(value => {
       this.userDataList = this.db.list(paths.getUsersPath());
       this.userDataList.subscribe(users => {
+        this.leagueToUsers = {};
         for (const user of users) {
           const league = this.leagueToUsers[user.leagueId] || [];
           league.push(user);

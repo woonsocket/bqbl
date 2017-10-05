@@ -4,7 +4,7 @@ export class User {
   // TODO harveyj - make this a full-on league struct?
   leagueName: string;
   leagueId: string;
-  weeks: {};
+  weeks: Week[];
   dh: boolean;
 }
 

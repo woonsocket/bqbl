@@ -1,10 +1,10 @@
 <mdl-tabs mdl-ripple mdl-tab-active-index="0">
-  <mdl-tab-panel *ngFor="let leagueKey of getIterable(leagues)">
+  <mdl-tab-panel *ngFor="let leagueKey of leagueKeys()">
     <mdl-tab-panel-title>
-      <span>{{leagueIdToName[leagueKey]}}</span>
+      <span>{{leagueIdToName.get(leagueKey)}}</span>
     </mdl-tab-panel-title>
     <mdl-tab-panel-content>
-      <mdl-card mdl-shadow="2" *ngFor="let player of leagues[leagueKey]"
+      <mdl-card mdl-shadow="2" *ngFor="let player of leagues.get(leagueKey)"
       style=margin-bottom:10px>
         <mdl-card-title>
           <h2 mdl-card-title-text>{{player.name}}</h2>
