@@ -58,19 +58,21 @@ describe('ScoresComponent', () => {
   it('should render the scores', () => {
     this.mockDb.data = new DefaultData().get();
     this.mockDb.data.users[USER_ID].weeks[0].teams[1].selected = true;
-    this.mockDb.data.users[USER_ID].weeks[0].teams[2].selected = true; 
+    this.mockDb.data.users[USER_ID].weeks[0].teams[2].selected = true;
     console.log(this.mockDb.data);
 
     fixture = TestBed.createComponent(ScoresComponent);
-    let teamName = fixture.debugElement.queryAll(By.css('.team-name'));
-    let teamScore = fixture.debugElement.queryAll(By.css('.team-score'));
+    let teamName = fixture.debugElement.queryAll(
+      By.css('mini-score img'));
+    let teamScore = fixture.debugElement.queryAll(
+      By.css('mini-score score-cell'));
     fixture.detectChanges();
 
     expect(fixture.componentInstance.selectedWeek).toEqual(1);
-    expect(teamName[0].nativeElement.textContent).toEqual('HOU');
-    expect(teamName[1].nativeElement.textContent).toEqual('NYJ');
-    expect(teamScore[0].nativeElement.textContent).toEqual('31');
-    expect(teamScore[1].nativeElement.textContent).toEqual('32');
+    expect(teamName[0].nativeElement.title).toEqual('HOU');
+    expect(teamName[1].nativeElement.title).toEqual('NYJ');
+    expect(teamScore[0].nativeElement.textContent.trim()).toEqual('31');
+    expect(teamScore[1].nativeElement.textContent.trim()).toEqual('32');
   });
 
 });

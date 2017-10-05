@@ -57,7 +57,8 @@ describe('NFLScoresComponent', () => {
   it('should render the projected scores', () => {
     this.mockDb.data = new DefaultData().get();
     fixture = TestBed.createComponent(NFLScoresComponent);
-    let scores = fixture.debugElement.queryAll(By.css('.score-card-comp-val'));
+    let scores = fixture.debugElement.queryAll(
+      By.css('.score-card-comp score-cell'));
     fixture.detectChanges();
     expect(scores.length).toEqual(4);
     expect(scores[0].nativeElement.textContent).toContain("4");
@@ -71,7 +72,8 @@ describe('NFLScoresComponent', () => {
     fixture = TestBed.createComponent(NFLScoresComponent);
     fixture.componentInstance.projectScores = false;
     fixture.detectChanges();
-    let scores = fixture.debugElement.queryAll(By.css('.score-card-comp-val'));
+    let scores = fixture.debugElement.queryAll(
+      By.css('.score-card-comp score-cell'));
     expect(scores.length).toEqual(4);
     expect(scores[0].nativeElement.textContent).toContain("33");
     expect(scores[1].nativeElement.textContent).toContain("32");

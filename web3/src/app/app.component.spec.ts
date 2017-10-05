@@ -10,6 +10,9 @@ import { MdlModule } from '@angular-mdl/core';
 import { APP_BASE_HREF } from '@angular/common';
 import { RouterTestingModule } from '@angular/router/testing';
 
+import { MiniScoreComponent } from './mini-score.component';
+import { MiniStatComponent } from './mini-stat.component';
+import { ScoreCellComponent } from './score-cell.component';
 import { ScoresComponent } from './scores.component';
 import { AntiScoresComponent } from './antiscores.component';
 import { NFLScoresComponent } from './nflscores.component';
@@ -21,6 +24,7 @@ import { ConsoleComponent } from './console.component';
 import { StandingsComponent } from './standings.component';
 import { ConstantsService } from './constants.service';
 import { AdminComponent } from './admin.component';
+import { Table247Component } from './247/table-247.component';
 import { TickerComponent } from './ticker.component';
 import { environment } from '../environments/environment';
 import { routes } from './app.routes';
@@ -36,6 +40,9 @@ describe('AppComponent', () => {
     TestBed.configureTestingModule({
       declarations: [
       AppComponent,
+      MiniScoreComponent,
+      MiniStatComponent,
+      ScoreCellComponent,
       AntiScoresComponent,
       ScoresComponent,
       NFLScoresComponent,
@@ -45,6 +52,7 @@ describe('AppComponent', () => {
       ConsoleComponent,
       ConsoleComponent,
       AdminComponent,
+      Table247Component,
       StandingsComponent,
       LoginComponent,
       NflIconPipe,

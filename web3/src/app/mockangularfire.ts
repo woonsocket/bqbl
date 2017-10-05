@@ -21,7 +21,9 @@ export class MockAngularFireDbResponse {
   data: {};
 
   constructor(public path: string, data: any) {
-    this.data = data;
+    const exists = !!data;
+    this.data = data || {};
+    this.data['$exists'] = () => exists;
     this.path = path;
   }
 
@@ -44,6 +46,10 @@ export class MockAngularFireDbResponse {
         // TODO(harveyj): implement
       }
     }
+  }
+
+  map(fn: (x: any) => any): Observable<any> {
+    return Observable.of(fn(this.data));
   }
 
   // NOTE(harveyj): I don't understand this. I had to mock it out because
