@@ -8,11 +8,17 @@ releases alliteratively.
 
 ## [Unreleased]
 
+### Added
+- Show road teams on the lineup setter.
+
+### Fixed
+- BQBL Scores/Standings pages no longer create duplicate copies of every team
+  every time somebody edits a lineup.
+
 ## [0.3.1] - 2017-09-28
 
 ### Added
 - (aerion) Sum the two teams' scores on the scoreboard.
-- (harveyj) Show road teams on the lineup setter.
 
 ### Fixed
 - (aerion) Fix 24/7 points console.
