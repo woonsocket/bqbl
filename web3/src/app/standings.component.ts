@@ -89,38 +89,10 @@ function scoresForLeague(scoreService: ScoreService,
                          users: User[]): Observable<UserEntry[]> {
   const userEntries: Observable<UserEntry>[] = [];
   for (const user of users) {
-    const weeks: Observable<WeekEntry>[] = [];
-    for (const userWeek of user.weeks) {
-      const scoresForWeek: Observable<TeamScore>[] = [];
-      for (const userTeam of userWeek.teams) {
-        if (userTeam.selected) {
-          const score = scoreService.scoreFor(userWeek.id, userTeam.name);
-          scoresForWeek.push(score.map((s) => {
-            if (!s) {
-              return null;
-            }
-            return {
-              name: userTeam.name,
-              score: s.total,
-            };
-          }));
-        }
-      }
-      if (scoresForWeek.length > 0) {
-        weeks.push(
-          Observable.combineLatest(scoresForWeek)
-            .map((arr) => {
-              return {
-                name: `Week ${userWeek.id}`,
-                scores: arr.filter(v => !!v),
-              }
-            }));
-      }
-    }
-
-    const weeksArr: Observable<WeekEntry[]> = Observable.combineLatest(weeks);
+    const weekEntries: Observable<WeekEntry[]> =
+      weeklyScores(scoreService, user);
     userEntries.push(
-      Observable.combineLatest([weeksArr])
+      Observable.combineLatest([weekEntries])
         .map(([weeks]) => {
           let totalScore = 0;
           for (const week of weeks) {
@@ -141,4 +113,42 @@ function scoresForLeague(scoreService: ScoreService,
 
 function sortedByScore(users: Observable<UserEntry[]>): Observable<UserEntry[]> {
   return users.map((u) => u.sort((a, b) => b.total - a.total));
+}
+
+/**
+ * Groups scores for a user by week. If there are no scores for a week (e.g.,
+ * because the user hasn't chosen teams for that week, or because none of the
+ * chosen teams has played yet), the week is omitted.
+ */
+function weeklyScores(scoreService: ScoreService,
+                      user: User): Observable<WeekEntry[]> {
+  const weeks: Observable<WeekEntry>[] = [];
+  for (const userWeek of user.weeks) {
+    const scoresForWeek: Observable<TeamScore>[] = [];
+    for (const userTeam of userWeek.teams) {
+      if (userTeam.selected) {
+        const score = scoreService.scoreFor(userWeek.id, userTeam.name);
+        scoresForWeek.push(score.map((s) => {
+          if (!s) {
+            return null;
+          }
+          return {
+            name: userTeam.name,
+            score: s.total,
+          };
+        }));
+      }
+    }
+    if (scoresForWeek.length > 0) {
+      weeks.push(
+        Observable.combineLatest(scoresForWeek)
+          .map((arr) => {
+            return {
+              name: `Week ${userWeek.id}`,
+              scores: arr.filter(v => !!v),
+            }
+          }));
+    }
+  }
+  return Observable.combineLatest(weeks);
 }
