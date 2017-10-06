@@ -15,6 +15,7 @@ releases alliteratively.
 ### Fixed
 - BQBL Scores/Standings pages no longer create duplicate copies of every team
   every time somebody edits a lineup.
+- Count 24/7 points in the BQBL Standings.
 
 ## [0.3.1] - 2017-09-28
 

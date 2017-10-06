@@ -8,16 +8,16 @@
                 style=margin-bottom:10px>
         <mdl-card-title>
           <h2 mdl-card-title-text>{{player.name}}</h2>
-          <div style=align-self:left>
-            Total: {{player.total}}
+          <div style="align-self: left">
+            Total: {{player.total}} (24/7 points: {{player.total247}})
           </div>
         </mdl-card-title>
         <mdl-card-supporting-text>
           <mini-score *ngFor="let week of player.weeks"
-          [name]="week.name" [scores]="week.scores">
-        </mini-score>
-      </mdl-card-supporting-text>
-    </mdl-card>
-  </mdl-tab-panel-content>
-</mdl-tab-panel>
+                      [name]="week.name" [scores]="week.scores">
+          </mini-score>
+        </mdl-card-supporting-text>
+      </mdl-card>
+    </mdl-tab-panel-content>
+  </mdl-tab-panel>
 </mdl-tabs>

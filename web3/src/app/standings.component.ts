@@ -20,6 +20,7 @@ export class StandingsComponent {
   db: AngularFireDatabase;
   leagueIdToName = new Map<string, string>();
   leagues = new Map<string, Observable<UserEntry[]>>();
+  scores247ByTeam: Observable<Map<string, number>>;
   year = '2017';
 
   constructor(db: AngularFireDatabase,
@@ -28,6 +29,17 @@ export class StandingsComponent {
               private scoreService: ScoreService,
               private constants: ConstantsService) {
     this.db = db;
+
+    // TODO(aerion): Factor this out from here and nflstandings.
+    this.scores247ByTeam = this.db.list(paths.get247ScoresPath(this.year))
+      .map((d) => {
+        const byTeam = new Map<string, number>();
+        d.forEach((entry) => {
+          const {team, points = 0} = entry;
+          byTeam.set(team, (byTeam.get(team) || 0) + points);
+        });
+        return byTeam;
+      });
 
     // Take only one value. We expect the user list to be constant over the
     // course of a season, so there's no need to subscribe to changes.
@@ -46,8 +58,8 @@ export class StandingsComponent {
         leagueIdToUsers.forEach((leagueUsers, leagueId) => {
           leagues.set(
             leagueId,
-            sortedByScore(
-              scoresForLeague(scoreService, leagueId, leagueUsers)));
+            sortedByScore(scoresForLeague(scoreService, this.scores247ByTeam,
+                                          leagueId, leagueUsers)));
         });
         this.leagues = leagues;
       });
@@ -76,6 +88,7 @@ class WeekEntry {
 class UserEntry {
   name: string;
   total: number;
+  total247: number;
   weeks: WeekEntry[];
 }
 
@@ -85,24 +98,32 @@ class UserEntry {
  *     user's score changes.
  */
 function scoresForLeague(scoreService: ScoreService,
+                         scores247ByTeam: Observable<Map<string, number>>,
                          leagueKey: string,
                          users: User[]): Observable<UserEntry[]> {
   const userEntries: Observable<UserEntry>[] = [];
   for (const user of users) {
     const weekEntries: Observable<WeekEntry[]> =
       weeklyScores(scoreService, user);
+    const teams247: Observable<TeamScore[]> = scores247(scores247ByTeam, user);
     userEntries.push(
-      Observable.combineLatest([weekEntries])
-        .map(([weeks]) => {
+      Observable.combineLatest([weekEntries, teams247])
+        .map(([weeks, t247]) => {
           let totalScore = 0;
           for (const week of weeks) {
             for (const s of week.scores) {
               totalScore += s.score;
             }
           }
+          let total247 = 0;
+          for (const t of t247) {
+            total247 += t.score;
+            totalScore += t.score;
+          }
           return {
             'name': user.name,
             'total': totalScore,
+            'total247': total247,
             'weeks': weeks.filter((v) => v.scores.length > 0),
           };
         }));
@@ -151,4 +172,18 @@ function weeklyScores(scoreService: ScoreService,
     }
   }
   return Observable.combineLatest(weeks);
+}
+
+function scores247(byTeam: Observable<Map<string, number>>,
+                   user: User): Observable<TeamScore[]> {
+  return byTeam.map((m) => {
+    // Ugh, we should store the user's owned teams somewhere better.
+    const teams: string[] = user.weeks[0].teams.slice(0, 4).map((t) => t.name);
+    return teams.map((name) => {
+      return {
+        name: name,
+        score: m.get(name) || 0,
+      };
+    });
+  });
 }
