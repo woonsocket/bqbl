@@ -1,7 +1,5 @@
 import * as firebase from 'firebase/app';
 import { ActivatedRoute, Router, NavigationEnd, Event, Params } from '@angular/router';
-import { AngularFireAuth } from 'angularfire2/auth';
-import { AngularFireAuthModule } from 'angularfire2/auth';
 import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
@@ -20,7 +18,6 @@ import * as paths from './paths';
 export class StandingsComponent {
   userDataList: FirebaseListObservable<any>;
   db: AngularFireDatabase;
-  user: Observable<firebase.User>;
   leagueIdToUsers = new Map<string, User[]>();
   leagueIdToName = new Map<string, string>();
   userToTeams = new Map<string, any>();
@@ -28,40 +25,36 @@ export class StandingsComponent {
   year = '2017';
 
   constructor(db: AngularFireDatabase,
-              private afAuth: AngularFireAuth,
               private route: ActivatedRoute,
               private router: Router,
               private scoreService: ScoreService,
               private constants: ConstantsService) {
     this.db = db;
-    this.user = afAuth.authState;
 
-    this.user.subscribe(value => {
-      this.userDataList = this.db.list(paths.getUsersPath());
-      this.userDataList.subscribe(users => {
-        this.leagueIdToUsers = new Map();
-        for (const user of users) {
-          const league = this.leagueIdToUsers.get(user.leagueId) || [];
-          league.push(user);
-          this.leagueIdToUsers.set(user.leagueId, league);
+    this.userDataList = this.db.list(paths.getUsersPath());
+    this.userDataList.subscribe(users => {
+      this.leagueIdToUsers = new Map();
+      for (const user of users) {
+        const league = this.leagueIdToUsers.get(user.leagueId) || [];
+        league.push(user);
+        this.leagueIdToUsers.set(user.leagueId, league);
 
-          this.leagueIdToName.set(user.leagueId, user.leagueName);
-          this.userToTeams.set(user.$key, {});
-          for (const week of user.weeks) {
-            const activeTeams = [];
-            for (const team of week.teams) {
-              if (team.selected) {
-                activeTeams.push(team.name);
-              }
+        this.leagueIdToName.set(user.leagueId, user.leagueName);
+        this.userToTeams.set(user.$key, {});
+        for (const week of user.weeks) {
+          const activeTeams = [];
+          for (const team of week.teams) {
+            if (team.selected) {
+              activeTeams.push(team.name);
             }
-            this.userToTeams.get(user.$key)[week.id] = {
-              'name': user.name,
-              'teams': activeTeams,
-            };
           }
+          this.userToTeams.get(user.$key)[week.id] = {
+            'name': user.name,
+            'teams': activeTeams,
+          };
         }
-        this.updateScores();
-      });
+      }
+      this.updateScores();
     });
   }
 
