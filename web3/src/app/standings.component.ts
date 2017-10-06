@@ -69,7 +69,7 @@ export class StandingsComponent {
 
 class WeekEntry {
   name: string;
-  scores: Observable<TeamScore[]>;
+  scores: TeamScore[];
 }
 
 class UserEntry {
@@ -89,9 +89,9 @@ function scoresForLeague(scoreService: ScoreService,
   const userEntries: Observable<UserEntry>[] = [];
   for (const user of users) {
     const allScores: Observable<number>[] = [];
-    const weeks: Observable<any>[] = [];
+    const weeks: Observable<WeekEntry>[] = [];
     for (const userWeek of user.weeks) {
-      const scoresForWeek = [];
+      const scoresForWeek: Observable<TeamScore>[] = [];
       for (const userTeam of userWeek.teams) {
         if (userTeam.selected) {
           const score = scoreService.scoreFor(userWeek.id, userTeam.name);
