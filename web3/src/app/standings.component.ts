@@ -89,7 +89,6 @@ function scoresForLeague(scoreService: ScoreService,
                          users: User[]): Observable<UserEntry[]> {
   const userEntries: Observable<UserEntry>[] = [];
   for (const user of users) {
-    const allScores: Observable<number>[] = [];
     const weeks: Observable<WeekEntry>[] = [];
     for (const userWeek of user.weeks) {
       const scoresForWeek: Observable<TeamScore>[] = [];
@@ -105,7 +104,6 @@ function scoresForLeague(scoreService: ScoreService,
               score: s.total,
             };
           }));
-          allScores.push(score.map((s) => s ? s.total : 0));
         }
       }
       if (scoresForWeek.length > 0) {
@@ -120,15 +118,19 @@ function scoresForLeague(scoreService: ScoreService,
       }
     }
 
-    const scoresArr = Observable.combineLatest(allScores);
-    const weeksArr: Observable<WeekEntry[]> =
-      Observable.combineLatest(weeks);
+    const weeksArr: Observable<WeekEntry[]> = Observable.combineLatest(weeks);
     userEntries.push(
-      Observable.combineLatest([scoresArr, weeksArr])
-        .map(([scores, weeks]) => {
+      Observable.combineLatest([weeksArr])
+        .map(([weeks]) => {
+          let totalScore = 0;
+          for (const week of weeks) {
+            for (const s of week.scores) {
+              totalScore += s.score;
+            }
+          }
           return {
             'name': user.name,
-            'total': scores.reduce((a, b) => a + b, 0),
+            'total': totalScore,
             'weeks': weeks.filter((v) => v.scores.length > 0),
           };
         }));
