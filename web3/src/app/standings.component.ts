@@ -44,7 +44,9 @@ export class StandingsComponent {
         }
         const leagues: Map<string, Observable<UserEntry[]>> = new Map();
         leagueIdToUsers.forEach((leagueUsers, leagueId) => {
-          leagues.set(leagueId, this.scoresForLeague(leagueId, leagueUsers));
+          leagues.set(
+            leagueId,
+            scoresForLeague(scoreService, leagueId, leagueUsers));
         });
         this.leagues = leagues;
       });
@@ -63,59 +65,6 @@ export class StandingsComponent {
   getLeague(key: string): Observable<UserEntry[]> {
     return this.leagues.get(key);
   }
-
-  scoresForLeague(leagueKey: string, users: User[]): Observable<UserEntry[]> {
-    const userEntries: Observable<UserEntry>[] = [];
-    for (const user of users) {
-      const allScores: Observable<number>[] = [];
-      const weeks: Observable<any>[] = [];
-      for (const userWeek of user.weeks) {
-        const scoresForWeek = [];
-        for (const userTeam of userWeek.teams) {
-          if (userTeam.selected) {
-            const score =
-              this.scoreService.scoreFor(userWeek.id, userTeam.name);
-            scoresForWeek.push(score.map((s) => {
-              if (!s) {
-                return null;
-              }
-              return {
-                name: userTeam.name,
-                score: s.total,
-              };
-            }));
-            allScores.push(score.map((s) => s ? s.total : 0));
-          }
-        }
-        if (scoresForWeek.length > 0) {
-          weeks.push(
-            Observable.combineLatest(scoresForWeek)
-              .map((arr) => {
-                return {
-                  name: `Week ${userWeek.id}`,
-                  scores: arr.filter(v => !!v),
-                }
-              }));
-        }
-      }
-
-      const scoresArr = Observable.combineLatest(allScores);
-      const weeksArr: Observable<WeekEntry[]> =
-        Observable.combineLatest(weeks);
-      const userEntry: Observable<UserEntry> =
-        Observable.combineLatest([scoresArr, weeksArr])
-          .map(([scores, weeks]) => {
-            return {
-              'name': user.name,
-              'total': scores.reduce((a, b) => a + b, 0),
-              'weeks': weeks.filter((v) => v.scores.length > 0),
-            };
-          });
-      userEntries.push(userEntry);
-    }
-
-    return Observable.combineLatest(userEntries);
-  }
 }
 
 class WeekEntry {
@@ -127,4 +76,62 @@ class UserEntry {
   name: string;
   total: number;
   weeks: WeekEntry[];
+}
+
+/**
+ * Computes the scores for all users in a league.
+ * @return An Observable that emits a new list of UserEntry objects whenever a
+ *     user's score changes.
+ */
+function scoresForLeague(scoreService: ScoreService,
+                         leagueKey: string,
+                         users: User[]): Observable<UserEntry[]> {
+  const userEntries: Observable<UserEntry>[] = [];
+  for (const user of users) {
+    const allScores: Observable<number>[] = [];
+    const weeks: Observable<any>[] = [];
+    for (const userWeek of user.weeks) {
+      const scoresForWeek = [];
+      for (const userTeam of userWeek.teams) {
+        if (userTeam.selected) {
+          const score = scoreService.scoreFor(userWeek.id, userTeam.name);
+          scoresForWeek.push(score.map((s) => {
+            if (!s) {
+              return null;
+            }
+            return {
+              name: userTeam.name,
+              score: s.total,
+            };
+          }));
+          allScores.push(score.map((s) => s ? s.total : 0));
+        }
+      }
+      if (scoresForWeek.length > 0) {
+        weeks.push(
+          Observable.combineLatest(scoresForWeek)
+            .map((arr) => {
+              return {
+                name: `Week ${userWeek.id}`,
+                scores: arr.filter(v => !!v),
+              }
+            }));
+      }
+    }
+
+    const scoresArr = Observable.combineLatest(allScores);
+    const weeksArr: Observable<WeekEntry[]> =
+      Observable.combineLatest(weeks);
+    userEntries.push(
+      Observable.combineLatest([scoresArr, weeksArr])
+        .map(([scores, weeks]) => {
+          return {
+            'name': user.name,
+            'total': scores.reduce((a, b) => a + b, 0),
+            'weeks': weeks.filter((v) => v.scores.length > 0),
+          };
+        }));
+  }
+
+  return Observable.combineLatest(userEntries);
 }
