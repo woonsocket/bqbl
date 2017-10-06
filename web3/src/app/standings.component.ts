@@ -6,7 +6,9 @@ import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable }
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/combineLatest';
+import 'rxjs/add/operator/map';
 import { User } from './structs'
+import { TeamScore } from './team-score';
 import { ConstantsService } from './constants.service';
 import { ScoreService } from './score.service';
 import * as paths from './paths';
@@ -22,7 +24,7 @@ export class StandingsComponent {
   leagueIdToUsers = new Map<string, User[]>();
   leagueIdToName = new Map<string, string>();
   userToTeams = new Map<string, any>();
-  leagues = new Map<string, Array<any>>();
+  leagues = new Map<string, Observable<UserEntry[]>>();
   year = '2017';
 
   constructor(db: AngularFireDatabase,
@@ -60,28 +62,26 @@ export class StandingsComponent {
         }
         this.updateScores();
       });
-      this.loadScoresDb();
     });
   }
 
   ngOnInit() {
     this.route.queryParams.subscribe((params: Params) => {
       this.year = params.year || '2017';
-      this.loadScoresDb();
     });
-  }
-
-  loadScoresDb(): void {
-    this.updateScores();
   }
 
   leagueKeys(): string[] {
     return Array.from(this.leagues.keys());
   }
 
+  getLeague(key: string): Observable<UserEntry[]> {
+    return this.leagues.get(key);
+  }
+
   // TODO doing a join by hand feels terrible.
   updateScores(): void {
-    this.leagues.clear();
+    const leagueToUserEntries: Map<string, Observable<UserEntry>[]> = new Map();
     for (const leagueKey of Array.from(this.leagueIdToUsers.keys())) {
       for (const user of this.leagueIdToUsers.get(leagueKey)) {
         const allScores: Observable<number>[] = [];
@@ -92,7 +92,7 @@ export class StandingsComponent {
             if (userTeam.selected) {
               const score =
                 this.scoreService.scoreFor(userWeek.id, userTeam.name);
-                scoresForWeek.push(score.map((s) => {
+              scoresForWeek.push(score.map((s) => {
                 if (!s) {
                   return null;
                 }
@@ -116,17 +116,39 @@ export class StandingsComponent {
           }
         }
         // TODO(aerion): Just make the whole 'leagues' structure async.
-        const userRow = {
-          'name': user.name,
-          'total': Observable.combineLatest(allScores)
-            .map((arr) => arr.reduce((a, b) => a + b, 0)),
-          'weeks': Observable.combineLatest(weeks)
-            .map((arr) => arr.filter((v) => v.scores.length > 0)),
-        };
-        const league = this.leagues.get(leagueKey) || [];
+        const scoresArr = Observable.combineLatest(allScores);
+        const weeksArr: Observable<WeekEntry[]> =
+          Observable.combineLatest(weeks);
+        const userRow: Observable<UserEntry> =
+          Observable.combineLatest([scoresArr, weeksArr])
+            .map(([scores, weeks]) => {
+              return {
+                'name': user.name,
+                'total': scores.reduce((a, b) => a + b, 0),
+                'weeks': weeks.filter((v) => v.scores.length > 0),
+              };
+            });
+        const league = leagueToUserEntries.get(leagueKey) || [];
         league.push(userRow);
-        this.leagues.set(leagueKey, league);
+        leagueToUserEntries.set(leagueKey, league);
       }
     }
+
+    this.leagues = new Map();
+    for (const key of Array.from(this.leagueIdToUsers.keys())) {
+      this.leagues.set(key,
+                       Observable.combineLatest(leagueToUserEntries.get(key)));
+    }
   }
+}
+
+class WeekEntry {
+  name: string;
+  scores: Observable<TeamScore[]>;
+}
+
+class UserEntry {
+  name: string;
+  total: number;
+  weeks: WeekEntry[];
 }

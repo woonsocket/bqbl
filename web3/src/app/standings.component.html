@@ -4,16 +4,16 @@
       <span>{{leagueIdToName.get(leagueKey)}}</span>
     </mdl-tab-panel-title>
     <mdl-tab-panel-content>
-      <mdl-card mdl-shadow="2" *ngFor="let player of leagues.get(leagueKey)"
-      style=margin-bottom:10px>
+      <mdl-card mdl-shadow="2" *ngFor="let player of getLeague(leagueKey)|async"
+                style=margin-bottom:10px>
         <mdl-card-title>
           <h2 mdl-card-title-text>{{player.name}}</h2>
           <div style=align-self:left>
-            Total: {{player.total|async}}
+            Total: {{player.total}}
           </div>
         </mdl-card-title>
         <mdl-card-supporting-text>
-          <mini-score *ngFor="let week of player.weeks|async"
+          <mini-score *ngFor="let week of player.weeks"
           [name]="week.name" [scores]="week.scores">
         </mini-score>
       </mdl-card-supporting-text>
