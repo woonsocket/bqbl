@@ -20,7 +20,6 @@ export class StandingsComponent {
   db: AngularFireDatabase;
   leagueIdToUsers = new Map<string, User[]>();
   leagueIdToName = new Map<string, string>();
-  userToTeams = new Map<string, any>();
   leagues = new Map<string, Observable<UserEntry[]>>();
   year = '2017';
 
@@ -40,19 +39,6 @@ export class StandingsComponent {
         this.leagueIdToUsers.set(user.leagueId, league);
 
         this.leagueIdToName.set(user.leagueId, user.leagueName);
-        this.userToTeams.set(user.$key, {});
-        for (const week of user.weeks) {
-          const activeTeams = [];
-          for (const team of week.teams) {
-            if (team.selected) {
-              activeTeams.push(team.name);
-            }
-          }
-          this.userToTeams.get(user.$key)[week.id] = {
-            'name': user.name,
-            'teams': activeTeams,
-          };
-        }
       }
       this.updateScores();
     });
