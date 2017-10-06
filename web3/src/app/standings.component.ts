@@ -46,7 +46,8 @@ export class StandingsComponent {
         leagueIdToUsers.forEach((leagueUsers, leagueId) => {
           leagues.set(
             leagueId,
-            scoresForLeague(scoreService, leagueId, leagueUsers));
+            sortedByScore(
+              scoresForLeague(scoreService, leagueId, leagueUsers)));
         });
         this.leagues = leagues;
       });
@@ -134,4 +135,8 @@ function scoresForLeague(scoreService: ScoreService,
   }
 
   return Observable.combineLatest(userEntries);
+}
+
+function sortedByScore(users: Observable<UserEntry[]>): Observable<UserEntry[]> {
+  return users.map((u) => u.sort((a, b) => b.total - a.total));
 }

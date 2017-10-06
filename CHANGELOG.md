@@ -10,6 +10,7 @@ releases alliteratively.
 
 ### Added
 - Show road teams on the lineup setter.
+- Sort BQBL Standings page by score. (This was more work than you would hope.)
 
 ### Fixed
 - BQBL Scores/Standings pages no longer create duplicate copies of every team
