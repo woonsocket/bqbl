@@ -1,3 +1,6 @@
+<mdl-progress class="top-progress" [indeterminate]="pendingOps > 0">
+</mdl-progress>
+
 <table>
  <thead>
   <tr class=head>
@@ -31,7 +34,7 @@
    {{week.id}}
   </td>
   <!-- Limit to 4. When there's a DH, don't list it as normal cell -->
-  <td *ngFor="let team of week.teams | slice:0:4;" class=team
+  <td *ngFor="let team of week.teams | slice:0:4;" class="team"
       [class.selected]="team.selected" (click)="onSelect(week, team, i)">
     <div>{{team.name}}</div>
     <div class="opp">{{schedule[team.name][i]}}</div>

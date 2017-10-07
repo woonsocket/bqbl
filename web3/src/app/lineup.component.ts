@@ -29,6 +29,8 @@ export class LineupComponent {
   displayName: string;
   teams: string[];
 
+  pendingOps = 0;
+
   constructor(private db: AngularFireDatabase,
               private afAuth: AngularFireAuth,
               private router: Router,
@@ -170,10 +172,13 @@ export class LineupComponent {
       return;
     }
 
+    this.pendingOps++;
+
     this.db
       .object(paths.getUserPath(this.uid) + '/weeks/' + weekId + '/teams')
       .set(week.teams)
-      .catch(err => this.checkLineupWriteError(err, weekId, week));
+      .catch(err => { this.checkLineupWriteError(err, weekId, week); })
+      .then(() => { this.pendingOps--; });
   }
 
   onChange(dh1, dh2, week, weekId) {
@@ -189,11 +194,14 @@ export class LineupComponent {
       this.mdlSnackbarService.showSnackbar({message: err});
       return;
     }
+
+    this.pendingOps++;
+
     this.db
       .object(paths.getUserPath(this.uid) + '/weeks/' + weekId + '/teams')
       .set(newTeams)
-      .catch(err => this.checkLineupWriteError(err, weekId, week));
-
+      .catch((err) => this.checkLineupWriteError(err, weekId, week))
+      .then(() => this.pendingOps--);
   }
 
   // Returns an error message as a string. If returned string is empty, the team

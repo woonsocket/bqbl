@@ -12,6 +12,7 @@ releases alliteratively.
 - Show road teams on the lineup setter.
 - Sort BQBL Standings page by score. (This was more work than you would hope.)
 - Sort NFL Standings page by score. (This wasn't.)
+- Show an animation if a lineup change hasn't yet been saved to the database.
 
 ### Fixed
 - BQBL Scores/Standings pages no longer create duplicate copies of every team
