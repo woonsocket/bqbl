@@ -1,10 +1,10 @@
-.mdl-card {
+mdl-card {
   margin: 10px;
   width: 300px;
   min-height: 100px;
 }
 
-.mdl-card > .mdl-card__title {
+mdl-card-title {
   position: relative;
   background-color: rgba(0, 0, 0, 0.5);
 }

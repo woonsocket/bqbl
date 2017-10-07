@@ -1,9 +1,9 @@
-<div class="mdl-card mdl-shadow--4dp">
-  <div class="mdl-card__title mdl-color-text--white">
+<mdl-card mdl-shadow="4">
+  <mdl-card-title class="mdl-color-text--white">
     <div class="bg"
          [ngStyle]="{'background-image': 'url(' + (score.$key | nflLogo) + ')'}">
     </div>
-    <h1 class="mdl-card__title-text">
+    <h1 mdl-card-title-text>
       {{ score.$key }}
     </h1>
     <div class="mdl-card__subtitle-text mdl-color-text--white">
@@ -12,9 +12,9 @@
     <div class="mdl-card__subtitle-text mdl-color-text--white">
       {{ score.gameInfo.clock }}
     </div>
-  </div>
+  </mdl-card-title>
 
-  <div class="mdl-card__supporting-text mdl-color-text--grey-700">
+  <mdl-card-supporting-text class="mdl-color-text--grey-700">
     <div class="comp total">
       <div class="comp-desc">
         {{ projectScores && !isFinal(score) ? 'Projected ' : '' }}Total
@@ -26,12 +26,12 @@
       <div class="comp-desc">{{ comp.desc }}</div>
       <score-cell [value]="comp.value"></score-cell>
     </div>
-  </div>
+  </mdl-card-supporting-text>
 
-  <div class="mdl-card__actions mdl-card--border">
+  <mdl-card-actions mdl-card-border>
     <a class="mdl-button mdl-button--colored"
        href="{{ boxScoreLink(score) }}">
       {{ boxScoreLinkText(score) }}
     </a>
-  </div>
-</div>
+  </mdl-card-actions>
+</mdl-card>
