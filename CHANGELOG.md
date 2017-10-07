@@ -16,6 +16,7 @@ releases alliteratively.
 - BQBL Scores/Standings pages no longer create duplicate copies of every team
   every time somebody edits a lineup.
 - Count 24/7 points in the BQBL Standings.
+- NFL standings page should no longer fail to load, hopefully.
 
 ## [0.3.1] - 2017-09-28
 

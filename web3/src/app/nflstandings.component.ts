@@ -19,7 +19,17 @@ export class NFLStandingsComponent implements OnInit {
   scores247ByTeam = new Map<string, Map<string, number>>();
 
   constructor(private db: AngularFireDatabase,
-              private constants: ConstantsService) {}
+              private constants: ConstantsService) {
+    const columns = [
+      {key: 'team', name: 'Team', sortable: true},
+      {key: 'total', name: 'Total', sortable: true, numeric: true},
+      {key: '24x7', name: '24/7', sortable: true, numeric: true},
+    ];
+    for (let i = 1; i <= 16; i++) {
+      columns.push({key: `${i}`, name: `${i}`, sortable: true, numeric: true});
+    }
+    this.scoreTable = new MdlDefaultTableModel(columns);
+  }
 
   ngOnInit() {
     this.db.list(paths.getScoresPath(this.year)).subscribe((d) => {
@@ -51,16 +61,6 @@ export class NFLStandingsComponent implements OnInit {
       this.scores247ByTeam = scores247;
       this.computeScores();
     });
-
-    const columns = [
-      {key: 'team', name: 'Team', sortable: true},
-      {key: 'total', name: 'Total', sortable: true, numeric: true},
-      {key: '24x7', name: '24/7', sortable: true, numeric: true},
-    ];
-    for (let i = 1; i <= 16; i++) {
-      columns.push({key: `${i}`, name: `${i}`, sortable: true, numeric: true});
-    }
-    this.scoreTable = new MdlDefaultTableModel(columns);
   }
 
   computeScores() {
