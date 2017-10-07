@@ -80,7 +80,7 @@ export class NFLStandingsComponent implements OnInit {
       scores[team]['total'] = total;
     });
     const sorted = Object.values(scores);
-    sorted.sort((a, b) => a['team'].localeCompare(b['team']));
+    sorted.sort((a, b) => b['total'] - a['total']);
     this.scoreTable.data = sorted;
   }
 }
