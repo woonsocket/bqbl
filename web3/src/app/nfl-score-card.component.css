@@ -1,15 +1,15 @@
-.score-card {
+.mdl-card {
   margin: 10px;
   width: 300px;
   min-height: 100px;
 }
 
-.score-card > .mdl-card__title {
+.mdl-card > .mdl-card__title {
   position: relative;
   background-color: rgba(0, 0, 0, 0.5);
 }
 
-.score-card-bg {
+.bg {
   z-index: -65535;
   background-position: center;
   background-repeat: no-repeat;
@@ -22,7 +22,7 @@
   right: 0;
 }
 
-.score-card-total {
+.total {
   font-weight: bold;
   font-size: 14pt;
   text-transform: uppercase;
@@ -30,15 +30,10 @@
   padding-bottom: 6px;
 }
 
-.score-card-comp {
+.comp {
   display: flex;
 }
 
-.score-card-comp-desc {
+.comp-desc {
   flex-grow: 1;
-}
-
-.score-card-comp-val {
-  flex-grow: 0;
-  text-align: right;
 }
