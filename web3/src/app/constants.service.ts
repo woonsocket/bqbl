@@ -55,7 +55,7 @@ const ABQBL_USERS = [
   ];
 
 
-const scheduleMap = {"ARI": ["@DET", "@IND", "DAL", "SF", "@PHI", "TB", "@LA", "BYE", "@SF", "SEA", "@HOU", "JAX", "LA", "TEN", "@WSH", "NYG", "@SEA"],
+const scheduleMap = {"ARI": ["@DET", "@IND", "DAL", "SF", "@PHI", "TB", "@LA", "BYE", "@SF", "SEA", "@HOU", "JAX", "LA", "TEN", "@WAS", "NYG", "@SEA"],
 "ATL": ["@CHI", "GB", "@DET", "BUF", "BYE", "MIA", "@NE", "@NYJ", "@CAR", "DAL", "@SEA", "TB", "MIN", "NO", "@TB", "@NO", "CAR"],
 "BAL": ["@CIN", "CLE", "@JAX", "PIT", "@OAK", "CHI", "@MIN", "MIA", "@TEN", "BYE", "@GB", "HOU", "DET", "@PIT", "@CLE", "IND", "CIN"],
 "BUF": ["NYJ", "@CAR", "DEN", "@ATL", "@CIN", "BYE", "TB", "OAK", "@NYJ", "NO", "@LAC", "@KC", "NE", "IND", "MIA", "@NE", "@MIA"],
@@ -63,30 +63,30 @@ const scheduleMap = {"ARI": ["@DET", "@IND", "DAL", "SF", "@PHI", "TB", "@LA", "
 "CHI": ["ATL", "@TB", "PIT", "@GB", "MIN", "@BAL", "CAR", "@NO", "BYE", "GB", "DET", "@PHI", "SF", "@CIN", "@DET", "CLE", "@MIN"],
 "CIN": ["BAL", "HOU", "@GB", "@CLE", "BUF", "BYE", "@PIT", "IND", "@JAX", "@TEN", "@DEN", "CLE", "PIT", "CHI", "@MIN", "DET", "@BAL"],
 "CLE": ["PIT", "@BAL", "@IND", "CIN", "NYJ", "@HOU", "TEN", "MIN", "BYE", "@DET", "JAX", "@CIN", "@LAC", "GB", "BAL", "@CHI", "@PIT"],
-"DAL": ["NYG", "@DEN", "@ARI", "LA", "GB", "BYE", "@SF", "@WSH", "KC", "@ATL", "PHI", "LAC", "WSH", "@NYG", "@OAK", "SEA", "@PHI"],
-"DEN": ["LAC", "DAL", "@BUF", "OAK", "BYE", "NYG", "@LAC", "@KC", "@PHI", "NE", "CIN", "@OAK", "@MIA", "NYJ", "@IND", "@WSH", "KC"],
+"DAL": ["NYG", "@DEN", "@ARI", "LA", "GB", "BYE", "@SF", "@WAS", "KC", "@ATL", "PHI", "LAC", "WAS", "@NYG", "@OAK", "SEA", "@PHI"],
+"DEN": ["LAC", "DAL", "@BUF", "OAK", "BYE", "NYG", "@LAC", "@KC", "@PHI", "NE", "CIN", "@OAK", "@MIA", "NYJ", "@IND", "@WAS", "KC"],
 "DET": ["ARI", "@NYG", "ATL", "@MIN", "CAR", "@NO", "BYE", "PIT", "@GB", "CLE", "@CHI", "MIN", "@BAL", "@TB", "CHI", "@CIN", "GB"],
 "GB": ["SEA", "@ATL", "CIN", "CHI", "@DAL", "@MIN", "NO", "BYE", "DET", "@CHI", "BAL", "@PIT", "TB", "@CLE", "@CAR", "MIN", "@DET"],
 "HOU": ["JAX", "@CIN", "@NE", "TEN", "KC", "CLE", "BYE", "@SEA", "IND", "@LA", "ARI", "@BAL", "@TEN", "SF", "@JAX", "PIT", "@IND"],
 "IND": ["@LA", "ARI", "CLE", "@SEA", "SF", "@TEN", "JAX", "@CIN", "@HOU", "PIT", "BYE", "TEN", "@JAX", "@BUF", "DEN", "@BAL", "HOU"],
 "JAX": ["@HOU", "TEN", "BAL", "@NYJ", "@PIT", "LA", "@IND", "BYE", "CIN", "LAC", "@CLE", "@ARI", "IND", "SEA", "HOU", "@SF", "@TEN"],
-"KC": ["@NE", "PHI", "@LAC", "WSH", "@HOU", "PIT", "@OAK", "DEN", "@DAL", "BYE", "@NYG", "BUF", "@NYJ", "OAK", "LAC", "MIA", "@DEN"],
-"LA": ["IND", "WSH", "@SF", "@DAL", "SEA", "@JAX", "ARI", "BYE", "@NYG", "HOU", "@MIN", "NO", "@ARI", "PHI", "@SEA", "@TEN", "SF"],
-"LAC": ["@DEN", "MIA", "KC", "PHI", "@NYG", "@OAK", "DEN", "@NE", "BYE", "@JAX", "BUF", "@DAL", "CLE", "WSH", "@KC", "@NYJ", "OAK"],
+"KC": ["@NE", "PHI", "@LAC", "WAS", "@HOU", "PIT", "@OAK", "DEN", "@DAL", "BYE", "@NYG", "BUF", "@NYJ", "OAK", "LAC", "MIA", "@DEN"],
+"LA": ["IND", "WAS", "@SF", "@DAL", "SEA", "@JAX", "ARI", "BYE", "@NYG", "HOU", "@MIN", "NO", "@ARI", "PHI", "@SEA", "@TEN", "SF"],
+"LAC": ["@DEN", "MIA", "KC", "PHI", "@NYG", "@OAK", "DEN", "@NE", "BYE", "@JAX", "BUF", "@DAL", "CLE", "WAS", "@KC", "@NYJ", "OAK"],
 "MIA": ["TB", "@LAC", "@NYJ", "NO", "TEN", "@ATL", "NYJ", "@BAL", "OAK", "@CAR", "TB", "@NE", "DEN", "NE", "@BUF", "@KC", "BUF"],
-"MIN": ["NO", "@PIT", "TB", "DET", "@CHI", "GB", "BAL", "@CLE", "BYE", "@WSH", "LA", "@DET", "@ATL", "@CAR", "CIN", "@GB", "CHI"],
+"MIN": ["NO", "@PIT", "TB", "DET", "@CHI", "GB", "BAL", "@CLE", "BYE", "@WAS", "LA", "@DET", "@ATL", "@CAR", "CIN", "@GB", "CHI"],
 "NE": ["KC", "@NO", "HOU", "CAR", "@TB", "@NYJ", "ATL", "LAC", "BYE", "@DEN", "@OAK", "MIA", "@BUF", "@MIA", "@PIT", "BUF", "NYJ"],
-"NO": ["@MIN", "NE", "@CAR", "@MIA", "BYE", "DET", "@GB", "CHI", "TB", "@BUF", "WSH", "@LA", "CAR", "@ATL", "NYJ", "ATL", "@TB"],
-"NYG": ["@DAL", "DET", "@PHI", "@TB", "LAC", "@DEN", "SEA", "BYE", "LA", "@SF", "KC", "@WSH", "@OAK", "DAL", "PHI", "@ARI", "WSH"],
+"NO": ["@MIN", "NE", "@CAR", "@MIA", "BYE", "DET", "@GB", "CHI", "TB", "@BUF", "WAS", "@LA", "CAR", "@ATL", "NYJ", "ATL", "@TB"],
+"NYG": ["@DAL", "DET", "@PHI", "@TB", "LAC", "@DEN", "SEA", "BYE", "LA", "@SF", "KC", "@WAS", "@OAK", "DAL", "PHI", "@ARI", "WAS"],
 "NYJ": ["@BUF", "@OAK", "MIA", "JAX", "@CLE", "NE", "@MIA", "ATL", "BUF", "@TB", "BYE", "CAR", "KC", "@DEN", "@NO", "LAC", "@NE"],
-"OAK": ["@TEN", "NYJ", "@WSH", "@DEN", "BAL", "LAC", "KC", "@BUF", "@MIA", "BYE", "NE", "DEN", "NYG", "@KC", "DAL", "@PHI", "@LAC"],
-"PHI": ["@WSH", "@KC", "NYG", "@LAC", "ARI", "@CAR", "WSH", "SF", "DEN", "BYE", "@DAL", "CHI", "@SEA", "@LA", "@NYG", "OAK", "DAL"],
+"OAK": ["@TEN", "NYJ", "@WAS", "@DEN", "BAL", "LAC", "KC", "@BUF", "@MIA", "BYE", "NE", "DEN", "NYG", "@KC", "DAL", "@PHI", "@LAC"],
+"PHI": ["@WAS", "@KC", "NYG", "@LAC", "ARI", "@CAR", "WAS", "SF", "DEN", "BYE", "@DAL", "CHI", "@SEA", "@LA", "@NYG", "OAK", "DAL"],
 "PIT": ["@CLE", "MIN", "@CHI", "@BAL", "JAX", "@KC", "CIN", "@DET", "BYE", "@IND", "TEN", "GB", "@CIN", "BAL", "NE", "@HOU", "CLE"],
-"SF": ["CAR", "@SEA", "LA", "@ARI", "@IND", "@WSH", "DAL", "@PHI", "ARI", "NYG", "BYE", "SEA", "@CHI", "@HOU", "TEN", "JAX", "@LA"],
-"SEA": ["@GB", "SF", "@TEN", "IND", "@LA", "BYE", "@NYG", "HOU", "WSH", "@ARI", "ATL", "@SF", "PHI", "@JAX", "LA", "@DAL", "ARI"],
+"SF": ["CAR", "@SEA", "LA", "@ARI", "@IND", "@WAS", "DAL", "@PHI", "ARI", "NYG", "BYE", "SEA", "@CHI", "@HOU", "TEN", "JAX", "@LA"],
+"SEA": ["@GB", "SF", "@TEN", "IND", "@LA", "BYE", "@NYG", "HOU", "WAS", "@ARI", "ATL", "@SF", "PHI", "@JAX", "LA", "@DAL", "ARI"],
 "TB": ["@MIA", "CHI", "@MIN", "NYG", "NE", "@ARI", "@BUF", "CAR", "@NO", "NYJ", "@MIA", "@ATL", "@GB", "DET", "ATL", "@CAR", "NO"],
 "TEN": ["OAK", "@JAX", "SEA", "@HOU", "@MIA", "IND", "@CLE", "BYE", "BAL", "CIN", "@PIT", "@IND", "HOU", "@ARI", "@SF", "LA", "JAX"],
-"WSH": ["PHI", "@LA", "OAK", "@KC", "BYE", "SF", "@PHI", "DAL", "@SEA", "MIN", "@NO", "NYG", "@DAL", "@LAC", "ARI", "DEN", "@NYG"],}
+"WAS": ["PHI", "@LA", "OAK", "@KC", "BYE", "SF", "@PHI", "DAL", "@SEA", "MIN", "@NO", "NYG", "@DAL", "@LAC", "ARI", "DEN", "@NYG"],}
 
 @Injectable()
 export class ConstantsService {
