@@ -53,7 +53,6 @@ export class NewUserComponent {
     user.name = name;
     user.teams = [];
     user.weeks = [];
-    user.leagueName = this.selectedLeague.name;
     user.leagueId = this.selectedLeague.key;
     for (let weekNum = 0; weekNum < WEEK_NAMES.length; weekNum++) {
       const newWeek = new Week();

@@ -1,8 +1,6 @@
 export class User {
   name: string;
   teams: TeamSpec[];
-  // TODO harveyj - make this a full-on league struct?
-  leagueName: string;
   leagueId: string;
   weeks: Week[];
   dh: boolean;
