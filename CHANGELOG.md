@@ -8,6 +8,10 @@ releases alliteratively.
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [0.4.0] - "Pitiful Pederson" - 2017-10-08
+
 ### Added
 - Show road teams on the lineup setter.
 - Sort BQBL Standings page by score. (This was more work than you would hope.)
