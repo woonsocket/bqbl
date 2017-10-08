@@ -26,3 +26,10 @@
   align-items: flex-start;
   justify-content: center;
 }
+
+.empty {
+  color: #959595;
+  font-style: italic;
+  padding: 40px;
+  text-align: center;
+}

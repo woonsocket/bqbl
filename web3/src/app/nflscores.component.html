@@ -20,4 +20,7 @@
                   [week]="selectedWeek"
                   [projectScores]="projectScores">
   </nfl-score-card>
+  <div *ngIf="!getScores().length" class="empty">
+    Nothing to show
+  </div>
 </div>
