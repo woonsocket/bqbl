@@ -7,6 +7,8 @@ import 'rxjs/add/operator/map';
 
 import { ConstantsService } from './constants.service';
 import { ScoreService } from './score.service';
+import { League, User } from './structs';
+import { TeamScore } from './team-score';
 import * as paths from './paths';
 
 @Component({
@@ -14,9 +16,8 @@ import * as paths from './paths';
   styleUrls: ['./scores.component.css']
 })
 export class ScoresComponent {
-  leagueToUsers = {};
+  leagues: Observable<LeagueScore[]>;
   userToTeams = {};
-  displayLeagues = [];
   selectedWeek = 1;
   year = '2017';
 
@@ -25,13 +26,14 @@ export class ScoresComponent {
               private router: Router,
               private constants: ConstantsService,
               private scoreService: ScoreService) {
-    db.list(paths.getUsersPath())
-      .subscribe(users => {
-        this.leagueToUsers = {};
+    // TODO: This would probably be bad if we had more than 16 users.
+    const userPicks = db.list(paths.getUsersPath())
+      .map(users => {
+        const leagueToUsers = {};
         for (const user of users) {
-          const league = this.leagueToUsers[user.leagueId] || [];
+          const league = leagueToUsers[user.leagueId] || [];
           league.push(user);
-          this.leagueToUsers[user.leagueId] = league;
+          leagueToUsers[user.leagueId] = league;
 
           this.userToTeams[user.$key] = {};
           for (const week of user.weeks) {
@@ -44,8 +46,11 @@ export class ScoresComponent {
             this.userToTeams[user.$key][week.id] = {'name': user.name, 'teams': activeTeams};
           }
         }
-        this.updateScores();
+        return leagueToUsers;
       });
+    const dbLeagues = db.object(paths.getLeaguesPath());
+    this.leagues = Observable.combineLatest([dbLeagues, userPicks])
+      .map(([leagueMap, userMap]) => this.computeScores(leagueMap, userMap));
   }
 
   ngOnInit() {
@@ -55,37 +60,38 @@ export class ScoresComponent {
     });
   }
 
-  getIterable(val) {
-    return Object.keys(val);
-  }
-
-  updateScores(): void {
-    this.displayLeagues = [];
-    for (const leagueKey in this.leagueToUsers) {
-      const league = {'name': '', 'scoreRows': []};
-      for (const user of this.leagueToUsers[leagueKey]) {
-        const leagueName = user.leagueName;
+  computeScores(leaguesById, leagueToUsers): LeagueScore[] {
+    const leagues = [];
+    for (const leagueKey of Object.keys(leaguesById)) {
+      const playerScores: Observable<PlayerScore>[] = [];
+      for (const user of leagueToUsers[leagueKey]) {
         const name = this.userToTeams[user.$key][this.selectedWeek].name;
         const teams = this.userToTeams[user.$key][this.selectedWeek].teams;
         teams[0] = teams[0] || 'N/A';
         teams[1] = teams[1] || 'N/A';
 
-        const scoreRow = {
-          'name': name,
-          'scores': Observable
-            .combineLatest([this.getScore(teams[0]), this.getScore(teams[1])])
-            .map(([s0, s1]) => {
-              return [
+        const pScore: Observable<PlayerScore> = Observable
+          .combineLatest([this.getScore(teams[0]), this.getScore(teams[1])])
+          .map(([s0, s1]) => {
+            return {
+              'name': name,
+              'scores': [
                 {'name': teams[0], 'score': s0},
                 {'name': teams[1], 'score': s1},
-              ];
-            }),
-        };
-        league.name = leagueName;
-        league.scoreRows.push(scoreRow);
+              ],
+            };
+          });
+        playerScores.push(pScore);
       }
-      this.displayLeagues.push(league);
+      const league: LeagueScore = {
+        name: leaguesById[leagueKey].name,
+        players: Observable.combineLatest(playerScores),
+      };
+      leagues.push(league);
     }
+
+    leagues.sort((a, b) => a.name.localeCompare(b.name));
+    return leagues;
   }
 
   getScore(teamName: string): Observable<number> {
@@ -97,4 +103,14 @@ export class ScoresComponent {
         return v.total;
       });
   }
+}
+
+class LeagueScore {
+  name: string;
+  players: Observable<PlayerScore[]>;
+}
+
+class PlayerScore {
+  name: string;
+  scores: TeamScore[];
 }

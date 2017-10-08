@@ -1,3 +1,10 @@
+export class League {
+  name: string;
+  maxPlays: number;
+  dh: boolean;
+  dhMax: number;
+}
+
 export class User {
   name: string;
   teams: TeamSpec[];
