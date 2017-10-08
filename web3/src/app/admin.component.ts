@@ -88,13 +88,22 @@ export class AdminComponent {
     return false;
   }
 
-  changeWeek(weekNum: string, locked: boolean) {
-    this.unlockedWeeks.set(weekNum, locked)
+  changeWeek(weekNum: string, unlocked: boolean) {
+    // TODO(aerion): Need a better default value when unlocking a
+    // week. Especially because we might lock a week accidentally, and
+    // re-unlocking it would be annoying.
+    const ONE_DAY = 24 * 60 * 60 * 1000;
+    const deadline = unlocked ? Date.now() + ONE_DAY : 0;
+    this.unlockedWeeks.set(weekNum, deadline)
       .catch(err => {
         this.snackbarService.showSnackbar({
           message: `Write failed. Are you an admin?`,
         });
       });
+  }
+
+  isLockedWeek(week: any): boolean {
+    return week.$value > Date.now();
   }
 
   onCreateLeague() {

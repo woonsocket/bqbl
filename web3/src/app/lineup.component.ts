@@ -68,7 +68,9 @@ export class LineupComponent {
     this.db.list(paths.getUnlockedWeeksPath()).subscribe((weeks) => {
       const unlockedWeeks = new Set();
       for (let week of weeks) {
-        if (week.$value) {
+        // TODO(aerion): Update this.unlockedWeeks if the lock time passes while
+        // the page is open.
+        if (week.$value > Date.now()) {
           unlockedWeeks.add(week.$key);
         }
       }

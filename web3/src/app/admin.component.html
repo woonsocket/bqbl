@@ -19,7 +19,7 @@
       <!-- Using mdl-ripple here causes a bug where clicking Week N for the
       first time causes the Week N+1 switch to receive the click. Dunno why. -->
       <mdl-switch #locked
-                  [ngModel]="week.$value"
+                  [ngModel]="isLockedWeek(week)"
                   (click)="changeWeek(week.$key.toString(), locked.value)">
         Week {{week.$key}}
       </mdl-switch>
