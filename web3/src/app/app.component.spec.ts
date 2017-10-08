@@ -12,6 +12,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 
 import { MiniScoreComponent } from './mini-score.component';
 import { MiniStatComponent } from './mini-stat.component';
+import { NFLScoreCardComponent } from './nfl-score-card.component';
 import { ScoreCellComponent } from './score-cell.component';
 import { ScoresComponent } from './scores.component';
 import { AntiScoresComponent } from './antiscores.component';
@@ -42,6 +43,7 @@ describe('AppComponent', () => {
       AppComponent,
       MiniScoreComponent,
       MiniStatComponent,
+      NFLScoreCardComponent,
       ScoreCellComponent,
       AntiScoresComponent,
       ScoresComponent,

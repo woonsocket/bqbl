@@ -19,6 +19,7 @@ import { DefaultData } from './fakedatabaseresponses'
 import { NflLogoPipe } from './nfl-logo.pipe';
 import { MiniScoreComponent } from './mini-score.component';
 import { ScoreCellComponent } from './score-cell.component';
+import { NFLScoreCardComponent } from './nfl-score-card.component';
 import { ConstantsService } from './constants.service';
 import { NFLScoresComponent } from './nflscores.component';
 
@@ -35,7 +36,13 @@ describe('NFLScoresComponent', () => {
     this.mockAuth = new MockAngularFireAuth(USER_ID, 'Harvey');
 
     TestBed.configureTestingModule({
-      declarations: [ NFLScoresComponent, NflLogoPipe, MiniScoreComponent, ScoreCellComponent  ], // declare the test component
+      declarations: [
+        NFLScoresComponent,
+        NFLScoreCardComponent,
+        NflLogoPipe,
+        MiniScoreComponent,
+        ScoreCellComponent,
+      ], // declare the test component
       imports: [ MdlModule, FormsModule ],
       providers: [
       { provide: ComponentFixtureAutoDetect, useValue: true },
@@ -58,7 +65,7 @@ describe('NFLScoresComponent', () => {
     this.mockDb.data = new DefaultData().get();
     fixture = TestBed.createComponent(NFLScoresComponent);
     let scores = fixture.debugElement.queryAll(
-      By.css('.score-card-comp score-cell'));
+      By.css('.comp score-cell'));
     fixture.detectChanges();
     expect(scores.length).toEqual(4);
     expect(scores[0].nativeElement.textContent).toContain("4");
@@ -73,7 +80,7 @@ describe('NFLScoresComponent', () => {
     fixture.componentInstance.projectScores = false;
     fixture.detectChanges();
     let scores = fixture.debugElement.queryAll(
-      By.css('.score-card-comp score-cell'));
+      By.css('.comp score-cell'));
     expect(scores.length).toEqual(4);
     expect(scores[0].nativeElement.textContent).toContain("33");
     expect(scores[1].nativeElement.textContent).toContain("32");

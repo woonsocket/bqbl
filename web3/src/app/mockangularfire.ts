@@ -41,11 +41,7 @@ export class MockAngularFireDbResponse {
   set(obj: any) {
     console.log('SET:' + this.path + ' ' + obj);
     Object.assign(this.data, obj);
-    return {
-      catch() {
-        // TODO(harveyj): implement
-      }
-    }
+    return Promise.resolve();
   }
 
   map(fn: (x: any) => any): Observable<any> {
@@ -59,6 +55,8 @@ export class MockAngularFireDbResponse {
   }
 }
 
+// TODO: This whole class should probably just be an Observable, instead of
+// implementing stubs for every Observable operator.
 export class MockAngularFireDbListResponse {
   data = [];
 
@@ -78,6 +76,10 @@ export class MockAngularFireDbListResponse {
     } else {
       fn(this.data);
     }
+  }
+
+  map(fn: (x: any) => any): Observable<any> {
+    return Observable.of(fn(this.data));
   }
 
   // NOTE(harveyj): I don't understand this. I had to mock it out because
