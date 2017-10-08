@@ -1,7 +1,4 @@
-
-import * as firebase from 'firebase/app';
 import { ActivatedRoute, Router, NavigationEnd, Event, Params } from '@angular/router';
-import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
 import { Component } from '@angular/core';
@@ -17,36 +14,25 @@ import * as paths from './paths';
   styleUrls: ['./scores.component.css']
 })
 export class ScoresComponent {
-  userDataList: FirebaseListObservable<any>;
-  scoresList: FirebaseListObservable<any>;
-  db: AngularFireDatabase;
-  user: Observable<firebase.User>;
   leagueToUsers = {};
-  leagueToNames = {};
   userToTeams = {};
-  teamToScores = {};
   displayLeagues = [];
   selectedWeek = 1;
   year = '2017';
+
   constructor(db: AngularFireDatabase,
-              private afAuth: AngularFireAuth,
               private route: ActivatedRoute,
               private router: Router,
               private constants: ConstantsService,
               private scoreService: ScoreService) {
-    this.db = db;
-    this.user = afAuth.authState;
-
-    this.user.subscribe(value => {
-      this.userDataList = this.db.list(paths.getUsersPath());
-      this.userDataList.subscribe(users => {
+    db.list(paths.getUsersPath())
+      .subscribe(users => {
         this.leagueToUsers = {};
         for (const user of users) {
           const league = this.leagueToUsers[user.leagueId] || [];
           league.push(user);
           this.leagueToUsers[user.leagueId] = league;
 
-          this.leagueToNames[user.leagueId] = user.leagueName;
           this.userToTeams[user.$key] = {};
           for (const week of user.weeks) {
             const activeTeams = [];
@@ -60,31 +46,17 @@ export class ScoresComponent {
         }
         this.updateScores();
       });
-    });
   }
 
   ngOnInit() {
     this.route.queryParams.subscribe((params: Params) => {
       this.selectedWeek = params.week || this.constants.getDefaultWeekId();
       this.year = params.year || '2017';
-      this.loadScoresDb();
     });
   }
 
   getIterable(val) {
     return Object.keys(val);
-  }
-
-  loadScoresDb(): void {
-    this.teamToScores = {};
-    this.scoresList = this.db.list(paths.getScoresPath(this.year, this.selectedWeek+''));
-    this.scoresList.subscribe(scores => {
-      for (const score of scores) {
-        this.teamToScores[score.$key] = score.total;
-      }
-      this.teamToScores['N/A'] = 0;
-      this.updateScores();
-    });
   }
 
   updateScores(): void {
