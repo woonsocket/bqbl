@@ -45,7 +45,7 @@ export class ConsoleComponent implements OnInit {
       });
       this.safeties = this.db.list(paths.getEventsPath() + `/${this.year}/${this.selectedWeek}/safeties`, {
         query: {
-          orderByChild: 'total'
+          orderByChild: 'team'
         }
       });
       this.db.object(paths.getEventsPath() + `/${this.year}/${this.selectedWeek}/overrides`).subscribe((val) => {
