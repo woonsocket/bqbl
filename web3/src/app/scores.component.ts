@@ -29,11 +29,11 @@ export class ScoresComponent {
     // TODO: This would probably be bad if we had more than 16 users.
     const userPicks = db.list(paths.getUsersPath())
       .map(users => {
-        const leagueToUsers = {};
+        const leagueToUsers = new Map();
         for (const user of users) {
-          const league = leagueToUsers[user.leagueId] || [];
+          const league = leagueToUsers.get(user.leagueId) || [];
           league.push(user);
-          leagueToUsers[user.leagueId] = league;
+          leagueToUsers.set(user.leagueId, league);
 
           this.userToTeams[user.$key] = {};
           for (const week of user.weeks) {
@@ -48,7 +48,14 @@ export class ScoresComponent {
         }
         return leagueToUsers;
       });
-    const dbLeagues = db.object(paths.getLeaguesPath());
+    const dbLeagues = db.list(paths.getLeaguesPath())
+      .map((leagues) => {
+        const leaguesById = new Map();
+        for (const league of leagues) {
+          leaguesById.set(league.$key, league);
+        }
+        return leaguesById;
+      });
     this.leagues = Observable.combineLatest([dbLeagues, userPicks])
       .map(([leagueMap, userMap]) => this.computeScores(leagueMap, userMap));
   }
@@ -62,9 +69,9 @@ export class ScoresComponent {
 
   computeScores(leaguesById, leagueToUsers): LeagueScore[] {
     const leagues = [];
-    for (const leagueKey of Object.keys(leaguesById)) {
+    for (const leagueKey of Array.from(leaguesById.keys())) {
       const playerScores: Observable<PlayerScore>[] = [];
-      for (const user of leagueToUsers[leagueKey]) {
+      for (const user of leagueToUsers.get(leagueKey)) {
         const name = this.userToTeams[user.$key][this.selectedWeek].name;
         const teams = this.userToTeams[user.$key][this.selectedWeek].teams;
         teams[0] = teams[0] || 'N/A';
@@ -84,7 +91,7 @@ export class ScoresComponent {
         playerScores.push(pScore);
       }
       const league: LeagueScore = {
-        name: leaguesById[leagueKey].name,
+        name: leaguesById.get(leagueKey).name,
         players: Observable.combineLatest(playerScores),
       };
       leagues.push(league);
