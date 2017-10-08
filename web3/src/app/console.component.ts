@@ -13,6 +13,14 @@ import { ConstantsService } from './constants.service';
 
 @Component({
   templateUrl: './console.component.html',
+  styles: [
+    `.empty {
+       color: #959595;
+       font-style: italic;
+       padding: 40px;
+       text-align: center;
+    }`,
+  ],
 })
 export class ConsoleComponent implements OnInit {
   passers: FirebaseListObservable<any>;

@@ -14,6 +14,7 @@ releases alliteratively.
 - Sort NFL Standings page by score. (This wasn't.)
 - Show an animation if a lineup change hasn't yet been saved to the database.
 - Automatically lock each week at 1:05 PM Eastern on Sunday.
+- Show placeholder text on empty pages so they don't feel broken.
 
 ### Fixed
 - BQBL Scores/Standings pages no longer create duplicate copies of every team

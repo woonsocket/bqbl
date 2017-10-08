@@ -13,5 +13,8 @@
         {{ event.date | date:'EEE hh:mm a' }}
       </mdl-list-item-secondary-info>
     </mdl-list-item-secondary-content>
- </mdl-list-item>
+  </mdl-list-item>
 </mdl-list>
+<div *ngIf="!(events | async)?.length" class="empty">
+  Nothing to show
+</div>

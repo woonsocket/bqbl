@@ -1,8 +1,6 @@
 <mdl-tabs mdl-ripple mdl-tab-active-index="0">
 <mdl-tab-panel>
-  <mdl-tab-panel-title>
-    <span>Benchings</span>
-  </mdl-tab-panel-title>
+  <mdl-tab-panel-title>Benchings</mdl-tab-panel-title>
   <mdl-tab-panel-content>
     <mdl-list>
       <mdl-list-item *ngFor="let passer of passers | async">
@@ -17,12 +15,17 @@
          <input #valid type="checkbox" class="mdl-checkbox__input"
                 (click)="onBenchingClick(passer, valid.checked)"
                 [checked]="overrideVal(passer.team, 'benchings', passer.$key)">
-       </mdl-list-item-secondary-action>
-     </mdl-list-item>
-   </mdl-list>
- </mdl-tab-panel-content>
+        </mdl-list-item-secondary-action>
+      </mdl-list-item>
+    </mdl-list>
+    <div *ngIf="!(passers | async)?.length" class="empty">
+      Nothing to show
+    </div>
+  </mdl-tab-panel-content>
 </mdl-tab-panel>
-<mdl-tab-panel mdl-tab-panel-title="Safeties">
+<mdl-tab-panel>
+  <mdl-tab-panel-title>Safeties</mdl-tab-panel-title>
+  <mdl-tab-panel-content>
     <mdl-list>
       <mdl-list-item *ngFor="let safety of safeties | async">
         <mdl-list-item-primary-content>
@@ -39,6 +42,9 @@
        </mdl-list-item-secondary-action>
      </mdl-list-item>
    </mdl-list>
-
+    <div *ngIf="!(safeties | async)?.length" class="empty">
+      Nothing to show
+    </div>
+  </mdl-tab-panel-content>
 </mdl-tab-panel>
 </mdl-tabs>

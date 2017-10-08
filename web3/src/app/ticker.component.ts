@@ -10,7 +10,15 @@ import { ConstantsService } from './constants.service';
 
 @Component({
   templateUrl: './ticker.component.html',
-  styles: ['.mdl-list__item-avatar { background: #fff; }'],
+  styles: [
+    `.mdl-list__item-avatar { background: #fff; }`,
+    `.empty {
+       color: #959595;
+       font-style: italic;
+       padding: 40px;
+       text-align: center;
+    }`,
+  ],
 })
 export class TickerComponent {
   events: Observable<any[]>;
