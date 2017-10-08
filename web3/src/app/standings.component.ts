@@ -144,7 +144,9 @@ function sortedByScore(users: Observable<UserEntry[]>): Observable<UserEntry[]> 
 function weeklyScores(scoreService: ScoreService,
                       user: User): Observable<WeekEntry[]> {
   const weeks: Observable<WeekEntry>[] = [];
-  for (const userWeek of user.weeks) {
+  const userWeeks = user.weeks.slice();
+  userWeeks.reverse();
+  for (const userWeek of userWeeks) {
     const scoresForWeek: Observable<TeamScore>[] = [];
     for (const userTeam of userWeek.teams) {
       if (userTeam.selected) {

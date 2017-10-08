@@ -13,9 +13,11 @@
           </div>
         </mdl-card-title>
         <mdl-card-supporting-text>
-          <mini-score *ngFor="let week of player.weeks"
-                      [name]="week.name" [scores]="week.scores">
-          </mini-score>
+          <div class="score-container">
+            <mini-score *ngFor="let week of player.weeks"
+                        [name]="week.name" [scores]="week.scores">
+            </mini-score>
+          </div>
         </mdl-card-supporting-text>
       </mdl-card>
     </mdl-tab-panel-content>
