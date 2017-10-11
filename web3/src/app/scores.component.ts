@@ -3,6 +3,7 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
 import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/observable/of';
 import 'rxjs/add/operator/map';
 
 import { ConstantsService } from './constants.service';
@@ -18,16 +19,22 @@ import * as paths from './paths';
 export class ScoresComponent {
   leagues: Observable<LeagueScore[]>;
   userToTeams = {};
-  selectedWeek = 1;
-  year = '2017';
+  selectedWeek: Observable<string>;
+  year: Observable<string>;
 
-  constructor(db: AngularFireDatabase,
+  constructor(private db: AngularFireDatabase,
               private route: ActivatedRoute,
               private router: Router,
               private constants: ConstantsService,
-              private scoreService: ScoreService) {
+              private scoreService: ScoreService) {}
+
+  ngOnInit() {
+    this.selectedWeek = this.route.queryParams
+      .map((params) => params.week || this.constants.getDefaultWeekId());
+    this.year = Observable.of('2017');
+
     // TODO: This would probably be bad if we had more than 16 users.
-    const userPicks = db.list(paths.getUsersPath())
+    const userPicks = this.db.list(paths.getUsersPath())
       .map(users => {
         const leagueToUsers = new Map();
         for (const user of users) {
@@ -48,7 +55,7 @@ export class ScoresComponent {
         }
         return leagueToUsers;
       });
-    const dbLeagues = db.list(paths.getLeaguesPath())
+    const dbLeagues = this.db.list(paths.getLeaguesPath())
       .map((leagues) => {
         const leaguesById = new Map();
         for (const league of leagues) {
@@ -56,29 +63,28 @@ export class ScoresComponent {
         }
         return leaguesById;
       });
-    this.leagues = Observable.combineLatest([dbLeagues, userPicks])
-      .map(([leagueMap, userMap]) => this.computeScores(leagueMap, userMap));
+    this.leagues = Observable
+      .combineLatest([this.year, this.selectedWeek, dbLeagues, userPicks])
+      .map(([year, week, leagueMap, userMap]) => {
+        return this.computeScores(year, week, leagueMap, userMap);
+      });
   }
 
-  ngOnInit() {
-    this.route.queryParams.subscribe((params: Params) => {
-      this.selectedWeek = params.week || this.constants.getDefaultWeekId();
-      this.year = params.year || '2017';
-    });
-  }
-
-  computeScores(leaguesById, leagueToUsers): LeagueScore[] {
+  computeScores(year, week, leaguesById, leagueToUsers): LeagueScore[] {
     const leagues = [];
     for (const leagueKey of Array.from(leaguesById.keys())) {
       const playerScores: Observable<PlayerScore>[] = [];
       for (const user of leagueToUsers.get(leagueKey)) {
-        const name = this.userToTeams[user.$key][this.selectedWeek].name;
-        const teams = this.userToTeams[user.$key][this.selectedWeek].teams;
+        const name = this.userToTeams[user.$key][week].name;
+        const teams = this.userToTeams[user.$key][week].teams;
         teams[0] = teams[0] || 'N/A';
         teams[1] = teams[1] || 'N/A';
 
         const pScore: Observable<PlayerScore> = Observable
-          .combineLatest([this.getScore(teams[0]), this.getScore(teams[1])])
+          .combineLatest([
+            this.getScore(week, teams[0]),
+            this.getScore(week, teams[1]),
+          ])
           .map(([s0, s1]) => {
             return {
               'name': name,
@@ -101,8 +107,8 @@ export class ScoresComponent {
     return leagues;
   }
 
-  getScore(teamName: string): Observable<number> {
-    return this.scoreService.scoreFor(this.selectedWeek.toString(), teamName)
+  getScore(week: string, teamName: string): Observable<number> {
+    return this.scoreService.scoreFor(week.toString(), teamName)
       .map((v) => {
         if (!v || !v.total) {
           return 0;
