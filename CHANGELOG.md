@@ -8,7 +8,9 @@ releases alliteratively.
 
 ## [Unreleased]
 
-Nothing yet.
+### Fixed
+- Don't crash the scraper when parsing a safety that no QB took part in (e.g., a
+  safety on a punt)
 
 ## [0.4.0] - "Pitiful Pederson" - 2017-10-08
 

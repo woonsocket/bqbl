@@ -108,6 +108,7 @@ def parse_play(game_id, play_id, play, is_qb, events):
 
     is_sack = False
     is_qb_fumble = False
+    player = '(no QB)'
 
     # http://www.nflgsis.com/gsis/documentation/Partners/StatIDs.html
     for stat in qb_stats:
