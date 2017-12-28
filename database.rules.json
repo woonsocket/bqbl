@@ -59,7 +59,10 @@
           "$week_id" : {
             ".write": "$user_id === auth.uid && root.child('unlockedweeks/' + newData.child('id').val()).val() > now"
           }
-        }
+        },
+        "probowl" : {
+          ".write": "$user_id === auth.uid"
+        },
       }
     },
     "unlockedweeks": {
@@ -69,6 +72,11 @@
     "leagues": {
       ".read": true,
       ".write": "root.child('roles/admins/' + auth.uid).exists()"
+    },
+    "tmp": {
+      ".read": true,
+      ".write": true
     }
+
   }
 }

@@ -7,6 +7,10 @@ export function getUserPath(uid: string): string {
   return '/users/' + uid;
 }
 
+export function getTempUserPath(uid: string): string {
+  return '/tmp/users/' + uid;
+}
+
 export function getLeaguesPath(): string {
   return '/leagues/';
 }

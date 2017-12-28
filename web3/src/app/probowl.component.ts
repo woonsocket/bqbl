@@ -54,4 +54,10 @@ export class ProBowlComponent {
                   {"value": "SEA"},
                   ]
   }
+
+  onChange() {
+    this.db
+      .object(paths.getUserPath(this.uid) + '/probowl/teams')
+      .set(this.teams);
+  }
 }
