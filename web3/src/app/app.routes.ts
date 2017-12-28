@@ -6,6 +6,7 @@ import { ConsoleComponent } from './console.component';
 import { ScoresComponent } from './scores.component';
 import { AntiScoresComponent } from './antiscores.component';
 import { NFLScoresComponent } from './nflscores.component';
+import { ProBowlComponent } from './probowl.component';
 import { NFLStandingsComponent } from './nflstandings.component';
 import { TickerComponent } from './ticker.component';
 import { LoginComponent } from './login.component';
@@ -50,6 +51,9 @@ export const routes: Routes = [
  },
  { path: 'standings',
    component: StandingsComponent
+ },
+ { path: 'probowl',
+   component: ProBowlComponent
  },
 ];
 

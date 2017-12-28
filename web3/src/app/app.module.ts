@@ -11,6 +11,7 @@ import { ScoreCellComponent } from './score-cell.component';
 import { ScoresComponent } from './scores.component';
 import { AntiScoresComponent } from './antiscores.component';
 import { NFLScoresComponent } from './nflscores.component';
+import { ProBowlComponent } from './probowl.component';
 import { NFLStandingsComponent } from './nflstandings.component';
 import { TickerComponent } from './ticker.component';
 import { NewUserComponent } from './newuser.component';
@@ -52,6 +53,7 @@ import { NflIconPipe, NflLogoPipe } from './nfl-logo.pipe';
     LoginComponent,
     NflIconPipe,
     NflLogoPipe,
+    ProBowlComponent,
   ],
   imports: [
     BrowserModule,

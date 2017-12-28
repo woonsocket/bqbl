@@ -1,0 +1,50 @@
+.top-progress {
+  width: 100%;
+}
+
+.selected {
+  background:#b3d4fc;
+}
+
+td.week {
+  text-align:right;
+  width:20px;
+  padding: 10px;
+}
+
+td.team {
+  min-width:30px;
+  text-align: center;
+}
+
+mdl-icon {
+  font-size: 18px;
+  vertical-align: middle;
+}
+
+td.team mdl-icon {
+  color: #F44336;
+}
+
+tr.head {
+  font-weight: bold;
+}
+
+tr:nth-child(even) {background: #f8f8f8}
+
+table {
+  width:90%;
+  margin:auto;
+}
+
+td.dh input {
+  width: 30px;
+  font-size: 14px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.opp {
+  font-size: 10px;
+  color: #757575;
+}
