@@ -1,17 +1,17 @@
+import 'rxjs/add/operator/take';
 import * as firebase from 'firebase/app';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
 import { Component } from '@angular/core';
+import { MdlSnackbarService } from '@angular-mdl/core';
 import { Observable } from 'rxjs/Observable';
 import { Router } from '@angular/router';
-import { MdlSnackbarService } from '@angular-mdl/core';
 
-import { LeagueRules } from './schema'
-import { ConstantsService } from './constants.service';
-import { User, Week, TeamEntry } from './structs';
 import * as paths from './paths';
-import 'rxjs/add/operator/take';
+import { ConstantsService } from './constants.service';
+import { LeagueRules } from './schema'
+import { User, Week, TeamEntry } from './structs';
 
 @Component({
   templateUrl: './lineup.component.html',
