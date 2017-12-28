@@ -2,16 +2,16 @@ import * as firebase from 'firebase/app';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { LeagueRules } from './schema'
+import { MdlSnackbarService } from '@angular-mdl/core';
 import { Observable } from 'rxjs/Observable';
 import { Router } from '@angular/router';
-import { MdlSnackbarService } from '@angular-mdl/core';
 
-import { LeagueRules } from './schema'
+import 'rxjs/add/operator/take';
+import * as paths from './paths';
 import { ConstantsService } from './constants.service';
 import { User, Week, TeamEntry } from './structs';
-import * as paths from './paths';
-import 'rxjs/add/operator/take';
 
 @Component({
   templateUrl: './probowl.component.html',
@@ -23,7 +23,7 @@ export class ProBowlComponent {
   user: Observable<firebase.User>;
   uid: string;
   displayName: string;
-  teams: string[];
+  teams: any[]; 
 
   constructor(private db: AngularFireDatabase,
               private afAuth: AngularFireAuth,
@@ -46,6 +46,12 @@ export class ProBowlComponent {
 
       this.uid = value.uid;
     });
+    this.teams = [{"value": "ARI"},
+                  {"value": "CHI"},
+                  {"value": "CLE"},
+                  {"value": "HOU"},
+                  {"value": "PIT"},
+                  {"value": "SEA"},
+                  ]
   }
-
 }
