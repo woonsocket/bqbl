@@ -8,6 +8,9 @@ releases alliteratively.
 
 ## [Unreleased]
 
+### Added
+- Pro Bowl mode!
+
 ### Fixed
 - Don't crash the scraper when parsing a safety that no QB took part in (e.g., a
   safety on a punt)

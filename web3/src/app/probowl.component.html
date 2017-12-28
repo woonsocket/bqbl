@@ -4,8 +4,19 @@
  <tr class=head>
   <td *ngFor="let team of teams; let index = index">
     <input type="text" class=team name=a{{index}}
-    [(ngModel)]="team.value"
+    [(ngModel)]="team.name"
     (change)="onChange()">
   </td>
 </tr>
 </table>
+
+
+<div *ngFor="let league of leagues|async">
+  <div class="league-title">{{league.name}}</div>
+  <div class="minis">
+    <mini-score *ngFor="let player of league.players|async"
+                [name]="player.name" [scores]="player.scores"
+                showTotal="true">
+    </mini-score>
+  </div>
+</div>
