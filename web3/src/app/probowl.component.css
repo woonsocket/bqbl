@@ -3,7 +3,6 @@ mdl-icon {
   vertical-align: middle;
 }
 
-
 table {
   width:90%;
   margin:auto;
@@ -20,4 +19,8 @@ td.name {
 td.selection {
   min-width:30px;
   text-align: center;
+}
+
+.team {
+  width:3em;
 }
