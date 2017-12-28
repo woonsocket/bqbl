@@ -82,8 +82,8 @@ export class ScoresComponent {
 
         const pScore: Observable<PlayerScore> = Observable
           .combineLatest([
-            this.getScore(week, teams[0]),
-            this.getScore(week, teams[1]),
+            this.scoreService.scoreTotalFor(week, teams[0]),
+            this.scoreService.scoreTotalFor(week, teams[1]),
           ])
           .map(([s0, s1]) => {
             return {
@@ -105,16 +105,6 @@ export class ScoresComponent {
 
     leagues.sort((a, b) => a.name.localeCompare(b.name));
     return leagues;
-  }
-
-  getScore(week: string, teamName: string): Observable<number> {
-    return this.scoreService.scoreFor(week.toString(), teamName)
-      .map((v) => {
-        if (!v || !v.total) {
-          return 0;
-        }
-        return v.total;
-      });
   }
 }
 

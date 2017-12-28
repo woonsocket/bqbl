@@ -26,7 +26,6 @@ export class ProBowlComponent {
   userDataSnapshot: any;
   user: Observable<firebase.User>;
   uid: string;
-  displayName: string;
   teams: any[]; 
 
   leagues: Observable<LeagueScore[]>;
@@ -39,12 +38,11 @@ export class ProBowlComponent {
               private router: Router,
               private mdlSnackbarService: MdlSnackbarService,
               private constants: ConstantsService,
-                            private scoreService: ScoreService,
-                            ) {
+              private scoreService: ScoreService,
+              ) {
     this.user = afAuth.authState;
     this.user.subscribe(value => {
       if (!value) {
-        this.displayName = '';
         return;
       }
       this.userData = this.db.object(paths.getUserPath(value.uid));
@@ -107,16 +105,6 @@ export class ProBowlComponent {
       .set(this.teams);
   }
 
-  getScore(week: string, teamName: string): Observable<number> {
-    return this.scoreService.scoreFor(week.toString(), teamName)
-      .map((v) => {
-        if (!v || !v.total) {
-          return 0;
-        }
-        return v.total;
-      });
-  }
-
   computeScores(year, week, leaguesById, leagueToUsers): LeagueScore[] {
     const leagues = [];
     for (const leagueKey of Array.from(leaguesById.keys())) {
@@ -136,12 +124,12 @@ export class ProBowlComponent {
 
         const pScore: Observable<PlayerScore> = Observable
           .combineLatest([
-            this.getScore(week, teams[0]),
-            this.getScore(week, teams[1]),
-            this.getScore(week, teams[2]),
-            this.getScore(week, teams[3]),
-            this.getScore(week, teams[4]),
-            this.getScore(week, teams[5]),
+            this.scoreService.scoreTotalFor(week, teams[0]),
+            this.scoreService.scoreTotalFor(week, teams[1]),
+            this.scoreService.scoreTotalFor(week, teams[2]),
+            this.scoreService.scoreTotalFor(week, teams[3]),
+            this.scoreService.scoreTotalFor(week, teams[4]),
+            this.scoreService.scoreTotalFor(week, teams[5]),
           ])
           .map(([s0, s1, s2, s3, s4, s5]) => {
             return {

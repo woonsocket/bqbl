@@ -150,7 +150,7 @@ function weeklyScores(scoreService: ScoreService,
     const scoresForWeek: Observable<TeamScore>[] = [];
     for (const userTeam of userWeek.teams) {
       if (userTeam.selected) {
-        const score = scoreService.scoreFor(userWeek.id, userTeam.name);
+        const score = scoreService.scoreObjectFor(userWeek.id, userTeam.name);
         scoresForWeek.push(score.map((s) => {
           if (!s) {
             return null;

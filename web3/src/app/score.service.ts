@@ -14,8 +14,19 @@ export class ScoreService {
    * Returns an Observable stream of score objects for the given week and
    * team. If the week/team combo does not exist, the Observable emits null.
    */
-  scoreFor(week: string, team: string): Observable<any> {
+  scoreObjectFor(week: string, team: string): Observable<any> {
     return this.db.object(paths.getScoresPath(this.year, week, team))
       .map(v => v.$exists() ? v : null);
   }
+
+  scoreTotalFor(week: string, teamName: string): Observable<number> {
+    return this.scoreObjectFor(week.toString(), teamName)
+      .map((v) => {
+        if (!v || !v.total) {
+          return 0;
+        }
+        return v.total;
+      });
+  }
+
 }
