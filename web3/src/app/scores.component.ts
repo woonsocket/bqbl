@@ -1,16 +1,15 @@
-import { ActivatedRoute, Router, NavigationEnd, Event, Params } from '@angular/router';
-import { AngularFireAuthModule } from 'angularfire2/auth';
+import 'rxjs/add/observable/of';
+import 'rxjs/add/operator/map';
 import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/observable/of';
-import 'rxjs/add/operator/map';
 
-import { ConstantsService } from './constants.service';
-import { ScoreService } from './score.service';
-import { League, User } from './structs';
-import { TeamScore } from './team-score';
 import * as paths from './paths';
+import { ConstantsService } from './constants.service';
+import { League, User } from './structs';
+import { ScoreService } from './score.service';
+import { TeamScore } from './team-score';
+import { WeekService } from './week.service';
 
 @Component({
   templateUrl: './scores.component.html',
@@ -19,19 +18,14 @@ import * as paths from './paths';
 export class ScoresComponent {
   leagues: Observable<LeagueScore[]>;
   userToTeams = {};
-  selectedWeek: Observable<string>;
   year: Observable<string>;
 
   constructor(private db: AngularFireDatabase,
-              private route: ActivatedRoute,
-              private router: Router,
               private constants: ConstantsService,
-              private scoreService: ScoreService) {}
+              private scoreService: ScoreService,
+              private weekService: WeekService) {}
 
   ngOnInit() {
-    this.selectedWeek = this.route.queryParams
-      .map((params) => params.week || this.constants.getDefaultWeekId());
-    this.year = Observable.of('2017');
 
     // TODO: This would probably be bad if we had more than 16 users.
     const userPicks = this.db.list(paths.getUsersPath())
@@ -64,7 +58,7 @@ export class ScoresComponent {
         return leaguesById;
       });
     this.leagues = Observable
-      .combineLatest([this.year, this.selectedWeek, dbLeagues, userPicks])
+      .combineLatest([this.weekService.getYear(), this.weekService.getWeek(), dbLeagues, userPicks])
       .map(([year, week, leagueMap, userMap]) => {
         return this.computeScores(year, week, leagueMap, userMap);
       });

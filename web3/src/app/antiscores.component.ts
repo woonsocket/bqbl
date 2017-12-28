@@ -109,7 +109,7 @@ export class AntiScoresComponent {
   }
 
   getScore(week: string, teamName: string): Observable<number> {
-    return this.scoreService.scoreFor(week.toString(), teamName)
+    return this.scoreService.scoreObjectFor(week.toString(), teamName)
       .map((v) => {
         if (!v || !v.total) {
           return 0;
