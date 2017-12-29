@@ -10,7 +10,6 @@ import { WeekService } from './week.service';
 @Injectable()
 export class ScoreService {
   year = '2017';
-  userToTeams = {};
 
   constructor(private db: AngularFireDatabase,
               private weekService: WeekService) {}
@@ -99,6 +98,21 @@ export class ScoreService {
       });
   }
 
+  /**
+   * Returns an Observable stream of LeagueScore arrays.
+   */
+  getLeaguesProBowl() : Observable<LeagueScore[]> {
+    const leagueToUsers = this.getLeagueToUsers();
+    const userToTeams = this.getUserToTeams();
+    const dbLeagues = this.getDbLeagues();
+    // HACK HACK HACK override week to 16 so I can test with real scores.
+    return Observable
+      .combineLatest([this.year, Observable.of('16'), dbLeagues, leagueToUsers, userToTeams])
+      .map(([year, week, leagueMap, userMap, userToTeams]) => {
+        return this.computeScoresProBowl(year, week, leagueMap, userMap, userToTeams);
+      });
+  }
+
   computeScores(year, week, leaguesById, leagueToUsers, userToTeams): LeagueScore[] {
     const leagues = [];
     for (const leagueKey of Array.from(leaguesById.keys())) {
@@ -108,9 +122,7 @@ export class ScoreService {
           continue;
         }
         const name = userToTeams[user.$key][week].name;
-        const teams = userToTeams[user.$key][week].teams;
-        teams[0] = teams[0] || 'N/A';
-        teams[1] = teams[1] || 'N/A';
+        const teams = userToTeams[user.$key][week].teams.map(team => team.name ? team.name : 'n/a');
 
         const pScore: Observable<PlayerScore> = Observable
           .combineLatest([
@@ -139,6 +151,53 @@ export class ScoreService {
     return leagues;
   }
 
+  computeScoresProBowl(year, week, leaguesById, leagueToUsers, userToTeams): LeagueScore[] {
+    const leagues = [];
+    console.log(leagueToUsers);
+    for (const leagueKey of Array.from(leaguesById.keys())) {
+      const playerScores: Observable<PlayerScore>[] = [];
+      for (const user of leagueToUsers.get(leagueKey)) {
+        const name = userToTeams[user.$key][week].name;
+        if (!user.probowl) {
+          continue;
+        }
+
+        const teams = user.probowl.teams.map(team => team.name ? team.name : 'n/a');
+
+        const pScore: Observable<PlayerScore> = Observable
+          .combineLatest([
+            this.scoreTotalFor(week, teams[0]),
+            this.scoreTotalFor(week, teams[1]),
+            this.scoreTotalFor(week, teams[2]),
+            this.scoreTotalFor(week, teams[3]),
+            this.scoreTotalFor(week, teams[4]),
+            this.scoreTotalFor(week, teams[5]),
+          ])
+          .map(([s0, s1, s2, s3, s4, s5]) => {
+            return {
+              'name': name,
+              'scores': [
+                {'name': teams[0], 'score': s0},
+                {'name': teams[1], 'score': s1},
+                {'name': teams[2], 'score': s2},
+                {'name': teams[3], 'score': s3},
+                {'name': teams[4], 'score': s4},
+                {'name': teams[5], 'score': s5},
+              ],
+            };
+          });
+        playerScores.push(pScore);
+      }
+      const league: LeagueScore = {
+        name: leaguesById.get(leagueKey).name,
+        players: Observable.combineLatest(playerScores),
+      };
+      leagues.push(league);
+    }
+
+    leagues.sort((a, b) => a.name.localeCompare(b.name));
+    return leagues;
+  }
 }
 
 export class LeagueScore {

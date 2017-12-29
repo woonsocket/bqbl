@@ -29,7 +29,6 @@ export class ProBowlComponent {
   teams: any[]; 
 
   leagues: Observable<LeagueScore[]>;
-  userToTeams = {};
   year: Observable<string>;
 
 
@@ -63,45 +62,9 @@ export class ProBowlComponent {
     });
   }
 
-
   ngOnInit() {
     this.year = Observable.of('2017');
-
-    // TODO: This would probably be bad if we had more than 16 users.
-    const userPicks = this.db.list(paths.getUsersPath())
-      .map(users => {
-        const leagueToUsers = new Map();
-        for (const user of users) {
-          const league = leagueToUsers.get(user.leagueId) || [];
-          league.push(user);
-          leagueToUsers.set(user.leagueId, league);
-
-          this.userToTeams[user.$key] = {};
-          for (const week of user.weeks) {
-            const activeTeams = [];
-            for (const team of week.teams) {
-              if (team.selected) {
-                activeTeams.push(team.name);
-              }
-            }
-            this.userToTeams[user.$key][week.id] = {'name': user.name, 'teams': activeTeams};
-          }
-        }
-        return leagueToUsers;
-      });
-    const dbLeagues = this.db.list(paths.getLeaguesPath())
-      .map((leagues) => {
-        const leaguesById = new Map();
-        for (const league of leagues) {
-          leaguesById.set(league.$key, league);
-        }
-        return leaguesById;
-      });
-    this.leagues = Observable
-      .combineLatest([this.year, Observable.of('16'), dbLeagues, userPicks])
-      .map(([year, week, leagueMap, userMap]) => {
-        return this.computeScores(year, week, leagueMap, userMap);
-      });
+    this.leagues = this.scoreService.getLeaguesProBowl();
   }
 
   onChange() {
@@ -111,57 +74,6 @@ export class ProBowlComponent {
       .set(this.teams);
   }
 
-  computeScores(year, week, leaguesById, leagueToUsers): LeagueScore[] {
-    const leagues = [];
-    for (const leagueKey of Array.from(leaguesById.keys())) {
-      const playerScores: Observable<PlayerScore>[] = [];
-      for (const user of leagueToUsers.get(leagueKey)) {
-        const name = this.userToTeams[user.$key][week].name;
-        if (!user.probowl) {
-          continue;
-        }
-        const teams = user.probowl.teams;
-        teams[0] = teams[0].name || 'N/A';
-        teams[1] = teams[1].name || 'N/A';
-        teams[2] = teams[2].name || 'N/A';
-        teams[3] = teams[3].name || 'N/A';
-        teams[4] = teams[4].name || 'N/A';
-        teams[5] = teams[5].name || 'N/A';
-
-        const pScore: Observable<PlayerScore> = Observable
-          .combineLatest([
-            this.scoreService.scoreTotalFor(week, teams[0]),
-            this.scoreService.scoreTotalFor(week, teams[1]),
-            this.scoreService.scoreTotalFor(week, teams[2]),
-            this.scoreService.scoreTotalFor(week, teams[3]),
-            this.scoreService.scoreTotalFor(week, teams[4]),
-            this.scoreService.scoreTotalFor(week, teams[5]),
-          ])
-          .map(([s0, s1, s2, s3, s4, s5]) => {
-            return {
-              'name': name,
-              'scores': [
-                {'name': teams[0], 'score': s0},
-                {'name': teams[1], 'score': s1},
-                {'name': teams[2], 'score': s2},
-                {'name': teams[3], 'score': s3},
-                {'name': teams[4], 'score': s4},
-                {'name': teams[5], 'score': s5},
-              ],
-            };
-          });
-        playerScores.push(pScore);
-      }
-      const league: LeagueScore = {
-        name: leaguesById.get(leagueKey).name,
-        players: Observable.combineLatest(playerScores),
-      };
-      leagues.push(league);
-    }
-
-    leagues.sort((a, b) => a.name.localeCompare(b.name));
-    return leagues;
-  }
 }
 
 class LeagueScore {
