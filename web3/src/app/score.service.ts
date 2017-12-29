@@ -38,20 +38,26 @@ export class ScoreService {
       });
   }
 
-  /**
-   * Returns an Observable stream of LeagueScore arrays.
-   */
-  getLeagues(anti?: boolean) : Observable<LeagueScore[]> {
-    // TODO: This would probably be bad if we had more than 16 users.
-    const userPicks = this.db.list(paths.getUsersPath())
+  getLeagueToUsers() {
+    return this.db.list(paths.getUsersPath())
       .map(users => {
         const leagueToUsers = new Map();
         for (const user of users) {
           const league = leagueToUsers.get(user.leagueId) || [];
           league.push(user);
           leagueToUsers.set(user.leagueId, league);
+        }
+        return leagueToUsers;
+      });
+  }
 
-          this.userToTeams[user.$key] = {};
+  getUserToTeams(anti?: boolean) {
+     // TODO: This would probably be bad if we had more than 16 users.
+     return this.db.list(paths.getUsersPath())
+      .map(users => {
+        const userToTeams = new Map();
+        for (const user of users) {
+          userToTeams[user.$key] = {};
           for (const week of user.weeks) {
             const activeTeams = [];
             for (const team of week.teams) {
@@ -61,13 +67,15 @@ export class ScoreService {
                 activeTeams.push(team.name);
               }
             }
-            this.userToTeams[user.$key][week.id] = {'name': user.name, 'teams': activeTeams};
+            userToTeams[user.$key][week.id] = {'name': user.name, 'teams': activeTeams};
           }
         }
-        return leagueToUsers;
+        return userToTeams;
       });
-    
-    const dbLeagues = this.db.list(paths.getLeaguesPath())
+  }
+
+  getDbLeagues() {
+    return this.db.list(paths.getLeaguesPath())
       .map((leagues) => {
         const leaguesById = new Map();
         for (const league of leagues) {
@@ -75,24 +83,32 @@ export class ScoreService {
         }
         return leaguesById;
       });
+  }
+  /**
+   * Returns an Observable stream of LeagueScore arrays.
+   */
+  getLeagues(anti?: boolean) : Observable<LeagueScore[]> {
+    const leagueToUsers = this.getLeagueToUsers();
+    const userToTeams = this.getUserToTeams(anti);
+    const dbLeagues = this.getDbLeagues();
 
     return Observable
-      .combineLatest([this.year, this.weekService.getWeek(), dbLeagues, userPicks])
-      .map(([year, week, leagueMap, userMap]) => {
-        return this.computeScores(year, week, leagueMap, userMap);
+      .combineLatest([this.year, this.weekService.getWeek(), dbLeagues, leagueToUsers, userToTeams])
+      .map(([year, week, leagueMap, userMap, userToTeams]) => {
+        return this.computeScores(year, week, leagueMap, userMap, userToTeams);
       });
   }
 
-  computeScores(year, week, leaguesById, leagueToUsers): LeagueScore[] {
+  computeScores(year, week, leaguesById, leagueToUsers, userToTeams): LeagueScore[] {
     const leagues = [];
     for (const leagueKey of Array.from(leaguesById.keys())) {
       const playerScores: Observable<PlayerScore>[] = [];
       for (const user of leagueToUsers.get(leagueKey)) {
-        if (!this.userToTeams[user.$key][week]) {
+        if (!userToTeams[user.$key][week]) {
           continue;
         }
-        const name = this.userToTeams[user.$key][week].name;
-        const teams = this.userToTeams[user.$key][week].teams;
+        const name = userToTeams[user.$key][week].name;
+        const teams = userToTeams[user.$key][week].teams;
         teams[0] = teams[0] || 'N/A';
         teams[1] = teams[1] || 'N/A';
 
