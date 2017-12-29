@@ -37,10 +37,13 @@ export class ScoreService {
       });
   }
 
-  getLeagueToUsers() {
+  /**
+   * Returns an Observable stream of a map <leagueid> --> users[].
+   */
+  leagueToUsers() {
     return this.db.list(paths.getUsersPath())
       .map(users => {
-        const leagueToUsers = new Map();
+        const leagueToUsers = new Map<string, any>();
         for (const user of users) {
           const league = leagueToUsers.get(user.leagueId) || [];
           league.push(user);
@@ -50,11 +53,14 @@ export class ScoreService {
       });
   }
 
-  getUserToTeams(anti?: boolean) {
+  /**
+   * Returns an Observable stream of a map <userid, weekid> --> teams.
+   */
+  userToTeams(anti?: boolean) {
      // TODO: This would probably be bad if we had more than 16 users.
      return this.db.list(paths.getUsersPath())
       .map(users => {
-        const userToTeams = new Map();
+        const userToTeams = new Map<string, any>();
         for (const user of users) {
           userToTeams[user.$key] = {};
           for (const week of user.weeks) {
@@ -73,23 +79,27 @@ export class ScoreService {
       });
   }
 
-  getDbLeagues() {
+  /**
+   * Returns an Observable stream of a map of league ID -> league object.
+   */
+  dbLeagues() : Observable<any> {
     return this.db.list(paths.getLeaguesPath())
       .map((leagues) => {
-        const leaguesById = new Map();
+        const leaguesById = new Map<string, any>();
         for (const league of leagues) {
           leaguesById.set(league.$key, league);
         }
         return leaguesById;
       });
   }
+
   /**
    * Returns an Observable stream of LeagueScore arrays.
    */
   getLeagues(anti?: boolean) : Observable<LeagueScore[]> {
-    const leagueToUsers = this.getLeagueToUsers();
-    const userToTeams = this.getUserToTeams(anti);
-    const dbLeagues = this.getDbLeagues();
+    const leagueToUsers = this.leagueToUsers();
+    const userToTeams = this.userToTeams(anti);
+    const dbLeagues = this.dbLeagues();
 
     return Observable
       .combineLatest([this.year, this.weekService.getWeek(), dbLeagues, leagueToUsers, userToTeams])
@@ -102,9 +112,9 @@ export class ScoreService {
    * Returns an Observable stream of LeagueScore arrays.
    */
   getLeaguesProBowl() : Observable<LeagueScore[]> {
-    const leagueToUsers = this.getLeagueToUsers();
-    const userToTeams = this.getUserToTeams();
-    const dbLeagues = this.getDbLeagues();
+    const leagueToUsers = this.leagueToUsers();
+    const userToTeams = this.userToTeams();
+    const dbLeagues = this.dbLeagues();
     // HACK HACK HACK override week to 16 so I can test with real scores.
     return Observable
       .combineLatest([this.year, Observable.of('16'), dbLeagues, leagueToUsers, userToTeams])

@@ -13,7 +13,6 @@ import * as paths from './paths';
 import { ConstantsService } from './constants.service';
 import { ScoreService, LeagueScore } from './score.service';
 import { TeamScore } from './team-score';
-import { User, Week, TeamEntry, League } from './structs';
 
 @Component({
   templateUrl: './probowl.component.html',
