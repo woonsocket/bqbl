@@ -135,7 +135,7 @@ export class ScoreService {
         const teams = userToTeams[user.$key][week].teams;
         teams[0] = teams[0] || 'N/A';
         teams[1] = teams[1] || 'N/A';
-        
+
         const pScore: Observable<PlayerScore> = Observable
           .combineLatest([
             this.scoreTotalFor(week, teams[0]),
@@ -170,11 +170,13 @@ export class ScoreService {
       const playerScores: Observable<PlayerScore>[] = [];
       for (const user of leagueToUsers.get(leagueKey)) {
         const name = userToTeams[user.$key][week].name;
-        if (!user.probowl) {
-          continue;
+        let teams = [];
+        if (user.probowl) {
+          teams = user.probowl.teams.map(team => team.name ? team.name : 'n/a');
         }
-
-        const teams = user.probowl.teams.map(team => team.name ? team.name : 'n/a');
+        while (teams.length < 6) {
+          teams.push('n/a');
+        }
 
         const pScore: Observable<PlayerScore> = Observable
           .combineLatest([
@@ -221,4 +223,3 @@ class PlayerScore {
   name: string;
   scores: TeamScore[];
 }
-
