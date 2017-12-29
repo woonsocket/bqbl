@@ -72,7 +72,10 @@ export class ScoreService {
                 activeTeams.push(team.name);
               }
             }
-            userToTeams[user.$key][week.id] = {'name': user.name, 'teams': activeTeams};
+            userToTeams[user.$key][week.id] = {
+              'name': user['shortName'],
+              'teams': activeTeams,
+            };
           }
         }
         return userToTeams;
@@ -165,7 +168,6 @@ export class ScoreService {
 
   computeScoresProBowl(year, week, leaguesById, leagueToUsers, userToTeams): LeagueScore[] {
     const leagues = [];
-    console.log(leagueToUsers);
     for (const leagueKey of Array.from(leaguesById.keys())) {
       const playerScores: Observable<PlayerScore>[] = [];
       for (const user of leagueToUsers.get(leagueKey)) {
