@@ -88,6 +88,9 @@ export class ScoreService {
     for (const leagueKey of Array.from(leaguesById.keys())) {
       const playerScores: Observable<PlayerScore>[] = [];
       for (const user of leagueToUsers.get(leagueKey)) {
+        if (!this.userToTeams[user.$key][week]) {
+          continue;
+        }
         const name = this.userToTeams[user.$key][week].name;
         const teams = this.userToTeams[user.$key][week].teams;
         teams[0] = teams[0] || 'N/A';

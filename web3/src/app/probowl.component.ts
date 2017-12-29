@@ -51,7 +51,12 @@ export class ProBowlComponent {
         if (!userData.$exists()) {
           this.router.navigate(['/newuser']);
         }
-        this.teams = this.userDataSnapshot['probowl'].teams;
+
+        if(this.userDataSnapshot['probowl']) {
+          this.teams = this.userDataSnapshot['probowl'].teams;
+        } else {
+          this.teams = [{name: "ARI"},{name: "CLE"},{name: "DET"},{name: "HOU"},{name: "PIT"},{name: "SEA"}];
+        }
       });
 
       this.uid = value.uid;
@@ -100,6 +105,7 @@ export class ProBowlComponent {
   }
 
   onChange() {
+    console.log("change!")
     this.db
       .object(paths.getUserPath(this.uid) + '/probowl/teams')
       .set(this.teams);
