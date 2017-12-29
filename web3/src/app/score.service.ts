@@ -122,8 +122,10 @@ export class ScoreService {
           continue;
         }
         const name = userToTeams[user.$key][week].name;
-        const teams = userToTeams[user.$key][week].teams.map(team => team.name ? team.name : 'n/a');
-
+        const teams = userToTeams[user.$key][week].teams;
+        teams[0] = teams[0] || 'N/A';
+        teams[1] = teams[1] || 'N/A';
+        
         const pScore: Observable<PlayerScore> = Observable
           .combineLatest([
             this.scoreTotalFor(week, teams[0]),
