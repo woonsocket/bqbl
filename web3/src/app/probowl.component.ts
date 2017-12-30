@@ -67,9 +67,11 @@ export class ProBowlComponent {
     // Assumes the PlayerScore[] values emitted by LeagueScore are sorted in
     // descending order.
     return league.players.map((playerScores) => {
-      return playerScores[0].totalScore() +
-        playerScores[1].totalScore() +
-        playerScores[2].totalScore();
+      let sum = 0;
+      sum += playerScores[0] ? playerScores[0].totalScore() : 0;
+      sum += playerScores[1] ? playerScores[1].totalScore() : 0;
+      sum += playerScores[2] ? playerScores[2].totalScore() : 0;
+      return sum;
     });
   }
 

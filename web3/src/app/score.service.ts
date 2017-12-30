@@ -118,9 +118,9 @@ export class ScoreService {
     const leagueToUsers = this.leagueToUsers();
     const userToTeams = this.userToTeams();
     const dbLeagues = this.dbLeagues();
-    // HACK HACK HACK override week to 16 so I can test with real scores.
+    // Hard-coded to Week 17. I'm sure we'll fix it next year.
     return Observable
-      .combineLatest([this.year, Observable.of('16'), dbLeagues, leagueToUsers, userToTeams])
+      .combineLatest([this.year, Observable.of('17'), dbLeagues, leagueToUsers, userToTeams])
       .map(([year, week, leagueMap, userMap, userToTeams]) => {
         return this.computeScoresProBowl(year, week, leagueMap, userMap, userToTeams);
       });
@@ -169,7 +169,6 @@ export class ScoreService {
     for (const leagueKey of Array.from(leaguesById.keys())) {
       const playerScores: Observable<PlayerScore>[] = [];
       for (const user of leagueToUsers.get(leagueKey)) {
-        const name = userToTeams[user.$key][week].name;
         let teams = [];
         if (user.probowl) {
           teams = user.probowl.teams.map(team => team.name ? team.name : 'n/a');
@@ -196,7 +195,7 @@ export class ScoreService {
               {'name': teams[4], 'score': s4},
               {'name': teams[5], 'score': s5},
             ];
-            return new PlayerScore(name, scores);
+            return new PlayerScore(user['shortName'], scores);
           });
         playerScores.push(pScore);
       }
