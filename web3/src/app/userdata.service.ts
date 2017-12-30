@@ -28,7 +28,7 @@ export class UserDataService {
   }
 
   /**
-   * Returns an Observable of a stream of an array of teams.
+   * Returns an Observable of a stream of an array of TeamSpec-s.
    */
   getTeams(): Observable<TeamSpec[]> {
     return this.user
