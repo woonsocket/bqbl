@@ -10,6 +10,7 @@ td.week {
   text-align:right;
   width:20px;
   padding: 10px;
+  white-space: nowrap;
 }
 
 td.team {
