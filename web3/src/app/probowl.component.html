@@ -1,21 +1,21 @@
 <div class="top">
 
-<table>
- <thead>
-  <td *ngFor="let team of teams; let index = index">
-  <span *ngIf="index != 5"> Pick {{index}}</span>
-  <span *ngIf="index == 5"> Nathan Peterman </span>
-  </td>
- </thead>
- <tr>
-  <td *ngFor="let team of teams; let index = index">
-    <input type="text" class="team" name="a{{index}}"
-           [(ngModel)]="team.name"
-           (change)="onChange()">
-  </td>
-</tr>
-</table>
+<div class="section-title">Your picks</div>
 
+<div class="lineup">
+  <div class="pick" *ngFor="let team of teams; let index = index">
+    <div *ngIf="index != 5"> Pick {{index + 1}}</div>
+    <div *ngIf="index == 5"> Nathan Peterman </div>
+    <div>
+      <input type="text" class="team" name="a{{index}}"
+             [(ngModel)]="team.name"
+             (change)="onChange()">
+    </div>
+  </div>
+</div>
+
+
+<div class="section-title">Scoreboard</div>
 
 <div *ngFor="let league of leagues|async">
   <div class="league-title">{{league.name}}: {{leagueScore(league)|async}} points</div>

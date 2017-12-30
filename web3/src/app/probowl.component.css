@@ -4,12 +4,35 @@
   align-items: center;
 }
 
+.section-title {
+  font-size: 20px;
+  margin-top: 30px;
+  margin-bottom: 10px;
+}
+
 .league-title {
   font-size: 18px;
   width: 90%;
   margin: auto;
   margin-top: 30px;
   margin-bottom: 10px;
+}
+
+.lineup {
+  width: 90%;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+}
+
+.lineup .pick {
+  text-align: center;
+  flex: 1;
+}
+
+.lineup input {
+  text-align: center;
+  width: 3em;
 }
 
 .minis {
@@ -26,18 +49,4 @@ mini-score:nth-child(-n+3) {
 mdl-icon {
   font-size: 18px;
   vertical-align: middle;
-}
-
-table {
-  width: 90%;
-  margin: auto;
-}
-
-td {
-  text-align: center;
-}
-
-.team {
-  text-align: center;
-  width: 3em;
 }
