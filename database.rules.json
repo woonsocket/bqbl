@@ -61,7 +61,7 @@
           }
         },
         "probowl" : {
-          ".write": "$user_id === auth.uid"
+          ".write": "$user_id === auth.uid && root.child('unlockedweeks/probowl').val() > now"
         },
       }
     },

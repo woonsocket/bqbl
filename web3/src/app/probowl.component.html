@@ -1,6 +1,8 @@
 <div class="top">
 
-<div class="section-title">Your picks</div>
+<div class="section-title">
+  Your picks <mdl-icon *ngIf="isLocked|async">lock</mdl-icon>
+</div>
 
 <div class="lineup">
   <div class="pick" *ngFor="let team of teams; let i = index">

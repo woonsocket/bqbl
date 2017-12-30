@@ -7,6 +7,7 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
 import { Router } from '@angular/router';
 import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
 import { Component, Input } from '@angular/core';
+import { MdlSnackbarService } from '@angular-mdl/core';
 import { Observable } from 'rxjs/Observable';
 
 import * as paths from './paths';
@@ -22,6 +23,7 @@ export class ProBowlComponent {
   user: Observable<firebase.User>;
   uid: string;
   teams: any[];
+  isLocked: Observable<boolean>;
 
   leagues: Observable<LeagueScore[]>;
 
@@ -29,6 +31,7 @@ export class ProBowlComponent {
               private afAuth: AngularFireAuth,
               private router: Router,
               private constants: ConstantsService,
+              private mdlSnackbarService: MdlSnackbarService,
               private scoreService: ScoreService,
               ) {
     this.user = afAuth.authState;
@@ -51,6 +54,12 @@ export class ProBowlComponent {
 
       this.uid = value.uid;
     });
+
+    this.isLocked = this.db.object(paths.getUnlockedWeeksPath())
+      .map((weeks) => {
+        const deadline = weeks['probowl'];
+        return deadline && deadline < Date.now();
+      });
   }
 
   ngOnInit() {
@@ -60,7 +69,19 @@ export class ProBowlComponent {
   onChange() {
     this.db
       .object(paths.getUserPath(this.uid) + '/probowl/teams')
-      .set(this.teams);
+      .set(this.teams)
+      .catch((err) => this.checkLineupWriteError(err));
+  }
+
+  checkLineupWriteError(err: Error): void {
+    if (err['code'] === 'PERMISSION_DENIED') {
+      this.mdlSnackbarService.showSnackbar({
+        message: `Picks are locked`,
+      });
+      return;
+    }
+    // Propagate unrecognized errors so we see them and can debug them.
+    throw err;
   }
 
   leagueScore(league: LeagueScore): Observable<number> {
