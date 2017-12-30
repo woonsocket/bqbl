@@ -9,9 +9,9 @@
  </thead>
  <tr>
   <td *ngFor="let team of teams; let index = index">
-    <input type="text" class=team name=a{{index}}
-    [(ngModel)]="team.name"
-    (change)="onChange()">
+    <input type="text" class="team" name="a{{index}}"
+           [(ngModel)]="team.name"
+           (change)="onChange()">
   </td>
 </tr>
 </table>

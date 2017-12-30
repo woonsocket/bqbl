@@ -4,29 +4,36 @@
   align-items: center;
 }
 
+.league-title {
+  font-size: 18px;
+  width: 90%;
+  margin: auto;
+  margin-top: 30px;
+  margin-bottom: 10px;
+}
+
+.minis {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: top;
+}
+
 mdl-icon {
   font-size: 18px;
   vertical-align: middle;
 }
 
 table {
-  width:90%;
-  margin:auto;
+  width: 90%;
+  margin: auto;
 }
 
-tr:nth-child(even) {background: #f8f8f8}
-
-td.name {
-  text-align:right;
-  width:20px;
-  padding: 10px;
-}
-
-td.selection {
-  min-width:30px;
+td {
   text-align: center;
 }
 
 .team {
-  width:3em;
+  text-align: center;
+  width: 3em;
 }
