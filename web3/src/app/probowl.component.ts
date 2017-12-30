@@ -37,26 +37,7 @@ export class ProBowlComponent {
               private userDataService: UserDataService,
               ) {
     this.user = afAuth.authState;
-    this.user.subscribe(value => {
-      if (!value) {
-        return;
-      }
-      let userData = this.db.object(paths.getUserPath(value.uid));
-      userData.subscribe(userData => {
-        if (!userData.$exists()) {
-          this.router.navigate(['/newuser']);
-        }
-
-        if(userData['probowl']) {
-          this.teams = userData['probowl'].teams;
-        } else {
-          this.teams = [{name: "ARI"},{name: "CLE"},{name: "DET"},{name: "HOU"},{name: "PIT"},{name: "SEA"}];
-        }
-      });
-
-      this.uid = value.uid;
-    });
-
+    this.user.subscribe(value => this.uid = value.uid);
     this.isLocked = this.db.object(paths.getUnlockedWeeksPath())
       .map((weeks) => {
         const deadline = weeks['probowl'];
@@ -65,6 +46,7 @@ export class ProBowlComponent {
   }
 
   ngOnInit() {
+    this.userDataService.getTeams().subscribe(teams => this.teams = teams);
     this.leagues = this.scoreService.getLeaguesProBowl();
   }
 
