@@ -12,6 +12,7 @@ import { Observable } from 'rxjs/Observable';
 
 import * as paths from './paths';
 import { ConstantsService } from './constants.service';
+import { UserDataService } from './userdata.service';
 import { ScoreService, LeagueScore } from './score.service';
 import { TeamScore } from './team-score';
 
@@ -33,6 +34,7 @@ export class ProBowlComponent {
               private constants: ConstantsService,
               private mdlSnackbarService: MdlSnackbarService,
               private scoreService: ScoreService,
+              private userDataService: UserDataService,
               ) {
     this.user = afAuth.authState;
     this.user.subscribe(value => {

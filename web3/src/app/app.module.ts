@@ -22,6 +22,7 @@ import { StandingsComponent } from './standings.component';
 import { ConstantsService } from './constants.service';
 import { WeekService } from './week.service';
 import { ScoreService } from './score.service';
+import { UserDataService } from './userdata.service';
 import { AdminComponent } from './admin.component';
 import { Table247Component } from './247/table-247.component';
 import { RouterModule, Routes } from '@angular/router';
@@ -65,7 +66,7 @@ import { NflIconPipe, NflLogoPipe } from './nfl-logo.pipe';
     MdlModule,
     routing,
   ],
-  providers: [ConstantsService, ScoreService, WeekService],
+  providers: [ConstantsService, ScoreService, WeekService, UserDataService],
   bootstrap: [AppComponent]
 })
 
