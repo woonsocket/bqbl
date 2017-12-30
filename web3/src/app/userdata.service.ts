@@ -14,6 +14,7 @@ import * as paths from './paths';
 import { ConstantsService } from './constants.service';
 import { ScoreService, LeagueScore } from './score.service';
 import { TeamScore } from './team-score';
+import { TeamSpec } from './structs';
 
 
 @Injectable()
@@ -21,7 +22,6 @@ export class UserDataService {
   user: Observable<firebase.User>;
 
   constructor(private db: AngularFireDatabase,
-              private router: Router,
               private afAuth: AngularFireAuth,
               private constants: ConstantsService) {
     this.user = afAuth.authState;
@@ -30,7 +30,7 @@ export class UserDataService {
   /**
    * Returns an Observable of a stream of an array of teams.
    */
-  getTeams(): Observable<any[]> {
+  getTeams(): Observable<TeamSpec[]> {
     return this.user
       .map(user => {
         return this.db.object(paths.getUserPath(user.uid))})

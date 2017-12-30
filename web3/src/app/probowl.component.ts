@@ -15,6 +15,7 @@ import { ConstantsService } from './constants.service';
 import { UserDataService } from './userdata.service';
 import { ScoreService, LeagueScore } from './score.service';
 import { TeamScore } from './team-score';
+import { TeamSpec } from './structs';
 
 @Component({
   templateUrl: './probowl.component.html',
@@ -23,7 +24,7 @@ import { TeamScore } from './team-score';
 export class ProBowlComponent {
   user: Observable<firebase.User>;
   uid: string;
-  teams: any[];
+  teams: TeamSpec[];
   isLocked: Observable<boolean>;
 
   leagues: Observable<LeagueScore[]>;
