@@ -21,7 +21,7 @@ import { TeamScore } from './team-score';
 export class ProBowlComponent {
   user: Observable<firebase.User>;
   uid: string;
-  teams: any[]; 
+  teams: any[];
 
   leagues: Observable<LeagueScore[]>;
 
@@ -61,6 +61,16 @@ export class ProBowlComponent {
     this.db
       .object(paths.getUserPath(this.uid) + '/probowl/teams')
       .set(this.teams);
+  }
+
+  leagueScore(league: LeagueScore): Observable<number> {
+    // Assumes the PlayerScore[] values emitted by LeagueScore are sorted in
+    // descending order.
+    return league.players.map((playerScores) => {
+      return playerScores[0].totalScore() +
+        playerScores[1].totalScore() +
+        playerScores[2].totalScore();
+    });
   }
 
 }

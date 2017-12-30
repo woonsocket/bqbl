@@ -18,7 +18,7 @@
 
 
 <div *ngFor="let league of leagues|async">
-  <div class="league-title">{{league.name}}</div>
+  <div class="league-title">{{league.name}}: {{leagueScore(league)|async}} points</div>
   <div class="minis">
     <mini-score *ngFor="let player of league.players|async"
                 [name]="player.name" [scores]="player.scores"

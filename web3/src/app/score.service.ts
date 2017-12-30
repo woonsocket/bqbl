@@ -145,13 +145,11 @@ export class ScoreService {
             this.scoreTotalFor(week, teams[1]),
           ])
           .map(([s0, s1]) => {
-            return {
-              'name': name,
-              'scores': [
-                {'name': teams[0], 'score': s0},
-                {'name': teams[1], 'score': s1},
-              ],
-            };
+            let scores = [
+              {'name': teams[0], 'score': s0},
+              {'name': teams[1], 'score': s1},
+            ];
+            return new PlayerScore(name, scores);
           });
         playerScores.push(pScore);
       }
@@ -190,23 +188,29 @@ export class ScoreService {
             this.scoreTotalFor(week, teams[5]),
           ])
           .map(([s0, s1, s2, s3, s4, s5]) => {
-            return {
-              'name': name,
-              'scores': [
-                {'name': teams[0], 'score': s0},
-                {'name': teams[1], 'score': s1},
-                {'name': teams[2], 'score': s2},
-                {'name': teams[3], 'score': s3},
-                {'name': teams[4], 'score': s4},
-                {'name': teams[5], 'score': s5},
-              ],
-            };
+            const scores = [
+              {'name': teams[0], 'score': s0},
+              {'name': teams[1], 'score': s1},
+              {'name': teams[2], 'score': s2},
+              {'name': teams[3], 'score': s3},
+              {'name': teams[4], 'score': s4},
+              {'name': teams[5], 'score': s5},
+            ];
+            return new PlayerScore(name, scores);
           });
         playerScores.push(pScore);
       }
+      // For the Pro Bowl, sort the scores in each league so that it's easier to
+      // tell which league is winning. We're also cheating a little in the CSS
+      // by just always highlighting the first 3 players and assuming that the
+      // scores are already sorted.
       const league: LeagueScore = {
         name: leaguesById.get(leagueKey).name,
-        players: Observable.combineLatest(playerScores),
+        players: Observable.combineLatest(playerScores).map((arr) => {
+          let sorted = arr.slice();
+          sorted.sort((a, b) => b.totalScore() - a.totalScore());
+          return sorted;
+        }),
       };
       leagues.push(league);
     }
@@ -222,6 +226,13 @@ export class LeagueScore {
 }
 
 class PlayerScore {
-  name: string;
-  scores: TeamScore[];
+  constructor(private name: string, private scores: TeamScore[]) {}
+
+  totalScore(): number {
+    let sum = 0;
+    for (let s of this.scores) {
+      sum += s.score;
+    }
+    return sum;
+  }
 }

@@ -19,6 +19,10 @@
   align-items: top;
 }
 
+mini-score:nth-child(-n+3) {
+  background: #e8eaf6;
+}
+
 mdl-icon {
   font-size: 18px;
   vertical-align: middle;
