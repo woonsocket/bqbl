@@ -3,11 +3,12 @@
 <div class="section-title">Your picks</div>
 
 <div class="lineup">
-  <div class="pick" *ngFor="let team of teams; let index = index">
-    <div *ngIf="index != 5"> Pick {{index + 1}}</div>
-    <div *ngIf="index == 5"> Nathan Peterman </div>
+  <div class="pick" *ngFor="let team of teams; let i = index">
+    <div *ngIf="i < 4"> Pick {{i+1}}</div>
+    <div *ngIf="i == 4"> Nathan Peterman </div>
+    <div *ngIf="i == 5"> Matt Schaub </div>
     <div>
-      <input type="text" class="team" name="a{{index}}"
+      <input type="text" class="team" name="a{{i}}"
              [(ngModel)]="team.name"
              (change)="onChange()">
     </div>
