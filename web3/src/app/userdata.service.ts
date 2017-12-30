@@ -33,7 +33,7 @@ export class UserDataService {
    * each time the team list in the database changes. If no choices are present
    * in the database, emits an array of empty team names.
    */
-  getTeams(): Observable<TeamSpec[]> {
+  getProBowlTeams(): Observable<TeamSpec[]> {
     return this.user
       .map((user) => {
         return this.db.object(paths.getUserPath(user.uid))

@@ -47,7 +47,7 @@ export class ProBowlComponent {
   }
 
   ngOnInit() {
-    this.userDataService.getTeams().subscribe(teams => this.teams = teams);
+    this.userDataService.getProBowlTeams().subscribe(teams => this.teams = teams);
     this.leagues = this.scoreService.getLeaguesProBowl();
   }
 
