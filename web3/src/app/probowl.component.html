@@ -1,7 +1,8 @@
 <table>
  <thead>
   <td *ngFor="let team of teams; let index = index">
-  Pick {{index}}
+  <span *ngIf="index != 5"> Pick {{index}}</span>
+  <span *ngIf="index == 5"> Nathan Peterman </span>
   </td>
  </thead>
  <tr>
