@@ -52,10 +52,23 @@ export class ProBowlComponent {
   }
 
   onChange() {
+    this.normalizeTeams();
     this.db
       .object(paths.getUserPath(this.uid) + '/probowl/teams')
       .set(this.teams)
       .catch((err) => this.checkLineupWriteError(err));
+  }
+
+  /** Convert team names to uppercase, and blank out unknown team names. */
+  normalizeTeams() {
+    // This code should be shared with lineup.component. But really there should
+    // be a single "team picker" component that manages all of this.
+    for (let team of this.teams) {
+      team.name = team.name.toUpperCase();
+      if (!this.constants.getAllTeams().has(team.name)) {
+        team.name = '';
+      }
+    }
   }
 
   checkLineupWriteError(err: Error): void {
