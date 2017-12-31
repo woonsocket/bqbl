@@ -1,5 +1,6 @@
 import 'rxjs/add/observable/of';
 import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/switch';
 import 'rxjs/add/operator/take';
 import * as firebase from 'firebase/app';
 import { AngularFireAuth } from 'angularfire2/auth';
@@ -28,21 +29,24 @@ export class UserDataService {
   }
 
   /**
-   * Returns an Observable of a stream of an array of TeamSpec-s.
+   * Returns an Observable that emits the current user's Pro Bowl team choices
+   * each time the team list in the database changes. If no choices are present
+   * in the database, emits an array of empty team names.
    */
   getTeams(): Observable<TeamSpec[]> {
     return this.user
-      .map(user => {
-        return this.db.object(paths.getUserPath(user.uid))})
-      .map(userData => {
-        let teams = [];
-        if(userData['probowl']) {
-          teams = userData['probowl'].teams;
-        } else {
-          teams = [{name: "ARI"},{name: "CLE"},{name: "DET"},{name: "HOU"},{name: "PIT"},{name: "SEA"}];
-        }
-        return teams;
-      });
+      .map((user) => {
+        return this.db.object(paths.getUserPath(user.uid))
+          .map((userData) => {
+            if (userData['probowl']) {
+              return userData['probowl'].teams;
+            }
+            return [
+              {name: ""}, {name: ""}, {name: ""},
+              {name: ""}, {name: ""}, {name: ""},
+            ];
+          });
+      })
+      .switch();
   }
 }
-
