@@ -13,6 +13,7 @@ import { LoginComponent } from './login.component';
 import { StandingsComponent } from './standings.component';
 import { AdminComponent } from './admin.component';
 import { AppComponent } from './app.component';
+import { AuthGuard } from './auth-guard.service';
 
 // Route Configuration
 export const routes: Routes = [
@@ -20,9 +21,6 @@ export const routes: Routes = [
    path: 'newuser', component: NewUserComponent
  },
  { path: '',
-   component: LineupComponent
- },
- { path: 'lineup',
    component: LineupComponent
  },
  { path: 'scores',
@@ -52,9 +50,23 @@ export const routes: Routes = [
  { path: 'standings',
    component: StandingsComponent
  },
+ {
+    path: 'user',
+    canActivate: [AuthGuard],
+    children: [
+      {
+        path: '',
+        children: [
+         { path: 'lineup',
+   component: LineupComponent
+ },
  { path: 'probowl',
    component: ProBowlComponent
  },
+        ],
+      }
+    ]
+  }
 ];
 
 export const routing: ModuleWithProviders = RouterModule.forRoot(routes,
