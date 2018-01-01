@@ -224,7 +224,7 @@ export class LeagueScore {
   players: Observable<PlayerScore[]>;
 }
 
-class PlayerScore {
+export class PlayerScore {
   constructor(private name: string, private scores: TeamScore[]) {}
 
   totalScore(): number {

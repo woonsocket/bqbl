@@ -2,10 +2,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 import { ComponentFixtureAutoDetect } from '@angular/core/testing';
-import { AngularFireAuth } from 'angularfire2/auth';
-import { AngularFireAuthModule } from 'angularfire2/auth';
-import { AngularFireDatabase, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2/database';
-import { ActivatedRoute, Router, NavigationEnd, Params} from '@angular/router';
 import { MdlSnackbarService } from '@angular-mdl/core';
 import { APP_BASE_HREF } from '@angular/common';
 import { MdlModule } from '@angular-mdl/core';
@@ -14,65 +10,43 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/of';
 
 import { NflLogoPipe } from './nfl-logo.pipe';
-import { MockAngularFireDb, MockAngularFireAuth } from './mockangularfire';
-import { DefaultData } from './fakedatabaseresponses'
 import { MiniScoreComponent } from './mini-score.component';
 import { ScoreCellComponent } from './score-cell.component';
-import { ScoreService } from './score.service';
+import { MockScoreService, LEAGUE_SCORE } from './mocks';
 import { ConstantsService } from './constants.service';
 import { ScoresComponent } from './scores.component';
+import { ScoreService, LeagueScore, PlayerScore } from './score.service';
 
-const USER_ID = '30';
 describe('ScoresComponent', () => {
 
-  let mockDb: MockAngularFireDb;
-  let mockAuth: MockAngularFireAuth;
+  let mockScoreService : MockScoreService;
   let fixture: ComponentFixture<ScoresComponent>;
 
   beforeEach(() => {
-
-    this.mockDb = new MockAngularFireDb();
-    this.mockAuth = new MockAngularFireAuth(USER_ID, 'Harvey');
-
+    mockScoreService = new MockScoreService();
+    mockScoreService.setLeagues([LEAGUE_SCORE]);
     TestBed.configureTestingModule({
       declarations: [ ScoresComponent, MiniScoreComponent, ScoreCellComponent, NflLogoPipe], // declare the test component
       imports: [ MdlModule, FormsModule ],
       providers: [
       { provide: ComponentFixtureAutoDetect, useValue: true },
-      { provide: AngularFireAuth, useValue: this.mockAuth },
-      { provide: AngularFireDatabase, useValue: this.mockDb },
-      { provide: ScoreService, useValue: new ScoreService(this.mockDb) },
-      { provide: Router, useValue: true },
+      { provide: ScoreService, useValue: mockScoreService },
       { provide: ConstantsService, useValue: new ConstantsService() },
-      { provide: MdlSnackbarService, useValue: true },
       { provide: APP_BASE_HREF, useValue: '/'},
-      { provide: ActivatedRoute, useValue: {
-          queryParams: Observable.of({ week: 1 })
-        }
-      },
       ]
     });
 
   });
 
   it('should render the scores', () => {
-    this.mockDb.data = new DefaultData().get();
-    this.mockDb.data.users[USER_ID].weeks[0].teams[1].selected = true;
-    this.mockDb.data.users[USER_ID].weeks[0].teams[2].selected = true;
-    console.log(this.mockDb.data);
-
     fixture = TestBed.createComponent(ScoresComponent);
     let teamName = fixture.debugElement.queryAll(
       By.css('mini-score img'));
     let teamScore = fixture.debugElement.queryAll(
       By.css('mini-score score-cell'));
     fixture.detectChanges();
+    expect(teamName.length).toEqual(2);
 
-    expect(fixture.componentInstance.selectedWeek).toEqual(1);
-    expect(teamName[0].nativeElement.title).toEqual('HOU');
-    expect(teamName[1].nativeElement.title).toEqual('NYJ');
-    expect(teamScore[0].nativeElement.textContent.trim()).toEqual('31');
-    expect(teamScore[1].nativeElement.textContent.trim()).toEqual('32');
   });
 
 });
