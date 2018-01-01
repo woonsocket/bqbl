@@ -12,7 +12,7 @@ import 'rxjs/add/observable/of';
 import { NflLogoPipe } from './nfl-logo.pipe';
 import { MiniScoreComponent } from './mini-score.component';
 import { ScoreCellComponent } from './score-cell.component';
-import { MockScoreService, LEAGUE_SCORE } from './mocks';
+import { MockScoreService, NBQBL_LEAGUE_SCORE } from './mocks';
 import { ConstantsService } from './constants.service';
 import { ScoresComponent } from './scores.component';
 import { ScoreService, LeagueScore, PlayerScore } from './score.service';
@@ -24,7 +24,7 @@ describe('ScoresComponent', () => {
 
   beforeEach(() => {
     mockScoreService = new MockScoreService();
-    mockScoreService.setLeagues([LEAGUE_SCORE]);
+    mockScoreService.setLeagues([NBQBL_LEAGUE_SCORE]);
     TestBed.configureTestingModule({
       declarations: [ ScoresComponent, MiniScoreComponent, ScoreCellComponent, NflLogoPipe], // declare the test component
       imports: [ MdlModule, FormsModule ],
@@ -46,7 +46,6 @@ describe('ScoresComponent', () => {
       By.css('mini-score score-cell'));
     fixture.detectChanges();
     expect(teamName.length).toEqual(2);
-
   });
 
 });
