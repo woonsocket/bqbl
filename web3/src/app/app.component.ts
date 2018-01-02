@@ -20,7 +20,6 @@ export class AppComponent implements OnInit {
   user: Observable<firebase.User>;
   uid = '';
   displayName = 'Login';
-  allWeeks = [];
   selectedWeek = '';
   year = '2017';
   weekDropdownSuppressPaths = [
@@ -28,11 +27,10 @@ export class AppComponent implements OnInit {
   ];
   suppressWeekDropdown = false;
   constructor(
-    db: AngularFireDatabase, private afAuth: AngularFireAuth,
+    private db: AngularFireDatabase, private afAuth: AngularFireAuth,
     private router: Router, private route: ActivatedRoute,
     private constants: ConstantsService) {
     this.user = afAuth.authState;
-    this.allWeeks = constants.getAllWeeks();
     this.user.subscribe(value => {
       if (!value) {
         this.displayName = 'Login';
@@ -51,8 +49,8 @@ export class AppComponent implements OnInit {
     });
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
-        this.suppressWeekDropdown =
-        this.weekDropdownSuppressPaths.includes(event.url.trim());
+        this.suppressWeekDropdown = 
+            this.weekDropdownSuppressPaths.includes(event.url.trim());
       }
     });
   }
