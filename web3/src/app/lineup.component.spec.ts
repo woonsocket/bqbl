@@ -20,8 +20,8 @@ import { LineupComponent } from './lineup.component';
 const USER_ID = '30';
 describe('LineupComponent', () => {
 
-  const mockDb: MockAngularFireDb;
-  const mockAuth: MockAngularFireAuth;
+  let mockDb: MockAngularFireDb;
+  let mockAuth: MockAngularFireAuth;
   let fixture: ComponentFixture<LineupComponent>;
   let selected: DebugElement[];
 
