@@ -1,4 +1,3 @@
-
 import * as firebase from 'firebase/app';
 import { ActivatedRoute, Router, NavigationEnd, Event, Params} from '@angular/router';
 import { AngularFireAuth } from 'angularfire2/auth';
@@ -20,7 +19,6 @@ export class AppComponent implements OnInit {
   user: Observable<firebase.User>;
   uid = '';
   displayName = 'Login';
-  allWeeks = [];
   selectedWeek = '';
   year = '2017';
   weekDropdownSuppressPaths = [
@@ -32,7 +30,6 @@ export class AppComponent implements OnInit {
     private router: Router, private route: ActivatedRoute,
     private constants: ConstantsService) {
     this.user = afAuth.authState;
-    this.allWeeks = constants.getAllWeeks();
     this.user.subscribe(value => {
       this.displayName = value.displayName;
       this.uid = value.uid;
@@ -46,14 +43,14 @@ export class AppComponent implements OnInit {
     });
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
-        this.suppressWeekDropdown =
-        this.weekDropdownSuppressPaths.includes(event.url.trim());
+        this.suppressWeekDropdown = 
+            this.weekDropdownSuppressPaths.includes(event.url.trim());
       }
     });
   }
 
   closeDrawer() {
-    const d : any = document.querySelector('.mdl-layout');
+    const d: any = document.querySelector('.mdl-layout');
     if (window.innerWidth < 1024) {
       d['MaterialLayout'].toggleDrawer();
     }

@@ -2,6 +2,7 @@ import 'rxjs/add/observable/of';
 import 'rxjs/add/operator/map';
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
+import { OnInit } from '@angular/core';
 
 import { ScoreService, LeagueScore } from './score.service';
 
@@ -10,7 +11,8 @@ import { ScoreService, LeagueScore } from './score.service';
   templateUrl: './scores.component.html',
   styleUrls: ['./scores.component.css']
 })
-export class AntiScoresComponent {
+export class AntiScoresComponent implements OnInit {
+
   leagues: Observable<LeagueScore[]>;
 
   constructor(private scoreService: ScoreService) {}

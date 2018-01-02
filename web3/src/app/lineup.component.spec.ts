@@ -12,7 +12,7 @@ import { MdlModule } from '@angular-mdl/core';
 import { FormsModule } from '@angular/forms';
 
 import { MockAngularFireDb, MockAngularFireAuth } from './mockangularfire';
-import { DefaultData } from './fakedatabaseresponses'
+import { DefaultData } from './fakedatabaseresponses';
 
 import { ConstantsService } from './constants.service';
 import { LineupComponent } from './lineup.component';
@@ -50,7 +50,7 @@ describe('LineupComponent', () => {
   it('should render the played teams', () => {
     this.mockDb.data = new DefaultData().get();
     this.mockDb.data.users[USER_ID].weeks[0].teams[1].selected = true;
-    this.mockDb.data.users[USER_ID].weeks[0].teams[2].selected = true; 
+    this.mockDb.data.users[USER_ID].weeks[0].teams[2].selected = true;
 
     fixture = TestBed.createComponent(LineupComponent);
     selected = fixture.debugElement.queryAll(By.css('.selected'));
@@ -66,7 +66,7 @@ describe('LineupComponent', () => {
     fixture = TestBed.createComponent(LineupComponent);
     selected = fixture.debugElement.queryAll(By.css('.selected'));
     selected[0].nativeElement.click();
-    let newTeamValue = this.mockDb.object(`/users/${USER_ID}/weeks/0/teams/1`).data;
+    const newTeamValue = this.mockDb.object(`/users/${USER_ID}/weeks/0/teams/1`).data;
     expect(newTeamValue.selected).toEqual(false);
   });
 
@@ -74,7 +74,7 @@ describe('LineupComponent', () => {
     const dbData = new DefaultData().get();
     this.mockDb.data = dbData;
     fixture = TestBed.createComponent(LineupComponent);
-    let teams = fixture.debugElement.queryAll(By.css('td.team'));
+    const teams = fixture.debugElement.queryAll(By.css('td.team'));
     // TODO(harveyj): Clean this magic number up.
     teams[4].nativeElement.click();
     teams[8].nativeElement.click();
@@ -87,13 +87,13 @@ describe('LineupComponent', () => {
     const dbData = new DefaultData().get();
     this.mockDb.data = dbData;
     fixture = TestBed.createComponent(LineupComponent);
-    let teams = fixture.debugElement.queryAll(By.css('td.team'));
+    const teams = fixture.debugElement.queryAll(By.css('td.team'));
     // TODO(harveyj): Clean this magic number up.
     teams[4].nativeElement.click();
     teams[5].nativeElement.click();
     teams[6].nativeElement.click();
     fixture.detectChanges();
-    let selected = fixture.debugElement.queryAll(By.css('.selected'));
+    selected = fixture.debugElement.queryAll(By.css('.selected'));
     expect(selected.length).toEqual(2);
   });
 
@@ -101,7 +101,7 @@ describe('LineupComponent', () => {
     const dbData = new DefaultData().get();
     this.mockDb.data = dbData;
     fixture = TestBed.createComponent(LineupComponent);
-    let teams = fixture.debugElement.queryAll(By.css('td.team'));
+    const teams = fixture.debugElement.queryAll(By.css('td.team'));
     // TODO(harveyj): Clean this magic number up.
     teams[4].nativeElement.click();
     teams[8].nativeElement.click();
@@ -114,7 +114,7 @@ describe('LineupComponent', () => {
     this.mockDb.data = dbData;
     this.mockDb.data.leagues['nbqbl'].dh = true;
     fixture = TestBed.createComponent(LineupComponent);
-    let dhEntries = fixture.debugElement.queryAll(By.css('input.dh'));
+    const dhEntries = fixture.debugElement.queryAll(By.css('input.dh'));
     expect(dhEntries.length).toEqual(4);
   });
 
@@ -123,22 +123,22 @@ describe('LineupComponent', () => {
     this.mockDb.data = dbData;
     this.mockDb.data.leagues['nbqbl'].dh = false;
     fixture = TestBed.createComponent(LineupComponent);
-    let dhEntries = fixture.debugElement.queryAll(By.css('input.dh'));
+    const dhEntries = fixture.debugElement.queryAll(By.css('input.dh'));
     expect(dhEntries.length).toEqual(0);
   });
 
   it ('should update db when DH selected', () => {
     this.mockDb.data = new DefaultData().get();
     this.mockDb.data.leagues['nbqbl'].dh = true;
-    let week = this.mockDb.data.users['30'].weeks[0];
+    const week = this.mockDb.data.users['30'].weeks[0];
     fixture = TestBed.createComponent(LineupComponent);
-    let dhEntries = fixture.debugElement.queryAll(By.css('input.dh'));
+    const dhEntries = fixture.debugElement.queryAll(By.css('input.dh'));
     dhEntries[0].nativeElement.value = 'ARI';
     dhEntries[0].nativeElement.dispatchEvent(new Event('input'));
     fixture.componentInstance.onChange('ARI', '', week, '0');
-    let val = this.mockDb.object(`/users/${USER_ID}/weeks/0/teams/4`);
-    expect(val.data.name).toEqual('ARI');  
-    expect(val.data.selected).toEqual(true);  
+    const val = this.mockDb.object(`/users/${USER_ID}/weeks/0/teams/4`);
+    expect(val.data.name).toEqual('ARI');
+    expect(val.data.selected).toEqual(true);
   });
 
 });

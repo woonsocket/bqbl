@@ -8,7 +8,7 @@ import { Observable } from 'rxjs/Observable';
 import { Router } from '@angular/router';
 import { User, Week, TeamEntry } from './structs';
 import * as paths from './paths';
-import { ConstantsService } from './constants.service'
+import { ConstantsService } from './constants.service';
 
 @Component({
   templateUrl: './newuser.component.html',
@@ -24,7 +24,7 @@ export class NewUserComponent {
   selectedLeague: any = {};
   selectedUser = [];
 
-  constructor(db: AngularFireDatabase, private afAuth: AngularFireAuth, router: Router, private constants : ConstantsService) {
+  constructor(db: AngularFireDatabase, private afAuth: AngularFireAuth, router: Router, private constants: ConstantsService) {
     this.db = db;
     this.user = afAuth.authState;
     this.user.subscribe(value => {

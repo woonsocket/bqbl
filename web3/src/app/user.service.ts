@@ -4,7 +4,7 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
-import * as paths from './paths'
+import * as paths from './paths';
 
 @Injectable()
 export class UserService {

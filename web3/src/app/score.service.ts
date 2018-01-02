@@ -2,7 +2,7 @@ import { AngularFireDatabase, FirebaseObjectObservable } from 'angularfire2/data
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
-import * as paths from './paths'
+import * as paths from './paths';
 
 import { TeamScore } from './team-score';
 import { WeekService } from './week.service';
@@ -85,7 +85,7 @@ export class ScoreService {
   /**
    * Returns an Observable stream of a map of league ID -> league object.
    */
-  dbLeagues() : Observable<any> {
+  dbLeagues(): Observable<any> {
     return this.db.list(paths.getLeaguesPath())
       .map((leagues) => {
         const leaguesById = new Map<string, any>();
@@ -99,7 +99,7 @@ export class ScoreService {
   /**
    * Returns an Observable stream of LeagueScore arrays.
    */
-  getLeagues(anti?: boolean) : Observable<LeagueScore[]> {
+  getLeagues(anti?: boolean): Observable<LeagueScore[]> {
     const leagueToUsers = this.leagueToUsers();
     const userToTeams = this.userToTeams(anti);
     const dbLeagues = this.dbLeagues();
@@ -114,7 +114,7 @@ export class ScoreService {
   /**
    * Returns an Observable stream of LeagueScore arrays.
    */
-  getLeaguesProBowl() : Observable<LeagueScore[]> {
+  getLeaguesProBowl(): Observable<LeagueScore[]> {
     const leagueToUsers = this.leagueToUsers();
     const userToTeams = this.userToTeams();
     const dbLeagues = this.dbLeagues();
@@ -145,7 +145,7 @@ export class ScoreService {
             this.scoreTotalFor(week, teams[1]),
           ])
           .map(([s0, s1]) => {
-            let scores = [
+            const scores = [
               {'name': teams[0], 'score': s0},
               {'name': teams[1], 'score': s1},
             ];
@@ -206,7 +206,7 @@ export class ScoreService {
       const league: LeagueScore = {
         name: leaguesById.get(leagueKey).name,
         players: Observable.combineLatest(playerScores).map((arr) => {
-          let sorted = arr.slice();
+          const sorted = arr.slice();
           sorted.sort((a, b) => b.totalScore() - a.totalScore());
           return sorted;
         }),
@@ -229,7 +229,7 @@ export class PlayerScore {
 
   totalScore(): number {
     let sum = 0;
-    for (let s of this.scores) {
+    for (const s of this.scores) {
       sum += s.score;
     }
     return sum;

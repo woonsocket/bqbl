@@ -3,7 +3,7 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { AngularFireDatabase } from 'angularfire2/database';
 import { Component } from '@angular/core';
 import { OnInit } from '@angular/core';
-import * as paths from './paths'
+import * as paths from './paths';
 import { ConstantsService } from './constants.service';
 
 @Component({

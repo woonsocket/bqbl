@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs/Rx'
+import { Observable } from 'rxjs/Rx';
 
 export class MockAngularFireDbSnapshot {
 
@@ -61,7 +61,7 @@ export class MockAngularFireDbListResponse {
   data = [];
 
   constructor(public path: string, data: any) {
-    for (let key of Object.keys(data)) {
+    for (const key of Object.keys(data)) {
       data[key]['$key'] = key;
       this.data.push(data[key]);
     }
@@ -104,17 +104,17 @@ export class MockAngularFireDb {
   data: {};
   constructor() {}
 
-  object(path: string) : MockAngularFireDbResponse {
-    let obj = this.getDbObject(path);
+  object(path: string): MockAngularFireDbResponse {
+    const obj = this.getDbObject(path);
     return new MockAngularFireDbResponse(path, obj);
   }
 
-  list(path: string) : MockAngularFireDbListResponse {
-    let obj = this.getDbObject(path);
+  list(path: string): MockAngularFireDbListResponse {
+    const obj = this.getDbObject(path);
     return new MockAngularFireDbListResponse(path, obj);
   }
 
-  private getDbObject(path:string) {
+  private getDbObject(path: string) {
     let obj = this.data;
     console.log('LOOKUP: ' + path);
     for (const pathFrag of path.split('/')) {

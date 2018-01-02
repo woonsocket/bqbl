@@ -42,8 +42,8 @@ export class UserDataService {
               return userData['probowl'].teams;
             }
             return [
-              {name: ""}, {name: ""}, {name: ""},
-              {name: ""}, {name: ""}, {name: ""},
+              {name: ''}, {name: ''}, {name: ''},
+              {name: ''}, {name: ''}, {name: ''},
             ];
           });
       })
