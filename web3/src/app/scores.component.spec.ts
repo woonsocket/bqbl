@@ -19,7 +19,7 @@ import { ScoreService, LeagueScore, PlayerScore } from './score.service';
 
 describe('ScoresComponent', () => {
 
-  let mockScoreService : MockScoreService;
+  let mockScoreService: MockScoreService;
   let fixture: ComponentFixture<ScoresComponent>;
 
   beforeEach(() => {
@@ -40,9 +40,9 @@ describe('ScoresComponent', () => {
 
   it('should render the scores', () => {
     fixture = TestBed.createComponent(ScoresComponent);
-    let teamName = fixture.debugElement.queryAll(
+    const teamName = fixture.debugElement.queryAll(
       By.css('mini-score img'));
-    let teamScore = fixture.debugElement.queryAll(
+    const teamScore = fixture.debugElement.queryAll(
       By.css('mini-score score-cell'));
     fixture.detectChanges();
     expect(teamName.length).toEqual(2);

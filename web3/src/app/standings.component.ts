@@ -6,7 +6,7 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/combineLatest';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/take';
-import { User } from './structs'
+import { User } from './structs';
 import { TeamScore } from './team-score';
 import { ConstantsService } from './constants.service';
 import { ScoreService } from './score.service';
@@ -169,7 +169,7 @@ function weeklyScores(scoreService: ScoreService,
             return {
               name: `Week ${userWeek.id}`,
               scores: arr.filter(v => !!v),
-            }
+            };
           }));
     }
   }

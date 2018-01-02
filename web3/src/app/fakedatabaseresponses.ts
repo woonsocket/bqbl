@@ -6,8 +6,8 @@ export function emptyDb() {
     'leagues': {},
     'scores': {},
     'unlockedweeks': [{}]
-  }
-};
+  };
+}
 
 export function nbqblLeague() {
   return {
@@ -33,23 +33,23 @@ export function emptyWeek (id: string) {
     {'name': 'NYJ', 'selected': false},
     {'name': 'CHI', 'selected': false},
     ]
-  }
+  };
 }
 
 export function emptyScores () {
   return {
-    'CLE': {total:30, projection: {total: 1}, gameInfo: {clock: "Final"}}, 
-    'HOU': {total:31, projection: {total: 2}, gameInfo: {clock: "Final"}}, 
-    'NYJ': {total:32, projection: {total: 3}, gameInfo: {clock: "Final"}}, 
-    'CHI': {total:33, projection: {total: 4}, gameInfo: {clock: "Final"}}, 
-  }
+    'CLE': {total: 30, projection: {total: 1}, gameInfo: {clock: 'Final'}},
+    'HOU': {total: 31, projection: {total: 2}, gameInfo: {clock: 'Final'}},
+    'NYJ': {total: 32, projection: {total: 3}, gameInfo: {clock: 'Final'}},
+    'CHI': {total: 33, projection: {total: 4}, gameInfo: {clock: 'Final'}},
+  };
 }
 
 export class DefaultData {
 
   get() {
-    let retVal = emptyDb();
-    let user = emptyUser();
+    const retVal = emptyDb();
+    const user = emptyUser();
     user.weeks.push(emptyWeek('1'));
     user.weeks.push(emptyWeek('2'));
 

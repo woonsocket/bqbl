@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 
 import * as paths from './paths';
 import { ConstantsService } from './constants.service';
-import { LeagueRules } from './schema'
+import { LeagueRules } from './schema';
 import { User, Week, TeamEntry } from './structs';
 
 @Component({
@@ -67,7 +67,7 @@ export class LineupComponent {
 
     this.db.list(paths.getUnlockedWeeksPath()).subscribe((weeks) => {
       const unlockedWeeks = new Set();
-      for (let week of weeks) {
+      for (const week of weeks) {
         // TODO(aerion): Update this.unlockedWeeks if the lock time passes while
         // the page is open.
         if (week.$value > Date.now()) {
@@ -179,7 +179,7 @@ export class LineupComponent {
     this.db
       .object(paths.getUserPath(this.uid) + '/weeks/' + weekId + '/teams')
       .set(week.teams)
-      .catch(err => { this.checkLineupWriteError(err, weekId, week); })
+      .catch(writeErr => { this.checkLineupWriteError(writeErr, weekId, week); })
       .then(() => { this.pendingOps--; });
   }
 
@@ -202,7 +202,7 @@ export class LineupComponent {
     this.db
       .object(paths.getUserPath(this.uid) + '/weeks/' + weekId + '/teams')
       .set(newTeams)
-      .catch((err) => this.checkLineupWriteError(err, weekId, week))
+      .catch((writeErr) => this.checkLineupWriteError(writeErr, weekId, week))
       .then(() => this.pendingOps--);
   }
 

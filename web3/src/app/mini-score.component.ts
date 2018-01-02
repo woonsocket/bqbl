@@ -48,7 +48,7 @@ export class MiniScoreComponent {
 
   totalScore(): number {
     let sum = 0;
-    for (let s of this.scores) {
+    for (const s of this.scores) {
       sum += s.score;
     }
     return sum;

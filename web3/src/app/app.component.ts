@@ -58,7 +58,7 @@ export class AppComponent implements OnInit {
   }
 
   closeDrawer() {
-    const d : any = document.querySelector('.mdl-layout');
+    const d: any = document.querySelector('.mdl-layout');
     if (window.innerWidth < 1024) {
       d['MaterialLayout'].toggleDrawer();
     }

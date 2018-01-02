@@ -63,7 +63,7 @@ export class ProBowlComponent {
   normalizeTeams() {
     // This code should be shared with lineup.component. But really there should
     // be a single "team picker" component that manages all of this.
-    for (let team of this.teams) {
+    for (const team of this.teams) {
       team.name = team.name.toUpperCase();
       if (!this.constants.getAllTeams().has(team.name)) {
         team.name = '';

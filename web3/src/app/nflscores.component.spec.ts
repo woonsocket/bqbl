@@ -14,7 +14,7 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/of';
 
 import { MockAngularFireDb, MockAngularFireAuth } from './mockangularfire';
-import { DefaultData } from './fakedatabaseresponses'
+import { DefaultData } from './fakedatabaseresponses';
 
 import { NflLogoPipe } from './nfl-logo.pipe';
 import { MiniScoreComponent } from './mini-score.component';
@@ -64,14 +64,14 @@ describe('NFLScoresComponent', () => {
   it('should render the projected scores', () => {
     this.mockDb.data = new DefaultData().get();
     fixture = TestBed.createComponent(NFLScoresComponent);
-    let scores = fixture.debugElement.queryAll(
+    const scores = fixture.debugElement.queryAll(
       By.css('.comp score-cell'));
     fixture.detectChanges();
     expect(scores.length).toEqual(4);
-    expect(scores[0].nativeElement.textContent).toContain("4");
-    expect(scores[1].nativeElement.textContent).toContain("3");
-    expect(scores[2].nativeElement.textContent).toContain("2");
-    expect(scores[3].nativeElement.textContent).toContain("1");
+    expect(scores[0].nativeElement.textContent).toContain('4');
+    expect(scores[1].nativeElement.textContent).toContain('3');
+    expect(scores[2].nativeElement.textContent).toContain('2');
+    expect(scores[3].nativeElement.textContent).toContain('1');
   });
 
   it('should render the scores', () => {
@@ -79,12 +79,12 @@ describe('NFLScoresComponent', () => {
     fixture = TestBed.createComponent(NFLScoresComponent);
     fixture.componentInstance.projectScores = false;
     fixture.detectChanges();
-    let scores = fixture.debugElement.queryAll(
+    const scores = fixture.debugElement.queryAll(
       By.css('.comp score-cell'));
     expect(scores.length).toEqual(4);
-    expect(scores[0].nativeElement.textContent).toContain("33");
-    expect(scores[1].nativeElement.textContent).toContain("32");
-    expect(scores[2].nativeElement.textContent).toContain("31");
-    expect(scores[3].nativeElement.textContent).toContain("30");
+    expect(scores[0].nativeElement.textContent).toContain('33');
+    expect(scores[1].nativeElement.textContent).toContain('32');
+    expect(scores[2].nativeElement.textContent).toContain('31');
+    expect(scores[3].nativeElement.textContent).toContain('30');
   });
 });
