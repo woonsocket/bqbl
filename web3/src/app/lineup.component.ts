@@ -39,10 +39,6 @@ export class LineupComponent {
     this.user = afAuth.authState;
     this.schedule = constants.getSchedule();
     this.user.subscribe(value => {
-      if (!value) {
-        this.displayName = '';
-        return;
-      }
       this.userData = this.db.object(paths.getUserPath(value.uid));
       this.userData.subscribe(userData => {
         this.userDataSnapshot = userData;

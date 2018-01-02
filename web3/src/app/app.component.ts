@@ -28,17 +28,12 @@ export class AppComponent implements OnInit {
   ];
   suppressWeekDropdown = false;
   constructor(
-    db: AngularFireDatabase, private afAuth: AngularFireAuth,
+    private afAuth: AngularFireAuth,
     private router: Router, private route: ActivatedRoute,
     private constants: ConstantsService) {
     this.user = afAuth.authState;
     this.allWeeks = constants.getAllWeeks();
     this.user.subscribe(value => {
-      if (!value) {
-        this.displayName = 'Login';
-        this.router.navigate(['/login']);
-        return;
-      }
       this.displayName = value.displayName;
       this.uid = value.uid;
     });
