@@ -28,7 +28,7 @@ export class ScoreService {
    * team. If the week/team combo does not exist, the Observable emits 0.
    */
   scoreTotalFor(week: string, teamName: string): Observable<number> {
-    return this.scoreObjectFor(week.toString(), teamName)
+    return this.scoreObjectFor(week, teamName)
       .map((v) => {
         if (!v || !v.total) {
           return 0;
