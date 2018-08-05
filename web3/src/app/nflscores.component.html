@@ -17,7 +17,7 @@
   <nfl-score-card *ngFor="let score of getScores()"
                   [score]="score"
                   [year]="year"
-                  [week]="selectedWeek"
+                  [week]="selectedWeek | async"
                   [projectScores]="projectScores">
   </nfl-score-card>
   <div *ngIf="!getScores().length" class="empty">

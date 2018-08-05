@@ -26,3 +26,9 @@ export class TeamEntry {
 export class TeamSpec {
   name: string;
 }
+
+export class Time {
+  constructor(
+    public week: string, 
+    public year: string) {}
+};

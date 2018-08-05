@@ -5,6 +5,9 @@ import { Component } from '@angular/core';
 import { OnInit } from '@angular/core';
 import * as paths from './paths';
 import { ConstantsService } from './constants.service';
+import { WeekService } from './week.service';
+import { Time } from './structs';
+import { Observable } from 'rxjs/Observable';
 
 @Component({
   templateUrl: './nflscores.component.html',
@@ -12,19 +15,18 @@ import { ConstantsService } from './constants.service';
 })
 export class NFLScoresComponent implements OnInit {
   scores = new Array<any>();
-  selectedWeek = 'P1';
-  year = '2017';
   sortOrder = 'score';
   projectScores = true;
+  selectedWeek: Observable<string>;
 
   constructor(private db: AngularFireDatabase,
               private route: ActivatedRoute,
-              private constants: ConstantsService) {}
+              private constants: ConstantsService, 
+              private weekService: WeekService) {}
 
   ngOnInit() {
-    this.route.queryParams.subscribe((params: Params) => {
-      this.selectedWeek = params.week || this.constants.getDefaultWeekId();
-      const query = this.db.list(paths.getScoresPath(this.year, this.selectedWeek), {
+    this.weekService.getTime().subscribe((time: Time) => {
+      const query = this.db.list(paths.getScoresPath(time.year, time.week), {
         query: {
           orderByChild: 'total'
         }
@@ -33,6 +35,7 @@ export class NFLScoresComponent implements OnInit {
         this.scores = items;
       });
     });
+    this.selectedWeek = this.weekService.getWeek();
   }
 
   byScore(a, b) {
