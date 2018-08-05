@@ -44,8 +44,12 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
-        this.suppressWeekDropdown = 
-            this.weekDropdownSuppressPaths.includes(event.url.trim());
+        this.suppressWeekDropdown = false;
+        for (var i = 0; i < this.weekDropdownSuppressPaths.length; i++) {
+          if (event.url.trim().includes(this.weekDropdownSuppressPaths[i])) {
+            this.suppressWeekDropdown = true;
+          }
+        }
       }
     });
   }
