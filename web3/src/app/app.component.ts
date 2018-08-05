@@ -8,6 +8,7 @@ import { Observable } from 'rxjs/Observable';
 import { OnInit } from '@angular/core';
 
 import { ConstantsService } from './constants.service';
+import { WeekService } from './week.service';
 
 @Component({
   selector: 'app-root',
@@ -19,28 +20,28 @@ export class AppComponent implements OnInit {
   user: Observable<firebase.User>;
   uid = '';
   displayName = 'Login';
-  selectedWeek = '';
-  year: Observable<String>;
+  selectedWeek = '1';
   weekDropdownSuppressPaths = [
   '/newuser', '/admin', '/lineup', '/standings', '/nflstandings'
   ];
   suppressWeekDropdown = false;
+  allWeeks: any;
+
   constructor(
     private afAuth: AngularFireAuth,
-    private router: Router, private route: ActivatedRoute,
-    private constants: ConstantsService) {
+    private router: Router,
+    private route: ActivatedRoute,
+    private constants: ConstantsService,
+    private weekService: WeekService) {
     this.user = afAuth.authState;
     this.user.subscribe(value => {
       this.displayName = value.displayName;
       this.uid = value.uid;
     });
+    this.allWeeks = constants.getAllWeeks();
   }
 
   ngOnInit() {
-    this.route.queryParams.subscribe((params: Params) => {
-      this.selectedWeek = params.week || this.constants.getDefaultWeekId();
-      this.year = params.year || this.constants.getDefaultYear();
-    });
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         this.suppressWeekDropdown = 
@@ -67,6 +68,6 @@ export class AppComponent implements OnInit {
   }
 
   onWeekChange() {
-    this.router.navigate([], {'queryParams': {'week': this.selectedWeek}});
+    this.router.navigate([], {'queryParams': {'week': this.selectedWeek, 'year': this.route.snapshot.queryParams['year']}});
   }
 }
