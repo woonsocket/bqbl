@@ -7,6 +7,7 @@ import { MdlDefaultTableModel } from '@angular-mdl/core';
 import { OnInit } from '@angular/core';
 import * as paths from './paths';
 import { ConstantsService } from './constants.service';
+import { WeekService } from './week.service';
 
 @Component({
   templateUrl: './nflstandings.component.html',
@@ -19,7 +20,8 @@ export class NFLStandingsComponent implements OnInit {
   scores247ByTeam = new Map<string, Map<string, number>>();
 
   constructor(private db: AngularFireDatabase,
-              private constants: ConstantsService) {
+              private constants: ConstantsService,
+              private weekService: WeekService) {
     const columns = [
       {key: 'team', name: 'Team', sortable: true},
       {key: 'total', name: 'Total', sortable: true, numeric: true},
@@ -32,7 +34,10 @@ export class NFLStandingsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.db.list(paths.getScoresPath(this.year)).subscribe((d) => {
+    this.weekService.getYear()
+    .map(year => paths.getScoresPath(year))
+    .switchMap(path => this.db.list(path))
+    .subscribe((d) => {
       const scores = new Map<string, Map<string, number>>();
       d.forEach((week) => {
         const weekNum = week.$key;
