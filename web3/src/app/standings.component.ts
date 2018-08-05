@@ -9,6 +9,7 @@ import 'rxjs/add/operator/take';
 import { User } from './structs';
 import { TeamScore } from './team-score';
 import { ConstantsService } from './constants.service';
+import { WeekService } from './week.service';
 import { ScoreService } from './score.service';
 import * as paths from './paths';
 
@@ -27,11 +28,14 @@ export class StandingsComponent {
               private route: ActivatedRoute,
               private router: Router,
               private scoreService: ScoreService,
-              private constants: ConstantsService) {
+              private constants: ConstantsService,
+              private weekService: WeekService) {
     this.db = db;
 
     // TODO(aerion): Factor this out from here and nflstandings.
-    this.scores247ByTeam = this.db.list(paths.get247ScoresPath(this.year))
+    this.scores247ByTeam = weekService.getYear()
+      .map(year => paths.get247ScoresPath(this.year))
+      .switchMap(path => this.db.list(path))
       .map((d) => {
         const byTeam = new Map<string, number>();
         d.forEach((entry) => {
