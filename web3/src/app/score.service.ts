@@ -3,13 +3,13 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 import * as paths from './paths';
+import 'rxjs/add/operator/switchMap';
 
 import { TeamScore } from './team-score';
 import { WeekService } from './week.service';
 
 @Injectable()
 export class ScoreService {
-  year = '2017';
 
   constructor(private db: AngularFireDatabase,
               private weekService: WeekService) {}
@@ -19,7 +19,9 @@ export class ScoreService {
    * team. If the week/team combo does not exist, the Observable emits null.
    */
   scoreObjectFor(week: string, team: string): Observable<any> {
-    return this.db.object(paths.getScoresPath(this.year, week, team))
+    return this.weekService.getYear()
+      .map(year => paths.getScoresPath(year, week, team))
+      .switchMap(path => this.db.object(path))
       .map(v => v.$exists() ? v : null);
   }
 
