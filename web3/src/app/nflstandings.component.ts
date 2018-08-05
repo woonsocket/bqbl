@@ -13,7 +13,6 @@ import { WeekService } from './week.service';
   templateUrl: './nflstandings.component.html',
 })
 export class NFLStandingsComponent implements OnInit {
-  year = '2017';
   scoreTable: any;
 
   scoresByTeam = new Map<string, Map<string, number>>();
@@ -54,7 +53,10 @@ export class NFLStandingsComponent implements OnInit {
       this.scoresByTeam = scores;
       this.computeScores();
     });
-    this.db.list(paths.get247ScoresPath(this.year)).subscribe((d) => {
+    this.weekService.getYear()
+    .map(year => paths.get247ScoresPath(year))
+    .switchMap(path => this.db.list(path))
+    .subscribe((d) => {
       const scores247 = new Map<string, Map<string, number>>();
       d.forEach((entry) => {
         const name = entry['team'];
