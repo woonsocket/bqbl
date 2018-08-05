@@ -25,7 +25,7 @@ NOTE(harveyj): we don't have tests yet.
 Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
 Before running the tests make sure you are serving the app via `ng serve`.
 
-## Running unit tests
+## Linting
 
-<install tslint>
+```First, install tslint```
 tslint -c tslint.json 'src/**/*.ts' --fix
