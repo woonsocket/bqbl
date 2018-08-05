@@ -155,6 +155,7 @@ export class ConstantsService {
   getAllWeeks(): WeekSpec[] { return ALL_WEEKS_2018; }
   getAllTeams() { return ALL_TEAMS; }
   getDummyLeague() { return ABQBL_USERS_2017; }
+  getDefaultYear(): string { return '2017'; }
   getDefaultWeekId(): string {
     const now = new Date(Date.now());
     let i = 0;

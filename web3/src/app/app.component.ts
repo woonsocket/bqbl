@@ -20,7 +20,7 @@ export class AppComponent implements OnInit {
   uid = '';
   displayName = 'Login';
   selectedWeek = '';
-  year = '2017';
+  year: Observable<String>;
   weekDropdownSuppressPaths = [
   '/newuser', '/admin', '/lineup', '/standings', '/nflstandings'
   ];
@@ -39,7 +39,7 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.route.queryParams.subscribe((params: Params) => {
       this.selectedWeek = params.week || this.constants.getDefaultWeekId();
-      this.year = params.year || '2017';
+      this.year = params.year || this.constants.getDefaultYear();
     });
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
