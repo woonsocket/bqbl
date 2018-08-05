@@ -7,6 +7,7 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 
 import { ConstantsService } from './constants.service';
+import { WeekService } from './week.service';
 
 @Component({
   templateUrl: './ticker.component.html',
@@ -27,16 +28,17 @@ export class TickerComponent {
 
   constructor(private db: AngularFireDatabase,
               private route: ActivatedRoute,
-              private constants: ConstantsService) {}
+              private constants: ConstantsService,
+              private weekService: WeekService) {}
 
   ngOnInit() {
-    this.route.queryParams.subscribe((params: Params) => {
-      this.selectedWeek = params.week || this.constants.getDefaultWeekId();
-      this.events = this.db
-        .list(`/eventticker/${this.year}/${this.selectedWeek}`,
-              {query: {orderByChild: 'date'}})
-        .map((array) => array.slice().reverse());
-    });
+    this.events = 
+      this.weekService.getTime()
+      .map(time => `/eventticker/${time.year}/${time.week}`)
+      .switchMap(path => 
+        this.db
+          .list(path, {query: {orderByChild: 'date'}})
+          .map((array) => array.slice().reverse()));
   }
 
   eventDescription(ev) {
