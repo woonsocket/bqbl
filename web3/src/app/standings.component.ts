@@ -18,20 +18,17 @@ import * as paths from './paths';
   styleUrls: ['./standings.component.css']
 })
 export class StandingsComponent {
-  db: AngularFireDatabase;
   leagueIdToName = new Map<string, string>();
   leagues = new Map<string, Observable<UserEntry[]>>();
   scores247ByTeam: Observable<Map<string, number>>;
   year = '2017';
 
-  constructor(db: AngularFireDatabase,
+  constructor(private db: AngularFireDatabase,
               private route: ActivatedRoute,
               private router: Router,
               private scoreService: ScoreService,
               private constants: ConstantsService,
               private weekService: WeekService) {
-    this.db = db;
-
     // TODO(aerion): Factor this out from here and nflstandings.
     this.scores247ByTeam = weekService.getYear()
       .map(year => paths.get247ScoresPath(this.year))
