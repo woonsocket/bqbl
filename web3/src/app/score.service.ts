@@ -105,7 +105,7 @@ export class ScoreService {
     const dbLeagues = this.dbLeagues();
 
     return Observable
-      .combineLatest([this.year, this.weekService.getWeek(), dbLeagues, leagueToUsers, userToTeams])
+      .combineLatest([this.weekService.getYear(), this.weekService.getWeek(), dbLeagues, leagueToUsers, userToTeams])
       .map(([year, week, leagueMap, userMap, userToTeams]) => {
         return this.computeScores(year, week, leagueMap, userMap, userToTeams);
       });
@@ -120,7 +120,7 @@ export class ScoreService {
     const dbLeagues = this.dbLeagues();
     // Hard-coded to Week 17. I'm sure we'll fix it next year.
     return Observable
-      .combineLatest([this.year, Observable.of('17'), dbLeagues, leagueToUsers, userToTeams])
+      .combineLatest([this.weekService.getYear(), Observable.of('17'), dbLeagues, leagueToUsers, userToTeams])
       .map(([year, week, leagueMap, userMap, userToTeams]) => {
         return this.computeScoresProBowl(year, week, leagueMap, userMap, userToTeams);
       });
