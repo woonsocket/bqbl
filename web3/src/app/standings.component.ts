@@ -21,7 +21,6 @@ export class StandingsComponent {
   leagueIdToName = new Map<string, string>();
   leagues = new Map<string, Observable<UserEntry[]>>();
   scores247ByTeam: Observable<Map<string, number>>;
-  year = '2017';
 
   constructor(private db: AngularFireDatabase,
               private route: ActivatedRoute,
@@ -31,7 +30,7 @@ export class StandingsComponent {
               private weekService: WeekService) {
     // TODO(aerion): Factor this out from here and nflstandings.
     this.scores247ByTeam = weekService.getYear()
-      .map(year => paths.get247ScoresPath(this.year))
+      .map(year => paths.get247ScoresPath(year))
       .switchMap(path => this.db.list(path))
       .map((d) => {
         const byTeam = new Map<string, number>();
@@ -64,12 +63,6 @@ export class StandingsComponent {
         });
         this.leagues = leagues;
       });
-  }
-
-  ngOnInit() {
-    this.route.queryParams.subscribe((params: Params) => {
-      this.year = params.year || '2017';
-    });
   }
 
   leagueKeys(): string[] {
