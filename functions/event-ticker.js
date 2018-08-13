@@ -19,9 +19,9 @@ class EventType {
  */
 exports.onNewEvent =
   functions.database.ref('/events/{year}/{week}/{type}/{eventId}')
-    .onCreate(event => {
-      const {year, week, type} = event.params;
-      processEvent(event.data.val(), type, year, week);
+    .onCreate((snap, context) => {
+      const {year, week, type} = context.params;
+      processEvent(snap.val(), type, year, week);
     });
 
 function processEvent(event, rawType, year, week) {

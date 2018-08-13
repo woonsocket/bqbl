@@ -5,29 +5,29 @@ const functions = require('firebase-functions');
 const eventTicker = require('./event-ticker.js');
 const scoring = require('./scoring.js');
 
-admin.initializeApp(functions.config().firebase);
+admin.initializeApp();
 
 exports.score = functions.database.ref('/stats/{year}/{week}/{team}')
-    .onWrite(event => {
-      const {year, week, team} = event.params;
-      const stats = event.data.val();
+    .onWrite((change, context) => {
+      const {year, week, team} = context.params;
+      const stats = change.after.val();
       const overrides = admin.database()
           .ref(`/events/${year}/${week}/overrides/${team}`)
           .once('value')
           .then(d => d.val());
-      doScore(stats, overrides, year, week, team);
+      return doScore(stats, overrides, year, week, team);
     });
 
 
 exports.rescoreOnOverride = functions.database.ref('/events/{year}/{week}/overrides/{team}')
-    .onWrite(event => {
-      const {year, week, team} = event.params;
+    .onWrite((change, context) => {
+      const {year, week, team} = context.params;
       const stats = admin.database()
           .ref(`/stats/${year}/${week}/${team}`)
           .once('value')
           .then(d => d.val());
-      const overrides = event.data.val();
-      doScore(stats, overrides, year, week, team);
+      const overrides = change.after.val();
+      return doScore(stats, overrides, year, week, team);
     });
 
 
