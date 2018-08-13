@@ -26,6 +26,9 @@ parser = optparse.OptionParser(
 parser.add_option("-f", "--firebase", dest="firebase", default=False,
                   action="store_true",
                   help="Write output to firebase")
+parser.add_option("--firebase_project", dest="firebase_project",
+                  default="bqbl-591f3",
+                  help="Firebase project ID to use")
 parser.add_option("-w", "--week", dest="week",
                   help="Week")
 parser.add_option("-y", "--year", dest="year",
@@ -38,10 +41,10 @@ parser.add_option("--firebase_creds", dest="firebase_cred_file",
                   help="File containing Firebase service account credentials")
 
 
-def init_firebase(cred_file):
+def init_firebase(cred_file, firebase_project):
     cred = credentials.Certificate(cred_file)
     firebase_admin.initialize_app(cred, {
-        'databaseURL': 'https://bqbl-591f3.firebaseio.com/',
+        'databaseURL': 'https://{0}.firebaseio.com/'.format(firebase_project),
         'databaseAuthVariableOverride': {
             'uid': 'score-scraper',
         },
@@ -305,7 +308,7 @@ def main():
         sys.exit(1)
     # We need this even if --firebase is false because we read some cached data
     # from Firebase.
-    init_firebase(options.firebase_cred_file)
+    init_firebase(options.firebase_cred_file, options.firebase_project)
 
     player_cache = PlayerCache(db.reference('/playerpositions').get() or {})
     plays = Plays(player_cache, event.Events())
