@@ -59,6 +59,12 @@ exports.computeScore = function(stats, overrides) {
 
   return {
     'total': score['total'],
+    // 'breakdown' is the new way of representing the various parts of the
+    // score.
+    'breakdown': score['breakdown'],
+    // 'components' is the deprecated way of representing the score. It'll get
+    // phased out at some point. (Er, I mean... "I have full confidence in
+    // components.")
     'components': score['components'],
     'lineScore': lineScore,
     'gameInfo': gameInfo,
@@ -156,13 +162,73 @@ class ScoreComponent {
 };
 
 /**
- * @return {{components: !Array<!ScoreComponent>, total: number}}
+ * @return {{breakdown: !Object, components: !Array<!ScoreComponent>, total: number}}
  */
 function computeScoreComponents(qbScore) {
   // Zero out any undefined keys
   SCORE_KEYS.forEach((k) => {
     qbScore[k] = qbScore[k] || 0;
   });
+
+  const breakdown = {};
+
+  // Turnover points
+  const totalTurnovers = qbScore['INT'] + qbScore['FUML'];
+  const totalTurnoversForTd = qbScore['INT6'] + qbScore['FUM6'];
+  const totalOvertimeLosingTurnovers = qbScore['INT6OT'];
+
+  breakdown['fumbleKept'] = scalar(2, qbScore['FUM'] - qbScore['FUML']);
+
+  // 5 points for a regular turnover, 25 for TD, 50 for OT TD.
+  const turnoverBase = (5 * totalTurnovers +
+                        20 * totalTurnoversForTd +
+                        25 * totalOvertimeLosingTurnovers);
+  const turnoverBonus = turnoverPoints(totalTurnovers);
+  breakdown['turnover'] = {
+    'count': totalTurnovers,
+    'value': turnoverBase + turnoverBonus,
+    'baseValue': turnoverBase,
+    'bonusValue': turnoverBonus,
+    'types': {
+      'int': qbScore['INT'],
+      'int6': qbScore['INT6'],
+      'fuml': qbScore['FUML'],
+      'fum6': qbScore['FUM6'],
+      'ot6': qbScore['INT6OT'],
+    },
+  };
+  const turnoverComponent = new ScoreComponent(
+      turnoverPoints(totalTurnovers), `${totalTurnovers}-turnover game`);
+
+  const totalTouchdowns = qbScore['TD'];
+  breakdown['touchdown'] = {
+    'count': totalTouchdowns,
+    'value': touchdownPoints(totalTouchdowns),
+  };
+  const touchdownComponent = new ScoreComponent(
+      touchdownPoints(totalTouchdowns), `${totalTouchdowns}-touchdown game`);
+
+  const netPassingYards = qbScore['PASSYD'] + qbScore['SACKYD'];
+  const passingBreakdown = passingYardPoints(netPassingYards);
+  breakdown['passingYardage'] = passingBreakdown;
+  const {min: pMin, max: pMax} = passingBreakdown['range'];
+  const yardageComponent = new ScoreComponent(
+    passingBreakdown['value'], `${pMin}-${pMax} passing yards`);
+
+  const completions = qbScore['CMP'];
+  const attempts = qbScore['ATT'];
+  const completionBreakdown =
+          completionRatePoints(qbScore['CMP'], qbScore['ATT']);
+  breakdown['completion'] = completionBreakdown;
+  const {min: compMin, max: compMax} = completionBreakdown['range'];
+  const completionComponent = new ScoreComponent(
+      completionBreakdown['value'], `${compMin}-${compMax}% completion rate`);
+
+  breakdown['sack'] = scalar(1, qbScore['SACK']);
+  breakdown['safety'] = scalar(20, qbScore['SAF']);
+  breakdown['bench'] = scalar(35, qbScore['BENCH']);
+  breakdown['freeAgent'] = scalar(20, qbScore['FREEAGENT']);
+
   let pointsList = [
     simpleMultiple(25, qbScore['INT6'] - qbScore['INT6OT'],
                         'INT returned for TD'),
@@ -170,32 +236,58 @@ function computeScoreComponents(qbScore) {
     simpleMultiple(25, qbScore['FUM6'], 'fumble lost for TD'),
     simpleMultiple(5, qbScore['FUML'] - qbScore['FUM6'], 'fumble lost'),
     simpleMultiple(2, qbScore['FUM'] - qbScore['FUML'], 'fumble kept'),
-    turnoverPoints(qbScore),
-    touchdownPoints(qbScore['TD']),
-    passingYardPoints(qbScore['PASSYD'] + qbScore['SACKYD']),
-    completionRatePoints(qbScore['CMP'], qbScore['ATT']),
+    turnoverComponent,
+    touchdownComponent,
+    yardageComponent,
+    completionComponent,
     simpleMultiple(1, qbScore['SACK'], 'sacked'),
     simpleMultiple(20, qbScore['SAF'], 'QB at fault for safety'),
     simpleMultiple(35, qbScore['BENCH'], 'QB benched'),
-    simpleMultiple(20, qbScore['FREEAGENT'], 'free agent starter')
+    simpleMultiple(20, qbScore['FREEAGENT'], 'free agent starter'),
   ];
-  if (qbScore['LONG'] < 25)
+
+  breakdown['longPass'] = {
+    'value': qbScore['LONG'] < 25 ? 10 : 0,
+    'yards': qbScore['LONG'],
+  };
+  if (qbScore['LONG'] < 25) {
     pointsList.push(new ScoreComponent(10, 'no pass of 25+ yards'));
-  if (qbScore['RUSHYD'] >= 75)
+  }
+
+  breakdown['rushingYardage'] = {
+    'value': qbScore['RUSHYD'] >= 75 ? -8 : 0,
+    'yards': qbScore['RUSHYD'],
+  };
+  if (qbScore['RUSHYD'] >= 75) {
     pointsList.push(new ScoreComponent(-8, '75+ rushing yards'));
-  if (qbScore['INT6OT'])
+  }
+
+  if (qbScore['INT6OT']) {
+    // Already accounted for in the turnover breakdown above.
     pointsList.push(new ScoreComponent(50, 'game-losing pick six in OT'));
+  }
 
   pointsList = pointsList.filter((x) => x.value != 0);
-  let total = pointsList.reduce((sum, p) => sum + p.value, 0);
+  let componentTotal = pointsList.reduce((sum, p) => sum + p.value, 0);
+  let total = 0;
+  for (let key of Object.keys(breakdown)) {
+    const entry = breakdown[key];
+    if (!entry) {
+      continue;
+    }
+    total += entry['value'] || 0;
+  }
+  if (total != componentTotal) {
+    console.warn(`scoring bug: new ${total} vs old ${componentTotal}`);
+  }
   return {
+    'breakdown': breakdown,
     'components': pointsList,
     'total': total,
   };
 };
 
-function turnoverPoints(qbScore) {
-  let totalTurnovers = qbScore['INT'] + qbScore['FUML'];
+function turnoverPoints(totalTurnovers) {
   let points = 0;
   if (totalTurnovers == 3) points = 10;
   else if (totalTurnovers == 4) points = 20;
@@ -204,29 +296,34 @@ function turnoverPoints(qbScore) {
   for (let to = 6; to <= totalTurnovers; to++) {
     points = points + points / 2;
   }
-  return new ScoreComponent(points, totalTurnovers + '-turnover game');
+  return points;
 };
 
 function passingYardPoints(yards) {
-  let points, rangeString;
-  if (yards < 100) { points = 25; rangeString = 'under 100'; }
-  else if (yards < 150) { points = 12; rangeString = 'under 150'; }
-  else if (yards < 200) { points = 6; rangeString = 'under 200'; }
-  else if (yards < 300) { points = 0; rangeString = 'under 300'; }
-  else if (yards < 350) { points = -6; rangeString = '300+'; }
-  else if (yards < 400) { points = -9; rangeString = '350+'; }
-  else { points = -12; rangeString = '400+'; }
-  return new ScoreComponent(points, rangeString + ' passing yards');
+  let points, range;
+  if (yards < 100) { points = 25; range = {'min': null, 'max': 99}; }
+  else if (yards < 150) { points = 12; range = {'min': 100, 'max': 149}; }
+  else if (yards < 200) { points = 6; range = {'min': 150, 'max': 199}; }
+  else if (yards < 300) { points = 0; range = {'min': 200, 'max': 299}; }
+  else if (yards < 350) { points = -6; range = {'min': 300, 'max': 349}; }
+  else if (yards < 400) { points = -9; range = {'min': 350, 'max': 399}; }
+  else { points = -12; range = {'min': 400, 'max': null}; }
+  return {'range': range, 'value': points, 'yards': yards};
 };
 
 function completionRatePoints(completions, attempts) {
   let completionRate = completions / attempts;
-  let points, rangeString;
-  if (completionRate < 0.3) { points = 25; rangeString = 'under 30%'; }
-  else if (completionRate < 0.4) { points = 15; rangeString = 'under 40%'; }
-  else if (completionRate < 0.5) { points = 5; rangeString = 'under 50%'; }
-  else { points = 0; rangeString = '50%+'; }
-  return new ScoreComponent(points, rangeString + ' completion rate');
+  let points, range;
+  if (completionRate < 0.3) { points = 25; range = {'min': 0, 'max': 30}; }
+  else if (completionRate < 0.4) { points = 15; range = {'min': 30, 'max': 40}; }
+  else if (completionRate < 0.5) { points = 5; range = {'min': 40, 'max': 50}; }
+  else { points = 0; range = {'min': 50, 'max': 100}; }
+  return {
+    'range': range,
+    'value': points,
+    'completions': completions,
+    'attempts': attempts,
+  };
 };
 
 function touchdownPoints(tds) {
@@ -238,7 +335,7 @@ function touchdownPoints(tds) {
   for (let td = 4; td <= tds; td++) {
     points *= 2;
   }
-  return new ScoreComponent(points, tds + '-touchdown game');
+  return points;
 };
 
 /**
@@ -255,4 +352,15 @@ function simpleMultiple(pointsPer, quantity, description) {
     description = quantity + 'x ' + description;
   }
   return new ScoreComponent(quantity * pointsPer, description);
+};
+
+/**
+ * Creates a score breakdown entry representing a simple "X points per Y" value.
+ * @param {number} pointsPer How many points each Y is worth ("X").
+ * @param {number} quantity How many Ys there are.
+ * @return {{count: number, value: number}}
+ */
+function scalar(pointsPer, quantity) {
+  quantity = quantity || 0;
+  return {'count': quantity, 'value': quantity * pointsPer};
 };
