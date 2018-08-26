@@ -22,6 +22,8 @@ import { ScoreCellComponent } from './score-cell.component';
 import { NFLScoreCardComponent } from './nfl-score-card.component';
 import { ConstantsService } from './constants.service';
 import { NFLScoresComponent } from './nflscores.component';
+import { Time } from './structs';
+import { WeekService } from './week.service';
 
 const USER_ID = '30';
 describe('NFLScoresComponent', () => {
@@ -34,6 +36,12 @@ describe('NFLScoresComponent', () => {
 
     this.mockDb = new MockAngularFireDb();
     this.mockAuth = new MockAngularFireAuth(USER_ID, 'Harvey');
+
+    this.mockWeekService = jasmine.createSpyObj('mockWeekService', {
+      'getYear': Observable.of('2017'),
+      'getWeek': Observable.of('1'),
+      'getTime': Observable.of(new Time('1', '2017')),
+    });
 
     TestBed.configureTestingModule({
       declarations: [
@@ -51,6 +59,7 @@ describe('NFLScoresComponent', () => {
       { provide: Router, useValue: true },
       { provide: ConstantsService, useValue: new ConstantsService() },
       { provide: MdlSnackbarService, useValue: true },
+      { provide: WeekService, useValue: this.mockWeekService },
       { provide: APP_BASE_HREF, useValue: '/'},
       { provide: ActivatedRoute, useValue: {
           queryParams: Observable.of({ week: 1 })
