@@ -14,7 +14,7 @@ import { FormsModule } from '@angular/forms';
 import { MockAngularFireDb, MockAngularFireAuth } from './mockangularfire';
 import { DefaultData } from './fakedatabaseresponses';
 
-import { ConstantsService } from './constants.service';
+import { ConstantsService } from './shared/constants.service';
 import { LineupComponent } from './lineup.component';
 
 const USER_ID = '30';

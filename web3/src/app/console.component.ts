@@ -9,7 +9,7 @@ import { Observable } from 'rxjs/Observable';
 import { OnInit } from '@angular/core';
 import * as paths from './paths';
 
-import { ConstantsService } from './constants.service';
+import { ConstantsService } from './shared/constants.service';
 
 @Component({
   templateUrl: './console.component.html',

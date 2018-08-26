@@ -5,7 +5,7 @@ import 'rxjs/add/operator/map';
 
 import * as paths from './paths';
 import { ActivatedRoute, Router, NavigationEnd, Event, Params } from '@angular/router';
-import { ConstantsService } from './constants.service';
+import { ConstantsService } from './shared/constants.service';
 import { Time } from './structs';
 
 

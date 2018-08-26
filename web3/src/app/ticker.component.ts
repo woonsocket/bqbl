@@ -6,7 +6,7 @@ import { Component } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 
-import { ConstantsService } from './constants.service';
+import { ConstantsService } from './shared/constants.service';
 import { WeekService } from './week.service';
 
 @Component({

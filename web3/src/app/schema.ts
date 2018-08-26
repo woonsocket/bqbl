@@ -5,9 +5,3 @@ export interface LeagueRules {
   dhMax: number;
   maxPlays: number;
 }
-
-export class WeekSpec {
-  name: string;
-  val: string;
-  displayUntil: Date;
-}

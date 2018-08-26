@@ -7,7 +7,7 @@ import { Component } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { OnInit } from '@angular/core';
 
-import { ConstantsService } from './constants.service';
+import { ConstantsService } from './shared/constants.service';
 import { WeekService } from './week.service';
 
 @Component({

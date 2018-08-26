@@ -6,7 +6,7 @@ import { Component } from '@angular/core';
 import { MdlDefaultTableModel } from '@angular-mdl/core';
 import { OnInit } from '@angular/core';
 import * as paths from './paths';
-import { ConstantsService } from './constants.service';
+import { ConstantsService } from './shared/constants.service';
 import { WeekService } from './week.service';
 
 @Component({

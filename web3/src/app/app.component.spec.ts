@@ -10,10 +10,11 @@ import { MdlModule } from '@angular-mdl/core';
 import { APP_BASE_HREF } from '@angular/common';
 import { RouterTestingModule } from '@angular/router/testing';
 
+import { SharedModule } from './shared/shared.module';
+
 import { MiniScoreComponent } from './mini-score.component';
 import { MiniStatComponent } from './mini-stat.component';
 import { NFLScoreCardComponent } from './nfl-score-card.component';
-import { ScoreCellComponent } from './score-cell.component';
 import { ScoresComponent } from './scores.component';
 import { AntiScoresComponent } from './antiscores.component';
 import { NFLScoresComponent } from './nflscores.component';
@@ -23,14 +24,13 @@ import { LineupComponent } from './lineup.component';
 import { LoginComponent } from './login.component';
 import { ConsoleComponent } from './console.component';
 import { StandingsComponent } from './standings.component';
-import { ConstantsService } from './constants.service';
+import { ConstantsService } from './shared/constants.service';
 import { AdminComponent } from './admin.component';
 import { Table247Component } from './247/table-247.component';
 import { TickerComponent } from './ticker.component';
 import { environment } from '../environments/environment';
 import { routes } from './app.routes';
 import { MockAngularFireAuth } from './mockangularfire';
-import { NflIconPipe, NflLogoPipe } from './nfl-logo.pipe';
 
 import { AppComponent } from './app.component';
 
@@ -44,7 +44,6 @@ describe('AppComponent', () => {
       MiniScoreComponent,
       MiniStatComponent,
       NFLScoreCardComponent,
-      ScoreCellComponent,
       AntiScoresComponent,
       ScoresComponent,
       NFLScoresComponent,
@@ -57,8 +56,6 @@ describe('AppComponent', () => {
       Table247Component,
       StandingsComponent,
       LoginComponent,
-      NflIconPipe,
-      NflLogoPipe,
       TickerComponent,
       ],
       imports: [

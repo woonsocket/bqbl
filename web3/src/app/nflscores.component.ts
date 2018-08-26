@@ -4,7 +4,7 @@ import { AngularFireDatabase } from 'angularfire2/database';
 import { Component } from '@angular/core';
 import { OnInit } from '@angular/core';
 import * as paths from './paths';
-import { ConstantsService } from './constants.service';
+import { ConstantsService } from './shared/constants.service';
 import { WeekService } from './week.service';
 import { Time } from './structs';
 import { Observable } from 'rxjs/Observable';

@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Set } from 'immutable';
-import { WeekSpec } from './schema';
 
 const ALL_WEEKS_2018: WeekSpec[] = [
   { 'name': 'Preseason 1', 'val': 'P1', 'displayUntil': new Date('2018-08-15') },
@@ -168,4 +167,10 @@ export class ConstantsService {
   getSchedule() {
     return SCHEDULE_MAP_2018;
   }
+}
+
+class WeekSpec {
+  name: string;
+  val: string;
+  displayUntil: Date;
 }

@@ -12,7 +12,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 
 import * as paths from './paths';
-import { ConstantsService } from './constants.service';
+import { ConstantsService } from './shared/constants.service';
 import { ScoreService, LeagueScore } from './score.service';
 import { TeamScore } from './team-score';
 import { TeamSpec } from './structs';

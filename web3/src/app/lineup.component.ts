@@ -9,7 +9,7 @@ import { Observable } from 'rxjs/Observable';
 import { Router } from '@angular/router';
 
 import * as paths from './paths';
-import { ConstantsService } from './constants.service';
+import { ConstantsService } from './shared/constants.service';
 import { LeagueRules } from './schema';
 import { User, Week, TeamEntry } from './structs';
 

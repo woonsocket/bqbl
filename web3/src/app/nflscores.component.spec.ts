@@ -16,11 +16,11 @@ import 'rxjs/add/observable/of';
 import { MockAngularFireDb, MockAngularFireAuth } from './mockangularfire';
 import { DefaultData } from './fakedatabaseresponses';
 
-import { NflLogoPipe } from './nfl-logo.pipe';
+import { SharedModule } from './shared/shared.module';
+
+import { ConstantsService } from './shared/constants.service';
 import { MiniScoreComponent } from './mini-score.component';
-import { ScoreCellComponent } from './score-cell.component';
 import { NFLScoreCardComponent } from './nfl-score-card.component';
-import { ConstantsService } from './constants.service';
 import { NFLScoresComponent } from './nflscores.component';
 import { Time } from './structs';
 import { WeekService } from './week.service';
@@ -47,11 +47,9 @@ describe('NFLScoresComponent', () => {
       declarations: [
         NFLScoresComponent,
         NFLScoreCardComponent,
-        NflLogoPipe,
         MiniScoreComponent,
-        ScoreCellComponent,
       ], // declare the test component
-      imports: [ MdlModule, FormsModule ],
+      imports: [ MdlModule, FormsModule, SharedModule ],
       providers: [
       { provide: ComponentFixtureAutoDetect, useValue: true },
       { provide: AngularFireAuth, useValue: this.mockAuth },

@@ -7,7 +7,7 @@ import { Component, ViewChild } from '@angular/core';
 import { NgModel } from '@angular/forms';
 import { MdlDefaultTableModel, MdlDialogComponent, MdlSnackbarService, MdlTextFieldComponent } from '@angular-mdl/core';
 import { Observable } from 'rxjs/Observable';
-import { ConstantsService } from './constants.service';
+import { ConstantsService } from './shared/constants.service';
 
 import * as paths from './paths';
 
