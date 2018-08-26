@@ -20,13 +20,13 @@ import { SharedModule } from './shared/shared.module';
 
 import { ConstantsService } from './shared/constants.service';
 import { MiniScoreComponent } from './mini-score.component';
-import { NFLScoreCardComponent } from './nfl-score-card.component';
+import { NflScoreCardComponent } from './nfl-scores/nfl-score-card.component';
 import { NFLScoresComponent } from './nflscores.component';
 import { Time } from './structs';
 import { WeekService } from './week.service';
 
 const USER_ID = '30';
-describe('NFLScoresComponent', () => {
+describe('NflScoresComponent', () => {
 
   let mockDb: MockAngularFireDb;
   let mockAuth: MockAngularFireAuth;
@@ -46,7 +46,7 @@ describe('NFLScoresComponent', () => {
     TestBed.configureTestingModule({
       declarations: [
         NFLScoresComponent,
-        NFLScoreCardComponent,
+        NflScoreCardComponent,
         MiniScoreComponent,
       ], // declare the test component
       imports: [ MdlModule, FormsModule, SharedModule ],

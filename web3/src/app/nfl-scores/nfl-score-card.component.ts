@@ -5,7 +5,7 @@ import { Component, Input } from '@angular/core';
   templateUrl: './nfl-score-card.component.html',
   styleUrls: ['./nfl-score-card.component.css'],
 })
-export class NFLScoreCardComponent {
+export class NflScoreCardComponent {
   @Input() score: any;
   @Input() year: string;
   @Input() week: string;

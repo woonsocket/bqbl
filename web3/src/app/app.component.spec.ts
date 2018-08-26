@@ -14,7 +14,7 @@ import { SharedModule } from './shared/shared.module';
 
 import { MiniScoreComponent } from './mini-score.component';
 import { MiniStatComponent } from './mini-stat.component';
-import { NFLScoreCardComponent } from './nfl-score-card.component';
+import { NflScoreCardComponent } from './nfl-scores/nfl-score-card.component';
 import { ScoresComponent } from './scores.component';
 import { AntiScoresComponent } from './antiscores.component';
 import { NFLScoresComponent } from './nflscores.component';
@@ -43,7 +43,7 @@ describe('AppComponent', () => {
       AppComponent,
       MiniScoreComponent,
       MiniStatComponent,
-      NFLScoreCardComponent,
+      NflScoreCardComponent,
       AntiScoresComponent,
       ScoresComponent,
       NFLScoresComponent,

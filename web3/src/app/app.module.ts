@@ -6,7 +6,6 @@ import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 import { MiniScoreComponent } from './mini-score.component';
 import { MiniStatComponent } from './mini-stat.component';
-import { NFLScoreCardComponent } from './nfl-score-card.component';
 import { ScoresComponent } from './scores.component';
 import { AntiScoresComponent } from './antiscores.component';
 import { NFLScoresComponent } from './nflscores.component';
@@ -30,6 +29,7 @@ import { routing } from './app.routes';
 import { FormsModule } from '@angular/forms';
 import { MdlModule } from '@angular-mdl/core';
 
+import { NflScoresModule } from './nfl-scores/nfl-scores.module';
 import { SharedModule } from './shared/shared.module';
 
 @NgModule({
@@ -37,7 +37,6 @@ import { SharedModule } from './shared/shared.module';
     AppComponent,
     MiniScoreComponent,
     MiniStatComponent,
-    NFLScoreCardComponent,
     AntiScoresComponent,
     ScoresComponent,
     NFLScoresComponent,
@@ -62,6 +61,7 @@ import { SharedModule } from './shared/shared.module';
     MdlModule,
     routing,
     SharedModule,
+    NflScoresModule,
   ],
   providers: [ScoreService, WeekService, UserDataService, AuthGuard],
   bootstrap: [AppComponent]
