@@ -102,7 +102,7 @@ separate competition.
 
         * N>3 touchdowns: 2 × (N−1 touchdowns)
 
-* Each sack: **1 point**
+* Sacks: The Nth sack is worth **⌈N/2⌉ points**
 
 * Total passing yards
 

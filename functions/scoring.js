@@ -224,7 +224,12 @@ function computeScoreComponents(qbScore) {
   const completionComponent = new ScoreComponent(
       completionBreakdown['value'], `${compMin}-${compMax}% completion rate`);
 
-  breakdown['sack'] = scalar(1, qbScore['SACK']);
+  const sacks = qbScore['SACK'];
+  const sackBreakdown = sackPoints(sacks);
+  breakdown['sack'] = sackBreakdown;
+  const sackComponent = new ScoreComponent(
+      sackBreakdown['value'], `${sacks} sacks`);
+
   breakdown['safety'] = scalar(20, qbScore['SAF']);
   breakdown['bench'] = scalar(35, qbScore['BENCH']);
   breakdown['freeAgent'] = scalar(20, qbScore['FREEAGENT']);
@@ -240,7 +245,7 @@ function computeScoreComponents(qbScore) {
     touchdownComponent,
     yardageComponent,
     completionComponent,
-    simpleMultiple(1, qbScore['SACK'], 'sacked'),
+    sackComponent,
     simpleMultiple(20, qbScore['SAF'], 'QB at fault for safety'),
     simpleMultiple(35, qbScore['BENCH'], 'QB benched'),
     simpleMultiple(20, qbScore['FREEAGENT'], 'free agent starter'),
@@ -336,7 +341,15 @@ function touchdownPoints(tds) {
     points *= 2;
   }
   return points;
-};
+}
+
+function sackPoints(sacks) {
+  let points = 0;
+  for (let i = 1; i <= sacks; i++) {
+    points += Math.ceil(i / 2);
+  }
+  return {'count': sacks, 'value': points};
+}
 
 /**
  * Creates a ScoreComponent representing a simple "X points per Y" value.
