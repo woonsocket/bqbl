@@ -141,6 +141,12 @@ separate competition.
     * Examples of QB *not* at fault: lineman holding, shotgun snap over the QB's
       head
 
+* Passer rating (for each QB with at least 10 pass attempts)
+
+    * 0.0 rating: **50 points**
+
+    * Perfect rating (158.3): **−25 points**
+
 * Benched during game (for non-injury reasons): **35 points**
 
     * This only counts if the QB was clearly benched for being bad at
