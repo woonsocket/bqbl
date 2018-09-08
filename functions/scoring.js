@@ -1,9 +1,9 @@
 const entries = require('object.entries');
 
 const SCORE_KEYS = [
-  'ATT', 'INT', 'INT6', 'INT6OT', 'FUM6', 'FUM6OT', 'FUML', 'TD', 'PASSYD',
-  'SACKYD', 'SACK', 'SAF', 'BENCH', 'FREEAGENT', 'FUM', 'PASSYD', 'CMP', 'LONG',
-  'RUSHYD', 'INT6OT'
+  'ATT', 'CMP', 'INT', 'INT6', 'INT6OT', 'FUM', 'FUM6', 'FUM6OT', 'FUML',
+  'TD', 'PASSTD', 'PASSYD', 'RUSHYD', 'SACKYD', 'SACK', 'SAF', 'BENCH',
+  'FREEAGENT', 'LONG',
 ];
 
 /**
@@ -235,6 +235,32 @@ function computeScoreComponents(qbScore) {
   breakdown['bench'] = scalar(35, qbScore['BENCH']);
   breakdown['freeAgent'] = scalar(20, qbScore['FREEAGENT']);
 
+  const passerStats = [];
+  let passerRatingTotalValue = 0;
+  for (let [_, passer] of entries(qbScore['passers'])) {
+    const stats = {
+      'cmp': passer['CMP'],
+      'att': passer['ATT'],
+      'yds': passer['PASSYD'],  // Sack yards don't count against rating.
+      'int': passer['INT'],
+      'td': passer['PASSTD'],
+    };
+    const {rating, value} = passerRatingPoints(stats);
+    passerRatingTotalValue += value;
+    passerStats.push({
+      'name': passer['NAME'],
+      'stats': stats,
+      'rating': rating,
+      'value': value,
+    });
+  }
+  // TODO(aerion): This isn't represented in the 'components' model. Either
+  // implement that, or ride it out until we delete components.
+  breakdown['passerRating'] = {
+    'passers': passerStats,
+    'value': passerRatingTotalValue,
+  };
+
   let pointsList = [
     simpleMultiple(25, qbScore['INT6'] - qbScore['INT6OT'],
                         'INT returned for TD'),
@@ -360,6 +386,32 @@ function sackPoints(sacks) {
     points += Math.ceil(i / 2);
   }
   return {'count': sacks, 'value': points};
+}
+
+/** Computes NFL passer rating and the corresponding BQBL points. */
+function passerRatingPoints({cmp, att, yds, int, td}) {
+  const clamp = (v) => Math.max(Math.min(v, 2.375), 0);
+
+  const compRate = clamp(((cmp / att) - 0.3) * 5);
+  const yardage = clamp(((yds / att) - 3) / 4);
+  const tdRate = clamp(td / att * 20);
+  const intRate = clamp(2.375 - (int / att * 25));
+  const unscaledRating = compRate + yardage + tdRate + intRate;
+
+  let value = 0;
+
+  // Minimum 10 pass attempts to be eligible for passer rating points. Even
+  // though that means this legendary 8-attempt performance wouldn't count:
+  // https://www.pro-football-reference.com/boxscores/201410260nyj.htm
+  if (att >= 10) {
+    if (unscaledRating == 0) {
+      value = 50;
+    } else if (unscaledRating >= 9.5) {
+      value = -25;
+    }
+  }
+  const rating = unscaledRating * 100 / 6;
+  return {'rating': rating, 'value': value};
 }
 
 /**

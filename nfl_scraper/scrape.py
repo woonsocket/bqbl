@@ -67,6 +67,9 @@ def parse_box(box, is_qb):
         outcomes[pid]['CMP'] += passer.get('cmp', 0)
         outcomes[pid]['PASSYD'] += passer.get('yds', 0)
         outcomes[pid]['TD'] += passer.get('tds', 0)
+        # We need to know the number of passing TDs in order to compute the
+        # passer rating.
+        outcomes[pid]['PASSTD'] += passer.get('tds', 0)
         # Interceptions are present here, but we'll read those from the
         # play-by-play instead, because we can tell if it was a pick-6.
     for pid, rusher in box.get('rushing', {}).items():
