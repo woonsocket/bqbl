@@ -59,7 +59,9 @@ export class AdminComponent {
     // Populate by default for testing iteration.
     this.users = constants.getDummyLeague();
 
-    this.points247 = this.db.list(paths.get247ScoresPath(this.year));
+    // TODO(aerion): Accept an Observable of the year.
+    this.points247 = this.db.list(
+      paths.get247ScoresPath(this.constants.getDefaultYear()));
 
     this.unlockedWeeks = this.db.list(paths.getUnlockedWeeksPath());
   }
