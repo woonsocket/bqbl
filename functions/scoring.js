@@ -239,11 +239,11 @@ function computeScoreComponents(qbScore) {
   let passerRatingTotalValue = 0;
   for (let [_, passer] of entries(qbScore['passers'])) {
     const stats = {
-      'cmp': passer['CMP'],
-      'att': passer['ATT'],
-      'yds': passer['PASSYD'],  // Sack yards don't count against rating.
-      'int': passer['INT'],
-      'td': passer['PASSTD'],
+      'cmp': passer['CMP'] || 0,
+      'att': passer['ATT'] || 0,
+      'yds': passer['PASSYD'] || 0,  // Sack yards don't count against rating.
+      'int': passer['INT'] || 0,
+      'td': passer['PASSTD'] || 0,
     };
     const {rating, value} = passerRatingPoints(stats);
     passerRatingTotalValue += value;
@@ -390,6 +390,10 @@ function sackPoints(sacks) {
 
 /** Computes NFL passer rating and the corresponding BQBL points. */
 function passerRatingPoints({cmp, att, yds, int, td}) {
+  if (att == 0) {
+    return {'rating': 0, 'value': 0};
+  }
+
   const clamp = (v) => Math.max(Math.min(v, 2.375), 0);
 
   const compRate = clamp(((cmp / att) - 0.3) * 5);
