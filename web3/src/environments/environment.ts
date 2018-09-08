@@ -7,12 +7,11 @@
 export const environment = {
   production: false,
   firebase: {
-    apiKey: 'AIzaSyCVbZ7U5Y4ZO-tsQpsZgIf7ROPJdpAXLuE',
-    authDomain: 'bqbl-591f3.firebaseapp.com',
-    databaseURL: 'https://bqbl-591f3.firebaseio.com',
-    projectId: 'bqbl-591f3',
-    storageBucket: 'bqbl-591f3.appspot.com',
-    messagingSenderId: '983576610595'
+    apiKey: "AIzaSyCVmBwFF3Gl9juiOW0tJ-SmjbYySQS1wj0",
+    authDomain: "woonsocket-6672b.firebaseapp.com",
+    databaseURL: "https://woonsocket-6672b.firebaseio.com",
+    projectId: "woonsocket-6672b",
+    storageBucket: "woonsocket-6672b.appspot.com",
+    messagingSenderId: "762227129651"
   }
 };
-
