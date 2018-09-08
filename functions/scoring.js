@@ -213,7 +213,7 @@ function computeScoreComponents(qbScore) {
   breakdown['passingYardage'] = passingBreakdown;
   const {min: pMin, max: pMax} = passingBreakdown['range'];
   const yardageComponent = new ScoreComponent(
-    passingBreakdown['value'], `${pMin}-${pMax} passing yards`);
+    passingBreakdown['value'], `${rangeString(pMin, pMax)} passing yards`);
 
   const completions = qbScore['CMP'];
   const attempts = qbScore['ATT'];
@@ -221,8 +221,9 @@ function computeScoreComponents(qbScore) {
           completionRatePoints(qbScore['CMP'], qbScore['ATT']);
   breakdown['completion'] = completionBreakdown;
   const {min: compMin, max: compMax} = completionBreakdown['range'];
+  const compRange = rangeString(compMin + '%', compMax + '%');
   const completionComponent = new ScoreComponent(
-      completionBreakdown['value'], `${compMin}-${compMax}% completion rate`);
+      completionBreakdown['value'], `${compRange} completion rate`);
 
   const sacks = qbScore['SACK'];
   const sackBreakdown = sackPoints(sacks);
@@ -315,6 +316,16 @@ function passingYardPoints(yards) {
   else { points = -12; range = {'min': 400, 'max': null}; }
   return {'range': range, 'value': points, 'yards': yards};
 };
+
+function rangeString(min, max) {
+  if (min === null) {
+    return `≤ ${max}`;
+  }
+  if (max === null) {
+    return `≥ ${min}`;
+  }
+  return `${min}-${max}`;
+}
 
 function completionRatePoints(completions, attempts) {
   let completionRate = completions / attempts;
