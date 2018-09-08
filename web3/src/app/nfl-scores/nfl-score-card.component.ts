@@ -12,27 +12,27 @@ export class NflScoreCardComponent {
   @Input() projectScores: boolean;
 
   // These seem like needlessly verbose ways of switching to/from projections.
-  getTotal(scoreObj: object) {
-    return this.projectScores && scoreObj['projection'] ?
-        scoreObj['projection']['total'] :
-        scoreObj['total'];
+  getTotal() {
+    return this.projectScores && this.score['projection'] ?
+        this.score['projection']['total'] :
+        this.score['total'];
   }
 
-  getComponents(scoreObj: object) {
-    return this.projectScores && scoreObj['projection'] ?
-        scoreObj['projection']['components'] :
-        scoreObj['components'];
+  getComponents() {
+    return this.projectScores && this.score['projection'] ?
+        this.score['projection']['components'] :
+        this.score['components'];
   }
 
   // TODO(aerion): Factor this out (probably as an instance method of a
   // forthcoming score object).
-  isFinal(scoreObj: object): boolean {
-    const clock = scoreObj['gameInfo'] && scoreObj['gameInfo']['clock'];
+  isFinal(): boolean {
+    const clock = this.score['gameInfo'] && this.score['gameInfo']['clock'];
     return clock && clock.toLowerCase().includes('final');
   }
 
-  boxScoreLink(scoreObj: object) {
-    const gameId = scoreObj['gameInfo'] && scoreObj['gameInfo'].id;
+  boxScoreLink() {
+    const gameId = this.score['gameInfo'] && this.score['gameInfo'].id;
     if (!gameId) {
       return 'http://www.nfl.com';
     }
@@ -47,8 +47,8 @@ export class NflScoreCardComponent {
         '#tab=analyze&analyze=boxscore';
   }
 
-  boxScoreLinkText(scoreObj: object) {
-    const {aName, hName, aScore, hScore} = scoreObj['gameInfo'];
+  boxScoreLinkText() {
+    const {aName, hName, aScore, hScore} = this.score['gameInfo'];
     if (!(aName && hName)) {
       return `Box Score`;
     }

@@ -17,11 +17,11 @@
   <mdl-card-supporting-text class="mdl-color-text--grey-700">
     <div class="comp total">
       <div class="comp-desc">
-        {{ projectScores && !isFinal(score) ? 'Projected ' : '' }}Total
+        {{ projectScores && !isFinal() ? 'Projected ' : '' }}Total
       </div>
-      <score-cell [value]="getTotal(score)"></score-cell>
+      <score-cell [value]="getTotal()"></score-cell>
     </div>
-    <div *ngFor="let comp of getComponents(score)"
+    <div *ngFor="let comp of getComponents()"
          class="comp">
       <div class="comp-desc">{{ comp.desc }}</div>
       <score-cell [value]="comp.value"></score-cell>
@@ -30,8 +30,8 @@
 
   <mdl-card-actions mdl-card-border>
     <a class="mdl-button mdl-button--colored"
-       href="{{ boxScoreLink(score) }}">
-      {{ boxScoreLinkText(score) }}
+       href="{{ boxScoreLink() }}">
+      {{ boxScoreLinkText() }}
     </a>
   </mdl-card-actions>
 </mdl-card>
