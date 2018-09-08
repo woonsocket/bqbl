@@ -58,26 +58,27 @@ def ordinal(n):
 
 
 def parse_box(box, is_qb):
-    outcomes = collections.defaultdict(int)
+    # {player_id: {stat_name: value}}
+    outcomes = collections.defaultdict(lambda: collections.defaultdict(int))
     for pid, passer in box.get('passing', {}).items():
         if not is_qb(pid):
             continue
-        outcomes['ATT'] += passer.get('att', 0)
-        outcomes['CMP'] += passer.get('cmp', 0)
-        outcomes['PASSYD'] += passer.get('yds', 0)
-        outcomes['TD'] += passer.get('tds', 0)
+        outcomes[pid]['ATT'] += passer.get('att', 0)
+        outcomes[pid]['CMP'] += passer.get('cmp', 0)
+        outcomes[pid]['PASSYD'] += passer.get('yds', 0)
+        outcomes[pid]['TD'] += passer.get('tds', 0)
         # Interceptions are present here, but we'll read those from the
         # play-by-play instead, because we can tell if it was a pick-6.
     for pid, rusher in box.get('rushing', {}).items():
         if not is_qb(pid):
             continue
-        outcomes['RUSHYD'] += rusher.get('yds', 0)
-        outcomes['TD'] += rusher.get('tds', 0)
+        outcomes[pid]['RUSHYD'] += rusher.get('yds', 0)
+        outcomes[pid]['TD'] += rusher.get('tds', 0)
     for pid, receiver in box.get('receiving', {}).items():
         if not is_qb(pid):
             continue
         # This is a *receiving* TD for the QB. It's been known to happen!
-        outcomes['TD'] += receiver.get('tds', 0)
+        outcomes[pid]['TD'] += receiver.get('tds', 0)
     return outcomes
 
 
@@ -99,13 +100,15 @@ def parse_play(game_id, play_id, play, is_qb, events):
         events: An Events object in which to record turnovers.
     """
     offense_team = play['posteam']
-    qb_stats = []
+    # {player_id: [plays]}
+    qb_stats = collections.defaultdict(list)
     def_stats = []
-    outcomes = collections.defaultdict(int)
+    # {player_id: {stat_name: value}}
+    outcomes = collections.defaultdict(lambda: collections.defaultdict(int))
     for pid, player_stats in play['players'].items():
         for stat in player_stats:
             if stat['clubcode'] == offense_team and is_qb(pid):
-                qb_stats.append(stat)
+                qb_stats[pid].append(stat)
             else:
                 def_stats.append(stat)
 
@@ -114,48 +117,52 @@ def parse_play(game_id, play_id, play, is_qb, events):
     player = '(no QB)'
 
     # http://www.nflgsis.com/gsis/documentation/Partners/StatIDs.html
-    for stat in qb_stats:
-        sid = stat.get('statId')
-        player = stat.get('playerName')
-        team = stat.get('clubcode')
-        desc = play['desc']
-        if sid in (15, 16):
-            outcomes['LONG'] = max(outcomes['LONG'], stat.get('yards'))
-        elif sid == 20:
-            is_sack = True
-            outcomes['SACK'] += 1
-            outcomes['SACKYD'] += stat.get('yards', 0)  # Value is negative.
-        elif sid == 19:
-            outcomes['INT'] += 1
-            opp_td = any(
-                filter(lambda s: s.get('statId') in (26, 28), def_stats))
-            if opp_td:
-                outcomes['INT6'] += 1
-                if play['qtr'] > 4:
-                    outcomes['INT6OT'] += 1
-            events.add_interception(game_id, play_id, player, play, opp_td)
-        elif sid in (52, 53):
-            is_qb_fumble = True
-            outcomes['FUM'] += 1
-        elif sid == 106:
-            is_qb_fumble = True
-            outcomes['FUML'] += 1
-            opp_td = any(
-                filter(lambda s: s.get('statId') in (60, 62), def_stats))
-            if opp_td:
-                outcomes['FUM6'] += 1
-            events.add_fumble(game_id, play_id, player, play, opp_td)
+    for pid, stats in qb_stats.items():
+        for stat in stats:
+            sid = stat.get('statId')
+            player = stat.get('playerName')
+            team = stat.get('clubcode')
+            desc = play['desc']
+            if sid in (15, 16):
+                outcomes[pid]['LONG'] = max(
+                    outcomes[pid]['LONG'], stat.get('yards'))
+            elif sid == 20:
+                is_sack = True
+                outcomes[pid]['SACK'] += 1
+                # Value in the source data is negative, which is what we want.
+                outcomes[pid]['SACKYD'] += stat.get('yards', 0)
+            elif sid == 19:
+                outcomes[pid]['INT'] += 1
+                opp_td = any(
+                    filter(lambda s: s.get('statId') in (26, 28), def_stats))
+                if opp_td:
+                    outcomes[pid]['INT6'] += 1
+                    if play['qtr'] > 4:
+                        outcomes[pid]['INT6OT'] += 1
+                events.add_interception(game_id, play_id, player, play, opp_td)
+            elif sid in (52, 53):
+                is_qb_fumble = True
+                outcomes[pid]['FUM'] += 1
+            elif sid == 106:
+                is_qb_fumble = True
+                outcomes[pid]['FUML'] += 1
+                opp_td = any(
+                    filter(lambda s: s.get('statId') in (60, 62), def_stats))
+                if opp_td:
+                    outcomes[pid]['FUM6'] += 1
+                events.add_fumble(game_id, play_id, player, play, opp_td)
 
-    is_safety = any(filter(lambda s: s.get('statId') == 89, def_stats))
-    if is_safety:
-        # Add all safeties to the events list, even if we're not sure that they
-        # should count for BQBL points. Some might be false negatives, and
-        # putting them in the events feed lets us easily override them later.
-        is_qb_fault = is_sack or is_qb_fumble
-        events.add_safety(game_id, play_id, player, play, is_qb_fault)
+        is_safety = any(filter(lambda s: s.get('statId') == 89, def_stats))
+        if is_safety:
+            # Add all safeties to the events list, even if we're not sure that
+            # they should count for BQBL points. Some might be false negatives,
+            # and putting them in the events feed lets us easily override them
+            # later.
+            is_qb_fault = is_sack or is_qb_fumble
+            events.add_safety(game_id, play_id, player, play, is_qb_fault)
 
-        if is_qb_fault:
-            outcomes['SAF'] += 1
+            if is_qb_fault:
+                outcomes[pid]['SAF'] += 1
 
     return outcomes
 
@@ -169,6 +176,11 @@ class Plays(object):
         self.player_cache = player_cache
 
     def process(self, season, week, game_id, data):
+        # {team_id: {player_id: {stat_name: value}}}
+        outcomes_by_player = collections.defaultdict(
+            lambda: collections.defaultdict(
+                lambda: collections.defaultdict(int)))
+
         data = data.get(game_id)
         if not data:
             # Empty data file. Maybe the game hasn't started yet.
@@ -210,24 +222,34 @@ class Plays(object):
 
         home_passers = home_box['stats'].get('passing', {})
         passers |= home_passers.keys()
-        if len(home_passers) > 1:
-            for id, p in home_passers.items():
-                self.events.add_passer(home_abbr, id, p.get('name', 'UNKNOWN'))
+        for id, p in home_passers.items():
+            name = p.get('name', 'UNKNOWN')
+            outcomes_by_player[home_abbr][id]['NAME'] = name
+            # If there's more than one, insert an event that lets us manually
+            # flag one of them as having been benched.
+            if len(home_passers) > 1:
+                self.events.add_passer(home_abbr, id, name)
         away_passers = away_box['stats'].get('passing', {})
         passers |= away_passers.keys()
-        if len(away_passers) > 1:
-            for id, p in away_passers.items():
-                self.events.add_passer(away_abbr, id, p.get('name', 'UNKNOWN'))
+        for id, p in away_passers.items():
+            name = p.get('name', 'UNKNOWN')
+            outcomes_by_player[away_abbr][id]['NAME'] = name
+            if len(away_passers) > 1:
+                self.events.add_passer(away_abbr, id, name)
 
         def is_qb(pid):
             return (pid in passers and
                     self.player_cache.lookup_position(pid) == 'QB')
 
         # Read box score stats.
-        for k, v in parse_box(home_box['stats'], is_qb).items():
-            self.outcomes_by_team[home_abbr][k] += v
-        for k, v in parse_box(away_box['stats'], is_qb).items():
-            self.outcomes_by_team[away_abbr][k] += v
+        for pid, qb_outcomes in parse_box(home_box['stats'], is_qb).items():
+            for k, v in qb_outcomes.items():
+                outcomes_by_player[home_abbr][pid][k] += v
+                self.outcomes_by_team[home_abbr][k] += v
+        for pid, qb_outcomes in parse_box(away_box['stats'], is_qb).items():
+            for k, v in qb_outcomes.items():
+                outcomes_by_player[away_abbr][pid][k] += v
+                self.outcomes_by_team[away_abbr][k] += v
 
         # Read play-by-play info for slightly more complex stats like turnovers
         # and sack yardage.
@@ -238,13 +260,24 @@ class Plays(object):
             for play_id, play in drive['plays'].items():
                 desc = play['desc']
 
-                outcomes = parse_play(game_id, play_id, play, is_qb, self.events)
-                for k, v in outcomes.items():
-                    if k == 'LONG':
-                        old = self.outcomes_by_team[play['posteam']][k]
-                        self.outcomes_by_team[play['posteam']][k] = max(old, v)
-                    else:
-                        self.outcomes_by_team[play['posteam']][k] += v
+                outcomes = parse_play(
+                    game_id, play_id, play, is_qb, self.events)
+                for pid, qb_outcomes in outcomes.items():
+                    for k, v in qb_outcomes.items():
+                        team = play['posteam']
+                        if k == 'LONG':
+                            pold = outcomes_by_player[team][pid][k]
+                            outcomes_by_player[team][pid][k] = max(pold, v)
+                            old = self.outcomes_by_team[team][k]
+                            self.outcomes_by_team[team][k] = max(old, v)
+                        else:
+                            outcomes_by_player[team][pid][k] += v
+                            self.outcomes_by_team[team][k] += v
+
+        self.outcomes_by_team[home_abbr]['passers'] = (
+            outcomes_by_player[home_abbr])
+        self.outcomes_by_team[away_abbr]['passers'] = (
+            outcomes_by_player[away_abbr])
 
 
 class PlayerCache(object):
