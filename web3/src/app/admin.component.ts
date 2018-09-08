@@ -36,7 +36,6 @@ export class AdminComponent {
   // https://stackoverflow.com/questions/36095496/angular-2-how-to-write-a-for-loop-not-a-foreach-loop
   users = [];
 
-  year = '2017';
   points247: FirebaseListObservable<any>;
 
   // Value is true if the week is unlocked. All absent values are false (locked).

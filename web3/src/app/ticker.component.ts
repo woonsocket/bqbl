@@ -23,8 +23,6 @@ import { WeekService } from './week.service';
 })
 export class TickerComponent {
   events: Observable<any[]>;
-  selectedWeek = '1';
-  year = '2017';
 
   constructor(private db: AngularFireDatabase,
               private route: ActivatedRoute,
@@ -32,10 +30,10 @@ export class TickerComponent {
               private weekService: WeekService) {}
 
   ngOnInit() {
-    this.events = 
+    this.events =
       this.weekService.getTime()
       .map(time => `/eventticker/${time.year}/${time.week}`)
-      .switchMap(path => 
+      .switchMap(path =>
         this.db
           .list(path, {query: {orderByChild: 'date'}})
           .map((array) => array.slice().reverse()));
