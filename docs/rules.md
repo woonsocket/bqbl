@@ -230,17 +230,10 @@ separate competition.
 
 * Previous week's starter abruptly released: **35 points**
 
-* Special rules for Tim Tebow and Johnny Manziel
+* Team starts a QB who was not on any NFL 53-man roster on opening day: **35
+  points** per QB, awarded only for the first time the QB starts for that team
 
-    * 1 point each week if the player is on your team's 53-man roster
-
-    * −6 points per TD the player scores
-
-    * −2 points per 2PC the player scores
-
-    * −3 points per FG the player personally kicks
-
-* The Kurt Warner Rule
+* Kurt Warner
 
     * Rumors from "team sources" that your team wants to sign Kurt Warner: **10
       points**
@@ -249,16 +242,22 @@ separate competition.
 
     * These points may also be awarded for Brett Favre, etc.
 
-* Team starts a QB who was not on any NFL 53-man roster on opening day: **35
-  points** per QB, awarded only for the first time the QB starts for that team
+* Colin Kaepernick
 
-* Trump
+    * Your team denies interest in Colin Kaepernick (cowards):
+      **10 points**
 
-    * Your QB makes an appearance at an official Trump campaign event: **20
-      points**
+    * Your team shows interest in Colin Kaepernick, but then backs down
+      (COWARDS): **20 points**
 
-    * The QB, their team, or the Trump campaign deny that this happened: **20
-      points**
+    * Your team becomes interested in Johnny Manziel after denying interest in
+      Colin Kaepernick (**INEPT** COWARDS): **50 points**
+
+* Donald Trump
+
+    * Donald Trump tweets about your QB: **10 points**
+
+    * The tweet is positive: **25 points** instead
 
 * Commissioner discretion
 
