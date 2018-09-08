@@ -4,11 +4,17 @@ These rules are an adaptation of
 [the original Grantland rules](http://grantland.com/the-triangle/introducing-grantlands-bad-quarterback-league/)
 from 2011.
 
-Rule changes for 2017:
+Rule changes for 2018:
 
-* Street free agent points are now 24/7 points. The bonus is 35 points on the
-  first time a team starts a given player, rather than 20 (on-field) points
-  every time they start.
+* Sack points are now quadratic instead of linear.
+
+* Points for perfect passer ratings and zero passer ratings.
+
+* Removed special Tebow/Manziel rules.
+
+* Added Kaepernick rules.
+
+* Trump campaign rules replaced by Trump tweet rules.
 
 ## General rules
 
