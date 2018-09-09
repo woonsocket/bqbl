@@ -237,6 +237,7 @@ function computeScoreComponents(qbScore) {
 
   const passerStats = [];
   let passerRatingTotalValue = 0;
+  const passerRatingComponents = [];
   for (let [_, passer] of entries(qbScore['passers'])) {
     const stats = {
       'cmp': passer['CMP'] || 0,
@@ -253,9 +254,10 @@ function computeScoreComponents(qbScore) {
       'rating': rating,
       'value': value,
     });
+    if (value != 0) {
+      passerRatingComponents.push(simpleMultiple(value, 1, 'passer rating'));
+    }
   }
-  // TODO(aerion): This isn't represented in the 'components' model. Either
-  // implement that, or ride it out until we delete components.
   breakdown['passerRating'] = {
     'passers': passerStats,
     'value': passerRatingTotalValue,
@@ -277,6 +279,8 @@ function computeScoreComponents(qbScore) {
     simpleMultiple(35, qbScore['BENCH'], 'QB benched'),
     simpleMultiple(20, qbScore['FREEAGENT'], 'free agent starter'),
   ];
+
+  pointsList.push(...passerRatingComponents);
 
   breakdown['longPass'] = {
     'value': qbScore['LONG'] < 25 ? 10 : 0,
