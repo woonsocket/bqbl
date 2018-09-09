@@ -290,11 +290,16 @@ function computeScoreComponents(qbScore) {
     pointsList.push(new ScoreComponent(10, 'no pass of 25+ yards'));
   }
 
+  const over75 = qbScore['RUSHYD'] >= 75;
   breakdown['rushingYardage'] = {
-    'value': qbScore['RUSHYD'] >= 75 ? -8 : 0,
+    'value': over75 ? -8 : 0,
     'yards': qbScore['RUSHYD'],
+    'range': {
+      'min': over75 ? 75 : null,
+      'max': over75 ? null : 74,
+    },
   };
-  if (qbScore['RUSHYD'] >= 75) {
+  if (over75) {
     pointsList.push(new ScoreComponent(-8, '75+ rushing yards'));
   }
 
