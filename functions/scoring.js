@@ -279,11 +279,16 @@ function computeScoreComponents(qbScore) {
 
   pointsList.push(...passerRatingComponents);
 
+  const under25 = qbScore['LONG'] < 25;
   breakdown['longPass'] = {
-    'value': qbScore['LONG'] < 25 ? 10 : 0,
+    'value': under25 ? 10 : 0,
     'yards': qbScore['LONG'],
+    'range': {
+      'min': under25 ? null : 25,
+      'max': under25 ? 24 : null,
+    },
   };
-  if (qbScore['LONG'] < 25) {
+  if (under25) {
     pointsList.push(new ScoreComponent(10, 'no pass of 25+ yards'));
   }
 
