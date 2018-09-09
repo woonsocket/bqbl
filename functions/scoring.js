@@ -2,8 +2,7 @@ const entries = require('object.entries');
 
 const SCORE_KEYS = [
   'ATT', 'CMP', 'INT', 'INT6', 'INT6OT', 'FUM', 'FUM6', 'FUM6OT', 'FUML',
-  'TD', 'PASSTD', 'PASSYD', 'RUSHYD', 'SACKYD', 'SACK', 'SAF', 'BENCH',
-  'FREEAGENT', 'LONG',
+  'TD', 'PASSTD', 'PASSYD', 'RUSHYD', 'SACKYD', 'SACK', 'SAF', 'BENCH', 'LONG',
 ];
 
 /**
@@ -233,7 +232,6 @@ function computeScoreComponents(qbScore) {
 
   breakdown['safety'] = scalar(20, qbScore['SAF']);
   breakdown['bench'] = scalar(35, qbScore['BENCH']);
-  breakdown['freeAgent'] = scalar(20, qbScore['FREEAGENT']);
 
   const passerStats = [];
   let passerRatingTotalValue = 0;
@@ -277,7 +275,6 @@ function computeScoreComponents(qbScore) {
     sackComponent,
     simpleMultiple(20, qbScore['SAF'], 'QB at fault for safety'),
     simpleMultiple(35, qbScore['BENCH'], 'QB benched'),
-    simpleMultiple(20, qbScore['FREEAGENT'], 'free agent starter'),
   ];
 
   pointsList.push(...passerRatingComponents);
