@@ -41,6 +41,20 @@ export class NflScoreCardComponent {
     return clock && clock.toLowerCase().includes('final');
   }
 
+  lineScore(): string {
+    // Always use the true score, not the projected score.
+    const breakdown = this.score['breakdown'];
+
+    const cmp = breakdown.completion.completions;
+    const att = breakdown.completion.attempts;
+    // This is net yards (passing yards minus sack yards).
+    const yd = breakdown.passingYardage.yards;
+    const int = breakdown.turnover.types.int;
+    const td = breakdown.touchdown.count;
+
+    return `${cmp}/${att}, ${yd} yd, ${td} TD, ${int} INT`;
+  }
+
   boxScoreLink() {
     const gameId = this.score['gameInfo'] && this.score['gameInfo'].id;
     if (!gameId) {
