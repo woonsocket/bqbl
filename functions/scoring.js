@@ -39,11 +39,6 @@ exports.computeScore = function(stats, overrides) {
 
   let score = computeScoreComponents(stats);
   let projScore = computeScoreComponents(computeStupidProjection(stats));
-  let lineScore =
-      `${stats['CMP']}/${stats['ATT']},
-       ${stats['PASSYD']} yd,
-       ${stats['TD']} TD,
-       ${stats['INT']} INT`;
   let gameInfo = {
     'clock': stats['CLOCK'],
     'id': stats['ID'],
@@ -61,11 +56,6 @@ exports.computeScore = function(stats, overrides) {
     // 'breakdown' is the new way of representing the various parts of the
     // score.
     'breakdown': score['breakdown'],
-    // 'components' is the deprecated way of representing the score. It'll get
-    // phased out at some point. (Er, I mean... "I have full confidence in
-    // components.")
-    'components': score['components'],
-    'lineScore': lineScore,
     'gameInfo': gameInfo,
     'projection': projScore,
   };
@@ -141,27 +131,7 @@ function parseElapsedFraction(gameStatus) {
 };
 
 /**
- * An immutable data object.
- * @constructor
- */
-class ScoreComponent {
-  constructor(value, desc) {
-    /**
-     * @type {number}
-     * @const
-     */
-    this.value = value;
-
-    /**
-     * @type {string}
-     * @const
-     */
-    this.desc = desc;
-  }
-};
-
-/**
- * @return {{breakdown: !Object, components: !Array<!ScoreComponent>, total: number}}
+ * @return {{breakdown: !Object, total: number}}
  */
 function computeScoreComponents(qbScore) {
   // Zero out any undefined keys
@@ -196,23 +166,17 @@ function computeScoreComponents(qbScore) {
       'ot6': qbScore['INT6OT'],
     },
   };
-  const turnoverComponent = new ScoreComponent(
-      turnoverPoints(totalTurnovers), `${totalTurnovers}-turnover game`);
 
   const totalTouchdowns = qbScore['TD'];
   breakdown['touchdown'] = {
     'count': totalTouchdowns,
     'value': touchdownPoints(totalTouchdowns),
   };
-  const touchdownComponent = new ScoreComponent(
-      touchdownPoints(totalTouchdowns), `${totalTouchdowns}-touchdown game`);
 
   const netPassingYards = qbScore['PASSYD'] + qbScore['SACKYD'];
   const passingBreakdown = passingYardPoints(netPassingYards);
   breakdown['passingYardage'] = passingBreakdown;
   const {min: pMin, max: pMax} = passingBreakdown['range'];
-  const yardageComponent = new ScoreComponent(
-    passingBreakdown['value'], `${rangeString(pMin, pMax)} passing yards`);
 
   const completions = qbScore['CMP'];
   const attempts = qbScore['ATT'];
@@ -221,21 +185,16 @@ function computeScoreComponents(qbScore) {
   breakdown['completion'] = completionBreakdown;
   const {min: compMin, max: compMax} = completionBreakdown['range'];
   const compRange = rangeString(compMin + '%', compMax + '%');
-  const completionComponent = new ScoreComponent(
-      completionBreakdown['value'], `${compRange} completion rate`);
 
   const sacks = qbScore['SACK'];
   const sackBreakdown = sackPoints(sacks);
   breakdown['sack'] = sackBreakdown;
-  const sackComponent = new ScoreComponent(
-      sackBreakdown['value'], `${sacks} sacks`);
 
   breakdown['safety'] = scalar(20, qbScore['SAF']);
   breakdown['bench'] = scalar(35, qbScore['BENCH']);
 
   const passerStats = [];
   let passerRatingTotalValue = 0;
-  const passerRatingComponents = [];
   for (let [_, passer] of entries(qbScore['passers'] || {})) {
     const stats = {
       'cmp': passer['CMP'] || 0,
@@ -252,32 +211,11 @@ function computeScoreComponents(qbScore) {
       'rating': rating,
       'value': value,
     });
-    if (value != 0) {
-      passerRatingComponents.push(simpleMultiple(value, 1, 'passer rating'));
-    }
   }
   breakdown['passerRating'] = {
     'passers': passerStats,
     'value': passerRatingTotalValue,
   };
-
-  let pointsList = [
-    simpleMultiple(25, qbScore['INT6'] - qbScore['INT6OT'],
-                        'INT returned for TD'),
-    simpleMultiple(5, qbScore['INT'] - qbScore['INT6'], 'INT'),
-    simpleMultiple(25, qbScore['FUM6'], 'fumble lost for TD'),
-    simpleMultiple(5, qbScore['FUML'] - qbScore['FUM6'], 'fumble lost'),
-    simpleMultiple(2, qbScore['FUM'] - qbScore['FUML'], 'fumble kept'),
-    turnoverComponent,
-    touchdownComponent,
-    yardageComponent,
-    completionComponent,
-    sackComponent,
-    simpleMultiple(20, qbScore['SAF'], 'QB at fault for safety'),
-    simpleMultiple(35, qbScore['BENCH'], 'QB benched'),
-  ];
-
-  pointsList.push(...passerRatingComponents);
 
   const under25 = qbScore['LONG'] < 25;
   breakdown['longPass'] = {
@@ -288,9 +226,6 @@ function computeScoreComponents(qbScore) {
       'max': under25 ? 24 : null,
     },
   };
-  if (under25) {
-    pointsList.push(new ScoreComponent(10, 'no pass of 25+ yards'));
-  }
 
   const over75 = qbScore['RUSHYD'] >= 75;
   breakdown['rushingYardage'] = {
@@ -301,17 +236,7 @@ function computeScoreComponents(qbScore) {
       'max': over75 ? null : 74,
     },
   };
-  if (over75) {
-    pointsList.push(new ScoreComponent(-8, '75+ rushing yards'));
-  }
 
-  if (qbScore['INT6OT']) {
-    // Already accounted for in the turnover breakdown above.
-    pointsList.push(new ScoreComponent(50, 'game-losing pick six in OT'));
-  }
-
-  pointsList = pointsList.filter((x) => x.value != 0);
-  let componentTotal = pointsList.reduce((sum, p) => sum + p.value, 0);
   let total = 0;
   for (let key of Object.keys(breakdown)) {
     const entry = breakdown[key];
@@ -320,12 +245,8 @@ function computeScoreComponents(qbScore) {
     }
     total += entry['value'] || 0;
   }
-  if (total != componentTotal) {
-    console.warn(`scoring bug: new ${total} vs old ${componentTotal}`);
-  }
   return {
     'breakdown': breakdown,
-    'components': pointsList,
     'total': total,
   };
 };
@@ -428,22 +349,6 @@ function passerRatingPoints({cmp, att, yds, int, td}) {
   const rating = unscaledRating * 100 / 6;
   return {'rating': rating, 'value': value};
 }
-
-/**
- * Creates a ScoreComponent representing a simple "X points per Y" value.
- * @param {number} pointsPer How many points each Y is worth ("X").
- * @param {number} quantity How many Ys there are.
- * @param {string} description A description of what Y is. Probably should be
- *     for the singular form of Y.
- * @return {!ScoreComponent} A ScoreComponent for the points described.
- */
-function simpleMultiple(pointsPer, quantity, description) {
-  quantity = quantity || 0;
-  if (quantity != 1) {
-    description = quantity + 'x ' + description;
-  }
-  return new ScoreComponent(quantity * pointsPer, description);
-};
 
 /**
  * Creates a score breakdown entry representing a simple "X points per Y" value.
