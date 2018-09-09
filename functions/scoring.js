@@ -238,7 +238,7 @@ function computeScoreComponents(qbScore) {
   const passerStats = [];
   let passerRatingTotalValue = 0;
   const passerRatingComponents = [];
-  for (let [_, passer] of entries(qbScore['passers'])) {
+  for (let [_, passer] of entries(qbScore['passers'] || {})) {
     const stats = {
       'cmp': passer['CMP'] || 0,
       'att': passer['ATT'] || 0,
