@@ -156,7 +156,7 @@ function breakdownToComponents(breakdown: ScoreBreakdown) {
     value: breakdown.bench.value,
   });
 
-  for (let passer of breakdown.passerRating.passers) {
+  for (let passer of breakdown.passerRating.passers || []) {
     components.push({
       desc: `${passer.rating.toFixed(1)} passer rating (${passer.name})`,
       value: passer.value,
