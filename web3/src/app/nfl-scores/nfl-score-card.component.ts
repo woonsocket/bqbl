@@ -21,7 +21,11 @@ export class NflScoreCardComponent {
   }
 
   getComponents() {
-    return breakdownToComponents(this.getBreakdown());
+    const breakdown = this.getBreakdown();
+    if (!breakdown) {
+      return [];
+    }
+    return breakdownToComponents(breakdown);
   }
 
   getBreakdown(): ScoreBreakdown {
@@ -44,6 +48,9 @@ export class NflScoreCardComponent {
   lineScore(): string {
     // Always use the true score, not the projected score.
     const breakdown = this.score['breakdown'];
+    if (!breakdown) {
+      return 'No stats yet';
+    }
 
     const cmp = breakdown.completion.completions;
     const att = breakdown.completion.attempts;
