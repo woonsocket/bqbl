@@ -22,21 +22,25 @@ export class AppComponent implements OnInit {
   displayName = 'Login';
   selectedWeek = '1';
   weekDropdownSuppressPaths = [
-  '/newuser', '/admin', '/lineup', '/standings', '/nflstandings'
+    '/newuser', '/admin', '/lineup', '/standings', '/nflstandings'
   ];
   suppressWeekDropdown = false;
   allWeeks: any;
 
-  constructor(
-    private afAuth: AngularFireAuth,
-    private router: Router,
-    private route: ActivatedRoute,
-    private constants: ConstantsService,
-    private weekService: WeekService) {
+  constructor(private afAuth: AngularFireAuth,
+              private router: Router,
+              private route: ActivatedRoute,
+              private constants: ConstantsService,
+              private weekService: WeekService) {
     this.user = afAuth.authState;
     this.user.subscribe(value => {
       this.displayName = value.displayName;
       this.uid = value.uid;
+    });
+    this.weekService.getWeek().subscribe((week) => {
+      // TODO: selectedWeek should be an Observable so it can be defined
+      // declaratively.
+      this.selectedWeek = week;
     });
     this.allWeeks = constants.getAllWeeks();
   }
