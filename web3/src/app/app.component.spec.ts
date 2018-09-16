@@ -16,7 +16,6 @@ import { MiniScoreComponent } from './mini-score.component';
 import { MiniStatComponent } from './mini-stat.component';
 import { NflScoreCardComponent } from './nfl-scores/nfl-score-card.component';
 import { ScoresComponent } from './scores.component';
-import { AntiScoresComponent } from './antiscores.component';
 import { NFLScoresComponent } from './nflscores.component';
 import { NFLStandingsComponent } from './nflstandings.component';
 import { NewUserComponent } from './newuser.component';
@@ -44,7 +43,6 @@ describe('AppComponent', () => {
       MiniScoreComponent,
       MiniStatComponent,
       NflScoreCardComponent,
-      AntiScoresComponent,
       ScoresComponent,
       NFLScoresComponent,
       NFLStandingsComponent,

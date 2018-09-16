@@ -58,7 +58,7 @@ export class ScoreService {
   /**
    * Returns an Observable stream of a map <userid, weekid> --> teams.
    */
-  userToTeams(anti?: boolean) {
+  userToTeams() {
      // TODO: This would probably be bad if we had more than 16 users.
      return this.db.list(paths.getUsersPath())
       .map(users => {
@@ -68,9 +68,7 @@ export class ScoreService {
           for (const week of user.weeks) {
             const activeTeams = [];
             for (const team of week.teams) {
-              if (anti && !team.selected) {
-                activeTeams.push(team.name);
-              } else if (!anti && team.selected) {
+              if (team.selected) {
                 activeTeams.push(team.name);
               }
             }
@@ -101,9 +99,9 @@ export class ScoreService {
   /**
    * Returns an Observable stream of LeagueScore arrays.
    */
-  getLeagues(anti?: boolean): Observable<LeagueScore[]> {
+  getLeagues(): Observable<LeagueScore[]> {
     const leagueToUsers = this.leagueToUsers();
-    const userToTeams = this.userToTeams(anti);
+    const userToTeams = this.userToTeams();
     const dbLeagues = this.dbLeagues();
 
     return Observable

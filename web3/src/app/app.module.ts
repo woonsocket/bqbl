@@ -7,7 +7,6 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
 import { MiniScoreComponent } from './mini-score.component';
 import { MiniStatComponent } from './mini-stat.component';
 import { ScoresComponent } from './scores.component';
-import { AntiScoresComponent } from './antiscores.component';
 import { NFLScoresComponent } from './nflscores.component';
 import { ProBowlComponent } from './probowl.component';
 import { NFLStandingsComponent } from './nflstandings.component';
@@ -37,7 +36,6 @@ import { SharedModule } from './shared/shared.module';
     AppComponent,
     MiniScoreComponent,
     MiniStatComponent,
-    AntiScoresComponent,
     ScoresComponent,
     NFLScoresComponent,
     NFLStandingsComponent,
