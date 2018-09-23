@@ -125,33 +125,41 @@ def parse_play(game_id, play_id, play, is_qb, events):
             player = stat.get('playerName')
             team = stat.get('clubcode')
             desc = play['desc']
+
+            # The `stats` list represents all events that occurred on a single
+            # play. We're assigning values to the outcomes dict instead of
+            # summing, because it's generally only possible, e.g., to throw one
+            # interception on a play. While it IS possible for the same QB to
+            # fumble multiple times in one play, it's more common for there to
+            # be an error in the data feed where multiple fumble events are
+            # incorrectly recorded for a single statistical fumble.
             if sid in (15, 16):
                 outcomes[pid]['LONG'] = max(
                     outcomes[pid]['LONG'], stat.get('yards'))
             elif sid == 20:
                 is_sack = True
-                outcomes[pid]['SACK'] += 1
+                outcomes[pid]['SACK'] = 1
                 # Value in the source data is negative, which is what we want.
-                outcomes[pid]['SACKYD'] += stat.get('yards', 0)
+                outcomes[pid]['SACKYD'] = stat.get('yards', 0)
             elif sid == 19:
-                outcomes[pid]['INT'] += 1
+                outcomes[pid]['INT'] = 1
                 opp_td = any(
                     filter(lambda s: s.get('statId') in (26, 28), def_stats))
                 if opp_td:
-                    outcomes[pid]['INT6'] += 1
+                    outcomes[pid]['INT6'] = 1
                     if play['qtr'] > 4:
-                        outcomes[pid]['INT6OT'] += 1
+                        outcomes[pid]['INT6OT'] = 1
                 events.add_interception(game_id, play_id, player, play, opp_td)
             elif sid in (52, 53):
                 is_qb_fumble = True
-                outcomes[pid]['FUM'] += 1
+                outcomes[pid]['FUM'] = 1
             elif sid == 106:
                 is_qb_fumble = True
-                outcomes[pid]['FUML'] += 1
+                outcomes[pid]['FUML'] = 1
                 opp_td = any(
                     filter(lambda s: s.get('statId') in (60, 62), def_stats))
                 if opp_td:
-                    outcomes[pid]['FUM6'] += 1
+                    outcomes[pid]['FUM6'] = 1
                 events.add_fumble(game_id, play_id, player, play, opp_td)
 
         is_safety = any(filter(lambda s: s.get('statId') == 89, def_stats))
@@ -164,7 +172,7 @@ def parse_play(game_id, play_id, play, is_qb, events):
             events.add_safety(game_id, play_id, player, play, is_qb_fault)
 
             if is_qb_fault:
-                outcomes[pid]['SAF'] += 1
+                outcomes[pid]['SAF'] = 1
 
     return outcomes
 
