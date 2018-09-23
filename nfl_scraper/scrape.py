@@ -115,12 +115,11 @@ def parse_play(game_id, play_id, play, is_qb, events):
             else:
                 def_stats.append(stat)
 
-    is_sack = False
-    is_qb_fumble = False
-    player = '(no QB)'
-
     # http://www.nflgsis.com/gsis/documentation/Partners/StatIDs.html
     for pid, stats in qb_stats.items():
+        is_sack = False
+        is_qb_fumble = False
+        player = '(no QB)'
         for stat in stats:
             sid = stat.get('statId')
             player = stat.get('playerName')
