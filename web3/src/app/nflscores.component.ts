@@ -17,15 +17,16 @@ export class NFLScoresComponent implements OnInit {
   scores = new Array<any>();
   sortOrder = 'score';
   projectScores = true;
-  selectedWeek: Observable<string>;
+  selectedTime: Observable<Time>;
 
   constructor(private db: AngularFireDatabase,
               private route: ActivatedRoute,
-              private constants: ConstantsService, 
+              private constants: ConstantsService,
               private weekService: WeekService) {}
 
   ngOnInit() {
-    this.weekService.getTime().subscribe((time: Time) => {
+    this.selectedTime = this.weekService.getTime();
+    this.selectedTime.subscribe((time: Time) => {
       const query = this.db.list(paths.getScoresPath(time.year, time.week), {
         query: {
           orderByChild: 'total'
@@ -35,7 +36,6 @@ export class NFLScoresComponent implements OnInit {
         this.scores = items;
       });
     });
-    this.selectedWeek = this.weekService.getWeek();
   }
 
   byScore(a, b) {

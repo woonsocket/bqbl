@@ -48,8 +48,7 @@ describe('NflScoreCardComponent', () => {
       'gameInfo': {'clock': 'Q1 14:55'},
       'total': 0,
     };
-    component.year = '2017';
-    component.week = '1';
+    component.time = {year: '2017', week: '1'};
     component.projectScores = false;
     fixture.detectChanges();
   });

@@ -1,5 +1,7 @@
 import { Component, Input } from '@angular/core';
 
+import { Time } from '../structs';
+
 import { ScoreBreakdown, Range } from './breakdown';
 
 @Component({
@@ -9,8 +11,7 @@ import { ScoreBreakdown, Range } from './breakdown';
 })
 export class NflScoreCardComponent {
   @Input() score: any;
-  @Input() year: string;
-  @Input() week: string;
+  @Input() time: Time;
   @Input() projectScores: boolean;
 
   // These seem like needlessly verbose ways of switching to/from projections.
@@ -67,14 +68,14 @@ export class NflScoreCardComponent {
     if (!gameId) {
       return 'http://www.nfl.com';
     }
-    const week = this.week;
+    const week = this.time.week;
     const nflWeek = week.startsWith('P') ? `PRE${week.slice(1)}` : `REG${week}`;
     // Actually, this component of the path doesn't seem to matter at all, as
     // long as it's non-empty. NFL.com puts the team nicknames in there
     // ('patriots@falcons'), but it appears to be purely for URL aesthetics.
     const atCode = 'score';
     return 'http://www.nfl.com/gamecenter/' +
-        `${gameId}/${this.year}/${nflWeek}/${atCode}` +
+        `${gameId}/${this.time.year}/${nflWeek}/${atCode}` +
         '#tab=analyze&analyze=boxscore';
   }
 
