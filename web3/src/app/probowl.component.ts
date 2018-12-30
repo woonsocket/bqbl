@@ -27,6 +27,8 @@ export class ProBowlComponent {
   teams: TeamSpec[];
   isLocked: Observable<boolean>;
 
+  projectScores = true;
+
   leagues: Observable<LeagueScore[]>;
 
   constructor(private db: AngularFireDatabase,
@@ -48,7 +50,7 @@ export class ProBowlComponent {
 
   ngOnInit() {
     this.userDataService.getProBowlTeams().subscribe(teams => this.teams = teams);
-    this.leagues = this.scoreService.getLeaguesProBowl();
+    this.updateScores();
   }
 
   onChange() {
@@ -57,6 +59,10 @@ export class ProBowlComponent {
       .object(paths.getUserPath(this.uid) + '/probowl/teams')
       .set(this.teams)
       .catch((err) => this.checkLineupWriteError(err));
+  }
+
+  updateScores() {
+    this.leagues = this.scoreService.getLeaguesProBowl(this.projectScores);
   }
 
   /** Convert team names to uppercase, and blank out unknown team names. */

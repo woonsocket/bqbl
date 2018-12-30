@@ -29,13 +29,13 @@ export class ScoreService {
    * Returns an Observable stream of score total numbers for the given week and
    * team. If the week/team combo does not exist, the Observable emits 0.
    */
-  scoreTotalFor(week: string, teamName: string): Observable<number> {
+  scoreTotalFor(week: string, teamName: string, useProjection = false): Observable<number> {
     return this.scoreObjectFor(week, teamName)
       .map((v) => {
-        if (!v || !v.total) {
+        if (!v || !v['total']) {
           return 0;
         }
-        return v.total;
+        return useProjection ? v['projection']['total'] : v['total'];
       });
   }
 
@@ -114,15 +114,15 @@ export class ScoreService {
   /**
    * Returns an Observable stream of LeagueScore arrays.
    */
-  getLeaguesProBowl(): Observable<LeagueScore[]> {
+  getLeaguesProBowl(useProjection = false): Observable<LeagueScore[]> {
     const leagueToUsers = this.leagueToUsers();
     const userToTeams = this.userToTeams();
     const dbLeagues = this.dbLeagues();
-    // Hard-coded to Week 17. I'm sure we'll fix it next year.
+    // Hard-coded to Week 17. I'm sure we'll fix it some year.
     return Observable
       .combineLatest([this.weekService.getYear(), Observable.of('17'), dbLeagues, leagueToUsers, userToTeams])
       .map(([year, week, leagueMap, userMap, userToTeams]) => {
-        return this.computeScoresProBowl(year, week, leagueMap, userMap, userToTeams);
+        return this.computeScoresProBowl(year, week, leagueMap, userMap, userToTeams, useProjection);
       });
   }
 
@@ -164,7 +164,7 @@ export class ScoreService {
     return leagues;
   }
 
-  computeScoresProBowl(year, week, leaguesById, leagueToUsers, userToTeams): LeagueScore[] {
+  computeScoresProBowl(year, week, leaguesById, leagueToUsers, userToTeams, useProjection = false): LeagueScore[] {
     const leagues = [];
     for (const leagueKey of Array.from(leaguesById.keys())) {
       const playerScores: Observable<PlayerScore>[] = [];
@@ -179,12 +179,12 @@ export class ScoreService {
 
         const pScore: Observable<PlayerScore> = Observable
           .combineLatest([
-            this.scoreTotalFor(week, teams[0]),
-            this.scoreTotalFor(week, teams[1]),
-            this.scoreTotalFor(week, teams[2]),
-            this.scoreTotalFor(week, teams[3]),
-            this.scoreTotalFor(week, teams[4]),
-            this.scoreTotalFor(week, teams[5]),
+            this.scoreTotalFor(week, teams[0], useProjection),
+            this.scoreTotalFor(week, teams[1], useProjection),
+            this.scoreTotalFor(week, teams[2], useProjection),
+            this.scoreTotalFor(week, teams[3], useProjection),
+            this.scoreTotalFor(week, teams[4], useProjection),
+            this.scoreTotalFor(week, teams[5], useProjection),
           ])
           .map(([s0, s1, s2, s3, s4, s5]) => {
             const scores = [
