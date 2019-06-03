@@ -9,13 +9,13 @@ import { FormsModule } from '@angular/forms';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/of';
 
-import { NflLogoPipe } from './nfl-logo.pipe';
+import { SharedModule } from './shared/shared.module';
+
 import { MiniScoreComponent } from './mini-score.component';
-import { ScoreCellComponent } from './score-cell.component';
 import { MockScoreService, NBQBL_LEAGUE_SCORE } from './mocks';
-import { ConstantsService } from './constants.service';
 import { ScoresComponent } from './scores.component';
 import { ScoreService, LeagueScore, PlayerScore } from './score.service';
+import { ConstantsService } from './shared/constants.service';
 
 describe('ScoresComponent', () => {
 
@@ -26,8 +26,8 @@ describe('ScoresComponent', () => {
     mockScoreService = new MockScoreService();
     mockScoreService.setLeagues([NBQBL_LEAGUE_SCORE]);
     TestBed.configureTestingModule({
-      declarations: [ ScoresComponent, MiniScoreComponent, ScoreCellComponent, NflLogoPipe], // declare the test component
-      imports: [ MdlModule, FormsModule ],
+      declarations: [ ScoresComponent, MiniScoreComponent ], // declare the test component
+      imports: [ MdlModule, FormsModule, SharedModule ],
       providers: [
       { provide: ComponentFixtureAutoDetect, useValue: true },
       { provide: ScoreService, useValue: mockScoreService },

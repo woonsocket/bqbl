@@ -7,7 +7,7 @@ import { Component, ViewChild } from '@angular/core';
 import { NgModel } from '@angular/forms';
 import { MdlDefaultTableModel, MdlDialogComponent, MdlSnackbarService, MdlTextFieldComponent } from '@angular-mdl/core';
 import { Observable } from 'rxjs/Observable';
-import { ConstantsService } from './constants.service';
+import { ConstantsService } from './shared/constants.service';
 
 import * as paths from './paths';
 
@@ -36,7 +36,6 @@ export class AdminComponent {
   // https://stackoverflow.com/questions/36095496/angular-2-how-to-write-a-for-loop-not-a-foreach-loop
   users = [];
 
-  year = '2017';
   points247: FirebaseListObservable<any>;
 
   // Value is true if the week is unlocked. All absent values are false (locked).
@@ -59,7 +58,9 @@ export class AdminComponent {
     // Populate by default for testing iteration.
     this.users = constants.getDummyLeague();
 
-    this.points247 = this.db.list(paths.get247ScoresPath(this.year));
+    // TODO(aerion): Accept an Observable of the year.
+    this.points247 = this.db.list(
+      paths.get247ScoresPath(this.constants.getDefaultYear()));
 
     this.unlockedWeeks = this.db.list(paths.getUnlockedWeeksPath());
   }

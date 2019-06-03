@@ -95,10 +95,13 @@ exports.rescoreAll = functions.https.onRequest((req, res) => {
           res.status(400).send(`no stats known for ${year}/${week}`);
           return;
         }
-        entries(weekStats).forEach(([team, stats]) => {
-          doScore(stats, overrides.then(v => v[team] || {}), year, week, team);
+        const promises = entries(weekStats).map(([team, stats]) => {
+          return doScore(stats, overrides.then(v => v[team] || {}),
+                         year, week, team);
         });
-        res.status(200).send(`wrote ${Object.keys(weekStats).join(' ')}`);
+        Promise.all(promises).then(() => {
+          res.status(200).send(`wrote ${Object.keys(weekStats).join(' ')}`);
+        });
       });
 });
 

@@ -2,7 +2,6 @@ import { ModuleWithProviders } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 import { AdminComponent } from './admin.component';
-import { AntiScoresComponent } from './antiscores.component';
 import { AppComponent } from './app.component';
 import { AuthGuard } from './auth-guard.service';
 import { ConsoleComponent } from './console.component';
@@ -28,10 +27,6 @@ export const routes: Routes = [
    {
       path: 'scores',
       component: ScoresComponent
-   },
-   {
-      path: 'antiscores',
-      component: AntiScoresComponent
    },
    {
       path: 'nflscores',

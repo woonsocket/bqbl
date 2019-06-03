@@ -16,15 +16,17 @@ import 'rxjs/add/observable/of';
 import { MockAngularFireDb, MockAngularFireAuth } from './mockangularfire';
 import { DefaultData } from './fakedatabaseresponses';
 
-import { NflLogoPipe } from './nfl-logo.pipe';
+import { SharedModule } from './shared/shared.module';
+
+import { ConstantsService } from './shared/constants.service';
 import { MiniScoreComponent } from './mini-score.component';
-import { ScoreCellComponent } from './score-cell.component';
-import { NFLScoreCardComponent } from './nfl-score-card.component';
-import { ConstantsService } from './constants.service';
+import { NflScoreCardComponent } from './nfl-scores/nfl-score-card.component';
 import { NFLScoresComponent } from './nflscores.component';
+import { Time } from './structs';
+import { WeekService } from './week.service';
 
 const USER_ID = '30';
-describe('NFLScoresComponent', () => {
+describe('NflScoresComponent', () => {
 
   let mockDb: MockAngularFireDb;
   let mockAuth: MockAngularFireAuth;
@@ -35,15 +37,19 @@ describe('NFLScoresComponent', () => {
     this.mockDb = new MockAngularFireDb();
     this.mockAuth = new MockAngularFireAuth(USER_ID, 'Harvey');
 
+    this.mockWeekService = jasmine.createSpyObj('mockWeekService', {
+      'getYear': Observable.of('2017'),
+      'getWeek': Observable.of('1'),
+      'getTime': Observable.of(new Time('1', '2017')),
+    });
+
     TestBed.configureTestingModule({
       declarations: [
         NFLScoresComponent,
-        NFLScoreCardComponent,
-        NflLogoPipe,
+        NflScoreCardComponent,
         MiniScoreComponent,
-        ScoreCellComponent,
       ], // declare the test component
-      imports: [ MdlModule, FormsModule ],
+      imports: [ MdlModule, FormsModule, SharedModule ],
       providers: [
       { provide: ComponentFixtureAutoDetect, useValue: true },
       { provide: AngularFireAuth, useValue: this.mockAuth },
@@ -51,6 +57,7 @@ describe('NFLScoresComponent', () => {
       { provide: Router, useValue: true },
       { provide: ConstantsService, useValue: new ConstantsService() },
       { provide: MdlSnackbarService, useValue: true },
+      { provide: WeekService, useValue: this.mockWeekService },
       { provide: APP_BASE_HREF, useValue: '/'},
       { provide: ActivatedRoute, useValue: {
           queryParams: Observable.of({ week: 1 })

@@ -11,7 +11,7 @@ import { MdlSnackbarService } from '@angular-mdl/core';
 import { Observable } from 'rxjs/Observable';
 
 import * as paths from './paths';
-import { ConstantsService } from './constants.service';
+import { ConstantsService } from './shared/constants.service';
 import { UserDataService } from './userdata.service';
 import { ScoreService, LeagueScore } from './score.service';
 import { TeamScore } from './team-score';
@@ -26,6 +26,8 @@ export class ProBowlComponent {
   uid: string;
   teams: TeamSpec[];
   isLocked: Observable<boolean>;
+
+  projectScores = true;
 
   leagues: Observable<LeagueScore[]>;
 
@@ -48,7 +50,7 @@ export class ProBowlComponent {
 
   ngOnInit() {
     this.userDataService.getProBowlTeams().subscribe(teams => this.teams = teams);
-    this.leagues = this.scoreService.getLeaguesProBowl();
+    this.updateScores();
   }
 
   onChange() {
@@ -57,6 +59,10 @@ export class ProBowlComponent {
       .object(paths.getUserPath(this.uid) + '/probowl/teams')
       .set(this.teams)
       .catch((err) => this.checkLineupWriteError(err));
+  }
+
+  updateScores() {
+    this.leagues = this.scoreService.getLeaguesProBowl(this.projectScores);
   }
 
   /** Convert team names to uppercase, and blank out unknown team names. */

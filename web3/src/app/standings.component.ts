@@ -8,7 +8,7 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/take';
 import { User } from './structs';
 import { TeamScore } from './team-score';
-import { ConstantsService } from './constants.service';
+import { ConstantsService } from './shared/constants.service';
 import { WeekService } from './week.service';
 import { ScoreService } from './score.service';
 import * as paths from './paths';

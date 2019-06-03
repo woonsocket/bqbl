@@ -8,7 +8,7 @@ import { Observable } from 'rxjs/Observable';
 import { Router } from '@angular/router';
 import { User, Week, TeamEntry } from './structs';
 import * as paths from './paths';
-import { ConstantsService } from './constants.service';
+import { ConstantsService } from './shared/constants.service';
 
 @Component({
   templateUrl: './newuser.component.html',

@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Set } from 'immutable';
-import { WeekSpec } from './schema';
 
 const ALL_WEEKS_2018: WeekSpec[] = [
   { 'name': 'Preseason 1', 'val': 'P1', 'displayUntil': new Date('2018-08-15') },
@@ -80,38 +79,38 @@ const ABQBL_USERS_2017 = [
 
 
 const SCHEDULE_MAP_2018 = {
-  'ARI': ['WSH', '@LAR', 'CHI', 'SEA', '@SF', '@MIN', 'DEN', 'SF', 'BYE', '@KC', 'OAK', '@LAC', '@GB', 'DET', '@ATL', 'LAR', '@SEA',],
-  'ATL': ['@PHI', 'CAR', 'NO', 'CIN', '@PIT', 'TB', 'NYG', 'BYE', '@WSH', '@CLE', 'DAL', '@NO', 'BAL', '@GB', 'ARI', '@CAR', '@TB',],
+  'ARI': ['WAS', '@LA', 'CHI', 'SEA', '@SF', '@MIN', 'DEN', 'SF', 'BYE', '@KC', 'OAK', '@LAC', '@GB', 'DET', '@ATL', 'LA', '@SEA',],
+  'ATL': ['@PHI', 'CAR', 'NO', 'CIN', '@PIT', 'TB', 'NYG', 'BYE', '@WAS', '@CLE', 'DAL', '@NO', 'BAL', '@GB', 'ARI', '@CAR', '@TB',],
   'BAL': ['BUF', '@CIN', 'DEN', '@PIT', '@CLE', '@TEN', 'NO', '@CAR', 'PIT', 'BYE', 'CIN', 'OAK', '@ATL', '@KC', 'TB', '@LAC', 'CLE',],
   'BUF': ['@BAL', 'LAC', '@MIN', '@GB', 'TEN', '@HOU', '@IND', 'NE', 'CHI', '@NYJ', 'BYE', 'JAX', '@MIA', 'NYJ', 'DET', '@NE', 'MIA',],
-  'CAR': ['DAL', '@ATL', 'CIN', 'BYE', 'NYG', '@WSH', '@PHI', 'BAL', 'TB', '@PIT', '@DET', 'SEA', '@TB', '@CLE', 'NO', 'ATL', '@NO',],
-  'CHI': ['@GB', 'SEA', '@ARI', 'TB', 'BYE', '@MIA', 'NE', 'NYJ', '@BUF', 'DET', 'MIN', '@DET', '@NYG', 'LAR', 'GB', '@SF', '@MIN',],
+  'CAR': ['DAL', '@ATL', 'CIN', 'BYE', 'NYG', '@WAS', '@PHI', 'BAL', 'TB', '@PIT', '@DET', 'SEA', '@TB', '@CLE', 'NO', 'ATL', '@NO',],
+  'CHI': ['@GB', 'SEA', '@ARI', 'TB', 'BYE', '@MIA', 'NE', 'NYJ', '@BUF', 'DET', 'MIN', '@DET', '@NYG', 'LA', 'GB', '@SF', '@MIN',],
   'CIN': ['@IND', 'BAL', '@CAR', '@ATL', 'MIA', 'PIT', '@KC', 'TB', 'BYE', 'NO', '@BAL', 'CLE', 'DEN', '@LAC', 'OAK', '@CLE', '@PIT',],
   'CLE': ['PIT', '@NO', 'NYJ', '@OAK', 'BAL', 'LAC', '@TB', '@PIT', 'KC', 'ATL', 'BYE', '@CIN', '@HOU', 'CAR', '@DEN', 'CIN', '@BAL',],
-  'DAL': ['@CAR', 'NYG', '@SEA', 'DET', '@HOU', 'JAX', '@WSH', 'BYE', 'TEN', '@PHI', '@ATL', 'WSH', 'NO', 'PHI', '@IND', 'TB', '@NYG',],
-  'DEN': ['SEA', 'OAK', '@BAL', 'KC', '@NYJ', 'LAR', '@ARI', '@KC', 'HOU', 'BYE', '@LAC', 'PIT', '@CIN', '@SF', 'CLE', '@OAK', 'LAC',],
-  'DET': ['NYJ', '@SF', 'NE', '@DAL', 'GB', 'BYE', '@MIA', 'SEA', '@MIN', '@CHI', 'CAR', 'CHI', 'LAR', '@ARI', '@BUF', 'MIN', '@GB',],
-  'GB': ['CHI', 'MIN', '@WSH', 'BUF', '@DET', 'SF', 'BYE', '@LAR', '@NE', 'MIA', '@SEA', '@MIN', 'ARI', 'ATL', '@CHI', '@NYJ', 'DET',],
-  'HOU': ['@NE', '@TEN', 'NYG', '@IND', 'DAL', 'BUF', '@JAX', 'MIA', '@DEN', 'BYE', '@WSH', 'TEN', 'CLE', 'IND', '@NYJ', '@PHI', 'JAX',],
-  'IND': ['CIN', '@WSH', '@PHI', 'HOU', '@NE', '@NYJ', 'BUF', '@OAK', 'BYE', 'JAX', 'TEN', 'MIA', '@JAX', '@HOU', 'DAL', 'NYG', '@TEN',],
-  'JAX': ['@NYG', 'NE', 'TEN', 'NYJ', '@KC', '@DAL', 'HOU', 'PHI', 'BYE', '@IND', 'PIT', '@BUF', 'IND', '@TEN', 'WSH', '@MIA', '@HOU',],
-  'KC': ['@LAC', '@PIT', 'SF', '@DEN', 'JAX', '@NE', 'CIN', 'DEN', '@CLE', 'ARI', '@LAR', 'BYE', '@OAK', 'BAL', 'LAC', '@SEA', 'OAK',],
-  'LAR': ['@OAK', 'ARI', 'LAC', 'MIN', '@SEA', '@DEN', '@SF', 'GB', '@NO', 'SEA', 'KC', 'BYE', '@DET', '@CHI', 'PHI', '@ARI', 'SF',],
-  'LAC': ['KC', '@BUF', '@LAR', 'SF', 'OAK', '@CLE', 'TEN', 'BYE', '@SEA', '@OAK', 'DEN', 'ARI', '@PIT', 'CIN', '@KC', 'BAL', '@DEN',],
+  'DAL': ['@CAR', 'NYG', '@SEA', 'DET', '@HOU', 'JAX', '@WAS', 'BYE', 'TEN', '@PHI', '@ATL', 'WAS', 'NO', 'PHI', '@IND', 'TB', '@NYG',],
+  'DEN': ['SEA', 'OAK', '@BAL', 'KC', '@NYJ', 'LA', '@ARI', '@KC', 'HOU', 'BYE', '@LAC', 'PIT', '@CIN', '@SF', 'CLE', '@OAK', 'LAC',],
+  'DET': ['NYJ', '@SF', 'NE', '@DAL', 'GB', 'BYE', '@MIA', 'SEA', '@MIN', '@CHI', 'CAR', 'CHI', 'LA', '@ARI', '@BUF', 'MIN', '@GB',],
+  'GB': ['CHI', 'MIN', '@WAS', 'BUF', '@DET', 'SF', 'BYE', '@LA', '@NE', 'MIA', '@SEA', '@MIN', 'ARI', 'ATL', '@CHI', '@NYJ', 'DET',],
+  'HOU': ['@NE', '@TEN', 'NYG', '@IND', 'DAL', 'BUF', '@JAX', 'MIA', '@DEN', 'BYE', '@WAS', 'TEN', 'CLE', 'IND', '@NYJ', '@PHI', 'JAX',],
+  'IND': ['CIN', '@WAS', '@PHI', 'HOU', '@NE', '@NYJ', 'BUF', '@OAK', 'BYE', 'JAX', 'TEN', 'MIA', '@JAX', '@HOU', 'DAL', 'NYG', '@TEN',],
+  'JAX': ['@NYG', 'NE', 'TEN', 'NYJ', '@KC', '@DAL', 'HOU', 'PHI', 'BYE', '@IND', 'PIT', '@BUF', 'IND', '@TEN', 'WAS', '@MIA', '@HOU',],
+  'KC': ['@LAC', '@PIT', 'SF', '@DEN', 'JAX', '@NE', 'CIN', 'DEN', '@CLE', 'ARI', '@LA', 'BYE', '@OAK', 'BAL', 'LAC', '@SEA', 'OAK',],
+  'LA': ['@OAK', 'ARI', 'LAC', 'MIN', '@SEA', '@DEN', '@SF', 'GB', '@NO', 'SEA', 'KC', 'BYE', '@DET', '@CHI', 'PHI', '@ARI', 'SF',],
+  'LAC': ['KC', '@BUF', '@LA', 'SF', 'OAK', '@CLE', 'TEN', 'BYE', '@SEA', '@OAK', 'DEN', 'ARI', '@PIT', 'CIN', '@KC', 'BAL', '@DEN',],
   'MIA': ['TEN', '@NYJ', 'OAK', '@NE', '@CIN', 'CHI', 'DET', '@HOU', 'NYJ', '@GB', 'BYE', '@IND', 'BUF', 'NE', '@MIN', 'JAX', '@BUF',],
-  'MIN': ['SF', '@GB', 'BUF', '@LAR', '@PHI', 'ARI', '@NYJ', 'NO', 'DET', 'BYE', '@CHI', 'GB', '@NE', '@SEA', 'MIA', '@DET', 'CHI',],
+  'MIN': ['SF', '@GB', 'BUF', '@LA', '@PHI', 'ARI', '@NYJ', 'NO', 'DET', 'BYE', '@CHI', 'GB', '@NE', '@SEA', 'MIA', '@DET', 'CHI',],
   'NE': ['HOU', '@JAX', '@DET', 'MIA', 'IND', 'KC', '@CHI', '@BUF', 'GB', '@TEN', 'BYE', '@NYJ', 'MIN', '@MIA', '@PIT', 'BUF', 'NYJ',],
-  'NO': ['TB', 'CLE', '@ATL', '@NYG', 'WSH', 'BYE', '@BAL', '@MIN', 'LAR', '@CIN', 'PHI', 'ATL', '@DAL', '@TB', '@CAR', 'PIT', 'CAR',],
-  'NYG': ['JAX', '@DAL', '@HOU', 'NO', '@CAR', 'PHI', '@ATL', 'WSH', 'BYE', '@SF', 'TB', '@PHI', 'CHI', '@WSH', 'TEN', '@IND', 'DAL',],
+  'NO': ['TB', 'CLE', '@ATL', '@NYG', 'WAS', 'BYE', '@BAL', '@MIN', 'LA', '@CIN', 'PHI', 'ATL', '@DAL', '@TB', '@CAR', 'PIT', 'CAR',],
+  'NYG': ['JAX', '@DAL', '@HOU', 'NO', '@CAR', 'PHI', '@ATL', 'WAS', 'BYE', '@SF', 'TB', '@PHI', 'CHI', '@WAS', 'TEN', '@IND', 'DAL',],
   'NYJ': ['@DET', 'MIA', '@CLE', '@JAX', 'DEN', 'IND', 'MIN', '@CHI', '@MIA', 'BUF', 'BYE', 'NE', '@TEN', '@BUF', 'HOU', 'GB', '@NE',],
-  'OAK': ['LAR', '@DEN', '@MIA', 'CLE', '@LAC', 'SEA', 'BYE', 'IND', '@SF', 'LAC', '@ARI', '@BAL', 'KC', 'PIT', '@CIN', 'DEN', '@KC',],
-  'PHI': ['ATL', '@TB', 'IND', '@TEN', 'MIN', '@NYG', 'CAR', '@JAX', 'BYE', 'DAL', '@NO', 'NYG', 'WSH', '@DAL', '@LAR', 'HOU', '@WSH',],
+  'OAK': ['LA', '@DEN', '@MIA', 'CLE', '@LAC', 'SEA', 'BYE', 'IND', '@SF', 'LAC', '@ARI', '@BAL', 'KC', 'PIT', '@CIN', 'DEN', '@KC',],
+  'PHI': ['ATL', '@TB', 'IND', '@TEN', 'MIN', '@NYG', 'CAR', '@JAX', 'BYE', 'DAL', '@NO', 'NYG', 'WAS', '@DAL', '@LA', 'HOU', '@WAS',],
   'PIT': ['@CLE', 'KC', '@TB', 'BAL', 'ATL', '@CIN', 'BYE', 'CLE', '@BAL', 'CAR', '@JAX', '@DEN', 'LAC', '@OAK', 'NE', '@NO', 'CIN',],
-  'SF': ['@MIN', 'DET', '@KC', '@LAC', 'ARI', '@GB', 'LAR', '@ARI', 'OAK', 'NYG', 'BYE', '@TB', '@SEA', 'DEN', 'SEA', 'CHI', '@LAR',],
-  'SEA': ['@DEN', '@CHI', 'DAL', '@ARI', 'LAR', '@OAK', 'BYE', '@DET', 'LAC', '@LAR', 'GB', '@CAR', 'SF', 'MIN', '@SF', 'KC', 'ARI',],
-  'TB': ['@NO', 'PHI', 'PIT', '@CHI', 'BYE', '@ATL', 'CLE', '@CIN', '@CAR', 'WSH', '@NYG', 'SF', 'CAR', 'NO', '@BAL', '@DAL', 'ATL',],
-  'TEN': ['@MIA', 'HOU', '@JAX', 'PHI', '@BUF', 'BAL', '@LAC', 'BYE', '@DAL', 'NE', '@IND', '@HOU', 'NYJ', 'JAX', '@NYG', 'WSH', 'IND',],
-  'WSH': ['@ARI', 'IND', 'GB', 'BYE', '@NO', 'CAR', 'DAL', '@NYG', 'ATL', '@TB', 'HOU', '@DAL', '@PHI', 'NYG', '@JAX', '@TEN', 'PHI',],
+  'SF': ['@MIN', 'DET', '@KC', '@LAC', 'ARI', '@GB', 'LA', '@ARI', 'OAK', 'NYG', 'BYE', '@TB', '@SEA', 'DEN', 'SEA', 'CHI', '@LA',],
+  'SEA': ['@DEN', '@CHI', 'DAL', '@ARI', 'LA', '@OAK', 'BYE', '@DET', 'LAC', '@LA', 'GB', '@CAR', 'SF', 'MIN', '@SF', 'KC', 'ARI',],
+  'TB': ['@NO', 'PHI', 'PIT', '@CHI', 'BYE', '@ATL', 'CLE', '@CIN', '@CAR', 'WAS', '@NYG', 'SF', 'CAR', 'NO', '@BAL', '@DAL', 'ATL',],
+  'TEN': ['@MIA', 'HOU', '@JAX', 'PHI', '@BUF', 'BAL', '@LAC', 'BYE', '@DAL', 'NE', '@IND', '@HOU', 'NYJ', 'JAX', '@NYG', 'WAS', 'IND',],
+  'WAS': ['@ARI', 'IND', 'GB', 'BYE', '@NO', 'CAR', 'DAL', '@NYG', 'ATL', '@TB', 'HOU', '@DAL', '@PHI', 'NYG', '@JAX', '@TEN', 'PHI',],
 }
 
 const SCHEDULE_MAP_2017 = {
@@ -155,7 +154,7 @@ export class ConstantsService {
   getAllWeeks(): WeekSpec[] { return ALL_WEEKS_2018; }
   getAllTeams() { return ALL_TEAMS; }
   getDummyLeague() { return ABQBL_USERS_2017; }
-  getDefaultYear(): string { return '2017'; }
+  getDefaultYear(): string { return '2018'; }
   getDefaultWeekId(): string {
     const now = new Date(Date.now());
     let i = 0;
@@ -168,4 +167,10 @@ export class ConstantsService {
   getSchedule() {
     return SCHEDULE_MAP_2018;
   }
+}
+
+class WeekSpec {
+  name: string;
+  val: string;
+  displayUntil: Date;
 }

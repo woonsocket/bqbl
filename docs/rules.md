@@ -4,11 +4,17 @@ These rules are an adaptation of
 [the original Grantland rules](http://grantland.com/the-triangle/introducing-grantlands-bad-quarterback-league/)
 from 2011.
 
-Rule changes for 2017:
+Rule changes for 2018:
 
-* Street free agent points are now 24/7 points. The bonus is 35 points on the
-  first time a team starts a given player, rather than 20 (on-field) points
-  every time they start.
+* Sack points are now quadratic instead of linear.
+
+* Points for perfect passer ratings and zero passer ratings.
+
+* Removed special Tebow/Manziel rules.
+
+* Added Kaepernick rules.
+
+* Trump campaign rules replaced by Trump tweet rules.
 
 ## General rules
 
@@ -102,7 +108,7 @@ separate competition.
 
         * N>3 touchdowns: 2 × (N−1 touchdowns)
 
-* Each sack: **1 point**
+* Sacks: The Nth sack is worth **⌈N/2⌉ points**
 
 * Total passing yards
 
@@ -140,6 +146,12 @@ separate competition.
 
     * Examples of QB *not* at fault: lineman holding, shotgun snap over the QB's
       head
+
+* Passer rating (for each QB with at least 10 pass attempts)
+
+    * 0.0 rating: **50 points**
+
+    * Perfect rating (158.3): **−25 points**
 
 * Benched during game (for non-injury reasons): **35 points**
 
@@ -224,17 +236,10 @@ separate competition.
 
 * Previous week's starter abruptly released: **35 points**
 
-* Special rules for Tim Tebow and Johnny Manziel
+* Team starts a QB who was not on any NFL 53-man roster on opening day: **35
+  points** per QB, awarded only for the first time the QB starts for that team
 
-    * 1 point each week if the player is on your team's 53-man roster
-
-    * −6 points per TD the player scores
-
-    * −2 points per 2PC the player scores
-
-    * −3 points per FG the player personally kicks
-
-* The Kurt Warner Rule
+* Kurt Warner
 
     * Rumors from "team sources" that your team wants to sign Kurt Warner: **10
       points**
@@ -243,16 +248,22 @@ separate competition.
 
     * These points may also be awarded for Brett Favre, etc.
 
-* Team starts a QB who was not on any NFL 53-man roster on opening day: **35
-  points** per QB, awarded only for the first time the QB starts for that team
+* Colin Kaepernick
 
-* Trump
+    * Your team denies interest in Colin Kaepernick (cowards):
+      **10 points**
 
-    * Your QB makes an appearance at an official Trump campaign event: **20
-      points**
+    * Your team shows interest in Colin Kaepernick, but then backs down
+      (COWARDS): **20 points**
 
-    * The QB, their team, or the Trump campaign deny that this happened: **20
-      points**
+    * Your team becomes interested in Johnny Manziel after denying interest in
+      Colin Kaepernick (**INEPT** COWARDS): **50 points**
+
+* Donald Trump
+
+    * Donald Trump tweets about your QB: **10 points**
+
+    * The tweet is positive: **25 points** instead
 
 * Commissioner discretion
 

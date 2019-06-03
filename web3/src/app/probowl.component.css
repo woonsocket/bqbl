@@ -50,3 +50,27 @@ mdl-icon {
   font-size: 18px;
   vertical-align: middle;
 }
+
+/* Copied from nflscores. A better person would factor this out into its own
+   component or something. */
+.sort-controls {
+  text-align: center;
+}
+
+.sort-control {
+  display: inline-block;
+  margin: 6px;
+  padding: 6px;
+}
+
+.sort-control mdl-radio {
+  margin-left: 6px;
+  margin-right: 6px;
+}
+
+/* This is a hack. The switch label has left:24px set for some reason, which
+   makes the label text overflow the parent div. Whatever. */
+.dumb-buffer {
+  display: inline-block;
+  width: 24px;
+}

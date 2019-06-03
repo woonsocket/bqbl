@@ -6,10 +6,7 @@ import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 import { MiniScoreComponent } from './mini-score.component';
 import { MiniStatComponent } from './mini-stat.component';
-import { NFLScoreCardComponent } from './nfl-score-card.component';
-import { ScoreCellComponent } from './score-cell.component';
 import { ScoresComponent } from './scores.component';
-import { AntiScoresComponent } from './antiscores.component';
 import { NFLScoresComponent } from './nflscores.component';
 import { ProBowlComponent } from './probowl.component';
 import { NFLStandingsComponent } from './nflstandings.component';
@@ -19,7 +16,6 @@ import { LineupComponent } from './lineup.component';
 import { LoginComponent } from './login.component';
 import { ConsoleComponent } from './console.component';
 import { StandingsComponent } from './standings.component';
-import { ConstantsService } from './constants.service';
 import { WeekService } from './week.service';
 import { ScoreService } from './score.service';
 import { AuthGuard } from './auth-guard.service';
@@ -32,16 +28,14 @@ import { routing } from './app.routes';
 import { FormsModule } from '@angular/forms';
 import { MdlModule } from '@angular-mdl/core';
 
-import { NflIconPipe, NflLogoPipe } from './nfl-logo.pipe';
+import { NflScoresModule } from './nfl-scores/nfl-scores.module';
+import { SharedModule } from './shared/shared.module';
 
 @NgModule({
   declarations: [
     AppComponent,
     MiniScoreComponent,
     MiniStatComponent,
-    NFLScoreCardComponent,
-    ScoreCellComponent,
-    AntiScoresComponent,
     ScoresComponent,
     NFLScoresComponent,
     NFLStandingsComponent,
@@ -54,8 +48,6 @@ import { NflIconPipe, NflLogoPipe } from './nfl-logo.pipe';
     Table247Component,
     StandingsComponent,
     LoginComponent,
-    NflIconPipe,
-    NflLogoPipe,
     ProBowlComponent,
   ],
   imports: [
@@ -66,8 +58,10 @@ import { NflIconPipe, NflLogoPipe } from './nfl-logo.pipe';
     AngularFireAuthModule,
     MdlModule,
     routing,
+    SharedModule,
+    NflScoresModule,
   ],
-  providers: [ConstantsService, ScoreService, WeekService, UserDataService, AuthGuard],
+  providers: [ScoreService, WeekService, UserDataService, AuthGuard],
   bootstrap: [AppComponent]
 })
 

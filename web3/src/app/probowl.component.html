@@ -20,6 +20,16 @@
 
 <div class="section-title">Scoreboard</div>
 
+<div class="sort-controls">
+  <div class="sort-control mdl-shadow--2dp">
+    <mdl-switch [(ngModel)]="projectScores" mdl-ripple id=projected-toggle
+                (change)="updateScores()">
+      Show projected scores
+      <span class="dumb-buffer">&nbsp;</span>
+    </mdl-switch>
+  </div>
+</div>
+
 <div *ngFor="let league of leagues|async">
   <div class="league-title">{{league.name}}: {{leagueScore(league)|async}} points</div>
   <div class="minis">

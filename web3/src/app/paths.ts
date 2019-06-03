@@ -1,3 +1,4 @@
+import { Time } from './structs';
 
 export function getUsersPath(): string {
   return '/users';
@@ -15,8 +16,8 @@ export function getLeaguesPath(): string {
   return '/leagues/';
 }
 
-export function getEventsPath(): string {
-  return '/events/';
+export function getEventsPath(t: Time): string {
+  return `/events/${t.year}/${t.week}`;
 }
 
 export function getUnlockedWeeksPath(): string {
