@@ -7,3 +7,4 @@ events/BQBL-2c621a7cef1f.json
 private-keys
 sandbox/*
 functions/node_modules/*
+react-bqbl-fe/node_modules/*
