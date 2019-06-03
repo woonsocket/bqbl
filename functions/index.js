@@ -101,3 +101,21 @@ exports.rescoreAll = functions.https.onRequest((req, res) => {
         res.status(200).send(`wrote ${Object.keys(weekStats).join(' ')}`);
       });
 });
+
+// exports.createStartsTable = functions.https.onRequest((req, res) => {
+//   const { year, week } = req.body;
+//   // const overrides = admin.database()
+//   //     .ref(`/events/${year}/${week}/overrides`)
+//   //     .once('value')
+//   //     .then(d => d.val() || {});
+//   admin.database().ref(`/tmp/league/year/`)
+//     .once('value', (data) => {
+//       const yearRef = admin.database().ref(`/tmp/league/year/`);
+//       console.log('Scoring2', team, stats);
+//       yearRef.update({'a':'b'});
+//       res.status(200).send(`wrote stuff`);
+//     });
+// });
+
+
+

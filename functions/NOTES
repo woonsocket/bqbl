@@ -1,0 +1,15 @@
+New table:
+(league --> year --> week --> user --> teams --> scores + sum)
+Scoreboard view(s) fall right out of it
+
+
+# user updates roster
+write to league --> year --> week --> user --> teams.
+update score for that user, just in case
+
+# scores update
+pull the scores
+iterate over each user, rescore them.
+
+
+
