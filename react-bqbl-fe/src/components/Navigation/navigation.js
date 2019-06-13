@@ -11,6 +11,7 @@ const LINKS = [
   { to: ROUTES.SCORES, text: 'Scores' },
   { to: ROUTES.HOME, text: 'Home' },
   { to: ROUTES.LINEUP, text: 'Lineup' },
+  { to: ROUTES.PLAYER_SCORES, text: 'Player Scores' },
 ];
 
 function Navigation(params) {

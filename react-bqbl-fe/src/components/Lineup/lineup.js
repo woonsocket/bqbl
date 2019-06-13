@@ -7,7 +7,7 @@ import './lineup.css'
 class LineupPageBase extends Component {
   constructor(props) {
     super(props);
-
+    this.user = null;
     this.state = {
       valsList: [],
     };
@@ -22,9 +22,9 @@ class LineupPageBase extends Component {
       console.log("bail!");
       return;
     }
-    console.log(user);
-    this.props.firebase.starts_year(user.uid, '2018').on('value', snapshot => {
-      console.log(snapshot.val());
+    this.user = user;
+    this.props.firebase.tmp_starts_year(user.uid, '2019')
+      .on('value', snapshot => {
       const vals = snapshot.val();
       const valsList = Object.keys(vals).map(key => ({
         ...vals[key],
@@ -34,6 +34,11 @@ class LineupPageBase extends Component {
     })
   }
 
+  updateCallback(weekData, weekId) {
+    this.props.firebase.tmp_starts_week(this.user.uid, '2019', weekId)
+      .update(weekData);
+  }
+
   render() {
     return (
       <React.Fragment>
@@ -41,7 +46,8 @@ class LineupPageBase extends Component {
         {this.state.valsList.map((week, index) => (
           <div>
             <LineupWeek
-              week={week} index={index}
+              week={week} index={index} 
+              updateCallback={this.updateCallback.bind(this)}
             />
           </div>
         ))}
@@ -51,15 +57,39 @@ class LineupPageBase extends Component {
 }
 
 
-const LineupWeek = ({ week, index }) => (
-  <React.Fragment>
-    <div className="id">Week {week.id}</div> 
-    {week.teams.map((team) => (
-        <div className={team.selected ? "team" : "team selected"}>{team.name}</div>
-    ))}
-  </React.Fragment>
-);
+class LineupWeek extends Component {
+  constructor(props) {
+    super(props);
 
+    this.state = {
+      weekData: props.week,
+      weekIndex: props.index,
+      updateCallback: props.updateCallback
+    };
+  }
+
+  handleClick(elem) {
+    var idx = elem.currentTarget.getAttribute("data-idx");
+    this.state.weekData.teams[idx].selected = 
+      ! this.state.weekData.teams[idx].selected;
+    this.setState(this.state);
+    this.state.updateCallback(this.state.weekData, this.state.weekIndex)
+  }
+
+  render() {
+    return (
+      <React.Fragment>
+        <div className="id" id={this.state.weekData.id}>
+          Week {this.state.weekData.id}</div>
+        {this.state.weekData.teams.map((team, idx) => (
+          <div data-idx={idx} onClick={this.handleClick.bind(this)}
+            className={team.selected ? "team" : "team selected"}>{team.name}
+          </div>
+        ))}
+      </React.Fragment>
+    )
+  }
+};
 
 const LineupPage = compose(
   withRouter,

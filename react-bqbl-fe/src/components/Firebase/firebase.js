@@ -46,20 +46,28 @@ class Firebase {
     return this.db.ref(`scores/${year}/${week}`);
   }
 
+  starts_week(year, uid, week) {
+    return this.db.ref(`tmp/leagues/${uid}/${year}/${week}`);
+  }
+
   starts_year(uid, year) {
-    return this.db.ref(`users/${uid}/weeks`);
+    return this.db.ref(`tmp/users/${uid}/weeks`);
   };
+
+  tmp_starts_year(uid, year) {
+    return this.db.ref(`tmp/users/${uid}/plays/${year}`);
+  };
+
+  tmp_starts_week(uid, year, week) {
+    return this.db.ref(`tmp/users/${uid}/plays/${year}/${week}`);
+  };
+
 
   authChanged(user) {
     if (!user) {
       console.log("bail!");
       return;
     }
-    // var displayName = user.displayName;
-    // var email = user.email;
-    // var emailVerified = user.emailVerified;
-    // var photoURL = user.photoURL;
-    // var isAnonymous = user.isAnonymous;
     this.uid = user.uid;
     this.getUserPath(this.uid).on('value', snapshot => {
       const vals = snapshot.val();
@@ -69,9 +77,6 @@ class Firebase {
   }
 
   leagueChanged() {
-    this.starts_year('2018', '3').on('value', snapshot => {
-      // console.log(snapshot.val());
-    });
   }
 
 }

@@ -8,3 +8,4 @@ private-keys
 sandbox/*
 functions/node_modules/*
 react-bqbl-fe/node_modules/*
+functions/firebase-debug.log

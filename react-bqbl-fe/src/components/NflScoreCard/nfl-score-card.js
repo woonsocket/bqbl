@@ -119,7 +119,7 @@ function breakdownToComponents(breakdown) {
   });
 
   components.push({
-    desc: breakdown.sack.count == 1 ? '1 sack' : `${breakdown.sack.count} sacks`,
+    desc: breakdown.sack.count === 1 ? '1 sack' : `${breakdown.sack.count} sacks`,
     value: breakdown.sack.value,
   });
 
@@ -140,7 +140,7 @@ function breakdownToComponents(breakdown) {
     });
   }
 
-  return components.filter(c => c.value != 0);
+  return components.filter(c => c.value !== 0);
 }
 
 
@@ -154,7 +154,7 @@ function breakdownToComponents(breakdown) {
   */
 function simpleMultiple(pointsPer, quantity, description) {
   quantity = quantity || 0;
-  if (quantity != 1) {
+  if (quantity !== 1) {
     description = quantity + 'x ' + description;
   }
   return { desc: description, value: quantity * pointsPer };
@@ -169,23 +169,6 @@ function rangeString(range) {
     return `≥ ${min}`;
   }
   return `${min}-${max}`;
-}
-
-
-function boxScoreLink() {
-  const gameId = this.score['gameInfo'] && this.score['gameInfo'].id;
-  if (!gameId) {
-    return 'http://www.nfl.com';
-  }
-  const week = this.time.week;
-  const nflWeek = week.startsWith('P') ? `PRE${week.slice(1)}` : `REG${week}`;
-  // Actually, this component of the path doesn't seem to matter at all, as
-  // long as it's non-empty. NFL.com puts the team nicknames in there
-  // ('patriots@falcons'), but it appears to be purely for URL aesthetics.
-  const atCode = 'score';
-  return 'http://www.nfl.com/gamecenter/' +
-    `${gameId}/${this.time.year}/${nflWeek}/${atCode}` +
-    '#tab=analyze&analyze=boxscore';
 }
 
 function lineScore(breakdown) {

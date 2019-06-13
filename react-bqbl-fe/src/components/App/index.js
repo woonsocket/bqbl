@@ -6,7 +6,6 @@ import {
 
 import { makeStyles } from '@material-ui/core/styles';
 import AccountCircle from '@material-ui/icons/AccountCircle';
-import AdminPage from '../Admin/admin';
 import AppBar from '@material-ui/core/AppBar';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import Divider from '@material-ui/core/Divider';
@@ -24,6 +23,7 @@ import Typography from '@material-ui/core/Typography';
 
 import * as ROUTES from '../../constants/routes';
 import LineupPage from '../Lineup/lineup';
+import PlayerScorePage from '../PlayerScorePage/player-score-page';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -126,12 +126,10 @@ function App() {
       </AppBar>
 
       <div>
-        <hr />
         <Route path={ROUTES.HOME} component={HomePage} />
-        <Route path={ROUTES.ADMIN} component={AdminPage} />
         <Route path={ROUTES.SCORES} component={ScorePage} />
+        <Route path={ROUTES.PLAYER_SCORES} component={PlayerScorePage} />
         <Route path={ROUTES.LINEUP} component={LineupPage} />
-
       </div>
     </Router>
   );
