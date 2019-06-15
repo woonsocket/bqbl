@@ -8,27 +8,27 @@ const scoring = require('./scoring.js');
 admin.initializeApp();
 
 exports.score = functions.database.ref('/stats/{year}/{week}/{team}')
-    .onWrite((change, context) => {
-      const {year, week, team} = context.params;
-      const stats = change.after.val();
-      const overrides = admin.database()
-          .ref(`/events/${year}/${week}/overrides/${team}`)
-          .once('value')
-          .then(d => d.val());
-      return doScore(stats, overrides, year, week, team);
-    });
+  .onWrite((change, context) => {
+    const {year, week, team} = context.params;
+    const stats = change.after.val();
+    const overrides = admin.database()
+      .ref(`/events/${year}/${week}/overrides/${team}`)
+      .once('value')
+      .then(d => d.val());
+    return doScore(stats, overrides, year, week, team);
+  });
 
 
 exports.rescoreOnOverride = functions.database.ref('/events/{year}/{week}/overrides/{team}')
-    .onWrite((change, context) => {
-      const {year, week, team} = context.params;
-      const stats = admin.database()
-          .ref(`/stats/${year}/${week}/${team}`)
-          .once('value')
-          .then(d => d.val());
-      const overrides = change.after.val();
-      return doScore(stats, overrides, year, week, team);
-    });
+  .onWrite((change, context) => {
+    const {year, week, team} = context.params;
+    const stats = admin.database()
+      .ref(`/stats/${year}/${week}/${team}`)
+      .once('value')
+      .then(d => d.val());
+    const overrides = change.after.val();
+    return doScore(stats, overrides, year, week, team);
+  });
 
 
 exports.addNewEventToTicker = eventTicker.onNewEvent;
@@ -55,23 +55,23 @@ function doScore(stats, overrides, year, week, team) {
 exports.scoreHttp = functions.https.onRequest((req, res) => {
   const {year, week, team} = req.body;
   const statsPromise = admin.database()
-      .ref(`/stats/${year}/${week}/${team}`).once('value');
+    .ref(`/stats/${year}/${week}/${team}`).once('value');
   const overridesPromise = admin.database()
-      .ref(`/events/${year}/${week}/overrides/${team}`).once('value');
+    .ref(`/events/${year}/${week}/overrides/${team}`).once('value');
 
   return Promise.all([statsPromise, overridesPromise])
-      .then(([statsData, overridesData]) => {
-        if (!statsData.exists()) {
-          res.status(400).send();
-          return;
-        }
-        const stats = statsData.val();
-        const overrides = overridesData.val() || {};
-        res.status(200).send(scoring.computeScore(stats, overrides));
-      })
-      .catch((err) => {
-        res.status(500).send(err);
-      });
+    .then(([statsData, overridesData]) => {
+      if (!statsData.exists()) {
+        res.status(400).send();
+        return;
+      }
+      const stats = statsData.val();
+      const overrides = overridesData.val() || {};
+      res.status(200).send(scoring.computeScore(stats, overrides));
+    })
+    .catch((err) => {
+      res.status(500).send(err);
+    });
 });
 
 
@@ -85,40 +85,68 @@ exports.scoreHttp = functions.https.onRequest((req, res) => {
 exports.rescoreAll = functions.https.onRequest((req, res) => {
   const {year, week} = req.body;
   const overrides = admin.database()
-      .ref(`/events/${year}/${week}/overrides`)
-      .once('value')
-      .then(d => d.val() || {});
+    .ref(`/events/${year}/${week}/overrides`)
+    .once('value')
+    .then(d => d.val() || {});
   admin.database().ref(`/stats/${year}/${week}`)
-      .once('value', (data) => {
-        let weekStats = data.val();
-        if (weekStats == null) {
-          res.status(400).send(`no stats known for ${year}/${week}`);
-          return;
-        }
-        const promises = entries(weekStats).map(([team, stats]) => {
-          return doScore(stats, overrides.then(v => v[team] || {}),
-                         year, week, team);
-        });
-        Promise.all(promises).then(() => {
-          res.status(200).send(`wrote ${Object.keys(weekStats).join(' ')}`);
-        });
+    .once('value', (data) => {
+      let weekStats = data.val();
+      if (weekStats == null) {
+        res.status(400).send(`no stats known for ${year}/${week}`);
+        return;
+      }
+      const promises = entries(weekStats).map(([team, stats]) => {
+        return doScore(stats, overrides.then(v => v[team] || {}),
+          year, week, team);
       });
+      Promise.all(promises).then(() => {
+        res.status(200).send(`wrote ${Object.keys(weekStats).join(' ')}`);
+      });
+    });
 });
 
-// exports.createStartsTable = functions.https.onRequest((req, res) => {
-//   const { year, week } = req.body;
-//   // const overrides = admin.database()
-//   //     .ref(`/events/${year}/${week}/overrides`)
-//   //     .once('value')
-//   //     .then(d => d.val() || {});
-//   admin.database().ref(`/tmp/league/year/`)
-//     .once('value', (data) => {
-//       const yearRef = admin.database().ref(`/tmp/league/year/`);
-//       console.log('Scoring2', team, stats);
-//       yearRef.update({'a':'b'});
-//       res.status(200).send(`wrote stuff`);
-//     });
-// });
+exports.createStartsTable = functions.https.onRequest((req, res) => {
+  admin.database()
+    .ref(`/users`)
+    .once('value').then(data => {
+      var users = data.val();
+      var updateItems = [];
+      for (let [userKey, user] of Object.entries(users)) {
+        user.weeks.forEach(week => {
+          var starts = week.teams.filter(team => {
+            if (team.selected) {
+              return team.name;
+            }
+          })
+          var a = { [user.leagueId + '/2018/' + week.id + '/' + userKey]: { 'starts': starts, 'name': user.name } };
+          updateItems.push(a);
+        })
+      }
 
+      updateItems.forEach(updateItem => {
+        const yearRef = admin.database().ref(`/tmp/leagues/`);
+        yearRef.update(updateItem);
+      });
+      res.status(200).send("success");
+    })
+});
 
-
+// read: year/uid/teams
+// write: users/${uid}/plays/${year}/${week}[/${team}/[id, selected], id]
+exports.createNewYear = functions.https.onRequest((req, res) => {
+  var updateItems = [];
+  var YEAR = 2019;
+  var weeks = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17"];
+  var allWeeksList = [];
+  for (var i = 0; i < weeks.length; i++){
+    week = weeks[i];
+    var teams = [{'name': 'ARI', selected:false},
+    {'name': 'CHI', selected:false},
+    {'name': 'NYJ', selected:false},
+    {'name': 'TEN', selected:false}];
+    var thisWeek = { 'id': week, "teams": teams };
+    allWeeksList.push(thisWeek);
+  }
+  const yearRef = admin.database().ref(`tmp/users/jzNyhVtHzKe8ERAaFrOAL2cFwZJ2/plays/2019/`);
+  yearRef.update(allWeeksList);
+  })
