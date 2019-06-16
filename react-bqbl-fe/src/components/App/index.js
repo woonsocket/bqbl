@@ -16,7 +16,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuIcon from '@material-ui/icons/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Navigation from '../Navigation/navigation';
-import ScorePage from '../ScorePage/score-page';
+import ScorePage from '../TeamScorePage/team-score-page';
 import BQBLStandingsPage from '../BQBLStandingsPage/bqblstandingspage';
 import SignIn from '../SignIn/sign-in';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -25,6 +25,7 @@ import Typography from '@material-ui/core/Typography';
 import * as ROUTES from '../../constants/routes';
 import LineupPage from '../Lineup/lineup';
 import PlayerScorePage from '../PlayerScorePage/player-score-page';
+import TeamStandingsPage from '../TeamStandingsPage/team-standings-page';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -132,7 +133,7 @@ function App() {
         <Route path={ROUTES.PLAYER_SCORES} component={PlayerScorePage} />
         <Route path={ROUTES.PLAYER_STANDINGS} component={BQBLStandingsPage} />
         <Route path={ROUTES.TEAM_SCORES} component={ScorePage} />
-        <Route path={ROUTES.TEAM_STANDINGS} component={HomePage} />
+        <Route path={ROUTES.TEAM_STANDINGS} component={TeamStandingsPage} />
       </div>
     </Router>
   );

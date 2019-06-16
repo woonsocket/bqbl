@@ -52,14 +52,14 @@ class Firebase {
 
   // TODO all over this obviously
   league_starts_year(year, leagueId) {
-//    return this.db.ref(`tmp/leagues/${leagueId}/${year}`);
-return this.db.ref('tmp/leagues/-KtC8hcGgvbh2W2Tq79n/2018')
-}
-league_starts_week(year, leagueId) {
-  //    return this.db.ref(`tmp/leagues/${leagueId}/${year}`);
-  return this.db.ref('tmp/leagues/-KtC8hcGgvbh2W2Tq79n/2018/2')
+    //    return this.db.ref(`tmp/leagues/${leagueId}/${year}`);
+    return this.db.ref('tmp/leagues/-KtC8hcGgvbh2W2Tq79n/2018')
   }
-  
+  league_starts_week(year, leagueId) {
+    //    return this.db.ref(`tmp/leagues/${leagueId}/${year}`);
+    return this.db.ref('tmp/leagues/-KtC8hcGgvbh2W2Tq79n/2018/2')
+  }
+
   // starts_year(uid, year) {
   //   return this.db.ref(`tmp/users/${uid}/weeks`);
   // };

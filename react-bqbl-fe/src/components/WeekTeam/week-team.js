@@ -15,7 +15,7 @@ function WeekTeamRow(props) {
 function WeekTeamCell(props) {
   return (
     <React.Fragment>
-    <span>{props.start.name}</span> <span>{props.start.total}</span> 
+    <span>{props.start.name}</span> <span>{props.start.total}</span>
     </React.Fragment>
   );
 

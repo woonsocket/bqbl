@@ -5,7 +5,7 @@ import Scores from '../Scores/scores';
 
 import { withFirebase } from '../Firebase';
 
-class ScorePageBase extends Component {
+class TeamScorePageBase extends Component {
   constructor(props) {
     super(props);
 
@@ -38,9 +38,9 @@ class ScorePageBase extends Component {
   }
 }
 
-const ScorePage = compose(
+const TeamScorePage = compose(
   withRouter,
   withFirebase,
-)(ScorePageBase);
+)(TeamScorePageBase);
 
-export default ScorePage;
+export default TeamScorePage;
