@@ -50,11 +50,16 @@ class Firebase {
     return this.db.ref(`scores/${year}/${week}`);
   }
 
+  // TODO all over this obviously
   league_starts_year(year, leagueId) {
 //    return this.db.ref(`tmp/leagues/${leagueId}/${year}`);
-return this.db.ref('tmp/leagues/-KtC8hcGgvbh2W2Tq79n')
+return this.db.ref('tmp/leagues/-KtC8hcGgvbh2W2Tq79n/2018')
 }
-
+league_starts_week(year, leagueId) {
+  //    return this.db.ref(`tmp/leagues/${leagueId}/${year}`);
+  return this.db.ref('tmp/leagues/-KtC8hcGgvbh2W2Tq79n/2018/2')
+  }
+  
   // starts_year(uid, year) {
   //   return this.db.ref(`tmp/users/${uid}/weeks`);
   // };
@@ -64,6 +69,7 @@ return this.db.ref('tmp/leagues/-KtC8hcGgvbh2W2Tq79n')
   };
 
   tmp_starts_week(uid, year, week) {
+    console.log(`tmp/users/${uid}/plays/${year}/${week}`)
     return this.db.ref(`tmp/users/${uid}/plays/${year}/${week}`);
   };
 

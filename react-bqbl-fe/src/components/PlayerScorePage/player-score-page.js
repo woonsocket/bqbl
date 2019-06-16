@@ -5,6 +5,7 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import './player-score-card.css';
+import WeekTeamRow from '../WeekTeam/week-team';
 
 import { withFirebase } from '../Firebase';
 
@@ -19,14 +20,20 @@ class PlayerScorePageBase extends Component {
   }
 
   componentDidMount() {
-    const scoresPromise = this.props.firebase.starts_week('2018', '2').once('value');
-    const startsPromise = this.props.firebase.scores_week('2018', '2').once('value');
+    // TODO kill hard-coded week
+    const scoresPromise = this.props.firebase.scores_week('2018', '2').once('value');
+    const startsPromise = this.props.firebase.league_starts_week('2019', '2').once('value');
 
-    return Promise.all([startsPromise, scoresPromise])
+    return Promise.all([scoresPromise, startsPromise])
       .then(([scoresData, startsData]) => {
-        console.log(scoresData);
-        console.log(startsData);
-        this.setState({ playerList: startsData.val(), scores: scoresData.val() });
+        const scoresDataValue = scoresData.val();
+        let startsDataProcessed = startsData.val();
+        for (let playerVal of Object.values(startsDataProcessed)) {
+          for (let start of playerVal.starts) {
+            start.total = scoresDataValue[start.name].total;
+          }
+        }
+        this.setState({ playerList: startsDataProcessed, scores: scoresData.val() });
       })
   }
 
@@ -35,24 +42,12 @@ class PlayerScorePageBase extends Component {
       <React.Fragment>
         {this.state.playerList ? (
           Object.values(this.state.playerList).map(playerData => (
-            // var playerData = this.state.playerList[playerKey];
-            //playerData = this.state.playerList[playerKey]
-
             <Card className="mdl-card">
-                          {/* {JSON.stringify(playerData)} */}
-
             <CardContent>
               <Typography variant="h5" component="h2">
               {playerData.name}
               </Typography>
-              <Typography variant="h5" component="h2">
-              {playerData.starts[0].name}
-              {this.state.scores[playerData.starts[0].name].total}
-              </Typography>
-              <Typography variant="h5" component="h2">
-                {playerData.starts[1].name}
-                {this.state.scores[playerData.starts[1].name].total}
-              </Typography>
+              <WeekTeamRow week={playerData}/>
             </CardContent>
           </Card>
               ))

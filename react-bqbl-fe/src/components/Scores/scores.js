@@ -1,5 +1,5 @@
 import React from 'react';
-import ScoreLine from '../NflScoreCard/nfl-score-card';
+import ScoreLine from '../TeamScoreCard/team-score-card';
 
 const Scores = ({ scores }) => (
   <React.Fragment>

@@ -9,6 +9,7 @@ import Collapse from '@material-ui/core/Collapse';
 import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import WeekTeamRow from '../WeekTeam/week-team';
 
 import { withFirebase } from '../Firebase';
 
@@ -109,8 +110,8 @@ class PlayerYearCard extends Component {
           />
           <CardContent>
           {ALL_WEEKS_REVERSE.slice(0, FOLD).map(weekId => (
-                <StartRow week={this.state.player[weekId]} weekId={weekId}>
-                </StartRow>
+                <WeekTeamRow week={this.state.player[weekId]} weekId={weekId}>
+                </WeekTeamRow>
               ))}
 
           </CardContent>
@@ -129,8 +130,8 @@ class PlayerYearCard extends Component {
           <Collapse in={this.state.expanded} timeout="auto" unmountOnExit>
             <CardContent>
               {ALL_WEEKS_REVERSE.slice(FOLD).map(weekId => (
-                <StartRow week={this.state.player[weekId]} weekId={weekId}>
-                </StartRow>
+                <WeekTeamRow week={this.state.player[weekId]} weekId={weekId}>
+                </WeekTeamRow>
               ))}
             </CardContent>
           </Collapse>
@@ -140,26 +141,6 @@ class PlayerYearCard extends Component {
   }
 };
 
-function StartRow(props) {
-  if(!props.week||!props.week.starts) {
-    return null;
-  }
-  let starts = props.week.starts;
-  return (
-    <div>
-      {starts.map(start => (<StartTeam start={start}/>))}
-    </div>
-  );
-}
-
-function StartTeam(props) {
-  return (
-    <React.Fragment>
-    <span>{props.start.name}</span> <span>{props.start.total}</span> 
-    </React.Fragment>
-  );
-
-}
 
 
 const BQBLStandingsPage = compose(

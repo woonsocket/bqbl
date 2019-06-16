@@ -8,11 +8,12 @@ import ListItemText from '@material-ui/core/ListItemText';
 import * as ROUTES from '../../constants/routes';
 
 const LINKS = [
-  { to: ROUTES.SCORES, text: 'Scores' },
   { to: ROUTES.HOME, text: 'Home' },
   { to: ROUTES.LINEUP, text: 'Lineup' },
   { to: ROUTES.PLAYER_SCORES, text: 'Player Scores' },
-  { to: ROUTES.BQBL_STANDINGS, text: 'BQBL Standings' },
+  { to: ROUTES.PLAYER_STANDINGS, text: 'Player Standings' },
+  { to: ROUTES.TEAM_SCORES, text: 'Team Scores' },
+  { to: ROUTES.TEAM_STANDINGS, text: 'Team Standings' },
 ];
 
 function Navigation(params) {

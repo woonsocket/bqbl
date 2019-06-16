@@ -1,0 +1,5 @@
+Rename things consistently
+Move everything off of /tmp
+Add cloud function to bootstrap a new league
+Add the ability to copy literally everything to /tmp to stage it
+
