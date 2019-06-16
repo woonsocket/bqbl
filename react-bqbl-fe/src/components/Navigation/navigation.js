@@ -12,6 +12,7 @@ const LINKS = [
   { to: ROUTES.HOME, text: 'Home' },
   { to: ROUTES.LINEUP, text: 'Lineup' },
   { to: ROUTES.PLAYER_SCORES, text: 'Player Scores' },
+  { to: ROUTES.BQBL_STANDINGS, text: 'BQBL Standings' },
 ];
 
 function Navigation(params) {

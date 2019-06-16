@@ -3,3 +3,4 @@ export const SCORES = '/scores';
 export const HOME = '/home';
 export const PLAYER_SCORES = '/playerscores';
 export const LINEUP = '/lineup';
+export const BQBL_STANDINGS = '/bqbl-standings';

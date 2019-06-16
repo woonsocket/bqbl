@@ -42,17 +42,22 @@ class Firebase {
     return this.db.ref('users');
   };
 
+  scores_year(year) {
+    return this.db.ref(`scores/${year}`);
+  }
+
   scores_week(year, week) {
     return this.db.ref(`scores/${year}/${week}`);
   }
 
-  starts_week(year, uid, week) {
-    return this.db.ref(`tmp/leagues/${uid}/${year}/${week}`);
-  }
+  league_starts_year(year, leagueId) {
+//    return this.db.ref(`tmp/leagues/${leagueId}/${year}`);
+return this.db.ref('tmp/leagues/-KtC8hcGgvbh2W2Tq79n')
+}
 
-  starts_year(uid, year) {
-    return this.db.ref(`tmp/users/${uid}/weeks`);
-  };
+  // starts_year(uid, year) {
+  //   return this.db.ref(`tmp/users/${uid}/weeks`);
+  // };
 
   tmp_starts_year(uid, year) {
     return this.db.ref(`tmp/users/${uid}/plays/${year}`);
