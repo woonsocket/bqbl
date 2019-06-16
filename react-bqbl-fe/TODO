@@ -1,4 +1,7 @@
-Rename things consistently
+Keep renaming
+Make the team standings a real table
+Do a styling pass on everything
+Fix the down-disclosure behavior of the person scorecards
 Move everything off of /tmp
 Add cloud function to bootstrap a new league
 Add the ability to copy literally everything to /tmp to stage it
