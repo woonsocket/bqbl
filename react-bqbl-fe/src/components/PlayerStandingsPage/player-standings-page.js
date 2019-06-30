@@ -1,20 +1,20 @@
-import React, { Component } from './node_modules/react';
-import { withRouter } from './node_modules/react-router-dom';
+import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
-import Card from './node_modules/@material-ui/core/Card';
-import CardHeader from './node_modules/@material-ui/core/CardHeader';
-import CardContent from './node_modules/@material-ui/core/CardContent';
-import CardActions from './node_modules/@material-ui/core/CardActions';
-import Collapse from './node_modules/@material-ui/core/Collapse';
-import Avatar from './node_modules/@material-ui/core/Avatar';
-import IconButton from './node_modules/@material-ui/core/IconButton';
-import ExpandMoreIcon from './node_modules/@material-ui/icons/ExpandMore';
+import Card from '@material-ui/core/Card';
+import CardHeader from '@material-ui/core/CardHeader';
+import CardContent from '@material-ui/core/CardContent';
+import CardActions from '@material-ui/core/CardActions';
+import Collapse from '@material-ui/core/Collapse';
+import Avatar from '@material-ui/core/Avatar';
+import IconButton from '@material-ui/core/IconButton';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import WeekTeamRow from '../WeekTeam/week-team';
 
 import { withFirebase } from '../Firebase';
 
 const ALL_WEEKS_REVERSE = ["17", "16", "15", "14", "13", "12", "11", "10",
- "9", "8", "7", "6", "5", "4", "3", "2", "1"];
+  "9", "8", "7", "6", "5", "4", "3", "2", "1"];
 const FOLD = 4;
 
 class PlayerStandingsPageBase extends Component {
@@ -34,29 +34,27 @@ class PlayerStandingsPageBase extends Component {
 
     Promise.all([scoresPromise, startsPromise]).then(
       ([scoresSnapshot, startsSnapshot]) => {
-        const vals = startsSnapshot.val();
         const scores = scoresSnapshot.val();
+        const starts = startsSnapshot.val();
         const players = {};
-        for (var key of Object.keys(vals)) {
-          const weeks = vals[key];
-          for (const [weekIndex, week] of weeks.entries()) {
-            if (!week) {
-              continue;
+        for (var weekIndex of Object.keys(starts)) {
+          const week = starts[weekIndex];
+          console.log("week");
+          console.log(Object.entries(week));
+          for (const playerKey of Object.keys(week)) {
+            const name = week[playerKey].name;
+            console.log(name);
+            if (!players[name]) {
+              players[name] = {};
             }
-            for (const playerKey of Object.keys(week)) {
-              const name = week[playerKey].name;
-              if (!players[name]) {
-                players[name] = {};
-              }
-              if (week[playerKey].starts) {
-                for (const start of week[playerKey].starts) {
-                  if (scores[weekIndex][start.name]) {
-                    start["total"] = scores[weekIndex][start.name].total;
-                  }
+            if (week[playerKey].starts) {
+              for (const start of week[playerKey].starts) {
+                if (scores[weekIndex][start.name]) {
+                  start["total"] = scores[weekIndex][start.name].total;
                 }
               }
-              players[name][weekIndex] = week[playerKey];
             }
+            players[name][weekIndex] = week[playerKey];
           }
         }
         this.setState({ players: players });
@@ -109,10 +107,10 @@ class PlayerYearCard extends Component {
             subheader="Total"
           />
           <CardContent>
-          {ALL_WEEKS_REVERSE.slice(0, FOLD).map(weekId => (
-                <WeekTeamRow week={this.state.player[weekId]} weekId={weekId}>
-                </WeekTeamRow>
-              ))}
+            {ALL_WEEKS_REVERSE.slice(0, FOLD).map(weekId => (
+              <WeekTeamRow week={this.state.player[weekId]} weekId={weekId}>
+              </WeekTeamRow>
+            ))}
 
           </CardContent>
           <CardActions disableSpacing>

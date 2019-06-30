@@ -17,7 +17,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Navigation from '../Navigation/navigation';
 import ScorePage from '../TeamScorePage/team-score-page';
-import BQBLStandingsPage from '../BQBLStandingsPage/bqblstandingspage';
+import PlayerStandingsPage from '../PlayerStandingsPage/player-standings-page';
 import SignIn from '../SignIn/sign-in';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -131,7 +131,7 @@ function App() {
         <Route path={ROUTES.HOME} component={HomePage} />
         <Route path={ROUTES.LINEUP} component={LineupPage} />
         <Route path={ROUTES.PLAYER_SCORES} component={PlayerScorePage} />
-        <Route path={ROUTES.PLAYER_STANDINGS} component={BQBLStandingsPage} />
+        <Route path={ROUTES.PLAYER_STANDINGS} component={PlayerStandingsPage} />
         <Route path={ROUTES.TEAM_SCORES} component={ScorePage} />
         <Route path={ROUTES.TEAM_STANDINGS} component={TeamStandingsPage} />
       </div>
