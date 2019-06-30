@@ -1,14 +1,14 @@
-import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
+import React, { Component } from './node_modules/react';
+import { withRouter } from './node_modules/react-router-dom';
 import { compose } from 'recompose';
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import CardContent from '@material-ui/core/CardContent';
-import CardActions from '@material-ui/core/CardActions';
-import Collapse from '@material-ui/core/Collapse';
-import Avatar from '@material-ui/core/Avatar';
-import IconButton from '@material-ui/core/IconButton';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Card from './node_modules/@material-ui/core/Card';
+import CardHeader from './node_modules/@material-ui/core/CardHeader';
+import CardContent from './node_modules/@material-ui/core/CardContent';
+import CardActions from './node_modules/@material-ui/core/CardActions';
+import Collapse from './node_modules/@material-ui/core/Collapse';
+import Avatar from './node_modules/@material-ui/core/Avatar';
+import IconButton from './node_modules/@material-ui/core/IconButton';
+import ExpandMoreIcon from './node_modules/@material-ui/icons/ExpandMore';
 import WeekTeamRow from '../WeekTeam/week-team';
 
 import { withFirebase } from '../Firebase';
@@ -17,7 +17,7 @@ const ALL_WEEKS_REVERSE = ["17", "16", "15", "14", "13", "12", "11", "10",
  "9", "8", "7", "6", "5", "4", "3", "2", "1"];
 const FOLD = 4;
 
-class BQBLStandingsPageBase extends Component {
+class PlayerStandingsPageBase extends Component {
   constructor(props) {
     super(props);
     this.user = null;
@@ -143,9 +143,9 @@ class PlayerYearCard extends Component {
 
 
 
-const BQBLStandingsPage = compose(
+const PlayerStandingsPage = compose(
   withRouter,
   withFirebase,
-)(BQBLStandingsPageBase);
+)(PlayerStandingsPageBase);
 
-export default BQBLStandingsPage;
+export default PlayerStandingsPage;
