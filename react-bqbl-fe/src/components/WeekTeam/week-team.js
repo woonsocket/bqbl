@@ -1,4 +1,5 @@
 import React from 'react';
+import IconScoreCell from '../IconScoreCell/icon-score-cell'
 
 function WeekTeamRow(props) {
   if(!props.week||!props.week.starts) {
@@ -7,18 +8,9 @@ function WeekTeamRow(props) {
   let starts = props.week.starts;
   return (
     <div>
-      {starts.map(start => (<WeekTeamCell start={start}/>))}
+      {starts.map(start => (<IconScoreCell team={start.name} score={start.total}/>))}
     </div>
   );
-}
-
-function WeekTeamCell(props) {
-  return (
-    <React.Fragment>
-    <span>{props.start.name}</span> <span>{props.start.total}</span>
-    </React.Fragment>
-  );
-
 }
 
 export default WeekTeamRow;

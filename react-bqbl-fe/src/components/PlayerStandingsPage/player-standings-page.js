@@ -138,9 +138,6 @@ class PlayerYearCard extends Component {
     )
   }
 };
-
-
-
 const PlayerStandingsPage = compose(
   withRouter,
   withFirebase,
