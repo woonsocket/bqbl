@@ -20,9 +20,8 @@ class PlayerScorePageBase extends Component {
   }
 
   componentDidMount() {
-    // TODO kill hard-coded week
-    const scoresPromise = this.props.firebase.scores_week('2018', '2').once('value');
-    const startsPromise = this.props.firebase.league_starts_week('2019', '2').once('value');
+    const scoresPromise = this.props.firebase.scores_week(this.props.match.params.year, this.props.match.params.week).once('value');
+    const startsPromise = this.props.firebase.league_starts_week(this.props.match.params.year, this.props.match.params.week).once('value');
 
     return Promise.all([scoresPromise, startsPromise])
       .then(([scoresData, startsData]) => {
