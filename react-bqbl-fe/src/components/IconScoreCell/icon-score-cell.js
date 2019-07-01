@@ -10,17 +10,26 @@ class IconScoreCell extends Component {
     };
   }
 
+   divStyles = {
+    display: 'inline-block',
+    marginLeft: '10px'
+  };
+
+  spanStyles = {
+    marginLeft: '3px'
+  };
 
   render() {
     return (
-        <div>
+        <div style={this.divStyles}>
           <img
             src={
               'http://i.nflcdn.com/static/site/7.5/img/logos/svg/' +
                 'teams-matte/' + this.state.team + '.svg'}
                 width='20px'/>
-
+           <span style={this.spanStyles}>
               {this.state.score}
+              </span>
         </div>
     )
   }

@@ -92,7 +92,6 @@ class PlayerYearCard extends Component {
   render() {
     return (
       <React.Fragment>
-        {/* {JSON.stringify(this.state)} */}
         <Card>
           <CardHeader
             avatar={
@@ -108,6 +107,12 @@ class PlayerYearCard extends Component {
               <WeekTeamRow week={this.state.player[weekId]} weekId={weekId}>
               </WeekTeamRow>
             ))}
+          <Collapse in={this.state.expanded} timeout="auto" unmountOnExit>
+              {ALL_WEEKS_REVERSE.slice(FOLD).map(weekId => (
+                <WeekTeamRow week={this.state.player[weekId]} weekId={weekId}>
+                </WeekTeamRow>
+              ))}
+          </Collapse>
 
           </CardContent>
           <CardActions disableSpacing>
@@ -122,14 +127,6 @@ class PlayerYearCard extends Component {
               <ExpandMoreIcon />
             </IconButton>
           </CardActions>
-          <Collapse in={this.state.expanded} timeout="auto" unmountOnExit>
-            <CardContent>
-              {ALL_WEEKS_REVERSE.slice(FOLD).map(weekId => (
-                <WeekTeamRow week={this.state.player[weekId]} weekId={weekId}>
-                </WeekTeamRow>
-              ))}
-            </CardContent>
-          </Collapse>
         </Card>
       </React.Fragment>
     )
