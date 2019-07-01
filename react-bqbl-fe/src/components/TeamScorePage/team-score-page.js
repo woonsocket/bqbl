@@ -15,7 +15,7 @@ class TeamScorePageBase extends Component {
   }
 
   componentDidMount() {
-    this.props.firebase.scores_week('2018', '2').on('value', snapshot => {
+    this.props.firebase.scores_week(this.props.match.params.year, this.props.match.params.week).on('value', snapshot => {
       const vals = snapshot.val();
       const valsList = Object.keys(vals).map(key => ({
         ...vals[key],
