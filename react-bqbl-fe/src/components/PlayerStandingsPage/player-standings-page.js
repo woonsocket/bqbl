@@ -10,6 +10,7 @@ import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import WeekTeamRow from '../WeekTeam/week-team';
+import './player-standings-page.css';
 
 import { withFirebase } from '../Firebase';
 
@@ -92,7 +93,7 @@ class PlayerYearCard extends Component {
   render() {
     return (
       <React.Fragment>
-        <Card>
+        <Card className="player-card">
           <CardHeader
             avatar={
               <Avatar aria-label="Recipe">
