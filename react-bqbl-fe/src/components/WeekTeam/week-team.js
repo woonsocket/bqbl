@@ -8,6 +8,7 @@ function WeekTeamRow(props) {
   let starts = props.week.starts;
   return (
     <div>
+      Week {props.weekId}
       {starts.map(start => (<IconScoreCell team={start.name} score={start.total}/>))}
     </div>
   );

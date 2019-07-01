@@ -39,11 +39,8 @@ class PlayerStandingsPageBase extends Component {
         const players = {};
         for (var weekIndex of Object.keys(starts)) {
           const week = starts[weekIndex];
-          console.log("week");
-          console.log(Object.entries(week));
           for (const playerKey of Object.keys(week)) {
             const name = week[playerKey].name;
-            console.log(name);
             if (!players[name]) {
               players[name] = {};
             }
