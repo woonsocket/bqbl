@@ -22,7 +22,7 @@ class TeamStandingsPageBase extends Component {
   }
 
   componentDidMount() {
-    this.props.firebase.scores_year('2018').on('value', snapshot => {
+    this.props.firebase.scores_year(this.props.match.params.year).on('value', snapshot => {
       let weekMap = {};
       for (let [weekId, weekVal] of Object.entries(snapshot.val())) {
         for (let [teamId, teamVal] of Object.entries(weekVal)) {

@@ -133,7 +133,7 @@ function App() {
         <Route path={ROUTES.PLAYER_SCORES} component={PlayerScorePage} />
         <Route path={ROUTES.PLAYER_STANDINGS} component={PlayerStandingsPage} />
         <Route path="/team-scores/:year/:week" component={ScorePage} />
-        <Route path={ROUTES.TEAM_STANDINGS} component={TeamStandingsPage} />
+        <Route path="/team-standings/:year" component={TeamStandingsPage} />
       </div>
     </Router>
   );
