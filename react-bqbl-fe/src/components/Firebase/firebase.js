@@ -62,6 +62,10 @@ class Firebase {
     return this.db.ref(`tmp/leagues/${leagueId}/${year}/${week}`)
   }
 
+  league_starts_year(year, leagueId) {
+    return this.db.ref(`tmp/leagues/${leagueId}/${year}`);
+  }
+
   authChanged(user) {
     if (!user) {
       console.log("bail!");

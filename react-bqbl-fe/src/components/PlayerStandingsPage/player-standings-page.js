@@ -31,7 +31,7 @@ class PlayerStandingsPageBase extends Component {
     var scoresPromise = this.props.firebase.scores_year('2018').once('value');
     var startsPromise =
       this.props.firebase.league_starts_year(
-        '2019', "-KtC8hcGgvbh2W2Tq79n").once('value');
+        '2018', "-KtC8hcGgvbh2W2Tq79n").once('value');
 
     Promise.all([scoresPromise, startsPromise]).then(
       ([scoresSnapshot, startsSnapshot]) => {

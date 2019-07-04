@@ -126,7 +126,7 @@ class LineupWeek extends Component {
 
         }
 
-{this.state.dh &&
+        {this.state.dh &&
           <NativeSelect
             value={this.state.weekData.teams[5] && this.state.weekData.teams[5].name || ""}
             onChange={this.handleSelect.bind(this)}
