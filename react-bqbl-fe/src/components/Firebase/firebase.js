@@ -55,7 +55,6 @@ class Firebase {
   };
 
   tmp_starts_week(uid, year, week) {
-    console.log(`tmp/users/${uid}/plays/${year}/${week}`)
     return this.db.ref(`tmp/users/${uid}/plays/${year}/${week}`);
   };
 
