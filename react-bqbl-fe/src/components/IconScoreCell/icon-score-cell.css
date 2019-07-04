@@ -1,0 +1,9 @@
+.outer {
+  display: inline-block;
+  margin-left: 5px;
+  min-width: 50px;
+}
+
+.cell {
+  margin-left: 5px;
+}

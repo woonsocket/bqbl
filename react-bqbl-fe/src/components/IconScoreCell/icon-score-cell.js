@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import './icon-score-cell.css';
 
 class IconScoreCell extends Component {
   constructor(props) {
@@ -10,25 +11,16 @@ class IconScoreCell extends Component {
     };
   }
 
-   divStyles = {
-    display: 'inline-block',
-    marginLeft: '10px'
-  };
-
-  spanStyles = {
-    marginLeft: '3px'
-  };
-
   render() {
     return (
-        <div style={this.divStyles}>
+        <div className="outer">
           <img
             src={
               'http://i.nflcdn.com/static/site/7.5/img/logos/svg/' +
                 'teams-matte/' + this.state.team + '.svg'}
                 width='20px'
                 alt=""/>
-           <span style={this.spanStyles}>
+           <span className="cell">
               {this.state.score}
               </span>
         </div>
