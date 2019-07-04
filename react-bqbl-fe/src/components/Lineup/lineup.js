@@ -4,10 +4,19 @@ import { compose } from 'recompose';
 
 import { withFirebase } from '../Firebase';
 import './lineup.css'
+import NativeSelect from '@material-ui/core/NativeSelect';
+import Input from '@material-ui/core/Input';
+
+const ALL_TEAMS = ["ARI", "ATL", "BAL", "BUF", "CAR", "CHI", "CIN", "CLE", "DAL", "DEN", "DET",
+  "GB", "HOU", "IND", "JAX", "KC", "LA", "MIA", "MIN", "NE", "NO", "NYG", "NYJ",
+  "OAK", "PHI", "PIT", "SD", "SEA", "SF", "TB", "TEN", "WSH"]
+
+
 class LineupPageBase extends Component {
   constructor(props) {
     super(props);
     this.user = null;
+    this.dh = true;
     this.state = {
       valsList: [],
     };
@@ -25,28 +34,28 @@ class LineupPageBase extends Component {
     this.user = user;
     this.props.firebase.tmp_starts_year(user.uid, '2019')
       .on('value', snapshot => {
-      const vals = snapshot.val();
-      const valsList = Object.keys(vals).map(key => ({
-        ...vals[key],
-        uid: key,
-      }));
-      this.setState({ valsList: valsList })
-    })
+        const vals = snapshot.val();
+        const valsList = Object.keys(vals).map(key => ({
+          ...vals[key],
+          uid: key,
+        }));
+        this.setState({ valsList: valsList })
+      })
   }
 
   updateCallback(weekData, weekId) {
     this.props.firebase.tmp_starts_week(this.user.uid, '2019', weekId)
       .update(weekData);
+    console.log(weekData)
   }
 
   render() {
     return (
       <React.Fragment>
-
         {this.state.valsList.map((week, index) => (
-          <div>
+          <div key={index}>
             <LineupWeek
-              week={week} index={index} 
+              week={week} index={index} dh={this.dh}
               updateCallback={this.updateCallback.bind(this)}
             />
           </div>
@@ -60,32 +69,75 @@ class LineupPageBase extends Component {
 class LineupWeek extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
       weekData: props.week,
       weekIndex: props.index,
-      updateCallback: props.updateCallback
+      updateCallback: props.updateCallback,
+      dh: props.dh
     };
   }
 
-  handleClick(elem) {
-    var idx = elem.currentTarget.getAttribute("data-idx");
-    this.state.weekData.teams[idx].selected = 
-      ! this.state.weekData.teams[idx].selected;
-    this.setState(this.state);
+  handleClick(e) {
+    var idx = e.currentTarget.getAttribute("data-idx");
+    let newState = this.state;
+    newState.weekData.teams[idx].selected =
+      !this.state.weekData.teams[idx].selected;
+    this.setState(newState);
+    this.state.updateCallback(this.state.weekData, this.state.weekIndex)
+  }
+
+  handleSelect(e) {
+    var idx = e.currentTarget.getAttribute("id");
+    console.log(this.state.weekData.teams.length)
+    console.log(e.currentTarget)
+    let newState = this.state;
+    if (newState.weekData.teams.length <= idx) {
+      newState.weekData.teams.push({
+        name: e.currentTarget.value,
+        selected: true
+      })
+    } else {
+      newState.weekData.teams[idx].name = e.currentTarget.value;
+      newState.weekData.teams[idx].selected = true;
+    }
+    this.setState(newState);
     this.state.updateCallback(this.state.weekData, this.state.weekIndex)
   }
 
   render() {
     return (
       <React.Fragment>
-        <div className="id" id={this.state.weekData.id}>
+        <div className="id" key={this.state.weekData.id}>
           Week {this.state.weekData.id}</div>
-        {this.state.weekData.teams.map((team, idx) => (
-          <div data-idx={idx} onClick={this.handleClick.bind(this)}
+        {this.state.weekData.teams.slice(0, 4).map((team, idx) => (
+          <div key={idx} data-idx={idx} onClick={this.handleClick.bind(this)}
             className={team.selected ? "team" : "team selected"}>{team.name}
           </div>
         ))}
+        {this.state.dh &&
+          <NativeSelect
+            value={this.state.weekData.teams[4] && this.state.weekData.teams[4].name || ""}
+            onChange={this.handleSelect.bind(this)}
+            input={<Input name="dh-1" id="4"
+            />}
+          >          <option value="">None</option>
+            {ALL_TEAMS.map(team => <option value={team} key={team}>{team}</option>
+            )}      </NativeSelect>
+
+        }
+
+{this.state.dh &&
+          <NativeSelect
+            value={this.state.weekData.teams[5] && this.state.weekData.teams[5].name || ""}
+            onChange={this.handleSelect.bind(this)}
+            input={<Input name="dh-2" id="5"
+            />}
+          >          <option value="">None</option>
+            {ALL_TEAMS.map(team => <option value={team} key={team}>{team}</option>
+            )}      </NativeSelect>
+
+        }
+
       </React.Fragment>
     )
   }
