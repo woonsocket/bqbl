@@ -59,6 +59,9 @@ class Firebase {
     return this.db.ref(`tmp/users/${uid}/plays/${year}/${week}`);
   };
 
+  league_starts_week(leagueId, year, week) {
+    return this.db.ref(`tmp/leagues/${leagueId}/${year}/${week}`)
+  }
 
   authChanged(user) {
     if (!user) {

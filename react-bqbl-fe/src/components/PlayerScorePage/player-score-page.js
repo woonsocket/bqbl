@@ -21,7 +21,9 @@ class PlayerScorePageBase extends Component {
 
   componentDidMount() {
     const scoresPromise = this.props.firebase.scores_week(this.props.match.params.year, this.props.match.params.week).once('value');
-    const startsPromise = this.props.firebase.league_starts_week(this.props.match.params.year, this.props.match.params.week).once('value');
+    // TODO: Get the league ID this user is assigned to
+    const startsPromise = this.props.firebase.league_starts_week(
+      '-KtC8hcGgvbh2W2Tq79n', this.props.match.params.year, this.props.match.params.week).once('value');
 
     return Promise.all([scoresPromise, startsPromise])
       .then(([scoresData, startsData]) => {
