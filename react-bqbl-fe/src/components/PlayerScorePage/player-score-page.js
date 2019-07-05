@@ -34,7 +34,7 @@ class PlayerScorePageBase extends Component {
                 <Typography variant="h5" component="h2">
                 {playerData.name}
                 </Typography>
-                <WeekTeamRow week={playerData} weekId={"1"}/>
+                <WeekTeamRow week={playerData} />
               </CardContent>
             </Card>
               ))

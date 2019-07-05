@@ -9,7 +9,7 @@ function WeekTeamRow(props) {
   let starts = props.week.starts;
   return (
     <div className="week-team-row">
-      Week {props.weekId}
+      {props.weekId && "Week " + props.weekId}
       {starts.map((start, idx) => (<IconScoreCell team={start.name} score={start.total} key={"start"+idx} />))}
     </div>
   );
