@@ -3,14 +3,14 @@ import IconScoreCell from '../IconScoreCell/icon-score-cell'
 import './week-team-row.css';
 
 function WeekTeamRow(props) {
-  if(!props.week||!props.week.starts) {
+  if (!props.week || !props.week.starts) {
     return null;
   }
   let starts = props.week.starts;
   return (
-    <div class="week-team-row">
+    <div className="week-team-row">
       Week {props.weekId}
-      {starts.map(start => (<IconScoreCell team={start.name} score={start.total}/>))}
+      {starts.map((start, idx) => (<IconScoreCell team={start.name} score={start.total} key={"start"+idx} />))}
     </div>
   );
 }

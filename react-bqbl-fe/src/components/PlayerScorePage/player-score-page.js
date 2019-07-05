@@ -28,15 +28,15 @@ class PlayerScorePageBase extends Component {
     return (
       <React.Fragment>
         {this.state.playerList ? (
-          Object.values(this.state.playerList).map(playerData => (
-            <Card className="mdl-card">
-            <CardContent>
-              <Typography variant="h5" component="h2">
-              {playerData.name}
-              </Typography>
-              <WeekTeamRow week={playerData} weekId={"1"}/>
-            </CardContent>
-          </Card>
+          Object.values(this.state.playerList).map((playerData, idx) => (
+            <Card className="mdl-card" key={idx}>
+              <CardContent>
+                <Typography variant="h5" component="h2">
+                {playerData.name}
+                </Typography>
+                <WeekTeamRow week={playerData} weekId={"1"}/>
+              </CardContent>
+            </Card>
               ))
         ) : (
             <div>No score response</div>
