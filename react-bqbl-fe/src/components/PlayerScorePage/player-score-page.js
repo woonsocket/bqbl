@@ -8,34 +8,20 @@ import './player-score-page.css';
 import WeekTeamRow from '../WeekTeam/week-team';
 
 import { withFirebase } from '../Firebase';
+import ScoreJoiner from '../ScoreJoiner/score-joiner';
 
 class PlayerScorePageBase extends Component {
   constructor(props) {
     super(props);
-
+    this.scoreJoiner = new ScoreJoiner(
+      this.props.firebase, this.props.match.params.year, this.props.match.params.week)
     this.state = {
       playerList: [],
-      scores: {},
     };
   }
 
   componentDidMount() {
-    const scoresPromise = this.props.firebase.scores_week(this.props.match.params.year, this.props.match.params.week).once('value');
-    // TODO: Get the league ID this user is assigned to
-    const startsPromise = this.props.firebase.league_starts_week(
-      '-KtC8hcGgvbh2W2Tq79n', this.props.match.params.year, this.props.match.params.week).once('value');
-
-    return Promise.all([scoresPromise, startsPromise])
-      .then(([scoresData, startsData]) => {
-        const scoresDataValue = scoresData.val();
-        let startsDataProcessed = startsData.val();
-        for (let playerVal of Object.values(startsDataProcessed)) {
-          for (let start of playerVal.starts) {
-            start.total = scoresDataValue[start.name].total;
-          }
-        }
-        this.setState({ playerList: startsDataProcessed, scores: scoresData.val() });
-      })
+    this.scoreJoiner.joinScores(this.setState.bind(this))
   }
 
   render() {
@@ -53,7 +39,7 @@ class PlayerScorePageBase extends Component {
           </Card>
               ))
         ) : (
-            <div>There are no messages ...</div>
+            <div>No score response</div>
           )}
       </React.Fragment>
     );
