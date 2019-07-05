@@ -2,7 +2,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 
 import * as ROUTES from '../../constants/routes';
@@ -21,9 +20,8 @@ function Navigation(params) {
     <List>
       {
         LINKS.map((item, index) => (
-          <Link to={item.to} onClick={params.close}>
+          <Link to={item.to} onClick={params.close} key={"link"+index}>
             <ListItem button key={item.text}>
-              <ListItemIcon></ListItemIcon>
               <ListItemText primary={item.text} />
             </ListItem>
           </Link>
