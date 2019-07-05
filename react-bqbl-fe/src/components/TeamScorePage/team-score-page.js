@@ -31,7 +31,7 @@ class TeamScorePageBase extends Component {
         {this.state.valsList ? (
             this.state.valsList.map(score => (
               <ScoreLine
-                score={score}
+                score={score} key={score.uid}
               />
             ))
         ) : (

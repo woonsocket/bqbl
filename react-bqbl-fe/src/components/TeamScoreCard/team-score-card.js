@@ -21,7 +21,7 @@ class TeamScoreCard extends Component {
 
   render() {
     return (
-      <Card className="mdl-card">
+      <Card className="mdl-card" >
         <div>
           <div
             style={{
@@ -45,7 +45,7 @@ class TeamScoreCard extends Component {
           <CardContent>
             <List>{
               breakdownToComponents(this.state.score.breakdown).map(
-                (line, index) => <LineItem line={line} />
+                (line, index) => <LineItem line={line} key={"lineitem" + index}/>
               )
             }
             </List>
