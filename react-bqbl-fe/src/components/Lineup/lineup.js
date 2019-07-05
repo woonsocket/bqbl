@@ -139,7 +139,7 @@ class LineupWeek extends Component {
       </React.Fragment>
     )
   }
-};
+}
 
 const LineupPage = compose(
   withRouter,

@@ -1,4 +1,3 @@
-
 class ScoreJoiner {
   constructor(firebase, year, week) {
     this.firebase = firebase;

@@ -132,7 +132,7 @@ class PlayerYearCard extends Component {
       </React.Fragment>
     )
   }
-};
+}
 const PlayerStandingsPage = compose(
   withRouter,
   withFirebase,

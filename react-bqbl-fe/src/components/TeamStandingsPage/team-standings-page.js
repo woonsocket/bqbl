@@ -41,17 +41,17 @@ class TeamStandingsPageBase extends Component {
           <TableHead>
             <TableRow>
               <TableCell>Team</TableCell>
-              {WEEK_IDS.map((v, k) =>
-                <TableCell align="right">{v}</TableCell>
+              {WEEK_IDS.map((val, k) =>
+                <TableCell align="right" key={"week"+k}>{val}</TableCell>
               )}
             </TableRow>
           </TableHead>
           <TableBody>
             {Object.entries(this.state.allScores).map((teamVal, teamKey) => (
-              <TableRow>
+              <TableRow key={"team"+teamKey}>
                 <TableCell>{teamVal[0]}</TableCell>
                 {WEEK_IDS.map((weekId) =>
-                  <TableCell>
+                  <TableCell key={"week2"+weekId}>
                     {JSON.stringify(teamVal[1][weekId])}
                   </TableCell>
                 )}

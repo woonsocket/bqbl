@@ -20,15 +20,15 @@ function Navigation(params) {
     <List>
       {
         LINKS.map((item, index) => (
-          <Link to={item.to} onClick={params.close} key={"link"+index}>
+          <Link to={item.to} onClick={params.close} key={"link" + index}>
             <ListItem button key={item.text}>
               <ListItemText primary={item.text} />
             </ListItem>
           </Link>
         ))
-        }
+      }
     </List>
   )
-        };
+}
 
-  export default Navigation;
+export default Navigation;
