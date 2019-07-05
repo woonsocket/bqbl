@@ -79,6 +79,7 @@ class Firebase {
     })
   }
 
+  // TODO: delete
   leagueChanged() {
   }
 

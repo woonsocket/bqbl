@@ -27,6 +27,7 @@ import LineupPage from '../Lineup/lineup';
 import PlayerScorePage from '../PlayerScorePage/player-score-page';
 import TeamStandingsPage from '../TeamStandingsPage/team-standings-page';
 
+// TODO: Move this into a stylesheet
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
@@ -39,7 +40,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-
+// TODO make this a class
 function App() {
 
   const classes = useStyles();
