@@ -25,7 +25,7 @@ class TeamScoreCard extends Component {
         <div>
           <div
             style={{
-              'background-image': 'url(http://i.nflcdn.com/static/site/7.5/img/logos/svg/' +
+              'backgroundImage': 'url(http://i.nflcdn.com/static/site/7.5/img/logos/svg/' +
                 'teams-matte/' + this.state.score.uid + '.svg)'
             }}
             className="bg">

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
-import Scores from '../Scores/scores';
+import ScoreLine from '../TeamScoreCard/team-score-card';
 
 import { withFirebase } from '../Firebase';
 
@@ -29,7 +29,11 @@ class TeamScorePageBase extends Component {
     return (
       <React.Fragment>
         {this.state.valsList ? (
-          <Scores scores={this.state.valsList} />
+            this.state.valsList.map(score => (
+              <ScoreLine
+                score={score}
+              />
+            ))
         ) : (
             <div>There are no messages ...</div>
           )}
