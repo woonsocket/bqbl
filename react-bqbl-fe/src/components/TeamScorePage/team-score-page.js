@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
-import { compose } from 'recompose';
-import ScoreLine from '../TeamScoreCard/team-score-card';
 
 import { withFirebase } from '../Firebase';
+import ScoreLine from '../TeamScoreCard/team-score-card';
+
+import { compose } from 'recompose';
+import { withRouter } from 'react-router-dom';
 
 class TeamScorePageBase extends Component {
   constructor(props) {

@@ -1,4 +1,5 @@
 import React from 'react';
+
 import IconScoreCell from '../IconScoreCell/icon-score-cell'
 import './week-team-row.css';
 

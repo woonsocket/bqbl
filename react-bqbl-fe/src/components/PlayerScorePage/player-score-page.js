@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
+
+import './player-score-page.css';
+import { withFirebase } from '../Firebase';
+import ScoreJoiner from '../ScoreJoiner/score-joiner';
+import WeekTeamRow from '../WeekTeam/week-team';
+
 import { compose } from 'recompose';
+import { withRouter } from 'react-router-dom';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
-import './player-score-page.css';
-import WeekTeamRow from '../WeekTeam/week-team';
-
-import { withFirebase } from '../Firebase';
-import ScoreJoiner from '../ScoreJoiner/score-joiner';
 
 class PlayerScorePageBase extends Component {
   constructor(props) {

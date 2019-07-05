@@ -4,28 +4,28 @@ import {
   Route,
 } from 'react-router-dom';
 
+import * as ROUTES from '../../constants/routes';
+import HomePage from '../Home/home';
+import LineupPage from '../Lineup/lineup';
+import Navigation from '../Navigation/navigation';
+import PlayerScorePage from '../PlayerScorePage/player-score-page';
+import PlayerStandingsPage from '../PlayerStandingsPage/player-standings-page';
+import ScorePage from '../TeamScorePage/team-score-page';
+import SignIn from '../SignIn/sign-in';
+import TeamStandingsPage from '../TeamStandingsPage/team-standings-page';
+
 import { makeStyles } from '@material-ui/core/styles';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import AppBar from '@material-ui/core/AppBar';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import Divider from '@material-ui/core/Divider';
 import Drawer from '@material-ui/core/Drawer';
-import HomePage from '../Home/home';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuIcon from '@material-ui/icons/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import Navigation from '../Navigation/navigation';
-import ScorePage from '../TeamScorePage/team-score-page';
-import PlayerStandingsPage from '../PlayerStandingsPage/player-standings-page';
-import SignIn from '../SignIn/sign-in';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-
-import * as ROUTES from '../../constants/routes';
-import LineupPage from '../Lineup/lineup';
-import PlayerScorePage from '../PlayerScorePage/player-score-page';
-import TeamStandingsPage from '../TeamStandingsPage/team-standings-page';
 
 // TODO: Move this into a stylesheet
 const useStyles = makeStyles(theme => ({
