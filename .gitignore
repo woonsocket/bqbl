@@ -10,3 +10,4 @@ functions/node_modules/*
 react-bqbl-fe/node_modules/*
 functions/firebase-debug.log
 react-bqbl-fe/.env
+react-bqbl-fe/.eslintrc.js
