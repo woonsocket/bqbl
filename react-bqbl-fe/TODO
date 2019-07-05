@@ -1,8 +1,18 @@
-Keep renaming
-Make the team standings a real table
+Write a unit test suite
+
+Cleanup:
+Do a naming pass on everything
+Pull styles into sheets
+
+UI:
 Do a styling pass on everything
-Fix the down-disclosure-click behavior of the person scorecards
+Fix the down-disclosure-click behavior of the person scorecards - arrow should swap positions
+Add a total to the person year-long scoreboard
+Add constraint checking to the lineup setter
+
+Architecture:
 Move everything off of /tmp
 Add cloud function to bootstrap a new league
 Add the ability to copy literally everything to /tmp to stage it
+Decouple db reads and writes from the UI
 
