@@ -15,4 +15,10 @@ Move everything off of /tmp
 Add cloud function to bootstrap a new league
 Add the ability to copy literally everything to /tmp to stage it
 Decouple db reads and writes from the UI
+Pull week, year into app-level context
+Add week, year defaults
+Pull league into app-level context
+
+New features:
+Add a draft mode?!
 
