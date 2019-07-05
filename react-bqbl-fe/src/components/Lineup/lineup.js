@@ -88,8 +88,6 @@ class LineupWeek extends Component {
 
   handleSelect(e) {
     var idx = e.currentTarget.getAttribute("id");
-    console.log(this.state.weekData.teams.length)
-    console.log(e.currentTarget)
     let newState = this.state;
     if (newState.weekData.teams.length <= idx) {
       newState.weekData.teams.push({
@@ -116,7 +114,7 @@ class LineupWeek extends Component {
         ))}
         {this.state.dh &&
           <NativeSelect
-            value={this.state.weekData.teams[4] && this.state.weekData.teams[4].name || ""}
+            value={this.state.weekData.teams[4] && (this.state.weekData.teams[4].name || "")}
             onChange={this.handleSelect.bind(this)}
             input={<Input name="dh-1" id="4"
             />}
@@ -128,7 +126,7 @@ class LineupWeek extends Component {
 
         {this.state.dh &&
           <NativeSelect
-            value={this.state.weekData.teams[5] && this.state.weekData.teams[5].name || ""}
+            value={this.state.weekData.teams[5] && (this.state.weekData.teams[5].name || "")}
             onChange={this.handleSelect.bind(this)}
             input={<Input name="dh-2" id="5"
             />}
