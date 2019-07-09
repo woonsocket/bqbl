@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 import React from 'react';
 import '@testing-library/jest-dom';
-import { render, fireEvent, cleanup } from '@testing-library/react'
+import { render } from '@testing-library/react'
 
 import WeekTeamRow from './week-team';
 

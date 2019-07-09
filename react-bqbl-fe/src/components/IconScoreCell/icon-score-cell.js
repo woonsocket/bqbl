@@ -1,7 +1,14 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+
 import './icon-score-cell.css';
 
 class IconScoreCell extends Component {
+  static propTypes = {
+    team: PropTypes.string.isRequired,
+    score: PropTypes.int.isRequired,
+  };
+
   constructor(props) {
     super(props);
 

@@ -1,12 +1,17 @@
+import { compose } from 'recompose';
+import { withRouter } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 import { withFirebase } from '../Firebase';
 import ScoreLine from '../TeamScoreCard/team-score-card';
 
-import { compose } from 'recompose';
-import { withRouter } from 'react-router-dom';
-
 class TeamScorePageBase extends Component {
+  static propTypes = {
+    firebase: PropTypes.object.isRequired,
+    match: PropTypes.object.isRequired,
+  };
+
   constructor(props) {
     super(props);
 
