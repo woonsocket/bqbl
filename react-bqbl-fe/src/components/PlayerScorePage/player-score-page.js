@@ -10,8 +10,14 @@ import { withRouter } from 'react-router-dom';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
+import PropTypes from 'prop-types';
 
 class PlayerScorePageBase extends Component {
+  static propTypes = {
+    firebase: PropTypes.object.isRequired,
+    match: PropTypes.object.isRequired,
+  };
+
   constructor(props) {
     super(props);
     this.scoreJoiner = new ScoreJoiner(
