@@ -22,13 +22,13 @@ afterEach(() => {
 
 //https://testing-library.com/docs/example-react-router
 
-function renderWithRouterAndFirebase(ui) {
+function renderWithRouterAndFirebase(ui, firebase) {
   const route = '/';
   const history = createMemoryHistory({ initialEntries: [route] });
 
   return render((
     <Router history={history}>
-      <FirebaseContext.Provider value={new Firebase()}>
+      <FirebaseContext.Provider value={firebase}>
         {ui}
       </FirebaseContext.Provider>
     </Router>
@@ -36,6 +36,7 @@ function renderWithRouterAndFirebase(ui) {
 }
 
 it('renders', () => {
-  const { getByText } = renderWithRouterAndFirebase(<PlayerScorePageBase />)
+  let firebase = new Firebase();
+  const { getByText } = renderWithRouterAndFirebase(<PlayerScorePageBase />, firebase)
 
 });
