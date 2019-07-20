@@ -6,7 +6,7 @@ import './icon-score-cell.css';
 class IconScoreCell extends Component {
   static propTypes = {
     team: PropTypes.string.isRequired,
-    score: PropTypes.int.isRequired,
+    score: PropTypes.number.isRequired,
   };
 
   constructor(props) {
