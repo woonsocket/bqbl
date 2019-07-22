@@ -11,6 +11,8 @@ const config = {
   messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
 };
 
+const PREFIX="tmp/";
+
 class Firebase {
   constructor() {
     app.initializeApp(config);
@@ -51,19 +53,19 @@ class Firebase {
   }
 
   tmp_starts_year(uid, year) {
-    return this.db.ref(`tmp/users/${uid}/plays/${year}`);
+    return this.db.ref(`${PREFIX}users/${uid}/plays/${year}`);
   };
 
   tmp_starts_week(uid, year, week) {
-    return this.db.ref(`tmp/users/${uid}/plays/${year}/${week}`);
+    return this.db.ref(`${PREFIX}users/${uid}/plays/${year}/${week}`);
   };
 
   league_starts_week(leagueId, year, week) {
-    return this.db.ref(`tmp/leagues/${leagueId}/${year}/${week}`)
+    return this.db.ref(`${PREFIX}leagues/${leagueId}/${year}/${week}`)
   }
 
   league_starts_year(year, leagueId) {
-    return this.db.ref(`tmp/leagues/${leagueId}/${year}`);
+    return this.db.ref(`${PREFIX}leagues/${leagueId}/${year}`);
   }
 
   authChanged(user) {
