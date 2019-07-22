@@ -23,7 +23,6 @@ class PlayerScorePageUI extends Component {
   render() {
     return (
       <React.Fragment>
-        <div>{JSON.stringify(this.state)}</div>
         {this.state.playerList ? (
           Object.values(this.state.playerList).map((playerData, idx) => (
             <Card className="mdl-card" key={idx}>
