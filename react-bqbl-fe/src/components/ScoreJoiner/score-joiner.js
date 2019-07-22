@@ -10,18 +10,26 @@ class ScoreJoiner {
     // TODO: Get the league ID this user is assigned to
     const startsPromise = this.firebase.league_starts_week(
       '-KtC8hcGgvbh2W2Tq79n', this.year, this.week).once('value');
-
+    
     return Promise.all([scoresPromise, startsPromise])
       .then(([scoresData, startsData]) => {
         const scoresDataValue = scoresData.val();
-        let startsDataProcessed = startsData.val();
-        for (let playerVal of Object.values(startsDataProcessed)) {
-          for (let start of playerVal.starts) {
-            start.total = scoresDataValue[start.name].total;
-          }
-        }
-        setState({ playerList: startsDataProcessed });
+        let startsDataValue = startsData.val();
+        this.mergeData(scoresDataValue, startsDataValue);
+        setState({ playerList: startsDataValue });
       })
+  }
+
+  mergeData(scores, starts) {
+    for (let playerVal of Object.values(starts)) {
+      if (!playerVal.starts) { // For example, player didn't start anyone
+        continue;
+      }
+      for (let start of playerVal.starts) {
+        start.total = scores[start.name].total;
+      }
+    }
+
   }
 }
 

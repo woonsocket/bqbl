@@ -6,7 +6,7 @@ import './week-team-row.css';
 
 WeekTeamRow.propTypes = {
   week: PropTypes.object.isRequired,
-  weekId: PropTypes.string.isRequired,
+  weekId: PropTypes.number,
 };
 
 function WeekTeamRow(props) {

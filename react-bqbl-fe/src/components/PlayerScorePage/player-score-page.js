@@ -3,13 +3,10 @@ import React, { Component } from 'react';
 import './player-score-page.css';
 import { withFirebase } from '../Firebase';
 import ScoreJoiner from '../ScoreJoiner/score-joiner';
-import WeekTeamRow from '../WeekTeam/week-team';
+import PlayerScorePageUI from './player-score-page-ui';
 
 import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Typography from '@material-ui/core/Typography';
 import PropTypes from 'prop-types';
 
 class PlayerScorePageBase extends Component {
@@ -32,26 +29,10 @@ class PlayerScorePageBase extends Component {
   }
 
   render() {
-    return (
-      <React.Fragment>
-        {this.state.playerList ? (
-          Object.values(this.state.playerList).map((playerData, idx) => (
-            <Card className="mdl-card" key={idx}>
-              <CardContent>
-                <Typography variant="h5" component="h2">
-                {playerData.name}
-                </Typography>
-                <WeekTeamRow week={playerData} />
-              </CardContent>
-            </Card>
-              ))
-        ) : (
-            <div>No score response</div>
-          )}
-      </React.Fragment>
-    );
+    return <PlayerScorePageUI playerList={this.state.playerList}/>
   }
 }
+
 
 const PlayerScorePage = compose(
   withRouter,

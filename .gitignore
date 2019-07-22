@@ -11,3 +11,5 @@ react-bqbl-fe/node_modules/*
 functions/firebase-debug.log
 react-bqbl-fe/.env
 react-bqbl-fe/.eslintrc.js
+.DS_Store
+react-bqbl-fe/src/components/PlayerScorePage/player-score-page.firebasetst-scratch.js
