@@ -25,7 +25,7 @@ class PlayerScorePageUI extends Component {
       <React.Fragment>
         {this.state.playerList ? (
           Object.values(this.state.playerList).map((playerData, idx) => (
-            <Card className="mdl-card" key={idx}>
+            <Card className="mdl-card" key={idx} data-testid="player">
               <CardContent>
                 <Typography variant="h5" component="h2">
                   {playerData.name}

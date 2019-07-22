@@ -26,6 +26,6 @@ it('renders', () => {
   let firebase = new Firebase();
   let scoreJoiner = new ScoreJoiner(firebase, "2018", "02")
   scoreJoiner.mergeData(SCORES_WEEK, STARTS);
-  const { getByText } = render(<PlayerScorePageUI playerList={STARTS}/>);
-  expect(getByText(/^Joel/).textContent).toContain('Joel')
+  const { getAllByTestId } = render(<PlayerScorePageUI playerList={STARTS}/>);
+  expect(getAllByTestId(/player/).length).toEqual(8);
 });
