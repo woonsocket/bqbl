@@ -29,7 +29,6 @@ class ScoreJoiner {
         start.total = scores[start.name].total;
       }
     }
-
   }
 }
 

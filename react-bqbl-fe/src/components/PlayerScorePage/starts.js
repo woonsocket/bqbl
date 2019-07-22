@@ -1,4 +1,4 @@
-const STARTS = {
+let STARTS = {
   "DcrFmtP6GehuYob6UHb7ODGOyW02" : {
     "name" : "Joel",
     "starts" : [ {
