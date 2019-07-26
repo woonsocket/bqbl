@@ -20,6 +20,11 @@ class PlayerScorePageUI extends Component {
       playerList: props.playerList
     }
   }
+
+  componentWillReceiveProps({playerList}) {
+    this.setState({...this.state,playerList})
+  }
+
   render() {
     return (
       <React.Fragment>
