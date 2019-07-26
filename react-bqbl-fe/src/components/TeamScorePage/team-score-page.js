@@ -14,6 +14,8 @@ class TeamScorePageBase extends Component {
 
   constructor(props) {
     super(props);
+    this.year = this.props.match.params.year || "2018";
+    this.week = this.props.match.params.week || "2";
 
     this.state = {
       valsList: [],
@@ -21,7 +23,7 @@ class TeamScorePageBase extends Component {
   }
 
   componentDidMount() {
-    this.props.firebase.scores_week(this.props.match.params.year, this.props.match.params.week).on('value', snapshot => {
+    this.props.firebase.scores_week(this.year, this.week).on('value', snapshot => {
       const vals = snapshot.val();
       const valsList = Object.keys(vals).map(key => ({
         ...vals[key],

@@ -16,6 +16,7 @@ const WEEK_IDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12",
 class TeamStandingsPageBase extends Component {
   constructor(props) {
     super(props);
+    this.year = this.props.match.params.year || "2018";
 
     this.state = {
       allScores: [],
@@ -23,7 +24,7 @@ class TeamStandingsPageBase extends Component {
   }
 
   componentDidMount() {
-    this.props.firebase.scores_year(this.props.match.params.year).on('value', snapshot => {
+    this.props.firebase.scores_year(this.year).on('value', snapshot => {
       let weekMap = {};
       for (let [weekId, weekVal] of Object.entries(snapshot.val())) {
         for (let [teamId, teamVal] of Object.entries(weekVal)) {

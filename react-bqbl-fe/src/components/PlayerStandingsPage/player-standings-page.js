@@ -23,16 +23,18 @@ class PlayerStandingsPageBase extends Component {
   constructor(props) {
     super(props);
     this.user = null;
+    this.year = this.props.match.params.year || "2018";
+
     this.state = {
       players: [],
     };
   }
 
   componentDidMount() {
-    var scoresPromise = this.props.firebase.scores_year('2018').once('value');
-    var startsPromise =
-      this.props.firebase.league_starts_year(
-        '2018', "-KtC8hcGgvbh2W2Tq79n").once('value');
+    var scoresPromise = this.props.firebase.scores_year(this.year).once('value');
+    // TODO: fix default league ID
+    var startsPromise = this.props.firebase.league_starts_year(
+      this.year, "-KtC8hcGgvbh2W2Tq79n").once('value');
 
     Promise.all([scoresPromise, startsPromise]).then(
       ([scoresSnapshot, startsSnapshot]) => {
