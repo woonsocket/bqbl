@@ -1,4 +1,5 @@
-Write a unit test suite
+Testing:
+Write a unit test suite (two tests currently)
 
 Cleanup:
 Do a naming pass on everything
@@ -18,6 +19,7 @@ Decouple db reads and writes from the UI
 Pull week, year into app-level context
 Add week, year defaults
 Pull league into app-level context
+Add week selector
 
 New features:
 Add a draft mode?!
