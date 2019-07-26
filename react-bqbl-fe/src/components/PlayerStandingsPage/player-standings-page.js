@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import './player-standings-page.css';
 import { withFirebase } from '../Firebase';
-import WeekTeamRow from '../WeekTeam/week-team';
+import WeekTeamRow from '../WeekTeam/week-team-row';
 
 import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
