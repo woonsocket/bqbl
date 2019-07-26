@@ -4,12 +4,16 @@ const functions = require('firebase-functions');
 
 const eventTicker = require('./event-ticker.js');
 const scoring = require('./scoring.js');
-
 admin.initializeApp();
 
+// Uncomment this to run locally. TODO: Make this work locally or remotely.
+// admin.initializeApp({
+//   credential: admin.credential.cert('../private-keys/bqbl-591f3-f7f1062e9016.json'),
+//   databaseURL: 'https://bqbl-591f3.firebaseio.com'
+// });
 exports.score = functions.database.ref('/stats/{year}/{week}/{team}')
   .onWrite((change, context) => {
-    const {year, week, team} = context.params;
+    const { year, week, team } = context.params;
     const stats = change.after.val();
     const overrides = admin.database()
       .ref(`/events/${year}/${week}/overrides/${team}`)
@@ -21,7 +25,7 @@ exports.score = functions.database.ref('/stats/{year}/{week}/{team}')
 
 exports.rescoreOnOverride = functions.database.ref('/events/{year}/{week}/overrides/{team}')
   .onWrite((change, context) => {
-    const {year, week, team} = context.params;
+    const { year, week, team } = context.params;
     const stats = admin.database()
       .ref(`/stats/${year}/${week}/${team}`)
       .once('value')
@@ -53,7 +57,7 @@ function doScore(stats, overrides, year, week, team) {
  * not write to the database. Sorta useful for local debugging.
  */
 exports.scoreHttp = functions.https.onRequest((req, res) => {
-  const {year, week, team} = req.body;
+  const { year, week, team } = req.body;
   const statsPromise = admin.database()
     .ref(`/stats/${year}/${week}/${team}`).once('value');
   const overridesPromise = admin.database()
@@ -83,7 +87,7 @@ exports.scoreHttp = functions.https.onRequest((req, res) => {
  * you've changed the scoring code.
  */
 exports.rescoreAll = functions.https.onRequest((req, res) => {
-  const {year, week} = req.body;
+  const { year, week } = req.body;
   const overrides = admin.database()
     .ref(`/events/${year}/${week}/overrides`)
     .once('value')
@@ -138,15 +142,45 @@ exports.createNewYear = functions.https.onRequest((req, res) => {
   var YEAR = 2019;
   var weeks = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17"];
   var allWeeksList = [];
-  for (var i = 0; i < weeks.length; i++){
+  for (var i = 0; i < weeks.length; i++) {
     week = weeks[i];
-    var teams = [{'name': 'ARI', selected:false},
-    {'name': 'CHI', selected:false},
-    {'name': 'NYJ', selected:false},
-    {'name': 'TEN', selected:false}];
+    var teams = [{ 'name': 'ARI', selected: false },
+    { 'name': 'CHI', selected: false },
+    { 'name': 'NYJ', selected: false },
+    { 'name': 'TEN', selected: false }];
     var thisWeek = { 'id': week, "teams": teams };
     allWeeksList.push(thisWeek);
   }
   const yearRef = admin.database().ref(`tmp/users/jzNyhVtHzKe8ERAaFrOAL2cFwZJ2/plays/2019/`);
   yearRef.update(allWeeksList);
-  })
+})
+
+/**
+ * Copy the whole db into /tmp/.
+ */
+exports.forkDataToTmp = functions.https.onRequest((req, res) => {
+  admin.database()
+    .ref(`/users`)
+    .once('value').then(data => {
+      admin.database().ref(`tmp/users`).update(data.val())
+    })
+
+  admin.database()
+    .ref(`/scores`)
+    .once('value').then(data => {
+      admin.database().ref(`tmp/scores`).update(data.val())
+    })
+
+  admin.database()
+    .ref(`/leagues`)
+    .once('value').then(data => {
+      admin.database().ref(`tmp/leagues`).update(data.val())
+    })
+
+  admin.database()
+    .ref(`/scores247`)
+    .once('value').then(data => {
+      admin.database().ref(`tmp/scores247`).update(data.val())
+    })
+
+});
