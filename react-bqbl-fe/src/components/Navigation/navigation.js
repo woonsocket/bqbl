@@ -14,6 +14,7 @@ const LINKS = [
   { to: ROUTES.PLAYER_STANDINGS, text: 'Player Standings' },
   { to: ROUTES.TEAM_SCORES, text: 'Team Scores' },
   { to: ROUTES.TEAM_STANDINGS, text: 'Team Standings' },
+  { to: ROUTES.DRAFT, text: 'Draft' },
 ];
 
 function Navigation(params) {

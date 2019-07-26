@@ -10,6 +10,7 @@ import LineupPage from '../Lineup/lineup';
 import Navigation from '../Navigation/navigation';
 import PlayerScorePage from '../PlayerScorePage/player-score-page';
 import PlayerStandingsPage from '../PlayerStandingsPage/player-standings-page';
+import DraftPage from '../Draft/draft';
 import ScorePage from '../TeamScorePage/team-score-page';
 import SignIn from '../SignIn/sign-in';
 import TeamStandingsPage from '../TeamStandingsPage/team-standings-page';
@@ -135,6 +136,7 @@ function App() {
         <Route path="/player-standings/:year?" component={PlayerStandingsPage} />
         <Route path="/team-scores/:year?/:week?" component={ScorePage} />
         <Route path="/team-standings/:year?" component={TeamStandingsPage} />
+        <Route path="/draft" component={DraftPage} />
       </div>
     </Router>
   );

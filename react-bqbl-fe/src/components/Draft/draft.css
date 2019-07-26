@@ -1,0 +1,15 @@
+.team {
+  padding: 1em;
+  min-width: 1em;
+  display: inline-block;
+}
+
+.id {
+  min-width: 5em;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.selected {
+  color: red;
+}
