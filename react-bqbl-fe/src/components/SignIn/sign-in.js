@@ -12,11 +12,10 @@ class SignIn extends Component {
     super(props);
 
     this.state = { error: null, name: "foo" };
-  };
+  }
+
   render() {
-
     return (
-
       <div>
         <SignInGoogle />
       </div>

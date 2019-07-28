@@ -31,6 +31,9 @@ class Firebase {
     return this.auth.signInWithPopup(this.googleProvider);
   }
   doSignOut = () => this.auth.signOut();
+  getCurrentUser() {
+    return this.auth.currentUser;
+  }
 
   /* Users api */
   getUserPath(uid) {

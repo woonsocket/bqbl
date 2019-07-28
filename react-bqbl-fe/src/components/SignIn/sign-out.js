@@ -11,10 +11,9 @@ class SignOut extends Component {
     super(props);
     this.state = { error: null, name: "foo" };
   }
+
   render() {
-
     return (
-
       <div>
         <SignOutGoogle />
       </div>

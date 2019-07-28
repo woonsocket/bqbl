@@ -12,7 +12,6 @@ import PlayerScorePage from '../PlayerScorePage/player-score-page';
 import PlayerStandingsPage from '../PlayerStandingsPage/player-standings-page';
 import DraftPage from '../Draft/draft';
 import ScorePage from '../TeamScorePage/team-score-page';
-import SignIn from '../SignIn/sign-in';
 import TeamStandingsPage from '../TeamStandingsPage/team-standings-page';
 import './app.css'
 
@@ -24,6 +23,7 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
+import SignInToggle from '../SignIn/sign-in-toggle';
 
 function App() {
 
@@ -51,9 +51,7 @@ function App() {
           <Typography variant="h6" className="title">
             BQBL
           </Typography>
-          {auth && (
-                <SignIn>Sign in</SignIn>
-          )}
+          <SignInToggle/>
         </Toolbar>
 
         <Drawer
