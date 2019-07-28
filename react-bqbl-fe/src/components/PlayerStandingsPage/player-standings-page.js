@@ -66,8 +66,8 @@ class PlayerStandingsPageBase extends Component {
     return (
       <React.Fragment>
         {Object.entries(this.state.players).map(([name, player]) => (
-          <div>
-            <PlayerYearCard
+          <div key={name}>
+            <PlayerYearCard 
               player={player}
               name={name}
             />
