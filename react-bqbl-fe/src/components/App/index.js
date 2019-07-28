@@ -14,8 +14,8 @@ import DraftPage from '../Draft/draft';
 import ScorePage from '../TeamScorePage/team-score-page';
 import SignIn from '../SignIn/sign-in';
 import TeamStandingsPage from '../TeamStandingsPage/team-standings-page';
+import './app.css'
 
-import { makeStyles } from '@material-ui/core/styles';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import AppBar from '@material-ui/core/AppBar';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
@@ -28,23 +28,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 
-// TODO: Move this into a stylesheet
-const useStyles = makeStyles(theme => ({
-  root: {
-    flexGrow: 1,
-  },
-  menuButton: {
-    marginRight: theme.spacing(2),
-  },
-  title: {
-    flexGrow: 1,
-  },
-}));
-
-// TODO make this a class
 function App() {
 
-  const classes = useStyles();
   // eslint-disable-next-line
   const [auth, setAuth] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -71,11 +56,11 @@ function App() {
     <Router>
       <AppBar position="static">
         <Toolbar>
-          <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="Menu"
+          <IconButton edge="start" color="inherit" aria-label="Menu"
             onClick={handleDrawerOpen}>
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" className={classes.title}>
+          <Typography variant="h6" className="title">
             BQBL
           </Typography>
           {auth && (
@@ -111,14 +96,14 @@ function App() {
         </Toolbar>
 
         <Drawer
-          className={classes.drawer}
+          className="drawer"
           anchor="left"
           open={drawerOpen}
           classes={{
-            paper: classes.drawerPaper,
+            paper: "drawerPaper",
           }}
         >
-          <div className={classes.drawerHeader}>
+          <div className="drawerHeader">
             <IconButton onClick={handleDrawerClose}>
               <ChevronLeftIcon />
             </IconButton>
