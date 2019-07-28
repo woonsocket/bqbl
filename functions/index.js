@@ -122,12 +122,14 @@ exports.createStartsTable = functions.https.onRequest((req, res) => {
               return team.name;
             }
           })
+          // TODO: Hard-coded year.
           var a = { [user.leagueId + '/2018/' + week.id + '/' + userKey]: { 'starts': starts, 'name': user.name } };
           updateItems.push(a);
         })
       }
 
       updateItems.forEach(updateItem => {
+        // TODO: hard-coded tmp.
         const yearRef = admin.database().ref(`/tmp/leagues/`);
         yearRef.update(updateItem);
       });
