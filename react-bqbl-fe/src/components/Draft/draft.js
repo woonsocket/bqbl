@@ -5,12 +5,10 @@ import { withFirebase } from '../Firebase';
 
 import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
-import Input from '@material-ui/core/Input';
-import NativeSelect from '@material-ui/core/NativeSelect';
 
 const ALL_TEAMS = ["ARI", "ATL", "BAL", "BUF", "CAR", "CHI", "CIN", "CLE", "DAL", "DEN", "DET",
   "GB", "HOU", "IND", "JAX", "KC", "LA", "MIA", "MIN", "NE", "NO", "NYG", "NYJ",
-  "OAK", "PHI", "PIT", "SD", "SEA", "SF", "TB", "TEN", "WSH"]
+  "OAK", "PHI", "PIT", "SD", "SEA", "SF", "TB", "TEN", "WAS"]
 
 
 class DraftPageBase extends Component {
@@ -51,7 +49,19 @@ class DraftPageBase extends Component {
   render() {
     return (
       <React.Fragment>
-        draft!
+        {ALL_TEAMS.map(team =>
+          <div className="team" key={team}>
+            <img
+              src={
+                'http://i.nflcdn.com/static/site/7.5/img/logos/svg/' +
+                'teams-matte/' + team + '.svg'}
+              width='80px'
+              alt="" /><br />
+            <div className="cell">
+              {team}
+            </div>
+          </div>
+        )}
       </React.Fragment>
     );
   }

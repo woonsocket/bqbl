@@ -10,6 +10,7 @@ Do a styling pass on everything
 Fix the down-disclosure-click behavior of the person scorecards - arrow should swap positions
 Add a total to the person year-long scoreboard
 Add constraint checking to the lineup setter
+Optimize login flow
 
 Architecture:
 Move everything off of /tmp
@@ -18,6 +19,7 @@ Decouple db reads and writes from the UI
 Pull week, year into app-level context
 Pull league into app-level context
 Add week selector
+Pull constants into a top-level
 
 New features:
 Add a draft mode?!

@@ -4,12 +4,6 @@
   display: inline-block;
 }
 
-.id {
-  min-width: 5em;
-  font-weight: bold;
-  display: inline-block;
-}
-
-.selected {
-  color: red;
+.cell {
+  text-align: center
 }
