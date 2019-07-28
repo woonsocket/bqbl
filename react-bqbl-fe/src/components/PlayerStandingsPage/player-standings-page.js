@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import './player-standings-page.css';
 import { withFirebase } from '../Firebase';
 import WeekTeamRow from '../WeekTeam/week-team-row';
+import * as FOOTBALL from "../../constants/football"
 
 import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
@@ -15,8 +16,7 @@ import Collapse from '@material-ui/core/Collapse';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import IconButton from '@material-ui/core/IconButton';
 
-const ALL_WEEKS_REVERSE = ["17", "16", "15", "14", "13", "12", "11", "10",
-  "9", "8", "7", "6", "5", "4", "3", "2", "1"];
+const ALL_WEEKS_REVERSE = FOOTBALL.WEEK_IDS.reverse();
 const FOLD = 4;
 
 class PlayerStandingsPageBase extends Component {

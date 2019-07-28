@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 import { withFirebase } from '../Firebase';
+import * as FOOTBALL from '../../constants/football';
 
 import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
@@ -10,8 +11,6 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-
-const WEEK_IDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17",]
 
 class TeamStandingsPageBase extends Component {
   constructor(props) {
@@ -43,7 +42,7 @@ class TeamStandingsPageBase extends Component {
           <TableHead>
             <TableRow>
               <TableCell>Team</TableCell>
-              {WEEK_IDS.map((val, k) =>
+              {FOOTBALL.WEEK_IDS.map((val, k) =>
                 <TableCell align="right" key={"week"+k}>{val}</TableCell>
               )}
             </TableRow>
@@ -52,7 +51,7 @@ class TeamStandingsPageBase extends Component {
             {Object.entries(this.state.allScores).map((teamVal, teamKey) => (
               <TableRow key={"team"+teamKey}>
                 <TableCell>{teamVal[0]}</TableCell>
-                {WEEK_IDS.map((weekId) =>
+                {FOOTBALL.WEEK_IDS.map((weekId) =>
                   <TableCell key={"week2"+weekId}>
                     {JSON.stringify(teamVal[1][weekId])}
                   </TableCell>
