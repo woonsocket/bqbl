@@ -139,11 +139,14 @@ exports.createStartsTable = functions.https.onRequest((req, res) => {
 // write: users/${uid}/plays/${year}/${week}[/${team}/[id, selected], id]
 exports.createNewYear = functions.https.onRequest((req, res) => {
   var updateItems = [];
+  // TODO: Make this a param or constant.
   var YEAR = 2019;
+  // TODO: Pull this into constants.
   var weeks = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17"];
   var allWeeksList = [];
   for (var i = 0; i < weeks.length; i++) {
     week = weeks[i];
+    // TODO: Pull this out of the league spec
     var teams = [{ 'name': 'ARI', selected: false },
     { 'name': 'CHI', selected: false },
     { 'name': 'NYJ', selected: false },
@@ -151,8 +154,10 @@ exports.createNewYear = functions.https.onRequest((req, res) => {
     var thisWeek = { 'id': week, "teams": teams };
     allWeeksList.push(thisWeek);
   }
+  // TODO: Write this to the right place.
   const yearRef = admin.database().ref(`tmp/users/jzNyhVtHzKe8ERAaFrOAL2cFwZJ2/plays/2019/`);
-  yearRef.update(allWeeksList);
+
+  yearRef.set(allWeeksList);
 })
 
 /**
