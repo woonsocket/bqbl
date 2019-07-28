@@ -2,16 +2,12 @@ import React, { Component } from 'react';
 
 import './lineup.css'
 import { withFirebase } from '../Firebase';
+import * as FOOTBALL from '../../constants/football';
 
 import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
 import Input from '@material-ui/core/Input';
 import NativeSelect from '@material-ui/core/NativeSelect';
-
-const ALL_TEAMS = ["ARI", "ATL", "BAL", "BUF", "CAR", "CHI", "CIN", "CLE", "DAL", "DEN", "DET",
-  "GB", "HOU", "IND", "JAX", "KC", "LA", "MIA", "MIN", "NE", "NO", "NYG", "NYJ",
-  "OAK", "PHI", "PIT", "SD", "SEA", "SF", "TB", "TEN", "WSH"]
-
 
 class LineupPageBase extends Component {
   constructor(props) {
@@ -121,7 +117,7 @@ class LineupWeek extends Component {
             input={<Input name="dh-1" id="4"
             />}
           >          <option value="">None</option>
-            {ALL_TEAMS.map(team => <option value={team} key={team}>{team}</option>
+            {FOOTBALL.ALL_TEAMS.map(team => <option value={team} key={team}>{team}</option>
             )}      </NativeSelect>
 
         }
@@ -133,7 +129,7 @@ class LineupWeek extends Component {
             input={<Input name="dh-2" id="5"
             />}
           >          <option value="">None</option>
-            {ALL_TEAMS.map(team => <option value={team} key={team}>{team}</option>
+            {FOOTBALL.ALL_TEAMS.map(team => <option value={team} key={team}>{team}</option>
             )}      </NativeSelect>
 
         }

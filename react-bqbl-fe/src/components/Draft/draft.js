@@ -2,14 +2,10 @@ import React, { Component } from 'react';
 
 import './draft.css'
 import { withFirebase } from '../Firebase';
+import * as FOOTBALL from '../../constants/football';
 
 import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
-
-const ALL_TEAMS = ["ARI", "ATL", "BAL", "BUF", "CAR", "CHI", "CIN", "CLE", "DAL", "DEN", "DET",
-  "GB", "HOU", "IND", "JAX", "KC", "LA", "MIA", "MIN", "NE", "NO", "NYG", "NYJ",
-  "OAK", "PHI", "PIT", "SD", "SEA", "SF", "TB", "TEN", "WAS"]
-
 
 class DraftPageBase extends Component {
   constructor(props) {
@@ -49,7 +45,7 @@ class DraftPageBase extends Component {
   render() {
     return (
       <React.Fragment>
-        {ALL_TEAMS.map(team =>
+        {FOOTBALL.ALL_TEAMS.map(team =>
           <div className="team" key={team}>
             <img
               src={
