@@ -27,9 +27,6 @@ class Firebase {
     this.auth.onAuthStateChanged(listener)
   }
 
-  doSignInWithEmailAndPassword = (email, password) =>
-    this.auth.signInWithEmailAndPassword(email, password);
-
   doSignInWithGoogle() {
     return this.auth.signInWithPopup(this.googleProvider);
   }
@@ -38,7 +35,7 @@ class Firebase {
   /* Users api */
   getUserPath(uid) {
     return this.db.ref(`users/${uid}`);
-  };
+  }
 
   users = () => {
     return this.db.ref('users');
@@ -54,11 +51,11 @@ class Firebase {
 
   starts_year(uid, year) {
     return this.db.ref(`${PREFIX}users/${uid}/plays/${year}`);
-  };
+  }
 
   starts_week(uid, year, week) {
     return this.db.ref(`${PREFIX}users/${uid}/plays/${year}/${week}`);
-  };
+  }
 
   league_starts_week(leagueId, year, week) {
     return this.db.ref(`${PREFIX}leagues/${leagueId}/${year}/${week}`)
