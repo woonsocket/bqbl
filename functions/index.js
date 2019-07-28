@@ -160,6 +160,7 @@ exports.createNewYear = functions.https.onRequest((req, res) => {
   const yearRef = admin.database().ref(`tmp/users/jzNyhVtHzKe8ERAaFrOAL2cFwZJ2/plays/2019/`);
 
   yearRef.set(allWeeksList);
+  res.status(200).send("success");
 })
 
 /**
@@ -189,5 +190,6 @@ exports.forkDataToTmp = functions.https.onRequest((req, res) => {
     .once('value').then(data => {
       admin.database().ref(`tmp/scores247`).update(data.val())
     })
+  res.status(200).send("success");
 
 });
