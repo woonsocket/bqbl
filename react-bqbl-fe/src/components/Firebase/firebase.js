@@ -52,11 +52,11 @@ class Firebase {
     return this.db.ref(`scores/${year}/${week}`);
   }
 
-  tmp_starts_year(uid, year) {
+  starts_year(uid, year) {
     return this.db.ref(`${PREFIX}users/${uid}/plays/${year}`);
   };
 
-  tmp_starts_week(uid, year, week) {
+  starts_week(uid, year, week) {
     return this.db.ref(`${PREFIX}users/${uid}/plays/${year}/${week}`);
   };
 

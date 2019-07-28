@@ -33,9 +33,10 @@ class LineupPageBase extends Component {
       return;
     }
     this.user = user;
-    this.props.firebase.tmp_starts_year(user.uid, '2019')
+    this.props.firebase.starts_year(user.uid, '2019')
       .on('value', snapshot => {
         const vals = snapshot.val();
+        console.log(snapshot.val())
         const valsList = Object.keys(vals).map(key => ({
           ...vals[key],
           uid: key,
@@ -45,7 +46,7 @@ class LineupPageBase extends Component {
   }
 
   updateCallback(weekData, weekId) {
-    this.props.firebase.tmp_starts_week(this.user.uid, '2019', weekId)
+    this.props.firebase.starts_week(this.user.uid, '2019', weekId)
       .update(weekData);
     console.log(weekData)
   }
