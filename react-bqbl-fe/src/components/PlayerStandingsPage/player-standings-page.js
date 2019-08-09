@@ -23,8 +23,8 @@ class PlayerStandingsPageBase extends Component {
   constructor(props) {
     super(props);
     this.user = null;
+    this.league = this.props.match.params.league || "-KtC8hcGgvbh2W2Tq79n";
     this.year = this.props.match.params.year || "2018";
-
     this.state = {
       players: [],
     };
@@ -32,9 +32,7 @@ class PlayerStandingsPageBase extends Component {
 
   componentDidMount() {
     var scoresPromise = this.props.firebase.scores_year(this.year).once('value');
-    // TODO: fix default league ID
-    var startsPromise = this.props.firebase.league_starts_year(
-      this.year, "-KtC8hcGgvbh2W2Tq79n").once('value');
+    var startsPromise = this.props.firebase.league_starts_year(this.league, this.year).once('value');
 
     Promise.all([scoresPromise, startsPromise]).then(
       ([scoresSnapshot, startsSnapshot]) => {

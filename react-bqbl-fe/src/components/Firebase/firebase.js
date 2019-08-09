@@ -64,7 +64,7 @@ class Firebase {
     return this.db.ref(`${PREFIX}leagues/${leagueId}/${year}/${week}`)
   }
 
-  league_starts_year(year, leagueId) {
+  league_starts_year(leagueId, year) {
     return this.db.ref(`${PREFIX}leagues/${leagueId}/${year}`);
   }
 
