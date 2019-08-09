@@ -7,6 +7,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 
 import * as ROUTES from '../../constants/routes';
 
+// TODO: Line up with parameterized routes?
 const LINKS = [
   { to: ROUTES.HOME, text: 'Home' },
   { to: ROUTES.LINEUP, text: 'Lineup' },
