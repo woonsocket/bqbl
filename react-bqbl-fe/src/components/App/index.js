@@ -76,7 +76,7 @@ function App() {
       <div>
         <Route path={ROUTES.HOME} component={HomePage} />
         <Route path={ROUTES.LINEUP} component={LineupPage} />
-        <Route path="/player-scores/:year?/:week?" component={PlayerScorePage} />
+        <Route path="/player-scores/:leagueid?/:year?/:week?" component={PlayerScorePage} />
         <Route path="/player-standings/:year?" component={PlayerStandingsPage} />
         <Route path="/team-scores/:year?/:week?" component={ScorePage} />
         <Route path="/team-standings/:year?" component={TeamStandingsPage} />
