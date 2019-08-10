@@ -4,13 +4,8 @@ const functions = require('firebase-functions');
 
 const eventTicker = require('./event-ticker.js');
 const scoring = require('./scoring.js');
-// admin.initializeApp();
+admin.initializeApp();
 
-// Uncomment this to run locally. TODO: Make this work locally or remotely.
-admin.initializeApp({
-  credential: admin.credential.cert('../private-keys/bqbl-591f3-f7f1062e9016.json'),
-  databaseURL: 'https://bqbl-591f3.firebaseio.com'
-});
 exports.score = functions.database.ref('/stats/{year}/{week}/{team}')
   .onWrite((change, context) => {
     const { year, week, team } = context.params;
@@ -21,7 +16,6 @@ exports.score = functions.database.ref('/stats/{year}/{week}/{team}')
       .then(d => d.val());
     return doScore(stats, overrides, year, week, team);
   });
-
 
 exports.rescoreOnOverride = functions.database.ref('/events/{year}/{week}/overrides/{team}')
   .onWrite((change, context) => {
@@ -140,16 +134,62 @@ exports.createStartsTable = functions.https.onRequest((req, res) => {
 /**
  * Dump a dummy league with id nbqbl. This is to test createNewYear, among other reasons.
  */
-exports.tmpWriteLeague = functions.https.onRequest((req, res) => {
-  const nbqbl = admin.database().ref(`/tmp/leaguespec/nbqbl`);
-  nbqbl.update({
-    users: [{ name: 'Joel', uid: '1', teams: [{name: 'ARI'}, {name: 'BUF'}, {name: 'CLE'}, {name: 'NYJ'}]},
-    { name: 'Harvey', uid: '2', teams: [{name: 'ARI'}, {name: 'BUF'}, {name: 'CLE'}, {name: 'NYJ'}]}],
+exports.tmpWriteLeague = functions.https.onCall((data, context) => {
+  const league = data.league;
+  const nbqbl = admin.database().ref(`/tmp/leaguespec/${league}`);
+  return nbqbl.update({
+    users: [{ name: 'Joel', uid: '1', teams: [{ name: 'ARI' }, { name: 'BUF' }, { name: 'CLE' }, { name: 'NYJ' }] },
+    { name: 'Harvey', uid: '2', teams: [{ name: 'ARI' }, { name: 'BUF' }, { name: 'CLE' }, { name: 'NYJ' }] },
+    { name: '3', uid: '3' },
+    { name: '4', uid: '4' },
+    { name: '5', uid: '5' },
+    { name: '6', uid: '6' },
+    { name: '7', uid: '7' },
+    { name: '8', uid: '8' },
+  ],
   })
-  res.status(200).send("success");
+});
+
+exports.setDraftOrder = functions.https.onCall((data, context) => {
+  const league = data.league;
+  return admin.database().ref(`/tmp/leaguespec/${league}`).once('value').then(
+    dataPromise => {
+      let data = dataPromise.val();
+      let uids = data.users.map(user => user.uid);
+      shuffle(uids);
+      const uidsReverse = [...uids].reverse();
+      let order = uids.concat(uidsReverse, uids, uidsReverse).map(uid => { return {uid: uid}});
+      admin.database().ref(`/tmp/leaguespec/${league}/draft`).set(order)
+    })
 });
 
 
+/**
+ * Randomly shuffle an array
+ * https://stackoverflow.com/a/2450976/1293256
+ * @param  {Array} array The array to shuffle
+ * @return {String}      The first item in the shuffled array
+ */
+var shuffle = function (array) {
+
+	var currentIndex = array.length;
+	var temporaryValue, randomIndex;
+
+	// While there remain elements to shuffle...
+	while (0 !== currentIndex) {
+		// Pick a remaining element...
+		randomIndex = Math.floor(Math.random() * currentIndex);
+		currentIndex -= 1;
+
+		// And swap it with the current element.
+		temporaryValue = array[currentIndex];
+		array[currentIndex] = array[randomIndex];
+		array[randomIndex] = temporaryValue;
+	}
+
+	return array;
+
+};
 /**
  * Create a league spec at /leaguespec/{LEAGUEID}.
  * 
@@ -229,4 +269,24 @@ exports.forkDataToTmp = functions.https.onRequest((req, res) => {
     })
   res.status(200).send("success");
 
+});
+
+/**
+ */
+exports.draftTeam = functions.https.onCall((data, context) => {
+  const team = data.team;
+  const league = data.league;
+  // Authentication / user information is automatically added to the request.
+  // const uid = context.auth.uid;
+  // const name = context.auth.token.name || null;
+  const uid = '4';
+
+  const draftRef = `tmp/leaguespec/${league}/draft/`;
+  return admin.database()
+    .ref(draftRef)
+    .once('value').then(data => {
+      let newData = data.val() || [];
+      newData.push(team);
+      admin.database().ref(draftRef).set(newData)
+    })
 });

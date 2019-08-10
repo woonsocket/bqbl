@@ -1,2 +1,5 @@
-Uncomment index.js lines that point to local key.
-firebase emulators:start --only functions
+export GOOGLE_APPLICATION_CREDENTIALS=../private-keys/bqbl-591f3-f7f1062e9016.json 
+firebase functions:shell
+
+In shell:
+>> draftTeam({team:'den', league:'nbqbl'})
