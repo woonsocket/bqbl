@@ -10,8 +10,6 @@ import { withRouter } from 'react-router-dom';
 class DraftPageBase extends Component {
   constructor(props) {
     super(props);
-    this.user = null;
-    this.dh = true;
     this.leagueid = this.props.match.params.league || "nbqbl";
     this.leagueSpecReader = new LeagueSpecReader(this.leagueid, 'uid', this.props.firebase);
     this.state = {
