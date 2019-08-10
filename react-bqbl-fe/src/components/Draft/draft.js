@@ -13,87 +13,67 @@ class DraftPageBase extends Component {
     this.user = null;
     this.dh = true;
     this.leagueid = this.props.match.params.league || "nbqbl";
+    this.leagueSpecReader = new LeagueSpecReader(this.leagueid, 'uid', this.props.firebase);
     this.state = {
-      valsList: [],
+      inLeague: false,
     };
   }
 
   componentDidMount() {
-    this.props.firebase.addAuthListener(this.authChanged.bind(this))
-  }
+    this.props.firebase.league_spec(this.leagueid).once('value').then(data => {
+      let lsr = new LeagueSpecReader();
+      let isInLeague = lsr.isInLeague(this.props.firebase.getCurrentUser().uid, data.val());
+      this.setState({ inLeague: isInLeague });
+    });
 
-  authChanged(user) {
-    if (!user) {
-      console.log("bail!");
-      return;
-    }
-    this.user = user;
-    // this.props.firebase.tmp_starts_year(user.uid, '2019')
-    //   .on('value', snapshot => {
-    //     const vals = snapshot.val();
-    //     const valsList = Object.keys(vals).map(key => ({
-    //       ...vals[key],
-    //       uid: key,
-    //     }));
-    //     this.setState({ valsList: valsList })
-    //   })
-  }
-
-  updateCallback(weekData, weekId) {
-//    this.props.firebase.tmp_starts_week(this.user.uid, '2019', weekId).update(weekData);
   }
 
   render() {
-    return (
-      <React.Fragment>
-        {FOOTBALL.ALL_TEAMS.map(team =>
-          <div className="team" key={team}>
-            <img
-              src={
-                'http://i.nflcdn.com/static/site/7.5/img/logos/svg/' +
-                'teams-matte/' + team + '.svg'}
-              width='80px'
-              alt="" /><br />
-            <div className="cell">
-              {team}
-            </div>
-          </div>
-        )}
-      </React.Fragment>
-    );
+    return this.state.inLeague ?
+      <DraftSelectionGrid /> : <NotInLeagueUI/>
   }
 }
 
+function DraftSelectionGrid() {
+  return (
+    <React.Fragment>
+      {FOOTBALL.ALL_TEAMS.map(team =>
+        <div className="team" key={team}>
+          <img
+            src={
+              'http://i.nflcdn.com/static/site/7.5/img/logos/svg/' +
+              'teams-matte/' + team + '.svg'}
+            width='80px'
+            alt="" /><br />
+          <div className="cell">
+            {team}
+          </div>
+        </div>
+      )}
+    </React.Fragment>
+  );
+}
 
+function NotInLeagueUI() {
+  return (
+    // TODO implement join flow.
+    <div>
+      Join the league!
+    </div>
+  );
 
+}
 
-
-  // handleSelect(e) {
-  //   var idx = e.currentTarget.getAttribute("id");
-  //   let newState = this.state;
-  //   if (newState.weekData.teams.length <= idx) {
-  //     newState.weekData.teams.push({
-  //       name: e.currentTarget.value,
-  //       selected: true
-  //     })
-  //   } else {
-  //     newState.weekData.teams[idx].name = e.currentTarget.value;
-  //     newState.weekData.teams[idx].selected = true;
-  //   }
-  //   this.setState(newState);
-  //   this.state.updateCallback(this.state.weekData, this.state.weekIndex)
-  // }
-
-
-          // <NativeSelect
-          //   value={this.state.weekData.teams[4] && (this.state.weekData.teams[4].name || "")}
-          //   onChange={this.handleSelect.bind(this)}
-          //   input={<Input name="dh-1" id="4"
-          //   />}
-          // >          <option value="">None</option>
-          //   {ALL_TEAMS.map(team => <option value={team} key={team}>{team}</option>
-          //   )}      </NativeSelect>
-
+class LeagueSpecReader {
+  isInLeague(uid, leagueData) {
+    for (let i = 0; i < leagueData.users.length; i++) {
+      if (leagueData.users[i].uid == uid) {
+        return true;
+      }
+    }
+    return false;
+  }
+}
 
 const DraftPage = compose(
   withRouter,

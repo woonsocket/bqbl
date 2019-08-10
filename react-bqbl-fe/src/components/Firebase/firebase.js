@@ -68,6 +68,11 @@ class Firebase {
     return this.db.ref(`${PREFIX}leagues/${leagueId}/${year}`);
   }
 
+  league_spec(leagueId) {
+    return this.db.ref(`${PREFIX}leaguespec/${leagueId}`);
+  }
+
+
   authChanged(user) {
     if (!user) {
       console.log("bail!");
