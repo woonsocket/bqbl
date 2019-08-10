@@ -53,12 +53,18 @@ class DraftPageBase extends Component {
 function DraftSelectionGrid({ taken = ["ARI", "CLE"] }) {
   const [selected, setSelected] = useState("DEN");
 
+  function updateSelection(team) {
+    if (!taken.includes(team)) {
+      setSelected(team);
+    }
+  }
+
   return (
     <React.Fragment>
       {FOOTBALL.ALL_TEAMS.map(team =>
         <div className={["team", selected == team ? "team-selected" : "", taken.includes(team) ? "taken" : ""].join(' ')}
          key={team}
-         onClick={setSelected.bind(this, team)}
+         onClick={updateSelection.bind(this, team)}
          >
           <img
             src={
