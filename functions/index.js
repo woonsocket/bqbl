@@ -279,14 +279,23 @@ exports.draftTeam = functions.https.onCall((data, context) => {
   // Authentication / user information is automatically added to the request.
   // const uid = context.auth.uid;
   // const name = context.auth.token.name || null;
-  const uid = '4';
+  const uid = data.uidOverride;
 
   const draftRef = `tmp/leaguespec/${league}/draft/`;
   return admin.database()
     .ref(draftRef)
     .once('value').then(data => {
-      let newData = data.val() || [];
-      newData.push(team);
-      admin.database().ref(draftRef).set(newData)
+      let draft = data.val();
+      for (let i = 0; i < draft.length; i++) {
+        if (draft[i].team) {
+          if (draft[i].team === team) {
+            return;
+          }
+          continue;
+        }
+        if (draft[i].uid == uid) {
+          admin.database().ref(draftRef+`/${i}`).set({uid:uid, team:team});
+        }
+      }
     })
 });
