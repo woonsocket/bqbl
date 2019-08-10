@@ -4,13 +4,13 @@ const functions = require('firebase-functions');
 
 const eventTicker = require('./event-ticker.js');
 const scoring = require('./scoring.js');
-admin.initializeApp();
+// admin.initializeApp();
 
 // Uncomment this to run locally. TODO: Make this work locally or remotely.
-// admin.initializeApp({
-//   credential: admin.credential.cert('../private-keys/bqbl-591f3-f7f1062e9016.json'),
-//   databaseURL: 'https://bqbl-591f3.firebaseio.com'
-// });
+admin.initializeApp({
+  credential: admin.credential.cert('../private-keys/bqbl-591f3-f7f1062e9016.json'),
+  databaseURL: 'https://bqbl-591f3.firebaseio.com'
+});
 exports.score = functions.database.ref('/stats/{year}/{week}/{team}')
   .onWrite((change, context) => {
     const { year, week, team } = context.params;
@@ -137,31 +137,54 @@ exports.createStartsTable = functions.https.onRequest((req, res) => {
     })
 });
 
-// read: year/uid/teams
-// write: users/${uid}/plays/${year}/${week}[/${team}/[id, selected], id]
-exports.createNewYear = functions.https.onRequest((req, res) => {
-  var updateItems = [];
-  // TODO: Make this a param or constant.
-  var YEAR = 2019;
-  // TODO: Pull this into constants.
-  var weeks = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17"];
-  var allWeeksList = [];
-  for (var i = 0; i < weeks.length; i++) {
-    week = weeks[i];
-    // TODO: Pull this out of the league spec
-    var teams = [{ 'name': 'ARI', selected: false },
-    { 'name': 'CHI', selected: false },
-    { 'name': 'NYJ', selected: false },
-    { 'name': 'TEN', selected: false }];
-    var thisWeek = { 'id': week, "teams": teams };
-    allWeeksList.push(thisWeek);
-  }
-  // TODO: Write this to the right place.
-  const yearRef = admin.database().ref(`tmp/users/jzNyhVtHzKe8ERAaFrOAL2cFwZJ2/plays/2019/`);
-
-  yearRef.set(allWeeksList);
+/**
+ * Dump a dummy league with id nbqbl. This is to test createNewYear, among other reasons.
+ */
+exports.tmpWriteLeague = functions.https.onRequest((req, res) => {
+  const nbqbl = admin.database().ref(`/tmp/leaguespec/nbqbl`);
+  nbqbl.update({
+    users: [{ name: 'Joel', uid: '1', teams: [{name: 'ARI'}, {name: 'BUF'}, {name: 'CLE'}, {name: 'NYJ'}]},
+    { name: 'Harvey', uid: '2', teams: [{name: 'ARI'}, {name: 'BUF'}, {name: 'CLE'}, {name: 'NYJ'}]}],
+  })
   res.status(200).send("success");
-})
+});
+
+
+/**
+ * Read in a league spec from /{LEAGUEID}.
+ * Write out all of the starts for that league.
+ */
+
+exports.createNewYear = functions.https.onRequest((req, res) => {
+  const leagueId = new URL(req.url, "http://bqbl.futbol").pathname.slice(1);
+
+  admin.database()
+    .ref(`/tmp/leaguespec/` + leagueId)
+    .once('value').then(data => {
+      const users = data.val().users;
+      // TODO: Make this a param or constant.
+      const YEAR = 2019;
+      // TODO: Pull this into constants.
+      const weeks = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17"];
+      for (let i = 0; i < users.length; i++) {
+        let allWeeksList = [];
+        let teams = users[i].teams;
+        for (let j = 0; j < teams.length; j++) {
+          teams[j].selected = "false";
+        }
+        console.log(teams);
+        for (let j = 0; j < weeks.length; j++) {
+          week = weeks[j];
+          let thisWeek = { 'id': week, "teams": teams };
+          allWeeksList.push(thisWeek);
+        }
+        // TODO: Get rid of /tmp
+        const yearRef = admin.database().ref(`tmp/users/` + users[i].uid + `/plays/` + leagueId + `/` + YEAR);
+        yearRef.set(allWeeksList);
+      }
+      res.status(200).send("success");
+    })
+});
 
 /**
  * Copy the whole db into /tmp/.

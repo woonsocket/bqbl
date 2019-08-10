@@ -13,7 +13,6 @@ Add constraint checking to the lineup setter
 Optimize login flow
 
 Architecture:
-Restructure the leagues spec to accommodate multiple years :-/
 Move everything off of /tmp
 Add cloud function to bootstrap a new league
 Decouple db reads and writes from the UI
