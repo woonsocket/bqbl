@@ -14,7 +14,6 @@ Optimize login flow
 
 Architecture:
 Move everything off of /tmp
-Add cloud function to bootstrap a new league
 Decouple db reads and writes from the UI
 Pull week, year into app-level context
 Pull league into app-level context
