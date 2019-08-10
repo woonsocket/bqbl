@@ -11,7 +11,6 @@ class DraftPageBase extends Component {
   constructor(props) {
     super(props);
     this.leagueid = this.props.match.params.league || "nbqbl";
-    this.leagueSpecReader = new LeagueSpecReader(this.leagueid, 'uid', this.props.firebase);
     this.state = {
       inLeague: false,
     };
@@ -20,10 +19,10 @@ class DraftPageBase extends Component {
   componentDidMount() {
     this.props.firebase.league_spec(this.leagueid).once('value').then(data => {
       let lsr = new LeagueSpecReader();
-      let isInLeague = lsr.isInLeague(this.props.firebase.getCurrentUser().uid, data.val());
+      let uid = this.props.firebase.getCurrentUser() ? this.props.firebase.getCurrentUser().uid : null;
+      let isInLeague = lsr.isInLeague(uid, data.val());
       this.setState({ inLeague: isInLeague });
     });
-
   }
 
   render() {
