@@ -11,6 +11,17 @@ import PropTypes from 'prop-types';
 class SignInToggleBase extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      user: this.props.firebase.getCurrentUser()
+    };
+  }
+
+  componentDidMount() {
+    this.props.firebase.addAuthListener(this.authChanged.bind(this))
+  }
+
+  authChanged(user) {
+    this.setState({user: user});
   }
 
   static propTypes = {
@@ -19,7 +30,7 @@ class SignInToggleBase extends Component {
 
   render() {
     return (
-      this.props.firebase.getCurrentUser() ? <SignOut/> : <SignIn/>
+      this.state.user ? <SignOut/> : <SignIn/>
     );
   }
 }
