@@ -56,7 +56,10 @@ function DraftSelectionGrid({ taken = ["ARI", "CLE"] }) {
   return (
     <React.Fragment>
       {FOOTBALL.ALL_TEAMS.map(team =>
-        <div className={["team", selected == team ? "team-selected" : "", taken.includes(team) ? "taken" : ""].join(' ')} key={team}>
+        <div className={["team", selected == team ? "team-selected" : "", taken.includes(team) ? "taken" : ""].join(' ')}
+         key={team}
+         onClick={setSelected.bind(this, team)}
+         >
           <img
             src={
               'http://i.nflcdn.com/static/site/7.5/img/logos/svg/' +
