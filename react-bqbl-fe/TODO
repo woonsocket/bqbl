@@ -22,7 +22,7 @@ Pull constants into a top-level
 
 New features:
 League creation - 
-  Add a cloud function that lets you add a league ID
+  XX Add a cloud function that lets you add a league ID
   Add a league landing page which lets signed-in users join
   Add a draft mode?!
     Add a draft order to the league schema

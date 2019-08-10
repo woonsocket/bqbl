@@ -12,6 +12,7 @@ class DraftPageBase extends Component {
     super(props);
     this.user = null;
     this.dh = true;
+    this.leagueid = this.props.match.params.league || "nbqbl";
     this.state = {
       valsList: [],
     };
@@ -45,6 +46,7 @@ class DraftPageBase extends Component {
   render() {
     return (
       <React.Fragment>
+        {this.props.match.params.leagueid}
         {FOOTBALL.ALL_TEAMS.map(team =>
           <div className="team" key={team}>
             <img

@@ -23,7 +23,7 @@ class PlayerStandingsPageBase extends Component {
   constructor(props) {
     super(props);
     this.user = null;
-    this.league = this.props.match.params.league || "-KtC8hcGgvbh2W2Tq79n";
+    this.league = this.props.match.params.leagueid || "-KtC8hcGgvbh2W2Tq79n";
     this.year = this.props.match.params.year || "2018";
     this.state = {
       players: [],

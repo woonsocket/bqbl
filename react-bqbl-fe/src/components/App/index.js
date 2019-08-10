@@ -80,7 +80,7 @@ function App() {
         <Route path="/player-standings/:leagueid?/:year?" component={PlayerStandingsPage} />
         <Route path="/team-scores/:year?/:week?" component={ScorePage} />
         <Route path="/team-standings/:year?" component={TeamStandingsPage} />
-        <Route path="/draft" component={DraftPage} />
+        <Route path="/draft/:leagueid?" component={DraftPage} />
       </div>
     </Router>
   );
