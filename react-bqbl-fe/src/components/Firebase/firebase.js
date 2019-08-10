@@ -1,6 +1,7 @@
 import app from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/database';
+import 'firebase/functions';
 
 const config = {
   apiKey: process.env.REACT_APP_API_KEY,
@@ -19,6 +20,8 @@ class Firebase {
     this.auth = app.auth();
     this.googleProvider = new app.auth.GoogleAuthProvider();
     this.db = app.database();
+    this.functions = app.functions();
+
     this.auth.onAuthStateChanged(this.authChanged.bind(this));
     this.uid = "";
   }
@@ -90,6 +93,9 @@ class Firebase {
   leagueChanged() {
   }
 
+  draftTeam() {
+    return this.functions.httpsCallable('draftTeam');
+  } 
 }
 
 export default Firebase;

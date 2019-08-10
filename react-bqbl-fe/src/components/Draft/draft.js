@@ -20,7 +20,8 @@ import Button from '@material-ui/core/Button';
 class DraftPageBase extends Component {
   constructor(props) {
     super(props);
-    this.leagueid = this.props.match.params.league || "nbqbl";
+    this.leagueid = props.match.params.league || "nbqbl";
+    this.firebase = props.firebase;
     this.state = {
       inLeague: false,
       value: 0
@@ -49,7 +50,11 @@ class DraftPageBase extends Component {
   }
 
   selectCallback(team) {
-    console.log(team);
+    this.props.firebase.draftTeam()({team: team, league:this.leagueid}).then(function(result) {
+      var sanitizedMessage = result.data;
+      console.log(sanitizedMessage)
+    });
+    
   }
 
   handleChange(event, newValue) {
@@ -65,11 +70,11 @@ class DraftPageBase extends Component {
       </Tabs>
       <TabPanel value={this.state.value} index={0}>
         {this.state.inLeague ?
-          <DraftSelectionGrid selectCallback={this.selectCallback} /> : <NotInLeagueUI adduser={this.addUser.bind(this)} />
+          <DraftSelectionGrid selectCallback={this.selectCallback.bind(this)} /> : <NotInLeagueUI adduser={this.addUser.bind(this)} />
         }
       </TabPanel>
       <TabPanel value={this.state.value} index={1}>
-        TODO: Put in the list of all teams taken so far, and the draft order.
+        <DraftSelectionList />
       </TabPanel>
     </React.Fragment>
   }
@@ -172,6 +177,28 @@ function DraftSnackbar(props) {
   );
 }
 
+
+function DraftSelectionList({ draftList=[{team:'DAL', uid: 15}] }) {
+
+  return (
+    draftList.map((row, idx) =>
+      <div key={idx}>
+        <span>{idx+1}</span>
+        <img
+          src={
+            'http://i.nflcdn.com/static/site/7.5/img/logos/svg/' +
+            'teams-matte/' + row.team + '.svg'}
+          width='20px'
+          alt="" />
+        <span className="cell">
+          {row.team}
+          {"  "}
+          {row.uid}
+        </span>
+      </div>
+    )
+  )
+}
 function NotInLeagueUI(props) {
   return (
     <div>
