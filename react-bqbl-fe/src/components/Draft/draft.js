@@ -4,7 +4,6 @@ import React, { Component, useState } from 'react';
 import './draft.css'
 import { withFirebase } from '../Firebase';
 import * as FOOTBALL from '../../constants/football';
-import Fab from '@material-ui/core/Fab';
 
 import Snackbar from '@material-ui/core/Snackbar';
 import IconButton from '@material-ui/core/IconButton';
