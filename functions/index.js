@@ -151,10 +151,24 @@ exports.tmpWriteLeague = functions.https.onRequest((req, res) => {
 
 
 /**
- * Read in a league spec from /{LEAGUEID}.
+ * Create a league spec at /leaguespec/{LEAGUEID}.
+ * 
+ * url - createNewYear/{LEAGUE_ID}
+ */
+exports.createLeague = functions.https.onRequest((req, res) => {
+  const leagueId = new URL(req.url, "http://bqbl.futbol").pathname.slice(1);
+  const leagueRef = admin.database().ref(`tmp/leaguespec/` + leagueId);
+  const stubLeague = {
+    id: leagueId
+  };
+  leagueRef.set(stubLeague);
+  res.status(200).send("success");
+});
+
+/**
+ * Read in a league spec from /leaguespec/{LEAGUEID}.
  * Write out all of the starts for that league.
  */
-
 exports.createNewYear = functions.https.onRequest((req, res) => {
   const leagueId = new URL(req.url, "http://bqbl.futbol").pathname.slice(1);
 
