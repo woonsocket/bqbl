@@ -4,6 +4,11 @@ import React, { Component, useState } from 'react';
 import './draft.css'
 import { withFirebase } from '../Firebase';
 import * as FOOTBALL from '../../constants/football';
+import Fab from '@material-ui/core/Fab';
+
+import Snackbar from '@material-ui/core/Snackbar';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
 
 import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
@@ -64,7 +69,51 @@ function DraftSelectionGrid({ taken = ["ARI", "CLE"] }) {
           </div>
         </div>
       )}
+      <DraftSnackbar teamSelected={selected}/>
     </React.Fragment>
+  );
+}
+
+function DraftSnackbar(props) {
+  const [open, setOpen] = React.useState(props.teamSelected);
+
+  function handleClick() {
+    setOpen(true);
+  }
+
+  function handleClose(event, reason) {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  }
+
+  return (
+    <div>
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        open={open}
+        onClose={handleClose}
+        message={<span id="message-id">Draft!</span>}
+        action={[
+          <Button key="undo" color="secondary" size="small" onClick={handleClose}>
+            CONFIRM
+          </Button>,
+          <IconButton
+            key="close"
+            aria-label="close"
+            color="inherit"
+            onClick={handleClose}
+          >
+            <CloseIcon />
+          </IconButton>,
+        ]}
+      />
+    </div>
   );
 }
 
