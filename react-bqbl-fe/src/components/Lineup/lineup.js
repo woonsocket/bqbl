@@ -29,6 +29,7 @@ class LineupPageBase extends Component {
       return;
     }
     this.user = user;
+    // TODO: key starts by league && UID.
     this.props.firebase.starts_year(user.uid, '2019')
       .on('value', snapshot => {
         const vals = snapshot.val();
