@@ -8,6 +8,10 @@ import * as FOOTBALL from '../../constants/football';
 import Snackbar from '@material-ui/core/Snackbar';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
 
 import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
@@ -19,6 +23,7 @@ class DraftPageBase extends Component {
     this.leagueid = this.props.match.params.league || "nbqbl";
     this.state = {
       inLeague: false,
+      value: 0
     };
   }
 
@@ -47,11 +52,44 @@ class DraftPageBase extends Component {
     console.log(team);
   }
 
+  handleChange(event, newValue) {
+    this.setState({ value: newValue });
+  }
+
   render() {
     // TODO: Redirect away from this page entirely for signed-out users.
-    return this.state.inLeague ?
-      <DraftSelectionGrid selectCallback={this.selectCallback}/> : <NotInLeagueUI adduser={this.addUser.bind(this)}/>
+    return <React.Fragment>
+      <Tabs value={this.state.value} onChange={this.handleChange.bind(this)} variant="fullWidth">
+        <Tab label="Select" />
+        <Tab label="History" />
+      </Tabs>
+      <TabPanel value={this.state.value} index={0}>
+        {this.state.inLeague ?
+          <DraftSelectionGrid selectCallback={this.selectCallback} /> : <NotInLeagueUI adduser={this.addUser.bind(this)} />
+        }
+      </TabPanel>
+      <TabPanel value={this.state.value} index={1}>
+        TODO: Put in the list of all teams taken so far, and the draft order.
+      </TabPanel>
+    </React.Fragment>
   }
+}
+
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <Typography
+      component="div"
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      <Box p={3}>{children}</Box>
+    </Typography>
+  );
 }
 
 function DraftSelectionGrid({ taken = ["ARI", "CLE"], selectCallback }) {
@@ -67,9 +105,9 @@ function DraftSelectionGrid({ taken = ["ARI", "CLE"], selectCallback }) {
     <React.Fragment>
       {FOOTBALL.ALL_TEAMS.map(team =>
         <div className={["team", selected == team ? "team-selected" : "", taken.includes(team) ? "taken" : ""].join(' ')}
-         key={team}
-         onClick={updateSelection.bind(this, team)}
-         >
+          key={team}
+          onClick={updateSelection.bind(this, team)}
+        >
           <img
             src={
               'http://i.nflcdn.com/static/site/7.5/img/logos/svg/' +
@@ -81,7 +119,7 @@ function DraftSelectionGrid({ taken = ["ARI", "CLE"], selectCallback }) {
           </div>
         </div>
       )}
-      <DraftSnackbar teamSelected={selected} selectCallback={selectCallback}/>
+      <DraftSnackbar teamSelected={selected} selectCallback={selectCallback} />
     </React.Fragment>
   );
 }
@@ -154,7 +192,7 @@ class LeagueSpecReader {
   }
 
   addUser(uid, leagueData) {
-    leagueData.users.push({name: "Foo", uid: uid, teams: []});
+    leagueData.users.push({ name: "Foo", uid: uid, teams: [] });
     return leagueData;
   }
 }
