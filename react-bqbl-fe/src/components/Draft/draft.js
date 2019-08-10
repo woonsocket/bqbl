@@ -43,14 +43,18 @@ class DraftPageBase extends Component {
 
   }
 
+  selectCallback(team) {
+    console.log(team);
+  }
+
   render() {
     // TODO: Redirect away from this page entirely for signed-out users.
     return this.state.inLeague ?
-      <DraftSelectionGrid /> : <NotInLeagueUI adduser={this.addUser.bind(this)}/>
+      <DraftSelectionGrid selectCallback={this.selectCallback}/> : <NotInLeagueUI adduser={this.addUser.bind(this)}/>
   }
 }
 
-function DraftSelectionGrid({ taken = ["ARI", "CLE"] }) {
+function DraftSelectionGrid({ taken = ["ARI", "CLE"], selectCallback }) {
   const [selected, setSelected] = useState("DEN");
 
   function updateSelection(team) {
@@ -77,7 +81,7 @@ function DraftSelectionGrid({ taken = ["ARI", "CLE"] }) {
           </div>
         </div>
       )}
-      <DraftSnackbar teamSelected={selected}/>
+      <DraftSnackbar teamSelected={selected} selectCallback={selectCallback}/>
     </React.Fragment>
   );
 }
@@ -87,6 +91,11 @@ function DraftSnackbar(props) {
 
   function handleClick() {
     setOpen(true);
+  }
+
+  function handleConfirm(event, reason) {
+    props.selectCallback(props.teamSelected)
+    handleClose(event, reason);
   }
 
   function handleClose(event, reason) {
@@ -108,7 +117,7 @@ function DraftSnackbar(props) {
         onClose={handleClose}
         message={<span id="message-id">Draft!</span>}
         action={[
-          <Button key="undo" color="secondary" size="small" onClick={handleClose}>
+          <Button key="undo" color="secondary" size="small" onClick={handleConfirm}>
             CONFIRM
           </Button>,
           <IconButton
