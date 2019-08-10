@@ -7,3 +7,11 @@
 .cell {
   text-align: center
 }
+
+.team-selected {
+  background: lightblue;
+}
+
+.taken {
+  opacity: .3;
+}
