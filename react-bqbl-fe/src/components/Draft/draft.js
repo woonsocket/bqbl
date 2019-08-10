@@ -46,7 +46,6 @@ class DraftPageBase extends Component {
   render() {
     return (
       <React.Fragment>
-        {this.props.match.params.leagueid}
         {FOOTBALL.ALL_TEAMS.map(team =>
           <div className="team" key={team}>
             <img
