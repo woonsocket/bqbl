@@ -16,6 +16,14 @@ import Snackbar from '@material-ui/core/Snackbar';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+
+
+
 class DraftPageBase extends Component {
   constructor(props) {
     super(props);
@@ -155,24 +163,27 @@ function DraftSnackbar({selectedTeam, selectCallback, setSelectedTeamCallback}) 
 
 
 function DraftSelectionList({ draftList=[{team:'DAL', uid: 15}] }) {
-
   return (
-    draftList.map((row, idx) =>
-      <div key={idx}>
-        <span>{idx+1}</span>
-        <img
-          src={
-            'http://i.nflcdn.com/static/site/7.5/img/logos/svg/' +
-            'teams-matte/' + row.team + '.svg'}
-          width='20px'
-          alt="" />
-        <span className="cell">
-          {row.team}
-          {"  "}
-          {row.name}
-        </span>
-      </div>
-    )
+    <Table>
+    <TableHead>
+      <TableRow>
+        <TableCell>Pick</TableCell>
+        <TableCell align="right">Who</TableCell>
+        <TableCell align="right">Team</TableCell>
+      </TableRow>
+    </TableHead>
+    <TableBody>
+      {draftList.map((row, idx) =>
+        <TableRow key={idx}>
+          <TableCell component="th" scope="row">
+            {`Pick ${idx+1}`}
+          </TableCell>
+          <TableCell> {row.name}</TableCell>
+          <TableCell align="right"><TeamIcon team={row.team}/> {row.team} </TableCell>
+        </TableRow>
+      )}
+    </TableBody>
+  </Table>
   )
 }
 
