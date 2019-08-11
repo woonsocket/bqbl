@@ -150,7 +150,6 @@ function DraftSnackbar({selectedTeam, selectCallback, setSelectedTeamCallback}) 
 
   return (
     <div>
-      {selectedTeam}
       <Snackbar
         anchorOrigin={{
           vertical: 'bottom',
@@ -158,10 +157,10 @@ function DraftSnackbar({selectedTeam, selectCallback, setSelectedTeamCallback}) 
         }}
         open={selectedTeam != ""}
         onClose={handleClose}
-        message={<span id="message-id">Draft!</span>}
+        message={<span id="message-id">Confirm selection</span>}
         action={[
           <Button key="undo" color="secondary" size="small" onClick={handleConfirm}>
-            CONFIRM
+            DRAFT {selectedTeam}
           </Button>,
           <IconButton
             key="close"
@@ -199,6 +198,7 @@ function DraftSelectionList({ draftList=[{team:'DAL', uid: 15}] }) {
     )
   )
 }
+
 function NotInLeagueUI(props) {
   return (
     <div>
