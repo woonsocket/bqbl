@@ -1,15 +1,17 @@
 .team {
-  padding: 1em;
-  min-width: 1em;
   display: inline-block;
 }
 
 .id {
-  min-width: 5em;
+  min-width: 4em;
   font-weight: bold;
   display: inline-block;
 }
 
 .selected {
-  color: red;
+  background: lightblue;
+}
+
+.MuiTableCell-sizeSmall {
+padding: 6px !important;
 }

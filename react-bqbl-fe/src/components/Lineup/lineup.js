@@ -8,12 +8,19 @@ import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
 import Input from '@material-ui/core/Input';
 import NativeSelect from '@material-ui/core/NativeSelect';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableRow from '@material-ui/core/TableRow';
+import Table from '@material-ui/core/Table';
 
+// TODO: Fully decouple data and UI.
 class LineupPageBase extends Component {
   constructor(props) {
     super(props);
     this.user = null;
-    this.dh = true;
+    this.league = props.league || '-KtC8hcGgvbh2W2Tq79n';
+    this.year = props.year || '2019';
+    this.dh = false;
     this.state = {
       valsList: [],
     };
@@ -25,119 +32,90 @@ class LineupPageBase extends Component {
 
   authChanged(user) {
     if (!user) {
-      console.log("bail!");
+        // eslint-disable-next-line no-console
+        console.log("bail!");
       return;
     }
     this.user = user;
     // TODO: key starts by league && UID.
-    this.props.firebase.starts_year(user.uid, '2019')
+    this.props.firebase.starts_year(user.uid, this.year)
       .on('value', snapshot => {
-        const vals = snapshot.val();
-        console.log(snapshot.val())
-        const valsList = Object.keys(vals).map(key => ({
-          ...vals[key],
-          uid: key,
-        }));
-        this.setState({ valsList: valsList })
+        this.setState({ valsList: Object.values(snapshot.val())});
       })
   }
 
   updateCallback(weekData, weekId) {
     this.props.firebase.starts_week(this.user.uid, '2019', weekId)
       .update(weekData);
-    console.log(weekData)
+  }
+
+  clickCallback(weekId, cell, val) {
+    const weekIndex = weekId * 1 - 1;
+    let row = this.state.valsList[weekIndex];
+    // The DH continues to be my enemy.
+    if (cell === 5 && row.teams.length === 4) {
+      row.teams.push({name:'', selected:false})
+    }
+    if (row.teams.length <= cell) {
+      row.teams.push({name:val, selected:false})
+    }
+    row.teams[cell].selected = !row.teams[cell].selected;
+    this.setState({ valsList: this.state.valsList })
+    this.props.firebase.starts_week(this.user.uid, '2019', weekIndex).update(row);
   }
 
   render() {
     return (
-      <React.Fragment>
-        {this.state.valsList.map((week, index) => (
-          <div key={index}>
+      <Table size="small">
+        <TableBody>
+          {this.state.valsList.map((week, index) => (
             <LineupWeek
-              week={week} index={index} dh={this.dh}
-              updateCallback={this.updateCallback.bind(this)}
+              week={week} index={index} dh={this.dh} key={index}
+              clickCallback={this.clickCallback.bind(this)}
             />
-          </div>
-        ))}
-      </React.Fragment>
-    );
-  }
+          ))}
+        </TableBody>
+      </Table>
+    )}
 }
 
+// clickCallback
+// dh
+// props.week.id
+// props.week.teams
+// props.week.teams.name
+function LineupWeek(props) {
+  return (
+    <TableRow key={props.week.id}>
+      <TableCell component="th" scope="row">
+        Week {props.week.id}
+      </TableCell>
+      {props.week.teams.slice(0, 4).map((team, idx) =>
+        <TableCell align="right" key={'' + props.week.id + idx}
+          className={team.selected ? "team selected" : "team"}
+          onClick={props.clickCallback.bind(null, props.week.id, idx, team.name)}>
+          {team.name}
+        </TableCell>
+      )}
+      {props.dh && <React.Fragment>
+        <TableCell> <DHSelector clickCallback={props.clickCallback} weekId={props.week.id} dhId={4} team={props.week.teams[4] || {}}/> </TableCell>
+        <TableCell> <DHSelector clickCallback={props.clickCallback} weekId={props.week.id} dhId={5} team={props.week.teams[5] || {}}/> </TableCell>
+      </React.Fragment>}
+    </TableRow>
+  );
+}
 
-class LineupWeek extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      weekData: props.week,
-      weekIndex: props.index,
-      updateCallback: props.updateCallback,
-      dh: props.dh
-    };
-  }
-
-  handleClick(e) {
-    var idx = e.currentTarget.getAttribute("data-idx");
-    let newState = this.state;
-    newState.weekData.teams[idx].selected =
-      !this.state.weekData.teams[idx].selected;
-    this.setState(newState);
-    this.state.updateCallback(this.state.weekData, this.state.weekIndex)
-  }
-
-  handleSelect(e) {
-    var idx = e.currentTarget.getAttribute("id");
-    let newState = this.state;
-    if (newState.weekData.teams.length <= idx) {
-      newState.weekData.teams.push({
-        name: e.currentTarget.value,
-        selected: true
-      })
-    } else {
-      newState.weekData.teams[idx].name = e.currentTarget.value;
-      newState.weekData.teams[idx].selected = true;
-    }
-    this.setState(newState);
-    this.state.updateCallback(this.state.weekData, this.state.weekIndex)
-  }
-
-  render() {
-    return (
-      <React.Fragment>
-        <div className="id" key={this.state.weekData.id}>
-          Week {this.state.weekData.id}</div>
-        {this.state.weekData.teams.slice(0, 4).map((team, idx) => (
-          <div key={idx} data-idx={idx} onClick={this.handleClick.bind(this)}
-            className={team.selected ? "team" : "team selected"}>{team.name}
-          </div>
-        ))}
-        {this.state.dh &&
-          <NativeSelect
-            value={this.state.weekData.teams[4] && (this.state.weekData.teams[4].name || "")}
-            onChange={this.handleSelect.bind(this)}
-            input={<Input name="dh-1" id="4"
-            />}
-          >          <option value="">None</option>
-            {FOOTBALL.ALL_TEAMS.map(team => <option value={team} key={team}>{team}</option>
-            )}      </NativeSelect>
-
-        }
-
-        {this.state.dh &&
-          <NativeSelect
-            value={this.state.weekData.teams[5] && (this.state.weekData.teams[5].name || "")}
-            onChange={this.handleSelect.bind(this)}
-            input={<Input name="dh-2" id="5"
-            />}
-          >          <option value="">None</option>
-            {FOOTBALL.ALL_TEAMS.map(team => <option value={team} key={team}>{team}</option>
-            )}      </NativeSelect>
-
-        }
-
-      </React.Fragment>
-    )
-  }
+function DHSelector(props) {
+  return (
+    <NativeSelect
+      value={props.team.name || ""}
+      onChange={e => props.clickCallback.bind(null, props.weekId, props.dhId)(e.target.value)}
+      input={<Input/>}
+    >
+      <option value="">None</option>
+      {FOOTBALL.ALL_TEAMS.map(team => <option value={team} key={team}>{team}</option>)}
+    </NativeSelect>
+  )
 }
 
 const LineupPage = compose(
