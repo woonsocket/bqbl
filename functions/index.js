@@ -277,7 +277,6 @@ exports.draftTeam = functions.https.onCall((data, context) => {
   const team = data.team;
   const league = data.league;
   // Authentication / user information is automatically added to the request.
-  // const uid = context.auth.uid;
   // const name = context.auth.token.name || null;
   const uid = data.uidOverride;
 
@@ -289,11 +288,16 @@ exports.draftTeam = functions.https.onCall((data, context) => {
       for (let i = 0; i < draft.length; i++) {
         if (draft[i].team) {
           if (draft[i].team === team) {
-            return;
+            throw new functions.https.HttpsError(
+              'invalid-argument', 'This team is already drafted.');
           }
           continue;
         }
-        if (draft[i].uid == uid) {
+        if (draft[i].uid != uid) {
+          throw new functions.https.HttpsError(
+            'invalid-argument', 'It\'s not your turn.');
+
+        } else {
           admin.database().ref(draftRef+`/${i}`).set({uid:uid, team:team});
           return;
         }
