@@ -19,7 +19,7 @@ import Tabs from '@material-ui/core/Tabs';
 class DraftPageBase extends Component {
   constructor(props) {
     super(props);
-    this.leagueid = props.match.params.league || "abqbl";
+    this.leagueid = props.match.params.league || "rbqbl";
     this.year = props.match.params.year || "2019";
     this.firebase = props.firebase;
     this.state = {
@@ -169,7 +169,7 @@ function DraftSelectionList({ draftList=[{team:'DAL', uid: 15}] }) {
         <span className="cell">
           {row.team}
           {"  "}
-          {row.uid}
+          {row.name}
         </span>
       </div>
     )

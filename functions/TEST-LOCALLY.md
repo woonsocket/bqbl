@@ -2,7 +2,7 @@ export GOOGLE_APPLICATION_CREDENTIALS=../private-keys/bqbl-591f3-f7f1062e9016.js
 firebase functions:shell
 
 # Shell recipes
-draftTeam({team:'den', league:'nbqbl', uidOverride:'4'})
+draftTeam({team:'den', league:'rbqbl', uidOverride:'4', year: '2019'})
 createLeague({league: 'rbqbl'})
 setDraftOrder({league: 'abqbl', year: '2019'})
 

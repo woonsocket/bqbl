@@ -139,13 +139,13 @@ exports.tmpWriteLeague = functions.https.onCall((data, context) => {
   const year = data.year || '2019';
   const nbqbl = admin.database().ref(`/tmp/leaguespec/${league}/users/${year}`);
   return nbqbl.update([{ name: 'Joel', uid: '1', teams: [{ name: 'ARI' }, { name: 'BUF' }, { name: 'CLE' }, { name: 'NYJ' }] },
-    { name: 'Harvey', uid: '2', teams: [{ name: 'ARI' }, { name: 'BUF' }, { name: 'CLE' }, { name: 'NYJ' }] },
-    { name: '3', uid: 'jzNyhVtHzKe8ERAaFrOAL2cFwZJ2' },
-    { name: '4', uid: '4' },
-    { name: '5', uid: '5' },
-    { name: '6', uid: '6' },
-    { name: '7', uid: '7' },
-    { name: '8', uid: '8' },])
+    { name: 'Jason', uid: '2', teams: [{ name: 'ARI' }, { name: 'BUF' }, { name: 'CLE' }, { name: 'NYJ' }] },
+    { name: 'Harvey', uid: 'jzNyhVtHzKe8ERAaFrOAL2cFwZJ2' },
+    { name: 'Sanchez', uid: '4' },
+    { name: 'Testaverde', uid: '5' },
+    { name: 'Cassell', uid: '6' },
+    { name: 'Hanie', uid: '7' },
+    { name: 'Tebow', uid: '8' },])
 });
 
 exports.setDraftOrder = functions.https.onCall((data, context) => {
@@ -153,11 +153,10 @@ exports.setDraftOrder = functions.https.onCall((data, context) => {
   const year = data.year || '2019';
   return admin.database().ref(`/tmp/leaguespec/${league}/users/${year}`).once('value').then(
     dataPromise => {
-      let users = dataPromise.val();
-      let uids = users.map(user => user.uid);
-      shuffle(uids);
-      const uidsReverse = [...uids].reverse();
-      let order = uids.concat(uidsReverse, uids, uidsReverse).map(uid => { return {uid: uid}});
+      let filteredUsers = dataPromise.val().map(item => {return {uid: item.uid, name: item.name}});
+      let shuffledUsers = shuffle(filteredUsers);
+      const shuffledUsersReverse = [...shuffledUsers].reverse();
+      let order = shuffledUsers.concat(shuffledUsersReverse, shuffledUsers, shuffledUsersReverse);
       console.log(`/tmp/leaguespec/${league}/draft/${year}`);
       return admin.database().ref(`/tmp/leaguespec/${league}/draft/${year}`).set(order)
     })
@@ -279,11 +278,12 @@ exports.forkDataToTmp = functions.https.onRequest((req, res) => {
 exports.draftTeam = functions.https.onCall((data, context) => {
   const team = data.team;
   const league = data.league;
+  const year = data.year;
   // Authentication / user information is automatically added to the request.
   const name = context.auth && context.auth.token.name || null;
-  const uid = data.uidOverride;
+  const uid = context.auth && context.auth.uid || data.uidOverride;
 
-  const draftRef = `tmp/leaguespec/${league}/draft/`;
+  const draftRef = `tmp/leaguespec/${league}/draft/${year}`;
   return admin.database()
     .ref(draftRef)
     .once('value').then(data => {
@@ -298,10 +298,9 @@ exports.draftTeam = functions.https.onCall((data, context) => {
         }
         if (draft[i].uid != uid) {
           throw new functions.https.HttpsError(
-            'invalid-argument', 'It\'s not your turn.');
-
+            'invalid-argument', `It's not your turn. ${uid} ${draft[i].uid}`);
         } else {
-          admin.database().ref(draftRef+`/${i}`).set({uid:uid, team:team});
+          admin.database().ref(draftRef+`/${i}/team`).set(team);
           return;
         }
       }
