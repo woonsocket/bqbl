@@ -20,17 +20,17 @@ import Button from '@material-ui/core/Button';
 class DraftPageBase extends Component {
   constructor(props) {
     super(props);
-    this.leagueid = props.match.params.league || "bqbl4";
+    this.leagueid = props.match.params.league || "abqbl";
+    this.year = props.match.params.year || "2019";
     this.firebase = props.firebase;
     this.state = {
       inLeague: false,
-      value: 0
     };
   }
 
   componentDidMount() {
     this.props.firebase.league_spec(this.leagueid).once('value').then(data => {
-      let lsr = new LeagueSpecReader();
+      let lsr = new LeagueSpecReader({year: this.year});
       let uid = this.props.firebase.getCurrentUser() ? this.props.firebase.getCurrentUser().uid : null;
       let isInLeague = lsr.isInLeague(uid, data.val());
       let takenTeams = lsr.getTakenTeams(data.val());
@@ -209,9 +209,15 @@ function NotInLeagueUI(props) {
 }
 
 class LeagueSpecReader {
+  constructor (props) {
+    this.year = props.year;
+    console.log(props.year)
+  }
+
   isInLeague(uid, leagueData) {
-    for (let i = 0; i < leagueData.users.length; i++) {
-      if (leagueData.users[i].uid == uid) {
+    const users = leagueData.users[this.year];
+    for (let i = 0; i < users.length; i++) {
+      if (users[i].uid == uid) {
         return true;
       }
     }
@@ -219,16 +225,17 @@ class LeagueSpecReader {
   }
 
   addUser(uid, leagueData) {
-    leagueData.users.push({ name: "Foo", uid: uid, teams: [] });
+    let users = leagueData.users[this.year];
+    users.push({ name: "Foo", uid: uid, teams: [] });
     return leagueData;
   }
 
   getTakenTeams(leagueData) {
-    return leagueData.draft.map(draftItem => {return draftItem.team })
+    return leagueData.draft[this.year].map(draftItem => {return draftItem.team })
   }
 
   getDraftList(leagueData) {
-    return leagueData.draft;
+    return leagueData.draft[this.year];
   }
 }
 
