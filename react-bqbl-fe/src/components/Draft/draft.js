@@ -48,14 +48,13 @@ class DraftPageBase extends Component {
       let newData = lsdp.addUser(uid, leagueData);
       this.props.firebase.league_spec(this.leagueid).update(newData);
     });
-
   }
 
   selectCallback(team) {
-    this.props.firebase.draftTeam()({team: team, league:this.leagueid}).then(function(result) {
+    // I'm clearly holding this function invocation wrong. Need to figure out the es6y way.
+    this.props.firebase.draftTeam()({team: team, year: this.year, league:this.leagueid}).then(function(result) {
       console.log(result);
     });
-    
   }
 
   handleChange(event, newValue) {
