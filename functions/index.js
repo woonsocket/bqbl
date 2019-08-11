@@ -151,14 +151,15 @@ exports.tmpWriteLeague = functions.https.onCall((data, context) => {
 exports.setDraftOrder = functions.https.onCall((data, context) => {
   const league = data.league;
   const year = data.year || '2019';
-  return admin.database().ref(`/tmp/leaguespec/${league}`).once('value').then(
+  return admin.database().ref(`/tmp/leaguespec/${league}/users/${year}`).once('value').then(
     dataPromise => {
-      let data = dataPromise.val();
-      let uids = data.users.map(user => user.uid);
+      let users = dataPromise.val();
+      let uids = users.map(user => user.uid);
       shuffle(uids);
       const uidsReverse = [...uids].reverse();
       let order = uids.concat(uidsReverse, uids, uidsReverse).map(uid => { return {uid: uid}});
-      admin.database().ref(`/tmp/leaguespec/${league}/draft/${year}`).set(order)
+      console.log(`/tmp/leaguespec/${league}/draft/${year}`);
+      return admin.database().ref(`/tmp/leaguespec/${league}/draft/${year}`).set(order)
     })
 });
 
