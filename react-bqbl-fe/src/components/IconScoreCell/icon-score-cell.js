@@ -1,37 +1,22 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
+import TeamIcon from '../reusable/TeamIcon/team-icon'
 import './icon-score-cell.css';
 
-class IconScoreCell extends Component {
-  static propTypes = {
-    team: PropTypes.string.isRequired,
-    score: PropTypes.number.isRequired,
-  };
+IconScoreCell.propTypes = {
+  team: PropTypes.string.isRequired,
+  score: PropTypes.number.isRequired
+}
 
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      team: props.team,
-      score: props.score
-    };
-  }
-
-  render() {
-    return (
-        <div className="outer">
-          <img
-            src={
-              'http://i.nflcdn.com/static/site/7.5/img/logos/svg/' +
-                'teams-matte/' + this.state.team + '.svg'}
-                width='20px'
-                alt=""/>
-           <span className="cell">
-              {this.state.score}
-              </span>
-        </div>
-    )
-  }
+function IconScoreCell(props) {
+  return (
+    <div className="outer">
+      <TeamIcon team={props.team} width='20px' />
+      <span className="cell">
+        {props.score}
+      </span>
+    </div>
+  )
 }
 export default IconScoreCell;
