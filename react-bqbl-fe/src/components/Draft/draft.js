@@ -20,7 +20,7 @@ import Button from '@material-ui/core/Button';
 class DraftPageBase extends Component {
   constructor(props) {
     super(props);
-    this.leagueid = props.match.params.league || "nbqbl";
+    this.leagueid = props.match.params.league || "bqbl4";
     this.firebase = props.firebase;
     this.state = {
       inLeague: false,
@@ -33,7 +33,8 @@ class DraftPageBase extends Component {
       let lsr = new LeagueSpecReader();
       let uid = this.props.firebase.getCurrentUser() ? this.props.firebase.getCurrentUser().uid : null;
       let isInLeague = lsr.isInLeague(uid, data.val());
-      this.setState({ inLeague: isInLeague });
+      let takenTeams = lsr.getTakenTeams(data.val());
+      this.setState({ inLeague: isInLeague, takenTeams: takenTeams});
     });
   }
 
@@ -51,8 +52,6 @@ class DraftPageBase extends Component {
 
   selectCallback(team) {
     this.props.firebase.draftTeam()({team: team, league:this.leagueid}).then(function(result) {
-      var sanitizedMessage = result.data;
-      console.log(sanitizedMessage)
     });
     
   }
@@ -70,7 +69,9 @@ class DraftPageBase extends Component {
       </Tabs>
       <TabPanel value={this.state.value} index={0}>
         {this.state.inLeague ?
-          <DraftSelectionGrid selectCallback={this.selectCallback.bind(this)} /> : <NotInLeagueUI adduser={this.addUser.bind(this)} />
+          <DraftSelectionGrid selectCallback={this.selectCallback.bind(this)} 
+            taken={this.state.takenTeams}/> 
+          : <NotInLeagueUI adduser={this.addUser.bind(this)} />
         }
       </TabPanel>
       <TabPanel value={this.state.value} index={1}>
@@ -97,19 +98,19 @@ function TabPanel(props) {
   );
 }
 
-function DraftSelectionGrid({ taken = ["ARI", "CLE"], selectCallback }) {
-  const [selected, setSelected] = useState("DEN");
+function DraftSelectionGrid({ taken=[], selectCallback }) {
+  const [selectedTeam, setSelectedTeam] = useState("");
 
   function updateSelection(team) {
     if (!taken.includes(team)) {
-      setSelected(team);
+      setSelectedTeam(team);
     }
   }
 
   return (
     <React.Fragment>
       {FOOTBALL.ALL_TEAMS.map(team =>
-        <div className={["team", selected == team ? "team-selected" : "", taken.includes(team) ? "taken" : ""].join(' ')}
+        <div className={["team", selectedTeam == team ? "team-selected" : "", taken.includes(team) ? "taken" : ""].join(' ')}
           key={team}
           onClick={updateSelection.bind(this, team)}
         >
@@ -124,20 +125,15 @@ function DraftSelectionGrid({ taken = ["ARI", "CLE"], selectCallback }) {
           </div>
         </div>
       )}
-      <DraftSnackbar teamSelected={selected} selectCallback={selectCallback} />
+      <DraftSnackbar selectedTeam={selectedTeam} selectCallback={selectCallback} />
     </React.Fragment>
   );
 }
 
-function DraftSnackbar(props) {
-  const [open, setOpen] = React.useState(props.teamSelected);
-
-  function handleClick() {
-    setOpen(true);
-  }
+function DraftSnackbar({selectedTeam, selectCallback}) {
 
   function handleConfirm(event, reason) {
-    props.selectCallback(props.teamSelected)
+    selectCallback(selectedTeam)
     handleClose(event, reason);
   }
 
@@ -145,18 +141,17 @@ function DraftSnackbar(props) {
     if (reason === 'clickaway') {
       return;
     }
-
-    setOpen(false);
   }
 
   return (
     <div>
+      {selectedTeam}
       <Snackbar
         anchorOrigin={{
           vertical: 'bottom',
           horizontal: 'left',
         }}
-        open={open}
+        open={selectedTeam != ""}
         onClose={handleClose}
         message={<span id="message-id">Draft!</span>}
         action={[
@@ -221,6 +216,10 @@ class LeagueSpecReader {
   addUser(uid, leagueData) {
     leagueData.users.push({ name: "Foo", uid: uid, teams: [] });
     return leagueData;
+  }
+
+  getTakenTeams(leagueData) {
+    return leagueData.draft.map(draftItem => {return draftItem.team })
   }
 }
 
