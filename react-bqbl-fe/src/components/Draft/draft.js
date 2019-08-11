@@ -53,6 +53,7 @@ class DraftPageBase extends Component {
 
   selectCallback(team) {
     this.props.firebase.draftTeam()({team: team, league:this.leagueid}).then(function(result) {
+      console.log(result);
     });
     
   }
@@ -108,6 +109,7 @@ function DraftSelectionGrid({ taken=[], selectCallback }) {
     }
   }
 
+
   return (
     <React.Fragment>
       {FOOTBALL.ALL_TEAMS.map(team =>
@@ -126,12 +128,12 @@ function DraftSelectionGrid({ taken=[], selectCallback }) {
           </div>
         </div>
       )}
-      <DraftSnackbar selectedTeam={selectedTeam} selectCallback={selectCallback} />
+      <DraftSnackbar selectedTeam={selectedTeam} selectCallback={selectCallback} setSelectedTeamCallback={setSelectedTeam} />
     </React.Fragment>
   );
 }
 
-function DraftSnackbar({selectedTeam, selectCallback}) {
+function DraftSnackbar({selectedTeam, selectCallback, setSelectedTeamCallback}) {
 
   function handleConfirm(event, reason) {
     selectCallback(selectedTeam)
@@ -142,6 +144,8 @@ function DraftSnackbar({selectedTeam, selectCallback}) {
     if (reason === 'clickaway') {
       return;
     }
+
+    setSelectedTeamCallback('');
   }
 
   return (
