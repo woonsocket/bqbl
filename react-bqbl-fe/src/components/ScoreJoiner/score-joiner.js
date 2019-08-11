@@ -1,3 +1,9 @@
+// TODO: Build this into a larger data proxy.
+// Eventually, each page should have:
+// 1. A base class which does the literal db lookup.
+// 2. A data proxy, which is the only thing that knows the internal structure of the db.
+// 3. A functional UI component, which is decoupled from db structure.
+
 class ScoreJoiner {
   constructor(firebase, league, year, week) {
     this.firebase = firebase;
@@ -15,7 +21,9 @@ class ScoreJoiner {
         const scoresDataValue = scoresData.val();
         let startsDataValue = startsData.val();
         this.mergeData(scoresDataValue, startsDataValue);
-        setState({ playerList: startsDataValue });
+        console.log(startsDataValue)
+        let playerList = this.createPlayerListFromMergedData(startsDataValue);
+        setState({ playerList: playerList });
       })
   }
 
@@ -29,6 +37,22 @@ class ScoreJoiner {
       }
     }
   }
+
+  createPlayerListFromMergedData(startsDataValue) {
+    return Object.values(startsDataValue).map(player => {
+      return this.createStartRow(
+        player.name,
+        ...player.starts.map(start => this.createStart(start.name, start.total)))
+    })
+  }
+
+  createStartRow(name, team_1, team_2) {
+    return { name, team_1, team_2 };
+  }
+  createStart(team_name, score) {
+    return { team_name, score }
+  }
+
 }
 
 export default ScoreJoiner;

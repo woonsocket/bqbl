@@ -3,7 +3,14 @@ import React, { Component } from 'react';
 import './player-score-page.css';
 import { withFirebase } from '../Firebase';
 import ScoreJoiner from '../ScoreJoiner/score-joiner';
-import PlayerScorePageUI from './player-score-page-ui';
+
+import IconScoreCell from '../reusable/IconScoreCell/icon-score-cell'
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+
 
 import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
@@ -22,7 +29,7 @@ class PlayerScorePageBase extends Component {
     let week = this.props.match.params.week || "2";
     this.scoreJoiner = new ScoreJoiner(this.props.firebase, league, year, week)
     this.state = {
-      playerList: {},
+      playerList: [],
     };
   }
 
@@ -35,6 +42,30 @@ class PlayerScorePageBase extends Component {
   }
 }
 
+function PlayerScorePageUI(props) {
+  return (
+    <Table>
+    <TableHead>
+      <TableRow>
+        <TableCell>Name</TableCell>
+        <TableCell align="right">Team 1</TableCell>
+        <TableCell align="right">Team 2</TableCell>
+      </TableRow>
+    </TableHead>
+    <TableBody>
+      {props.playerList.map(row => (
+        <TableRow key={row.name}>
+          <TableCell component="th" scope="row">
+            {row.name}
+          </TableCell>
+          <TableCell align="right"><IconScoreCell team={row.team_1.team_name} score={row.team_1.score}/> </TableCell>
+          <TableCell align="right"><IconScoreCell team={row.team_2.team_name} score={row.team_2.score}/> </TableCell>
+        </TableRow>
+      ))}
+    </TableBody>
+  </Table>
+  )
+}
 
 const PlayerScorePage = compose(
   withRouter,
