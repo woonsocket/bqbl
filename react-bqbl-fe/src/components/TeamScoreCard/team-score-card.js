@@ -47,7 +47,7 @@ class TeamScoreCard extends Component {
           <CardContent>
             <List>{
               breakdownToComponents(this.state.score.breakdown).map(
-                (line, index) => <LineItem line={line} key={"lineitem" + index}/>
+                (line, index) => <LineItem line={line} key={"lineitem" + index} />
               )
             }
             </List>
@@ -145,15 +145,14 @@ function breakdownToComponents(breakdown) {
   return components.filter(c => c.value !== 0);
 }
 
-
 /**
  * Creates a ScoreComponent representing a simple "X points per Y" value.
-* @param {number} pointsPer How many points each Y is worth ("X").
-* @param {number} quantity How many Ys there are.
-* @param {string} description A description of what Y is. Probably should be
-  *     for the singular form of Y.
-* @return {!ScoreComponent} A ScoreComponent for the points described.
-  */
+ * @param {number} pointsPer How many points each Y is worth ("X").
+ * @param {number} quantity How many Ys there are.
+ * @param {string} description A description of what Y is. Probably should be
+ *     for the singular form of Y.
+ * @return {!ScoreComponent} A ScoreComponent for the points described.
+ */
 function simpleMultiple(pointsPer, quantity, description) {
   quantity = quantity || 0;
   if (quantity !== 1) {
