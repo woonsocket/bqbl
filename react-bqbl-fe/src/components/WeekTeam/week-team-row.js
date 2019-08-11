@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import IconScoreCell from '../IconScoreCell/icon-score-cell'
+import IconScoreCell from '../reusable/IconScoreCell/icon-score-cell'
 import './week-team-row.css';
 
 WeekTeamRow.propTypes = {

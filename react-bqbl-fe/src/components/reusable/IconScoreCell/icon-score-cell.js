@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import TeamIcon from '../reusable/TeamIcon/team-icon'
+import TeamIcon from '../TeamIcon/team-icon'
 import './icon-score-cell.css';
 
 IconScoreCell.propTypes = {
