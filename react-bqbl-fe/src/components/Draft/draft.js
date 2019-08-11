@@ -34,7 +34,8 @@ class DraftPageBase extends Component {
       let uid = this.props.firebase.getCurrentUser() ? this.props.firebase.getCurrentUser().uid : null;
       let isInLeague = lsr.isInLeague(uid, data.val());
       let takenTeams = lsr.getTakenTeams(data.val());
-      this.setState({ inLeague: isInLeague, takenTeams: takenTeams});
+      let draftList = lsr.getDraftList(data.val())
+      this.setState({ inLeague: isInLeague, takenTeams: takenTeams, draftList: draftList});
     });
   }
 
@@ -75,7 +76,7 @@ class DraftPageBase extends Component {
         }
       </TabPanel>
       <TabPanel value={this.state.value} index={1}>
-        <DraftSelectionList />
+        <DraftSelectionList draftList={this.state.draftList} />
       </TabPanel>
     </React.Fragment>
   }
@@ -220,6 +221,10 @@ class LeagueSpecReader {
 
   getTakenTeams(leagueData) {
     return leagueData.draft.map(draftItem => {return draftItem.team })
+  }
+
+  getDraftList(leagueData) {
+    return leagueData.draft;
   }
 }
 
