@@ -111,7 +111,7 @@ function DraftSelectionGrid({ taken=[], selectCallback }) {
 
 
   return (
-    <React.Fragment>
+    <div className="grid-container">
       {FOOTBALL.ALL_TEAMS.map(team =>
         <div className={["team", selectedTeam == team ? "team-selected" : "", taken.includes(team) ? "taken" : ""].join(' ')}
           key={team}
@@ -129,7 +129,7 @@ function DraftSelectionGrid({ taken=[], selectCallback }) {
         </div>
       )}
       <DraftSnackbar selectedTeam={selectedTeam} selectCallback={selectCallback} setSelectedTeamCallback={setSelectedTeam} />
-    </React.Fragment>
+    </div>
   );
 }
 

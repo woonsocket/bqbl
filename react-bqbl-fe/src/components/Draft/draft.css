@@ -15,3 +15,7 @@
 .taken {
   opacity: .3;
 }
+
+.grid-container {
+  text-align:center
+}
