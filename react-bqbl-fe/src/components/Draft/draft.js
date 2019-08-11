@@ -5,6 +5,7 @@ import './draft.css'
 import { withFirebase } from '../Firebase';
 import * as FOOTBALL from '../../constants/football';
 import TabPanel from '../reusable/TabPanel/tab-panel'
+import TeamIcon from '../reusable/TeamIcon/team-icon'
 
 import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
@@ -95,16 +96,11 @@ function DraftSelectionGrid({ taken=[], selectCallback }) {
   return (
     <div className="grid-container">
       {FOOTBALL.ALL_TEAMS.map(team =>
-        <div className={["team", selectedTeam == team ? "team-selected" : "", taken.includes(team) ? "taken" : ""].join(' ')}
+        <div className={["team", selectedTeam === team ? "team-selected" : "", taken.includes(team) ? "taken" : ""].join(' ')}
           key={team}
           onClick={updateSelection.bind(this, team)}
         >
-          <img
-            src={
-              'http://i.nflcdn.com/static/site/7.5/img/logos/svg/' +
-              'teams-matte/' + team + '.svg'}
-            width='80px'
-            alt="" /><br />
+          <TeamIcon team={team} width='80px' />
           <div className="cell">
             {team}
           </div>
@@ -137,7 +133,7 @@ function DraftSnackbar({selectedTeam, selectCallback, setSelectedTeamCallback}) 
           vertical: 'bottom',
           horizontal: 'left',
         }}
-        open={selectedTeam != ""}
+        open={selectedTeam !== ""}
         onClose={handleClose}
         message={<span id="message-id">Confirm selection</span>}
         action={[
@@ -187,19 +183,17 @@ function NotInLeagueUI(props) {
       <Button onClick={props.adduser}>Join</Button>
     </div>
   );
-
 }
 
 class LeagueSpecDataProxy {
   constructor (props) {
     this.year = props.year;
-    console.log(props.year)
   }
 
   isInLeague(uid, leagueData) {
     const users = leagueData.users[this.year];
     for (let i = 0; i < users.length; i++) {
-      if (users[i].uid == uid) {
+      if (users[i].uid === uid) {
         return true;
       }
     }
