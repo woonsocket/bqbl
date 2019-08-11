@@ -51,6 +51,7 @@ function App() {
           <Typography variant="h6" className="title">
             BQBL
           </Typography>
+           {/* TODO: add week selector */}
           <SignInToggle/>
         </Toolbar>
 
