@@ -190,19 +190,19 @@ var shuffle = function (array) {
 	return array;
 
 };
+
 /**
  * Create a league spec at /leaguespec/{LEAGUEID}.
  * 
- * url - createNewYear/{LEAGUE_ID}
+ * league: string
  */
-exports.createLeague = functions.https.onRequest((req, res) => {
-  const leagueId = new URL(req.url, "http://bqbl.futbol").pathname.slice(1);
-  const leagueRef = admin.database().ref(`tmp/leaguespec/` + leagueId);
+exports.createLeague = functions.https.onCall((data, context) => {
+  const leagueId = data.league;
+  const leagueRef = admin.database().ref(`tmp/leaguespec/${leagueId}`);
   const stubLeague = {
     id: leagueId
   };
-  leagueRef.set(stubLeague);
-  res.status(200).send("success");
+  return leagueRef.set(stubLeague);
 });
 
 /**
