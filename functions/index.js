@@ -132,26 +132,25 @@ exports.createStartsTable = functions.https.onRequest((req, res) => {
 });
 
 /**
- * Dump a dummy league with id nbqbl. This is to test createNewYear, among other reasons.
+ * Dump a dummy league. This is to test createNewYear, among other reasons.
  */
 exports.tmpWriteLeague = functions.https.onCall((data, context) => {
   const league = data.league;
-  const nbqbl = admin.database().ref(`/tmp/leaguespec/${league}`);
-  return nbqbl.update({
-    users: [{ name: 'Joel', uid: '1', teams: [{ name: 'ARI' }, { name: 'BUF' }, { name: 'CLE' }, { name: 'NYJ' }] },
+  const year = data.year || '2019';
+  const nbqbl = admin.database().ref(`/tmp/leaguespec/${league}/users/${year}`);
+  return nbqbl.update([{ name: 'Joel', uid: '1', teams: [{ name: 'ARI' }, { name: 'BUF' }, { name: 'CLE' }, { name: 'NYJ' }] },
     { name: 'Harvey', uid: '2', teams: [{ name: 'ARI' }, { name: 'BUF' }, { name: 'CLE' }, { name: 'NYJ' }] },
-    { name: '3', uid: '3' },
+    { name: '3', uid: 'jzNyhVtHzKe8ERAaFrOAL2cFwZJ2' },
     { name: '4', uid: '4' },
     { name: '5', uid: '5' },
     { name: '6', uid: '6' },
     { name: '7', uid: '7' },
-    { name: '8', uid: '8' },
-  ],
-  })
+    { name: '8', uid: '8' },])
 });
 
 exports.setDraftOrder = functions.https.onCall((data, context) => {
   const league = data.league;
+  const year = data.year || '2019';
   return admin.database().ref(`/tmp/leaguespec/${league}`).once('value').then(
     dataPromise => {
       let data = dataPromise.val();
@@ -159,7 +158,7 @@ exports.setDraftOrder = functions.https.onCall((data, context) => {
       shuffle(uids);
       const uidsReverse = [...uids].reverse();
       let order = uids.concat(uidsReverse, uids, uidsReverse).map(uid => { return {uid: uid}});
-      admin.database().ref(`/tmp/leaguespec/${league}/draft`).set(order)
+      admin.database().ref(`/tmp/leaguespec/${league}/draft/${year}`).set(order)
     })
 });
 
@@ -209,10 +208,10 @@ exports.createLeague = functions.https.onCall((data, context) => {
  * Read in a league spec from /leaguespec/{LEAGUEID}.
  * Write out all of the starts for that league.
  */
-exports.createNewYear = functions.https.onRequest((req, res) => {
-  const leagueId = new URL(req.url, "http://bqbl.futbol").pathname.slice(1);
+exports.createNewYear = functions.https.onCall((data, context) => {
+  const leagueId = data.league;
 
-  admin.database()
+  return admin.database()
     .ref(`/tmp/leaguespec/` + leagueId)
     .once('value').then(data => {
       const users = data.val().users;
@@ -236,7 +235,6 @@ exports.createNewYear = functions.https.onRequest((req, res) => {
         const yearRef = admin.database().ref(`tmp/users/` + users[i].uid + `/plays/` + leagueId + `/` + YEAR);
         yearRef.set(allWeeksList);
       }
-      res.status(200).send("success");
     })
 });
 
