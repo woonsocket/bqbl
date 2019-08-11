@@ -4,18 +4,16 @@ import React, { Component, useState } from 'react';
 import './draft.css'
 import { withFirebase } from '../Firebase';
 import * as FOOTBALL from '../../constants/football';
-
-import Snackbar from '@material-ui/core/Snackbar';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
+import TabPanel from '../reusable/TabPanel/tab-panel'
 
 import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
+import CloseIcon from '@material-ui/icons/Close';
+import IconButton from '@material-ui/core/IconButton';
+import Snackbar from '@material-ui/core/Snackbar';
+import Tab from '@material-ui/core/Tab';
+import Tabs from '@material-ui/core/Tabs';
 
 class DraftPageBase extends Component {
   constructor(props) {
@@ -82,23 +80,6 @@ class DraftPageBase extends Component {
       </TabPanel>
     </React.Fragment>
   }
-}
-
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <Typography
-      component="div"
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      <Box p={3}>{children}</Box>
-    </Typography>
-  );
 }
 
 function DraftSelectionGrid({ taken=[], selectCallback }) {
