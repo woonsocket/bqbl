@@ -4,16 +4,17 @@ import {
   Route,
 } from 'react-router-dom';
 
+import './app.css'
 import * as ROUTES from '../../constants/routes';
+import DraftPage from '../Draft/draft';
 import HomePage from '../Home/home';
 import LineupPage from '../Lineup/lineup';
 import Navigation from '../Navigation/navigation';
 import PlayerScorePage from '../PlayerScorePage/player-score-page';
 import PlayerStandingsPage from '../PlayerStandingsPage/player-standings-page';
-import DraftPage from '../Draft/draft';
 import ScorePage from '../TeamScorePage/team-score-page';
+import SignInToggle from '../SignIn/sign-in-toggle';
 import TeamStandingsPage from '../TeamStandingsPage/team-standings-page';
-import './app.css'
 
 import AppBar from '@material-ui/core/AppBar';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
@@ -23,7 +24,6 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import SignInToggle from '../SignIn/sign-in-toggle';
 
 function App() {
 
@@ -71,9 +71,9 @@ function App() {
           <Divider />
           <Navigation close={handleDrawerClose}/>
         </Drawer>
-
       </AppBar>
 
+ {/* TODO: Figure out how to get leagueid, year, week treated more rationally. They should be settable from app and percolate down to PlayerScorePage. */}
       <div>
         <Route path={ROUTES.HOME} component={HomePage} />
         <Route path="/lineup/:leagueid?" component={LineupPage} />
