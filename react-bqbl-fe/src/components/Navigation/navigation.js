@@ -18,6 +18,7 @@ const LINKS = [
   { to: ROUTES.DRAFT, text: 'Draft' },
 ];
 
+// TODO: Link messes up the styling.
 function Navigation(params) {
   return (
     <List>
