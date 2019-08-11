@@ -272,12 +272,16 @@ exports.forkDataToTmp = functions.https.onRequest((req, res) => {
 });
 
 /**
+ * Draft a team. 
+ * team: string the team to draft
+ * league: the league we're drafting in
+ * uidOverride: TEST ONLY - masquerade as a different user.
  */
 exports.draftTeam = functions.https.onCall((data, context) => {
   const team = data.team;
   const league = data.league;
   // Authentication / user information is automatically added to the request.
-  // const name = context.auth.token.name || null;
+  const name = context.auth && context.auth.token.name || null;
   const uid = data.uidOverride;
 
   const draftRef = `tmp/leaguespec/${league}/draft/`;
