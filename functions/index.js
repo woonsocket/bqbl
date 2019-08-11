@@ -295,6 +295,7 @@ exports.draftTeam = functions.https.onCall((data, context) => {
         }
         if (draft[i].uid == uid) {
           admin.database().ref(draftRef+`/${i}`).set({uid:uid, team:team});
+          return;
         }
       }
     })
