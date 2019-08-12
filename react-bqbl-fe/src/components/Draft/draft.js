@@ -22,8 +22,6 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 
-
-
 class DraftPageBase extends Component {
   constructor(props) {
     super(props);
@@ -62,6 +60,8 @@ class DraftPageBase extends Component {
     // I'm clearly holding this function invocation wrong. Need to figure out the es6y way.
     this.props.firebase.draftTeam()({team: team, year: this.year, league:this.leagueid}).then(function(result) {
       console.log(result);
+    }).catch(error => {
+      alert(error);
     });
   }
 
@@ -147,12 +147,7 @@ function DraftSnackbar({selectedTeam, selectCallback, setSelectedTeamCallback}) 
           <Button key="undo" color="secondary" size="small" onClick={handleConfirm}>
             DRAFT {selectedTeam}
           </Button>,
-          <IconButton
-            key="close"
-            aria-label="close"
-            color="inherit"
-            onClick={handleClose}
-          >
+          <IconButton key="close" aria-label="close" color="inherit" onClick={handleClose}>
             <CloseIcon />
           </IconButton>,
         ]}
