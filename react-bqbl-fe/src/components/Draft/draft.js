@@ -49,7 +49,7 @@ class DraftPageBase extends Component {
     // TODO: Race conditions ahoy!
     this.props.firebase.league_spec(this.leagueid).once('value').then(data => {
       let leagueData = data.val();
-      let lsdp = this.props.firebase.leagueSpecDataProxy();
+      let lsdp = this.props.firebase.leagueSpecDataProxy(this.year);
       let uid = this.props.firebase.getCurrentUser() ? this.props.firebase.getCurrentUser().uid : null;
       let newData = lsdp.addUser(uid, leagueData);
       this.props.firebase.league_spec(this.leagueid).update(newData);

@@ -118,6 +118,11 @@ class LeagueSpecDataProxy {
   }
 
   addUser(uid, leagueData) {
+    if (!leagueData.users) {
+      leagueData.users = {};
+      leagueData.users[this.year] = [];
+    }
+
     let users = leagueData.users[this.year];
     users.push({ name: "Foo", uid: uid, teams: [] });
     return leagueData;
