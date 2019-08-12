@@ -167,9 +167,9 @@ function DraftSelectionList({ draftList=[{team:'DAL', uid: 15}] }) {
     <Table>
     <TableHead>
       <TableRow>
-        <TableCell>Pick</TableCell>
-        <TableCell align="right">Who</TableCell>
-        <TableCell align="right">Team</TableCell>
+        <TableCell>Pick #</TableCell>
+        <TableCell>Player</TableCell>
+        <TableCell>Team</TableCell>
       </TableRow>
     </TableHead>
     <TableBody>
@@ -178,8 +178,10 @@ function DraftSelectionList({ draftList=[{team:'DAL', uid: 15}] }) {
           <TableCell component="th" scope="row">
             {`Pick ${idx+1}`}
           </TableCell>
-          <TableCell> {row.name}</TableCell>
-          <TableCell align="right"><TeamIcon team={row.team}/> {row.team} </TableCell>
+          <TableCell>{row.name}</TableCell>
+          <TableCell>{row.team && 
+            <span> <TeamIcon width="20px" team={row.team}/> {row.team} </span>} 
+          </TableCell>
         </TableRow>
       )}
     </TableBody>
