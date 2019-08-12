@@ -20,9 +20,9 @@ class LineupPageBase extends Component {
     this.user = null;
     this.league = props.league || '-KtC8hcGgvbh2W2Tq79n';
     this.year = props.year || '2019';
-    this.dh = false;
     this.state = {
       valsList: [],
+      dh: false
     };
   }
 
@@ -70,7 +70,7 @@ class LineupPageBase extends Component {
         <TableBody>
           {this.state.valsList.map((week, index) => (
             <LineupWeek
-              week={week} index={index} dh={this.dh} key={index}
+              week={week} index={index} dh={this.state.dh} key={index}
               clickCallback={this.clickCallback.bind(this)}
             />
           ))}

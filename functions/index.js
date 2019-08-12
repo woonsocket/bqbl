@@ -194,12 +194,16 @@ var shuffle = function (array) {
  * Create a league spec at /leaguespec/{LEAGUEID}.
  * 
  * league: string
+ * year: year to populate the settings for
  */
 exports.createLeague = functions.https.onCall((data, context) => {
   const leagueId = data.league;
+  const year = data.year || '2019';
+  
   const leagueRef = admin.database().ref(`tmp/leaguespec/${leagueId}`);
   const stubLeague = {
-    id: leagueId
+    id: leagueId,
+    settings: {'2019': {dh: false}}
   };
   return leagueRef.set(stubLeague);
 });

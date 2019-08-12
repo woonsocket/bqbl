@@ -76,12 +76,12 @@ function App() {
  {/* TODO: Figure out how to get leagueid, year, week treated more rationally. They should be settable from app and percolate down to PlayerScorePage. */}
       <div>
         <Route path={ROUTES.HOME} component={HomePage} />
-        <Route path="/lineup/:leagueid?" component={LineupPage} />
-        <Route path="/player-scores/:leagueid?/:year?/:week?" component={PlayerScorePage} />
-        <Route path="/player-standings/:leagueid?/:year?" component={PlayerStandingsPage} />
+        <Route path="/lineup/:league?" component={LineupPage} />
+        <Route path="/player-scores/:league?/:year?/:week?" component={PlayerScorePage} />
+        <Route path="/player-standings/:league?/:year?" component={PlayerStandingsPage} />
         <Route path="/team-scores/:year?/:week?" component={ScorePage} />
         <Route path="/team-standings/:year?" component={TeamStandingsPage} />
-        <Route path="/draft/:leagueid?" component={DraftPage} />
+        <Route path="/draft/:league?" component={DraftPage} />
       </div>
     </Router>
   );

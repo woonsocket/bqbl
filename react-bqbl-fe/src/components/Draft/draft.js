@@ -36,7 +36,7 @@ class DraftPageBase extends Component {
 
   componentDidMount() {
     this.props.firebase.league_spec(this.leagueid).once('value').then(data => {
-      let lsdp = new LeagueSpecDataProxy({year: this.year});
+      let lsdp = this.props.firebase.leagueSpecDataProxy(this.year);
       let uid = this.props.firebase.getCurrentUser() ? this.props.firebase.getCurrentUser().uid : null;
       let isInLeague = lsdp.isInLeague(uid, data.val());
       let takenTeams = lsdp.getTakenTeams(data.val());
@@ -49,7 +49,7 @@ class DraftPageBase extends Component {
     // TODO: Race conditions ahoy!
     this.props.firebase.league_spec(this.leagueid).once('value').then(data => {
       let leagueData = data.val();
-      let lsdp = new LeagueSpecDataProxy();
+      let lsdp = this.props.firebase.leagueSpecDataProxy();
       let uid = this.props.firebase.getCurrentUser() ? this.props.firebase.getCurrentUser().uid : null;
       let newData = lsdp.addUser(uid, leagueData);
       this.props.firebase.league_spec(this.leagueid).update(newData);
@@ -190,36 +190,6 @@ function NotInLeagueUI(props) {
       <Button onClick={props.adduser}>Join</Button>
     </div>
   );
-}
-
-class LeagueSpecDataProxy {
-  constructor (props) {
-    this.year = props.year;
-  }
-
-  isInLeague(uid, leagueData) {
-    const users = leagueData.users[this.year];
-    for (let i = 0; i < users.length; i++) {
-      if (users[i].uid === uid) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  addUser(uid, leagueData) {
-    let users = leagueData.users[this.year];
-    users.push({ name: "Foo", uid: uid, teams: [] });
-    return leagueData;
-  }
-
-  getTakenTeams(leagueData) {
-    return leagueData.draft[this.year].map(draftItem => {return draftItem.team })
-  }
-
-  getDraftList(leagueData) {
-    return leagueData.draft[this.year];
-  }
 }
 
 const DraftPage = compose(
