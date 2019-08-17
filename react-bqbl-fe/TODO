@@ -10,7 +10,7 @@ P3: Make styling of player scores non-terrible
 
 Cleanup:
 Figure out the React-standard way to do styles
-Convert {} pure-functional components
+Convert {PlayerStandings} to pure-functional components
 
 Architecture:
 Move everything off of /tmp

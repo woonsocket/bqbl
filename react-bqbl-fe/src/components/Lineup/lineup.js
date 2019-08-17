@@ -12,6 +12,7 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import Table from '@material-ui/core/Table';
+import PropTypes from 'prop-types';
 
 // TODO: Fully decouple data and UI.
 class LineupPageBase extends Component {
@@ -80,6 +81,10 @@ class LineupPageBase extends Component {
         </TableBody>
       </Table>
     )}
+}
+
+LineupWeek.propTypes = {
+  clickCallback: PropTypes.func.isRequired
 }
 
 // clickCallback

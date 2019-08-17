@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 
 import './player-standings-page.css';
 import { withFirebase } from '../Firebase';
-import WeekTeamRow from '../WeekTeam/week-team-row';
 import * as FOOTBALL from "../../constants/football"
+import IconScoreCell from '../reusable/IconScoreCell/icon-score-cell'
 
 import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
@@ -15,8 +15,16 @@ import CardHeader from '@material-ui/core/CardHeader';
 import Collapse from '@material-ui/core/Collapse';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import IconButton from '@material-ui/core/IconButton';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import PropTypes from 'prop-types';
 
-const ALL_WEEKS_REVERSE = FOOTBALL.WEEK_IDS.reverse();
+
+export const WEEK_IDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"]
+const ALL_WEEKS_REVERSE = WEEK_IDS.reverse();
 const FOLD = 4;
 
 class PlayerStandingsPageBase extends Component {
@@ -27,126 +35,93 @@ class PlayerStandingsPageBase extends Component {
     this.year = this.props.match.params.year || "2018";
     this.state = {
       players: [],
+      playerTable: {}
     };
   }
 
   componentDidMount() {
-    // TODO: Decouple all of this from the database
-    var scoresPromise = this.props.firebase.scores_year(this.year).once('value');
-    var startsPromise = this.props.firebase.league_starts_year(this.league, this.year).once('value');
-
-    Promise.all([scoresPromise, startsPromise]).then(
-      ([scoresSnapshot, startsSnapshot]) => {
-        const scores = scoresSnapshot.val();
-        const starts = startsSnapshot.val();
-        const players = {};
-        for (var weekIndex of Object.keys(starts)) {
-          const week = starts[weekIndex];
-          for (const playerKey of Object.keys(week)) {
-            const name = week[playerKey].name;
-            if (!players[name]) {
-              players[name] = {};
-            }
-            if (week[playerKey].starts) {
-              for (const start of week[playerKey].starts) {
-                if (scores[weekIndex][start.name]) {
-                  start["total"] = scores[weekIndex][start.name].total;
-                }
-              }
-            }
-            players[name][weekIndex] = week[playerKey];
-          }
-        }
-        for (let player of Object.values(players)) {
-          let total = 0;
-          for (let weekIndex in player) {
-            if (!player[weekIndex].starts) {
-              continue;
-            }
-            for (let startIndex = 0; startIndex < player[weekIndex].starts.length; startIndex++) {
-              total += player[weekIndex].starts[startIndex].total || 0;
-            }
-          }
-          player.total = total;
-        }
-        this.setState({ players: players });
-      })
+    this.props.firebase.getScores(
+      this.league, this.year, ALL_WEEKS_REVERSE, this.setState.bind(this));
   }
 
   render() {
-    return (
-      <React.Fragment>
-        {Object.entries(this.state.players).map(([name, player]) => (
-          <div key={name}>
-            <PlayerYearCard 
-              player={player}
-              name={name}
-            />
-          </div>
-        ))}
-      </React.Fragment>
-    );
+    return Object.entries(this.state.playerTable).map(([playerId, player]) => (
+            <PlayerYearCard player={player} name={playerId} key={playerId}/>
+        ))
   }
 }
 
-// TODO: Functional component
-class PlayerYearCard extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      player: props.player,
-      name: props.name,
-      expanded: false,
-    };
+PlayerYearCard.propTypes = {
+  player: PropTypes.object.isRequired,
+}
+
+
+function PlayerYearCard(props) {
+  const [expanded, setExpanded] = React.useState(false);
+  function handleExpandClick() {
+    setExpanded(!expanded);
   }
 
-  handleExpandClick() {
-    this.setState({ expanded: !this.state.expanded });
-  }
-
-  render() {
-    return (
-      <React.Fragment>
-        <Card className="player-card">
-          <CardHeader
-            avatar={
-              <Avatar aria-label="Recipe">
-                {this.state.name[0]}
-              </Avatar>
-            }
-            title={this.state.name}
-            subheader={"Total: " + this.state.player.total}
-          />
-          <CardContent>
-            {ALL_WEEKS_REVERSE.slice(0, FOLD).map(weekId => (
-              <WeekTeamRow week={this.state.player[weekId]} weekId={weekId}>
-              </WeekTeamRow>
-            ))}
-          <Collapse in={this.state.expanded} timeout="auto" unmountOnExit>
-              {ALL_WEEKS_REVERSE.slice(FOLD).map(weekId => (
-                <WeekTeamRow week={this.state.player[weekId]} weekId={weekId}>
-                </WeekTeamRow>
+  return (
+    <Card className="player-card">
+      <CardHeader
+        avatar={
+          <Avatar aria-label="">
+            {props.player.name}
+          </Avatar>
+        }
+        title={props.player.name}
+        subheader={"Total: " + props.player.total}
+      />
+      <CardContent>
+        <Table>
+          
+          <TableBody>
+            {ALL_WEEKS_REVERSE.slice(0, FOLD)
+              .filter(weekId => Object.keys(props.player.start_rows).includes(weekId))
+              .map(weekId => (
+                <TableRow key={weekId}>
+                  <TableCell component="th" scope="row">
+                    {"Week " + weekId}
+                  </TableCell>
+                  <TableCell align="left"><IconScoreCell team={props.player.start_rows[weekId].team_1.team_name} score={props.player.start_rows[weekId].team_1.score} /> </TableCell>
+                  <TableCell align="left"><IconScoreCell team={props.player.start_rows[weekId].team_2.team_name} score={props.player.start_rows[weekId].team_2.score} /> </TableCell>
+                </TableRow>
               ))}
-          </Collapse>
+            {/* <Collapse in={expanded} timeout="auto" unmountOnExit> */}
+              {ALL_WEEKS_REVERSE.slice(FOLD)
+                .filter(weekId => Object.keys(props.player.start_rows).includes(weekId))
+                .map(weekId => (
+                  <TableRow key={weekId}>
+                    <TableCell component="th" scope="row">
+                      {"Week " + weekId}
+                    </TableCell>
+                    <TableCell align="left"><IconScoreCell team={props.player.start_rows[weekId].team_1.team_name} score={props.player.start_rows[weekId].team_1.score} /> </TableCell>
+                    <TableCell align="left"><IconScoreCell team={props.player.start_rows[weekId].team_2.team_name} score={props.player.start_rows[weekId].team_2.score} /> </TableCell>
+                  </TableRow>
+                ))}
+            {/* </Collapse> */}
+          </TableBody>
+        </Table>
 
-          </CardContent>
-          <CardActions disableSpacing>
-            <IconButton
-              // className={clsx(this.classes.expand, {
-              //   [this.classes.expandOpen]: this.state.expanded,
-              // })}
-              onClick={this.handleExpandClick.bind(this)}
-              aria-expanded={this.state.expanded}
-              aria-label="Show more"
-            >
-              <ExpandMoreIcon />
-            </IconButton>
-          </CardActions>
-        </Card>
-      </React.Fragment>
-    )
-  }
+      </CardContent>
+      <CardActions disableSpacing>
+        <IconButton
+          // className={clsx(this.classes.expand, {
+          //   [this.classes.expandOpen]: this.state.expanded,
+          // })}
+          onClick={handleExpandClick}
+          aria-expanded={expanded}
+          aria-label="Show more"
+        >
+          <ExpandMoreIcon />
+        </IconButton>
+      </CardActions>
+    </Card>
+
+  )
 }
+
 const PlayerStandingsPage = compose(
   withRouter,
   withFirebase,

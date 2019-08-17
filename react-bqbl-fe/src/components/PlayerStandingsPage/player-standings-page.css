@@ -1,6 +1,6 @@
 .player-card {
   margin: 10px;
-  width: 300px;
+  max-width: 500px;
   min-height: 100px;
   position: relative;
 }
