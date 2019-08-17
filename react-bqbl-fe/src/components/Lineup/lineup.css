@@ -13,5 +13,9 @@
 }
 
 .MuiTableCell-sizeSmall {
-padding: 6px !important;
+  padding: 6px !important;
+}
+
+.lineupWeek {
+  max-width: 20px;
 }

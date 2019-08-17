@@ -18,7 +18,7 @@ class LineupPageBase extends Component {
   constructor(props) {
     super(props);
     this.user = null;
-    this.league = props.league || '-KtC8hcGgvbh2W2Tq79n';
+    this.league = props.league;
     this.year = props.year || '2019';
     this.state = {
       valsList: [],
@@ -87,11 +87,11 @@ class LineupPageBase extends Component {
 function LineupWeek(props) {
   return (
     <TableRow key={props.week.id}>
-      <TableCell component="th" scope="row">
+      <TableCell scope="row" className="lineupWeek">
         Week {props.week.id}
       </TableCell>
       {props.week.teams.slice(0, 4).map((team, idx) =>
-        <TableCell align="right" key={'' + props.week.id + idx}
+        <TableCell align="center" key={'' + props.week.id + idx}
           className={team.selected ? "team selected" : "team"}
           onClick={props.clickCallback.bind(null, props.week.id, idx, team.name)}>
           {team.name}
