@@ -12,7 +12,7 @@ IconScoreCell.propTypes = {
 function IconScoreCell(props) {
   return (
     <div className="outer">
-      <TeamIcon team={props.team} width='20px' />
+      <TeamIcon team={props.team} width='30px' />
       <span className="cell">
         {props.score}
       </span>

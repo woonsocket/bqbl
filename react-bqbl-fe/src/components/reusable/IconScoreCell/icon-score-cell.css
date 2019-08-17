@@ -5,5 +5,10 @@
 }
 
 .cell {
-  margin-left: 5px;
+  text-align: right;
+  min-width: 35px;
+  vertical-align: super;
+  display: inline-block;
+  font-size: 14px;
+  font-family: monospace;
 }

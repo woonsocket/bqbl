@@ -2,16 +2,15 @@ Testing:
 Write a unit test suite (two tests currently)
 
 Functionality:
-P0: Read DH from league state in lineup
 P0: Add total to player score card
-P1: Make styling of player scores non-terrible
 P1: Make styling of player standings non-terrible
 P1: Add constraint checking to lineup setter
 P1: Add week selector
 P2: Add year selector
+P3: Make styling of player scores non-terrible
 
 Cleanup:
-Pull styles into sheets
+Figure out the React-standard way to do styles
 Convert {} pure-functional components
 
 Architecture:
