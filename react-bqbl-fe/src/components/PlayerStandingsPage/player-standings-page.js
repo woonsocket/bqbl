@@ -31,6 +31,7 @@ class PlayerStandingsPageBase extends Component {
   }
 
   componentDidMount() {
+    // TODO: Decouple all of this from the database
     var scoresPromise = this.props.firebase.scores_year(this.year).once('value');
     var startsPromise = this.props.firebase.league_starts_year(this.league, this.year).once('value');
 
@@ -56,6 +57,18 @@ class PlayerStandingsPageBase extends Component {
             players[name][weekIndex] = week[playerKey];
           }
         }
+        for (let player of Object.values(players)) {
+          let total = 0;
+          for (let weekIndex in player) {
+            if (!player[weekIndex].starts) {
+              continue;
+            }
+            for (let startIndex = 0; startIndex < player[weekIndex].starts.length; startIndex++) {
+              total += player[weekIndex].starts[startIndex].total || 0;
+            }
+          }
+          player.total = total;
+        }
         this.setState({ players: players });
       })
   }
@@ -76,7 +89,7 @@ class PlayerStandingsPageBase extends Component {
   }
 }
 
-
+// TODO: Functional component
 class PlayerYearCard extends Component {
   constructor(props) {
     super(props);
@@ -102,7 +115,7 @@ class PlayerYearCard extends Component {
               </Avatar>
             }
             title={this.state.name}
-            subheader="Total"
+            subheader={"Total: " + this.state.player.total}
           />
           <CardContent>
             {ALL_WEEKS_REVERSE.slice(0, FOLD).map(weekId => (
