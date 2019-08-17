@@ -2,11 +2,11 @@ Testing:
 Write a unit test suite (two tests currently)
 
 Cleanup:
-Do a naming pass on everything
 Pull styles into sheets
+Convert {} pure-functional components
 
 UI:
-Do a styling pass on everything
+Do a styling pass on {}
 Fix the down-disclosure-click behavior of the person scorecards - arrow should swap positions
 Add a total to the person year-long scoreboard
 Add constraint checking to the lineup setter
@@ -19,14 +19,4 @@ Pull week, year into app-level context
 Pull league into app-level context
 Add week selector
 Pull constants into a top-level
-
-New features:
-League creation - 
-  XX Add a cloud function that lets you add a league ID
-  Add a league landing page which lets signed-in users join
-  Add a draft mode?!
-    Add a draft order to the league schema
-    Make team selection write to the league spec
-    
-
 
