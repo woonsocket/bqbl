@@ -214,13 +214,12 @@ exports.createLeague = functions.https.onCall((data, context) => {
  */
 exports.createNewYear = functions.https.onCall((data, context) => {
   const leagueId = data.league;
+  const year = data.year || '2019';
 
   return admin.database()
     .ref(`/tmp/leaguespec/` + leagueId)
     .once('value').then(data => {
       const users = data.val().users;
-      // TODO: Make this a param or constant.
-      const YEAR = 2019;
       // TODO: Pull this into constants.
       const weeks = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17"];
       for (let i = 0; i < users.length; i++) {
@@ -236,7 +235,8 @@ exports.createNewYear = functions.https.onCall((data, context) => {
           allWeeksList.push(thisWeek);
         }
         // TODO: Get rid of /tmp
-        const yearRef = admin.database().ref(`tmp/users/` + users[i].uid + `/plays/` + leagueId + `/` + YEAR);
+        const yearRef = admin.database().ref(
+          `tmp/users/${users[i].uid}/plays/${leagueId}/${year}`);
         yearRef.set(allWeeksList);
       }
     })
