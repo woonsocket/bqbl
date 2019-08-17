@@ -18,7 +18,7 @@ class LineupPageBase extends Component {
   constructor(props) {
     super(props);
     this.user = null;
-    this.league = props.league;
+    this.leagueId = props.match.params.league;
     this.year = props.year || '2019';
     this.state = {
       valsList: [],
@@ -42,6 +42,9 @@ class LineupPageBase extends Component {
       .on('value', snapshot => {
         this.setState({ valsList: Object.values(snapshot.val())});
       })
+    this.props.firebase.hasDh(this.leagueId, this.year,
+      hasDh => {this.setState({dh: hasDh})}
+    );
   }
 
   updateCallback(weekData, weekId) {

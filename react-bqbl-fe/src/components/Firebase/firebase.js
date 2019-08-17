@@ -12,7 +12,7 @@ const config = {
   messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
 };
 
-const PREFIX="tmp/";
+const PREFIX = "tmp/";
 
 class Firebase {
   constructor() {
@@ -75,7 +75,6 @@ class Firebase {
     return this.db.ref(`${PREFIX}leaguespec/${leagueId}`);
   }
 
-
   authChanged(user) {
     if (!user) {
       console.log("bail!");
@@ -89,21 +88,29 @@ class Firebase {
     })
   }
 
+  hasDh(leagueId, year, callback) {
+    return this.db.ref(`${PREFIX}leaguespec/${leagueId}`).on('value',
+      snapshot => {
+        let lsdp = new LeagueSpecDataProxy({ year })
+        callback(lsdp.hasDh(snapshot.val(), year));
+      })
+  }
+
   // TODO: delete
   leagueChanged() {
   }
 
   draftTeam() {
     return this.functions.httpsCallable('draftTeam');
-  } 
+  }
 
   leagueSpecDataProxy(year) {
-    return new LeagueSpecDataProxy({year});
+    return new LeagueSpecDataProxy({ year });
   }
 }
 
 class LeagueSpecDataProxy {
-  constructor (props) {
+  constructor(props) {
     this.year = props.year;
   }
 
@@ -129,11 +136,15 @@ class LeagueSpecDataProxy {
   }
 
   getTakenTeams(leagueData) {
-    return (leagueData.draft && leagueData.draft[this.year].map(draftItem => {return draftItem.team })) || [];
+    return (leagueData.draft && leagueData.draft[this.year].map(draftItem => { return draftItem.team })) || [];
   }
 
   getDraftList(leagueData) {
     return (leagueData.draft && leagueData.draft[this.year]) || [];
+  }
+
+  hasDh(leagueData, year) {
+    return leagueData['settings'][year].dh;
   }
 }
 
