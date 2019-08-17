@@ -74,35 +74,30 @@ function PlayerYearCard(props) {
         subheader={"Total: " + props.player.total}
       />
       <CardContent>
-        <Table>
-          
-          <TableBody>
             {ALL_WEEKS_REVERSE.slice(0, FOLD)
               .filter(weekId => Object.keys(props.player.start_rows).includes(weekId))
               .map(weekId => (
-                <TableRow key={weekId}>
-                  <TableCell component="th" scope="row">
+                <div key={weekId}>
+                  <div className="week-cell" scope="row">
                     {"Week " + weekId}
-                  </TableCell>
-                  <TableCell align="left"><IconScoreCell team={props.player.start_rows[weekId].team_1.team_name} score={props.player.start_rows[weekId].team_1.score} /> </TableCell>
-                  <TableCell align="left"><IconScoreCell team={props.player.start_rows[weekId].team_2.team_name} score={props.player.start_rows[weekId].team_2.score} /> </TableCell>
-                </TableRow>
+                  </div>
+                  <div className="score-cell"><IconScoreCell team={props.player.start_rows[weekId].team_1.team_name} score={props.player.start_rows[weekId].team_1.score} /> </div>
+                  <div className="score-cell"><IconScoreCell team={props.player.start_rows[weekId].team_2.team_name} score={props.player.start_rows[weekId].team_2.score} /> </div>
+                </div>
               ))}
-            {/* <Collapse in={expanded} timeout="auto" unmountOnExit> */}
+            <Collapse in={expanded} timeout="auto" unmountOnExit>
               {ALL_WEEKS_REVERSE.slice(FOLD)
                 .filter(weekId => Object.keys(props.player.start_rows).includes(weekId))
                 .map(weekId => (
-                  <TableRow key={weekId}>
-                    <TableCell component="th" scope="row">
-                      {"Week " + weekId}
-                    </TableCell>
-                    <TableCell align="left"><IconScoreCell team={props.player.start_rows[weekId].team_1.team_name} score={props.player.start_rows[weekId].team_1.score} /> </TableCell>
-                    <TableCell align="left"><IconScoreCell team={props.player.start_rows[weekId].team_2.team_name} score={props.player.start_rows[weekId].team_2.score} /> </TableCell>
-                  </TableRow>
-                ))}
-            {/* </Collapse> */}
-          </TableBody>
-        </Table>
+                  <div key={weekId}>
+
+                  <div className="week-cell" scope="row">
+                    {"Week " + weekId}
+                  </div>
+                  <div className="score-cell"><IconScoreCell team={props.player.start_rows[weekId].team_1.team_name} score={props.player.start_rows[weekId].team_1.score} /> </div>
+                  <div className="score-cell"><IconScoreCell team={props.player.start_rows[weekId].team_2.team_name} score={props.player.start_rows[weekId].team_2.score} /> </div>
+                </div>))}
+            </Collapse>
 
       </CardContent>
       <CardActions disableSpacing>

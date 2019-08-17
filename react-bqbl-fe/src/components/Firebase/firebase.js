@@ -163,9 +163,7 @@ class Firebase {
         callback({ players: players, playerTable: playerTable });
         console.log(playerTable);
       })
-
   }
-
 }
 
 

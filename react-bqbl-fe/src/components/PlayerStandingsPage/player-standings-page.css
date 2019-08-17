@@ -4,3 +4,17 @@
   min-height: 100px;
   position: relative;
 }
+
+div.week-cell {
+  display: inline-block;
+  min-width: 70px;
+  font-size: 0.875rem;
+  text-align: left;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  font-weight: 400;
+}
+
+div.score-cell {
+  display: inline-block;
+  min-width: 50px;
+}
