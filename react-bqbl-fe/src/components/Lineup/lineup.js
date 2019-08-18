@@ -33,8 +33,8 @@ class LineupPageBase extends Component {
 
   authChanged(user) {
     if (!user) {
-        // eslint-disable-next-line no-console
-        console.log("bail!");
+      // eslint-disable-next-line no-console
+      console.log("bail!");
       return;
     }
     this.user = user;
@@ -83,15 +83,17 @@ class LineupPageBase extends Component {
     )}
 }
 
-LineupWeek.propTypes = {
-  clickCallback: PropTypes.func.isRequired
+LineupPageBase.propTypes = {
+  firebase: PropTypes.object.isRequired,
+  match: PropTypes.object.isRequired,
 }
 
-// clickCallback
-// dh
-// props.week.id
-// props.week.teams
-// props.week.teams.name
+LineupWeek.propTypes = {
+  clickCallback: PropTypes.func.isRequired,
+  dh: PropTypes.bool.isRequired,
+  week: PropTypes.object.isRequired
+}
+
 function LineupWeek(props) {
   return (
     <TableRow key={props.week.id}>
