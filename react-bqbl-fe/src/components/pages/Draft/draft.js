@@ -25,8 +25,9 @@ import Tabs from '@material-ui/core/Tabs';
 class DraftPageBase extends Component {
   constructor(props) {
     super(props);
-    this.leagueid = props.match.params.league;
-    this.year = props.match.params.year || "2019";
+    let params = new URLSearchParams(props.location.search);
+    this.league = params.get('league');
+    this.year = params.get('year');
     this.firebase = props.firebase;
     this.state = {
       inLeague: false,

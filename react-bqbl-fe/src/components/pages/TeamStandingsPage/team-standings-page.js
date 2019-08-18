@@ -15,7 +15,9 @@ import TableRow from '@material-ui/core/TableRow';
 class TeamStandingsPageBase extends Component {
   constructor(props) {
     super(props);
-    this.year = this.props.match.params.year || "2018";
+    let params = new URLSearchParams(props.location.search);
+    this.league = params.get('league');
+    this.year = params.get('year');
 
     this.state = {
       allScores: [],

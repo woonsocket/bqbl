@@ -14,8 +14,9 @@ class TeamScorePageBase extends Component {
 
   constructor(props) {
     super(props);
-    this.year = this.props.match.params.year || "2018";
-    this.week = this.props.match.params.week || "2";
+    let params = new URLSearchParams(props.location.search);
+    this.year = params.get('year');
+    this.week = params.get('week');
 
     this.state = {
       valsList: [],
