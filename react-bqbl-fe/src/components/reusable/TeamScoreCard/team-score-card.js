@@ -3,13 +3,16 @@ import React from 'react';
 import './team-score-card.css';
 
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
-import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
+import PropTypes from 'prop-types';
+
+TeamScoreCard.propTypes = {
+  score: PropTypes.object.isRequired,
+}
 
 function TeamScoreCard(props) {
   return (
@@ -50,6 +53,10 @@ function TeamScoreCard(props) {
       </CardActions> */}
     </Card>
   )
+}
+
+LineItem.propTypes = {
+  line: PropTypes.object.isRequired,
 }
 
 function LineItem(props) {

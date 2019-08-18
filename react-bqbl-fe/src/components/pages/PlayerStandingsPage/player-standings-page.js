@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 
 import './player-standings-page.css';
-import { withFirebase } from '../Firebase';
-import IconScoreCell from '../reusable/IconScoreCell/icon-score-cell'
+import { withFirebase } from '../../Firebase';
+import IconScoreCell from '../../reusable/IconScoreCell/icon-score-cell'
 import classNames from 'classnames/bind';
 
 import { compose } from 'recompose';

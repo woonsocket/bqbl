@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 
-import { withFirebase } from '../Firebase';
-import ScoreJoiner from '../ScoreJoiner/score-joiner';
+import { withFirebase } from '../../Firebase';
+import ScoreJoiner from '../../ScoreJoiner/score-joiner';
 
-import IconScoreCell from '../reusable/IconScoreCell/icon-score-cell'
+import IconScoreCell from '../../reusable/IconScoreCell/icon-score-cell'
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';

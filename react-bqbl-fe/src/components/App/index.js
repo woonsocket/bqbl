@@ -6,14 +6,14 @@ import {
 
 import './app.css'
 import * as ROUTES from '../../constants/routes';
-import DraftPage from '../Draft/draft';
-import HomePage from '../Home/home';
-import LineupPage from '../Lineup/lineup';
-import PlayerScorePage from '../PlayerScorePage/player-score-page';
-import PlayerStandingsPage from '../PlayerStandingsPage/player-standings-page';
-import ScorePage from '../TeamScorePage/team-score-page';
-import SignInToggle from '../SignIn/sign-in-toggle';
-import TeamStandingsPage from '../TeamStandingsPage/team-standings-page';
+import DraftPage from '../pages/Draft/draft';
+import HomePage from '../pages/Home/home';
+import LineupPage from '../pages/Lineup/lineup';
+import PlayerScorePage from '../pages/PlayerScorePage/player-score-page';
+import PlayerStandingsPage from '../pages/PlayerStandingsPage/player-standings-page';
+import ScorePage from '../pages/TeamScorePage/team-score-page';
+import SignInToggle from '../reusable/SignIn/sign-in-toggle';
+import TeamStandingsPage from '../pages/TeamStandingsPage/team-standings-page';
 
 import AppBar from '@material-ui/core/AppBar';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';

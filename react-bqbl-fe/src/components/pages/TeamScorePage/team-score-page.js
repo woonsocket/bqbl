@@ -3,8 +3,8 @@ import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
-import { withFirebase } from '../Firebase';
-import ScoreLine from '../TeamScoreCard/team-score-card';
+import { withFirebase } from '../../Firebase';
+import ScoreLine from '../../reusable/TeamScoreCard/team-score-card';
 
 class TeamScorePageBase extends Component {
   static propTypes = {

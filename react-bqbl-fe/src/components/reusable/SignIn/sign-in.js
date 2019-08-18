@@ -1,28 +1,30 @@
 import React, { Component } from 'react';
 
-import { withFirebase } from '../Firebase';
+import { withFirebase } from '../../Firebase';
+import * as ROUTES from '../../../constants/routes';
 
 import { withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
 import Button from '@material-ui/core/Button';
 
-class SignOut extends Component {
+class SignIn extends Component {
   constructor(props) {
     super(props);
+
     this.state = { error: null, name: "foo" };
   }
 
   render() {
     return (
       <div>
-        <SignOutGoogle />
+        <SignInGoogle />
       </div>
     );
   }
 };
 
 
-class SignOutGoogleBase extends Component {
+class SignInGoogleBase extends Component {
   constructor(props) {
     super(props);
 
@@ -33,7 +35,16 @@ class SignOutGoogleBase extends Component {
   }
 
   onSubmit = event => {
-    this.props.firebase.doSignOut();
+    this.props.firebase
+      .doSignInWithGoogle()
+      .then(socialAuthUser => {
+        this.setState({ error: null });
+        this.props.history.push(ROUTES.HOME);
+      })
+      .catch(error => {
+        this.setState({ error });
+      });
+
     event.preventDefault();
   };
 
@@ -42,16 +53,16 @@ class SignOutGoogleBase extends Component {
     return (
       <div>
         <Button variant="contained" color="primary" onClick={this.onSubmit}>
-          Sign Out
+          Sign In
           </Button>
       </div>
     );
   }
 }
 
-const SignOutGoogle = compose(
+const SignInGoogle = compose(
   withRouter,
   withFirebase,
-)(SignOutGoogleBase);
+)(SignInGoogleBase);
 
-export default SignOut;
+export default SignIn;

@@ -1,7 +1,7 @@
 import React from 'react';
 
 import "./home.css"
-import SignInToggle from '../SignIn/sign-in-toggle';
+import SignInToggle from '../../reusable/SignIn/sign-in-toggle';
 const Home = () => (
   <div className="splash">
     <div>

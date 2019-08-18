@@ -2,10 +2,10 @@ import React, { Component, useState } from 'react';
 
 //TODO: Every stylesheet in the source directory appears to be getting included.
 import './draft.css'
-import { withFirebase } from '../Firebase';
-import * as FOOTBALL from '../../constants/football';
-import TabPanel from '../reusable/TabPanel/tab-panel'
-import TeamIcon from '../reusable/TeamIcon/team-icon'
+import { withFirebase } from '../../Firebase';
+import * as FOOTBALL from '../../../constants/football';
+import TabPanel from '../../reusable/TabPanel/tab-panel'
+import TeamIcon from '../../reusable/TeamIcon/team-icon'
 
 import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
@@ -25,7 +25,7 @@ import Tabs from '@material-ui/core/Tabs';
 class DraftPageBase extends Component {
   constructor(props) {
     super(props);
-    this.leagueid = props.match.params.league || "rbqbl";
+    this.leagueid = props.match.params.league;
     this.year = props.match.params.year || "2019";
     this.firebase = props.firebase;
     this.state = {
