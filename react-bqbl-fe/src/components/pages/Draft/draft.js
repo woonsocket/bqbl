@@ -42,7 +42,7 @@ class DraftPageBase extends Component {
       let isInLeague = lsdp.isInLeague(uid, data.val());
       let takenTeams = lsdp.getTakenTeams(data.val());
       let draftList = lsdp.getDraftList(data.val())
-      this.setState({ inLeague: isInLeague, takenTeams: takenTeams, draftList: draftList});
+      this.setState({ inLeague: isInLeague, takenTeams: takenTeams, draftList: draftList });
     });
   }
 
@@ -59,7 +59,7 @@ class DraftPageBase extends Component {
 
   selectCallback(team) {
     // I'm clearly holding this function invocation wrong. Need to figure out the es6y way.
-    this.props.firebase.draftTeam()({team: team, year: this.year, league:this.leagueid}).then(function(result) {
+    this.props.firebase.draftTeam()({ team: team, year: this.year, league: this.leagueid }).then(function (result) {
       console.log(result);
     }).catch(error => {
       alert(error);
@@ -79,8 +79,8 @@ class DraftPageBase extends Component {
       </Tabs>
       <TabPanel value={this.state.value} index={0}>
         {this.state.inLeague ?
-          <DraftSelectionGrid selectCallback={this.selectCallback.bind(this)} 
-            taken={this.state.takenTeams}/> 
+          <DraftSelectionGrid selectCallback={this.selectCallback.bind(this)}
+            taken={this.state.takenTeams} />
           : <NotInLeagueUI addUser={this.addUser.bind(this)} />
         }
       </TabPanel>
@@ -96,7 +96,7 @@ DraftSelectionGrid.propTypes = {
   selectCallback: PropTypes.func.isRequired,
 }
 
-function DraftSelectionGrid({ taken=[], selectCallback }) {
+function DraftSelectionGrid({ taken = [], selectCallback }) {
   const [selectedTeam, setSelectedTeam] = useState("");
 
   function updateSelection(team) {
@@ -108,6 +108,7 @@ function DraftSelectionGrid({ taken=[], selectCallback }) {
   return (
     <div className="grid-container">
       {FOOTBALL.ALL_TEAMS.map(team =>
+        // TODO: Clean up by using the classnames package.
         <div className={["team", selectedTeam === team ? "team-selected" : "", taken.includes(team) ? "taken" : ""].join(' ')}
           key={team}
           onClick={updateSelection.bind(this, team)}
@@ -129,7 +130,7 @@ DraftSnackbar.propTypes = {
   setSelectedTeamCallback: PropTypes.func.isRequired,
 }
 
-function DraftSnackbar({selectedTeam, selectCallback, setSelectedTeamCallback}) {
+function DraftSnackbar({ selectedTeam, selectCallback, setSelectedTeamCallback }) {
 
   function handleConfirm(event, reason) {
     selectCallback(selectedTeam)
@@ -171,30 +172,30 @@ DraftSelectionList.propTypes = {
   draftList: PropTypes.array.isRequired,
 }
 
-function DraftSelectionList({ draftList=[{team:'DAL', uid: 15}] }) {
+function DraftSelectionList({ draftList = [{ team: 'DAL', uid: 15 }] }) {
   return (
     <Table>
-    <TableHead>
-      <TableRow>
-        <TableCell>Pick #</TableCell>
-        <TableCell>Player</TableCell>
-        <TableCell>Team</TableCell>
-      </TableRow>
-    </TableHead>
-    <TableBody>
-      {draftList.map((row, idx) =>
-        <TableRow key={idx}>
-          <TableCell component="th" scope="row">
-            {`Pick ${idx+1}`}
-          </TableCell>
-          <TableCell>{row.name}</TableCell>
-          <TableCell>{row.team && 
-            <span> <TeamIcon width="20px" team={row.team}/> {row.team} </span>} 
-          </TableCell>
+      <TableHead>
+        <TableRow>
+          <TableCell>Pick #</TableCell>
+          <TableCell>Player</TableCell>
+          <TableCell>Team</TableCell>
         </TableRow>
-      )}
-    </TableBody>
-  </Table>
+      </TableHead>
+      <TableBody>
+        {draftList.map((row, idx) =>
+          <TableRow key={idx}>
+            <TableCell component="th" scope="row">
+              {`Pick ${idx + 1}`}
+            </TableCell>
+            <TableCell>{row.name}</TableCell>
+            <TableCell>{row.team &&
+              <span> <TeamIcon width="20px" team={row.team} /> {row.team} </span>}
+            </TableCell>
+          </TableRow>
+        )}
+      </TableBody>
+    </Table>
   )
 }
 

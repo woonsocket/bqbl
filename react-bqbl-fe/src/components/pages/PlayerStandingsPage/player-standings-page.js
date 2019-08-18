@@ -28,8 +28,6 @@ class PlayerStandingsPageBase extends Component {
     let params = new URLSearchParams(props.location.search);
     this.league = params.get('league');
     this.year = params.get('year');
-    // Hack.
-    this.league = "-KtC8hcGgvbh2W2Tq79n";
     this.state = {
       players: [],
       playerTable: {}

@@ -14,19 +14,16 @@ class ScoreJoiner {
 
   joinScores(setState) {
     const scoresPromise = this.firebase.scores_week(this.year, this.week).once('value');
-    const startsPromise = this.firebase.league_starts_week(
-      '-KtC8hcGgvbh2W2Tq79n', this.year, this.week).once('value');
+    const startsPromise = this.firebase.league_starts_week(this.league, this.year, this.week).once('value');
     return Promise.all([scoresPromise, startsPromise])
       .then(([scoresData, startsData]) => {
         if (!startsData.val() || !scoresData.val()) {
           return;
         }
-        let scoresDataValue = scoresData.val();
-        let startsDataValue = startsData.val();
-        sanitizeStartsDataWeek(startsDataValue);
-        sanitizeScoresDataWeek(scoresDataValue);
+        const scoresDataValue = sanitizeScoresDataWeek(scoresDataValue);
+        const startsDataValue = sanitizeStartsDataWeek(startsDataValue);
         this.mergeData(scoresDataValue, startsDataValue);
-        let playerList = this.createPlayerListFromMergedData(startsDataValue);
+        const playerList = this.createPlayerListFromMergedData(startsDataValue);
         setState({ playerList: playerList });
       })
   }
@@ -37,8 +34,6 @@ class ScoreJoiner {
         continue;
       }
       for (let start of playerVal.starts) {
-        console.log(start);
-        console.log(scores)
         start.total = scores[start.name].total;
       }
     }
@@ -66,8 +61,9 @@ function sanitizeStartsData(dbStarts) {
   console.log(dbStarts)
   for (const weekIndex of Object.keys(dbStarts)) {
     const dbWeek = dbStarts[weekIndex];
-    sanitizeStartsDataWeek(dbWeek)
+    sanitizeStartsDataWeek(dbWeek);
   }
+  return dbStarts;
 }
 
 function sanitizeStartsDataWeek(dbWeek) {
@@ -81,10 +77,12 @@ function sanitizeStartsDataWeek(dbWeek) {
       dbWeek[playerKey].starts.push({ name: 'none', score: 0 });
     }
   }
+  return dbWeek;
 }
 
 function sanitizeScoresDataWeek(dbScoresWeek) {
   dbScoresWeek['none'] = { total: 0 }
+  return dbScoresWeek;
 }
 
 export default ScoreJoiner;

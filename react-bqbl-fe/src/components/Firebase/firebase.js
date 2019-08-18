@@ -118,6 +118,9 @@ class Firebase {
       ([scoresSnapshot, startsSnapshot]) => {
         const dbScores = scoresSnapshot.val();
         const dbStarts = startsSnapshot.val();
+        if (!startsSnapshot.val() || !scoresSnapshot.val()) {
+          return;
+        }
         sanitizeStartsData(dbStarts);
         sanitizeScoresData(dbScores);
         const players = {};
@@ -154,7 +157,6 @@ class Firebase {
           player.total = playerTotal;
         }
         callback({ players: players, playerTable: playerTable });
-        console.log(playerTable);
       })
   }
 }
