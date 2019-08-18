@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 
 import './team-score-card.css';
 
@@ -11,63 +11,52 @@ import CardContent from '@material-ui/core/CardContent';
 import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
 
-class TeamScoreCard extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      score: props.score,
-    };
-  }
-
-
-  render() {
-    return (
-      <Card className="mdl-card" >
-        <div>
-          <div
-            style={{
-              'backgroundImage': 'url(http://i.nflcdn.com/static/site/7.5/img/logos/svg/' +
-                'teams-matte/' + this.state.score.uid + '.svg)'
-            }}
-            className="bg">
-          </div>
-
-          <Box className="header-text">
-            <Typography variant="h5" component="h2">
-              {this.state.score.uid}
-            </Typography>
-            <Typography>
-              {lineScore(this.state.score.breakdown)} <br />
-              {this.state.score.gameInfo.clock}
-            </Typography>
-          </Box>
+function TeamScoreCard(props) {
+  return (
+    <Card className="team-score-card">
+      <div>
+        <div
+          style={{
+            'backgroundImage': 'url(http://i.nflcdn.com/static/site/7.5/img/logos/svg/' +
+              'teams-matte/' + props.score.uid + '.svg)'
+          }}
+          className="bg">
         </div>
-        <CardActionArea>
-          <CardContent>
-            <List>{
-              breakdownToComponents(this.state.score.breakdown).map(
-                (line, index) => <LineItem line={line} key={"lineitem" + index} />
-              )
-            }
-            </List>
-          </CardContent>
-        </CardActionArea>
-        <CardActions>
-          <Button size="small" color="primary">
-            Box Score Link
-          </Button>
-        </CardActions>
-      </Card>
 
-    )
-  }
+        <Box className="header-text">
+          <Typography variant="h5" component="h2">
+            {props.score.uid}
+          </Typography>
+          <Typography>
+            {lineScore(props.score.breakdown)} <br />
+            {props.score.gameInfo.clock}
+          </Typography>
+        </Box>
+      </div>
+      <CardActionArea>
+        <CardContent>
+          <List>{
+            breakdownToComponents(props.score.breakdown).map(
+              (line, index) => <LineItem line={line} key={"lineitem" + index} />
+            )
+          }
+          </List>
+        </CardContent>
+      </CardActionArea>
+      {/* <CardActions>
+        <Button size="small" color="primary">
+          Box Score Link
+          </Button>
+      </CardActions> */}
+    </Card>
+  )
 }
 
 function LineItem(props) {
   return (
     <div className="comp">
-      <span className="comp-desc">{props.line.desc}</span> {props.line.value}
+      <div className="comp-desc">{props.line.desc}</div>
+      <div className="comp-score">{props.line.value}</div>
     </div>
   );
 

@@ -1,8 +1,11 @@
-.mdl-card {
-  margin: 10px;
+.team-score-card {
+  margin-top: 10px;
+  margin-bottom: 10px;
   width: 300px;
   min-height: 100px;
   position: relative;
+  margin-right: auto;
+  margin-left: auto;
 }
 
 .header-text {
@@ -26,8 +29,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  min-height: 100px;
-  opacity:0.5;
+  min-height: 110px;
 }
 
 .total {
@@ -39,15 +41,21 @@
 }
 
 .comp {
-  display: flex;
+  -webkit-box-flex: 1;
+  flex-grow: 1;
+  color: rgba(0,0,0,.54);
+  font-size: 1rem;
+  line-height: 18px;
+  overflow: hidden;
+  width: 90%;
 }
 
 .comp-desc {
-  -webkit-box-flex: 1;
-    flex-grow: 1;
-  color: rgba(0,0,0,.54);
-    font-size: 1rem;
-    line-height: 18px;
-    overflow: hidden;
-    width: 90%;
+  font-size: 1rem;
+  float:left;
+}
+
+.comp-score {
+  font-size: 1rem;
+  float:right;
 }

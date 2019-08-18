@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 
-import './player-score-page.css';
 import { withFirebase } from '../Firebase';
 import ScoreJoiner from '../ScoreJoiner/score-joiner';
 
