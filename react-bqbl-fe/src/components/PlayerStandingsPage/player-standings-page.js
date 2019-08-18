@@ -4,6 +4,7 @@ import './player-standings-page.css';
 import { withFirebase } from '../Firebase';
 import * as FOOTBALL from "../../constants/football"
 import IconScoreCell from '../reusable/IconScoreCell/icon-score-cell'
+import classNames from 'classnames/bind';
 
 import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
@@ -15,11 +16,6 @@ import CardHeader from '@material-ui/core/CardHeader';
 import Collapse from '@material-ui/core/Collapse';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import IconButton from '@material-ui/core/IconButton';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
 import PropTypes from 'prop-types';
 
 
@@ -46,15 +42,14 @@ class PlayerStandingsPageBase extends Component {
 
   render() {
     return Object.entries(this.state.playerTable).map(([playerId, player]) => (
-            <PlayerYearCard player={player} name={playerId} key={playerId}/>
-        ))
+      <PlayerYearCard player={player} name={playerId} key={playerId} />
+    ))
   }
 }
 
 PlayerYearCard.propTypes = {
   player: PropTypes.object.isRequired,
 }
-
 
 function PlayerYearCard(props) {
   const [expanded, setExpanded] = React.useState(false);
@@ -74,37 +69,34 @@ function PlayerYearCard(props) {
         subheader={"Total: " + props.player.total}
       />
       <CardContent>
-            {ALL_WEEKS_REVERSE.slice(0, FOLD)
-              .filter(weekId => Object.keys(props.player.start_rows).includes(weekId))
-              .map(weekId => (
-                <div key={weekId}>
-                  <div className="week-cell" scope="row">
-                    {"Week " + weekId}
-                  </div>
-                  <div className="score-cell"><IconScoreCell team={props.player.start_rows[weekId].team_1.team_name} score={props.player.start_rows[weekId].team_1.score} /> </div>
-                  <div className="score-cell"><IconScoreCell team={props.player.start_rows[weekId].team_2.team_name} score={props.player.start_rows[weekId].team_2.score} /> </div>
+        {ALL_WEEKS_REVERSE.slice(0, FOLD)
+          .filter(weekId => Object.keys(props.player.start_rows).includes(weekId))
+          .map(weekId => (
+            <div key={weekId}>
+              <div className="week-cell">
+                {"Week " + weekId}
+              </div>
+              <div className="score-cell"><IconScoreCell team={props.player.start_rows[weekId].team_1.team_name} score={props.player.start_rows[weekId].team_1.score} /> </div>
+              <div className="score-cell"><IconScoreCell team={props.player.start_rows[weekId].team_2.team_name} score={props.player.start_rows[weekId].team_2.score} /> </div>
+            </div>
+          ))}
+        <Collapse in={expanded} timeout="auto" unmountOnExit>
+          {ALL_WEEKS_REVERSE.slice(FOLD)
+            .filter(weekId => Object.keys(props.player.start_rows).includes(weekId))
+            .map(weekId => (
+              <div key={weekId}>
+                <div className="week-cell">
+                  {"Week " + weekId}
                 </div>
-              ))}
-            <Collapse in={expanded} timeout="auto" unmountOnExit>
-              {ALL_WEEKS_REVERSE.slice(FOLD)
-                .filter(weekId => Object.keys(props.player.start_rows).includes(weekId))
-                .map(weekId => (
-                  <div key={weekId}>
-
-                  <div className="week-cell" scope="row">
-                    {"Week " + weekId}
-                  </div>
-                  <div className="score-cell"><IconScoreCell team={props.player.start_rows[weekId].team_1.team_name} score={props.player.start_rows[weekId].team_1.score} /> </div>
-                  <div className="score-cell"><IconScoreCell team={props.player.start_rows[weekId].team_2.team_name} score={props.player.start_rows[weekId].team_2.score} /> </div>
-                </div>))}
-            </Collapse>
+                <div className="score-cell"><IconScoreCell team={props.player.start_rows[weekId].team_1.team_name} score={props.player.start_rows[weekId].team_1.score} /> </div>
+                <div className="score-cell"><IconScoreCell team={props.player.start_rows[weekId].team_2.team_name} score={props.player.start_rows[weekId].team_2.score} /> </div>
+              </div>))}
+        </Collapse>
 
       </CardContent>
       <CardActions disableSpacing>
         <IconButton
-          // className={clsx(this.classes.expand, {
-          //   [this.classes.expandOpen]: this.state.expanded,
-          // })}
+          className={classNames({ expanded: expanded })}
           onClick={handleExpandClick}
           aria-expanded={expanded}
           aria-label="Show more"

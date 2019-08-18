@@ -2,7 +2,6 @@ Testing:
 Write a unit test suite (two tests currently)
 
 Functionality:
-P1: Make styling of player standings non-terrible
 P1: Add constraint checking to lineup setter
 P1: Add week selector
 P2: Add year selector
