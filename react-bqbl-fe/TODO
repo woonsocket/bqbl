@@ -1,11 +1,8 @@
 Testing:
-Write a unit test suite (two tests currently)
+Write a unit test suite
 
 Functionality:
-P0: Make the league, week, year handling decoupled from defaults
 P1: Add constraint checking to lineup setter
-P1: Add week selector
-P2: Add year selector
 P3: Make styling of player scores non-terrible
 
 Cleanup:
@@ -15,7 +12,5 @@ Convert {PlayerStandings} to pure-functional components
 Architecture:
 Move everything off of /tmp
 Decouple db reads and writes from the UI
-Pull week, year into app-level context
-Pull league into app-level context
 Pull constants into a top-level
 
