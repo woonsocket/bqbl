@@ -118,21 +118,14 @@ class Firebase {
       ([scoresSnapshot, startsSnapshot]) => {
         const dbScores = scoresSnapshot.val();
         const dbStarts = startsSnapshot.val();
+        sanitizeStartsData(dbStarts);
+        sanitizeScoresData(dbScores);
         const players = {};
         for (const weekIndex of Object.keys(dbStarts)) {
           const dbWeek = dbStarts[weekIndex];
-          dbScores[weekIndex]['none'] = {total: 0}
           for (const playerKey of Object.keys(dbWeek)) {
             if (!players[playerKey]) {
               players[playerKey] = {};
-            }
-            // Players are not required to start two teams.
-            // In these cases, sanitize the data.
-            if (!dbWeek[playerKey].starts) {
-              dbWeek[playerKey].starts = [{name: 'none', score: 0}, {name: 'none', score:0}]
-            }
-            if (dbWeek[playerKey].starts.length === 1) {
-              dbWeek[playerKey].starts.push({name: 'none', score: 0});
             }
           }
         }
@@ -166,6 +159,27 @@ class Firebase {
   }
 }
 
+function sanitizeStartsData(dbStarts) {
+  for (const weekIndex of Object.keys(dbStarts)) {
+    const dbWeek = dbStarts[weekIndex];
+    for (const playerKey of Object.keys(dbWeek)) {
+      // Players are not required to start two teams.
+      // In these cases, sanitize the data.
+      if (!dbWeek[playerKey].starts) {
+        dbWeek[playerKey].starts = [{name: 'none', score: 0}, {name: 'none', score:0}]
+      }
+      if (dbWeek[playerKey].starts.length === 1) {
+        dbWeek[playerKey].starts.push({name: 'none', score: 0});
+      }
+    }
+  }
+}
+
+function sanitizeScoresData(dbScores) {
+  for (const weekIndex of Object.keys(dbScores)) {
+    dbScores[weekIndex]['none'] = {total: 0}
+  }
+}
 
 function createPlayer(name, total, start_rows) {
   return { name, total, start_rows };

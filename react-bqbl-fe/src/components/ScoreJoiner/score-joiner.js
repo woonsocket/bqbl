@@ -18,10 +18,14 @@ class ScoreJoiner {
       '-KtC8hcGgvbh2W2Tq79n', this.year, this.week).once('value');
     return Promise.all([scoresPromise, startsPromise])
       .then(([scoresData, startsData]) => {
-        const scoresDataValue = scoresData.val();
+        if (!startsData.val() || !scoresData.val()) {
+          return;
+        }
+        let scoresDataValue = scoresData.val();
         let startsDataValue = startsData.val();
+        sanitizeStartsDataWeek(startsDataValue);
+        sanitizeScoresDataWeek(scoresDataValue);
         this.mergeData(scoresDataValue, startsDataValue);
-        console.log(startsDataValue)
         let playerList = this.createPlayerListFromMergedData(startsDataValue);
         setState({ playerList: playerList });
       })
@@ -33,6 +37,8 @@ class ScoreJoiner {
         continue;
       }
       for (let start of playerVal.starts) {
+        console.log(start);
+        console.log(scores)
         start.total = scores[start.name].total;
       }
     }
@@ -42,7 +48,7 @@ class ScoreJoiner {
     return Object.values(startsDataValue).map(player => {
       return this.createStartRow(
         player.name,
-        ...player.starts.map(start => this.createStart(start.name, start.total)))
+        ...(player.starts && player.starts.map(start => this.createStart(start.name, start.total))))
     })
   }
 
@@ -53,6 +59,32 @@ class ScoreJoiner {
     return { team_name, score }
   }
 
+}
+
+// TODO: Merge this with firebase.js version.
+function sanitizeStartsData(dbStarts) {
+  console.log(dbStarts)
+  for (const weekIndex of Object.keys(dbStarts)) {
+    const dbWeek = dbStarts[weekIndex];
+    sanitizeStartsDataWeek(dbWeek)
+  }
+}
+
+function sanitizeStartsDataWeek(dbWeek) {
+  for (const playerKey of Object.keys(dbWeek)) {
+    // Players are not required to start two teams.
+    // In these cases, sanitize the data.
+    if (!dbWeek[playerKey].starts) {
+      dbWeek[playerKey].starts = [{ name: 'none', score: 0 }, { name: 'none', score: 0 }]
+    }
+    if (dbWeek[playerKey].starts.length === 1) {
+      dbWeek[playerKey].starts.push({ name: 'none', score: 0 });
+    }
+  }
+}
+
+function sanitizeScoresDataWeek(dbScoresWeek) {
+  dbScoresWeek['none'] = { total: 0 }
 }
 
 export default ScoreJoiner;

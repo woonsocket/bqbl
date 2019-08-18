@@ -2,7 +2,10 @@ Testing:
 Write a unit test suite
 
 Functionality:
+P1: Add "what league are you in" links to homepage
+P1: Hide the selector dropdown when it doesn't make sense
 P1: Add constraint checking to lineup setter
+P1: Secret project involving a profile page
 P3: Make styling of player scores non-terrible
 
 Cleanup:
