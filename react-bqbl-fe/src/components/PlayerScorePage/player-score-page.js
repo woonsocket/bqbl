@@ -41,6 +41,10 @@ class PlayerScorePageBase extends Component {
   }
 }
 
+PlayerScorePageUI.propTypes = {
+  playerList: PropTypes.array.isRequired,
+}
+
 function PlayerScorePageUI(props) {
   return (
     <Table>
