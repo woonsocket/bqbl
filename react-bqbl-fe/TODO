@@ -2,6 +2,7 @@ Testing:
 Write a unit test suite (two tests currently)
 
 Functionality:
+P0: Make the league, week, year handling decoupled from defaults
 P1: Add constraint checking to lineup setter
 P1: Add week selector
 P2: Add year selector
