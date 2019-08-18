@@ -139,7 +139,7 @@ class Firebase {
         let playerTable = {};
         for (const [playerId, player] of Object.entries(players)) {
           let start_rows = {};
-          for (const [idx, weekId] of Object.entries(legal_weeks)) {
+          for (const weekId of Object.values(legal_weeks)) {
             const dbWeekPlayer = dbStarts[weekId][playerId];
             let name_1 = dbWeekPlayer.starts[0].name || "none";
             let name_2 = dbWeekPlayer.starts[1].name || "none";
@@ -153,9 +153,9 @@ class Firebase {
           const name = (dbStarts[legal_weeks[0]][playerId].name);
           playerTable[playerId] = createPlayer(name, 30, start_rows);
         }
-        for (const [playerId, player] of Object.entries(playerTable)) {
+        for (const player of Object.values(playerTable)) {
           let playerTotal = 0;
-          for (const [idx, row] of Object.entries(player.start_rows)) {
+          for (const row of Object.values(player.start_rows)) {
             playerTotal += row.team_1.score + row.team_2.score;
           }
           player.total = playerTotal;
