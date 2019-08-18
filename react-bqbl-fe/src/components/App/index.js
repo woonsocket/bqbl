@@ -5,7 +5,6 @@ import {
 } from 'react-router-dom';
 
 import './app.css'
-import * as ROUTES from '../../constants/routes';
 import DraftPage from '../pages/Draft/draft';
 import HomePage from '../pages/Home/home';
 import LineupPage from '../pages/Lineup/lineup';
@@ -27,12 +26,17 @@ import { Link } from 'react-router-dom';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import Input from '@material-ui/core/Input';
+import Select from '@material-ui/core/Select';
+import NativeSelect from '@material-ui/core/NativeSelect';
 
+export const WEEK_IDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"]
 
 function App() {
 
   const [drawerOpen, setDrawerOpen] = React.useState(false);
-
+  const week = new URLSearchParams(window.location.search).get("week");
+  const year = new URLSearchParams(window.location.search).get("year");
   function handleDrawerOpen() {
     setDrawerOpen(true);
   }
@@ -52,7 +56,29 @@ function App() {
           <Typography variant="h6" className="title">
             BQBL
           </Typography>
-           {/* TODO: add week selector */}
+          <NativeSelect 
+            value={year} className="week-select"
+            onChange={event => {
+              let usp = new URLSearchParams(window.location.search);
+              usp.set("year", event.target.value)
+              window.location.search = usp.toString();
+            }}
+            input={<Input name="year" id="year-native-helper" />}
+          >
+            {["2017", "2018", "2019"].map(id =><option value={id}>{id}</option>)}
+          </NativeSelect>
+
+          <NativeSelect 
+            value={week} className="week-select"
+            onChange={event => {
+              let usp = new URLSearchParams(window.location.search);
+              usp.set("week", event.target.value)
+              window.location.search = usp.toString();
+            }}
+            input={<Input name="week" id="week-native-helper" />}
+          >
+            {WEEK_IDS.map(id =><option value={id}>Week {id}</option>)}
+          </NativeSelect>
           <SignInToggle/>
         </Toolbar>
 
@@ -74,36 +100,44 @@ function App() {
         </Drawer>
       </AppBar>
 
- {/* TODO: Figure out how to get leagueid, year, week treated more rationally. They should be settable from app and percolate down to PlayerScorePage. */}
       <div>
-        <Route path={ROUTES.HOME} component={HomePage} />
-        <Route path="/lineup/:league?" component={LineupPage} />
-        <Route path="/player-scores/:league?/:year?/:week?" component={PlayerScorePage} />
-        <Route path="/player-standings/:league?/:year?" component={PlayerStandingsPage} />
-        <Route path="/team-scores/:year?/:week?" component={ScorePage} />
-        <Route path="/team-standings/:year?" component={TeamStandingsPage} />
-        <Route path="/draft/:league?" component={DraftPage} />
+        <Route path={HOME} component={HomePage} />
+        <Route path={LINEUP} component={LineupPage} />
+        <Route path={PLAYER_SCORES} component={PlayerScorePage} />
+        <Route path={PLAYER_STANDINGS} component={PlayerStandingsPage} />
+        <Route path={TEAM_SCORES} component={ScorePage} />
+        <Route path={TEAM_STANDINGS} component={TeamStandingsPage} />
+        <Route path={DRAFT} component={DraftPage} />
       </div>
     </Router>
   );
 }
 
-// TODO: Line up with parameterized routes?
+export const LANDING = '/';
+export const HOME = '/home';
+export const LINEUP = '/lineup';
+export const PLAYER_SCORES = '/player-scores';
+export const PLAYER_STANDINGS = '/player-standings';
+export const TEAM_SCORES = '/team-scores';
+export const TEAM_STANDINGS = '/team-standings';
+export const DRAFT = '/draft';
+
 const LINKS = [
-  { to: ROUTES.HOME, text: 'Home' },
-  { to: ROUTES.LINEUP, text: 'Lineup' },
-  { to: ROUTES.PLAYER_SCORES, text: 'Player Scores' },
-  { to: ROUTES.PLAYER_STANDINGS, text: 'Player Standings' },
-  { to: ROUTES.TEAM_SCORES, text: 'Team Scores' },
-  { to: ROUTES.TEAM_STANDINGS, text: 'Team Standings' },
-  { to: ROUTES.DRAFT, text: 'Draft' },
+  { path: HOME, text: 'Home' },
+  { path: LINEUP, text: 'Lineup' },
+  { path: PLAYER_SCORES, text: 'Player Scores' },
+  { path: PLAYER_STANDINGS, text: 'Player Standings' },
+  { path: TEAM_SCORES, text: 'Team Scores' },
+  { path: TEAM_STANDINGS, text: 'Team Standings' },
+  { path: DRAFT, text: 'Draft' },
 ];
 
-function Navigation(params) {
+function Navigation(props) {
   return (
     <List>
       {LINKS.map((item, index) => (
-          <Link to={item.to} onClick={params.close} key={"link" + index}>
+          <Link to={{pathname: item.path, search: window.location.search}}
+                onClick={props.close} key={"link" + index}>
             <ListItem button key={item.text}>
               <ListItemText primary={item.text} />
             </ListItem>

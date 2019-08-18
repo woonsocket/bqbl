@@ -8,3 +8,9 @@ a {
   text-decoration: none;
   color: rgba(0, 0, 0, 0.87);
 }
+.week-select {
+  background: white;
+  padding-right: 30px;
+  padding-left: 10px;
+  margin-right: 5px;
+}
