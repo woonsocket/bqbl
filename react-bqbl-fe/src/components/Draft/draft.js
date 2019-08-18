@@ -12,15 +12,15 @@ import { withRouter } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
+import PropTypes from 'prop-types';
 import Snackbar from '@material-ui/core/Snackbar';
 import Tab from '@material-ui/core/Tab';
-import Tabs from '@material-ui/core/Tabs';
-
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import Tabs from '@material-ui/core/Tabs';
 
 class DraftPageBase extends Component {
   constructor(props) {
@@ -80,7 +80,7 @@ class DraftPageBase extends Component {
         {this.state.inLeague ?
           <DraftSelectionGrid selectCallback={this.selectCallback.bind(this)} 
             taken={this.state.takenTeams}/> 
-          : <NotInLeagueUI adduser={this.addUser.bind(this)} />
+          : <NotInLeagueUI addUser={this.addUser.bind(this)} />
         }
       </TabPanel>
       <TabPanel value={this.state.value} index={1}>
@@ -88,6 +88,11 @@ class DraftPageBase extends Component {
       </TabPanel>
     </React.Fragment>
   }
+}
+
+DraftSelectionGrid.propTypes = {
+  taken: PropTypes.array.isRequired,
+  selectCallback: PropTypes.func.isRequired,
 }
 
 function DraftSelectionGrid({ taken=[], selectCallback }) {
@@ -98,7 +103,6 @@ function DraftSelectionGrid({ taken=[], selectCallback }) {
       setSelectedTeam(team);
     }
   }
-
 
   return (
     <div className="grid-container">
@@ -116,6 +120,12 @@ function DraftSelectionGrid({ taken=[], selectCallback }) {
       <DraftSnackbar selectedTeam={selectedTeam} selectCallback={selectCallback} setSelectedTeamCallback={setSelectedTeam} />
     </div>
   );
+}
+
+DraftSnackbar.propTypes = {
+  selectedTeam: PropTypes.string.isRequired,
+  selectCallback: PropTypes.func.isRequired,
+  setSelectedTeamCallback: PropTypes.func.isRequired,
 }
 
 function DraftSnackbar({selectedTeam, selectCallback, setSelectedTeamCallback}) {
@@ -156,6 +166,9 @@ function DraftSnackbar({selectedTeam, selectCallback, setSelectedTeamCallback}) 
   );
 }
 
+DraftSelectionList.propTypes = {
+  draftList: PropTypes.array.isRequired,
+}
 
 function DraftSelectionList({ draftList=[{team:'DAL', uid: 15}] }) {
   return (
@@ -184,10 +197,14 @@ function DraftSelectionList({ draftList=[{team:'DAL', uid: 15}] }) {
   )
 }
 
+NotInLeagueUI.propTypes = {
+  addUser: PropTypes.array.isRequired,
+}
+
 function NotInLeagueUI(props) {
   return (
     <div>
-      <Button onClick={props.adduser}>Join</Button>
+      <Button onClick={props.addUser}>Join</Button>
     </div>
   );
 }

@@ -31,8 +31,6 @@ import ListItemText from '@material-ui/core/ListItemText';
 
 function App() {
 
-  // eslint-disable-next-line
-  const [auth, setAuth] = React.useState(true);
   const [drawerOpen, setDrawerOpen] = React.useState(false);
 
   function handleDrawerOpen() {
@@ -104,8 +102,7 @@ const LINKS = [
 function Navigation(params) {
   return (
     <List>
-      {
-        LINKS.map((item, index) => (
+      {LINKS.map((item, index) => (
           <Link to={item.to} onClick={params.close} key={"link" + index}>
             <ListItem button key={item.text}>
               <ListItemText primary={item.text} />
