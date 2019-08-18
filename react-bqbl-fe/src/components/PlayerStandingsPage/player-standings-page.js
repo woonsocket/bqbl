@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 
 import './player-standings-page.css';
 import { withFirebase } from '../Firebase';
-import * as FOOTBALL from "../../constants/football"
 import IconScoreCell from '../reusable/IconScoreCell/icon-score-cell'
 import classNames from 'classnames/bind';
 
@@ -44,6 +43,11 @@ class PlayerStandingsPageBase extends Component {
       <PlayerYearCard player={player} name={playerId} key={playerId} />
     ))
   }
+}
+
+PlayerStandingsPageBase.propTypes = {
+  firebase: PropTypes.object.isRequired,
+  match: PropTypes.object.isRequired,
 }
 
 PlayerYearCard.propTypes = {
