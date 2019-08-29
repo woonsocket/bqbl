@@ -4,17 +4,12 @@ These rules are an adaptation of
 [the original Grantland rules](http://grantland.com/the-triangle/introducing-grantlands-bad-quarterback-league/)
 from 2011.
 
-Rule changes for 2018:
+Rule changes for 2019:
 
-* Sack points are now quadratic instead of linear.
+* Generalized the Kurt Warner rule to apply to all retired QBs. Added
+  exponential bonuses for QBs who have retired multiple times.
 
-* Points for perfect passer ratings and zero passer ratings.
-
-* Removed special Tebow/Manziel rules.
-
-* Added Kaepernick rules.
-
-* Trump campaign rules replaced by Trump tweet rules.
+* Awarded points for horrible field position.
 
 ## General rules
 
@@ -107,6 +102,17 @@ separate competition.
     * 5 touchdowns: **−20 points**
 
         * N>3 touchdowns: 2 × (N−1 touchdowns)
+
+* Field position
+
+    * Team never enters the red zone: **20 points**
+
+    * Team never crosses midfield: **50 points**
+
+    * Field position only counts for drives where the team gained a first
+      down. For example, if the opponent turns the ball over on their own 1-yard
+      line, then the offense goes 3-and-out and kicks a field goal, the drive
+      doesn't count as entering the red zone (or crossing midfield).
 
 * Sacks: The Nth sack is worth **⌈N/2⌉ points**
 
@@ -239,14 +245,15 @@ separate competition.
 * Team starts a QB who was not on any NFL 53-man roster on opening day: **35
   points** per QB, awarded only for the first time the QB starts for that team
 
-* Kurt Warner
+* Unretirements
 
-    * Rumors from "team sources" that your team wants to sign Kurt Warner: **10
-      points**
+    * Rumors from "team sources" that your team wants to sign a specific, named
+      quarterback who has officially retired from the NFL: **10 points**
 
-    * Your team works out Kurt Warner: **20 points**
+    * Your team adds a formerly retired quarterback to the roster: **20 points**
 
-    * These points may also be awarded for Brett Favre, etc.
+    * Point values are doubled for each time the quarterback has unretired and
+      then re-retired
 
 * Colin Kaepernick
 
