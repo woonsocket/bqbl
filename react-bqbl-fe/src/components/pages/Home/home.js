@@ -60,9 +60,9 @@ function LeagueHome(props) {
 function AllLeagues(props) {
   return (
     <List>
-    {    
-      props.leagues.map((league, index) => (
-        <Link to={{pathname: `home?league=${league}`, search: window.location.search}}
+    {  props.leagues.map((league, index) => (
+      // TODO: hard-coded year
+        <Link to={{pathname: `home?league=${league}&year=2019`, search: window.location.search}}
               onClick={props.close} key={"link" + index}>
           <ListItem button key={league}>
             <ListItemText primary={league} />
