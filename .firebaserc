@@ -1,5 +1,14 @@
 {
   "projects": {
     "default": "bqbl-591f3"
+  },
+  "targets": {
+    "bqbl-591f3": {
+      "hosting": {
+        "dev": [
+          "bqbl-dev"
+        ]
+      }
+    }
   }
 }
