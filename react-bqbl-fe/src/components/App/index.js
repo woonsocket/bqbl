@@ -33,6 +33,7 @@ function App() {
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const week = new URLSearchParams(window.location.search).get("week");
   const year = new URLSearchParams(window.location.search).get("year");
+
   function handleDrawerOpen() {
     setDrawerOpen(true);
   }
