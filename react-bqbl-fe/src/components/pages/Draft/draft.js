@@ -36,7 +36,7 @@ class DraftPageBase extends Component {
   }
 
   componentDidMount() {
-    this.props.firebase.league_spec(this.leagueid).once('value').then(data => {
+    this.props.firebase.league_spec(this.league).once('value').then(data => {
       let lsdp = this.props.firebase.leagueSpecDataProxy(this.year);
       let uid = this.props.firebase.getCurrentUser() ? this.props.firebase.getCurrentUser().uid : null;
       let isInLeague = lsdp.isInLeague(uid, data.val());
@@ -58,8 +58,9 @@ class DraftPageBase extends Component {
   }
 
   selectCallback(team) {
+    let params = { team: team, year: this.year, league: this.league };
     // I'm clearly holding this function invocation wrong. Need to figure out the es6y way.
-    this.props.firebase.draftTeam()({ team: team, year: this.year, league: this.leagueid }).then(function (result) {
+    this.props.firebase.draftTeam()(params).then(function (result) {
       console.log(result);
     }).catch(error => {
       alert(error);
@@ -110,8 +111,7 @@ function DraftSelectionGrid({ taken = [], selectCallback }) {
       {FOOTBALL.ALL_TEAMS.map(team =>
         // TODO: Clean up by using the classnames package.
         <div className={["team", selectedTeam === team ? "team-selected" : "", taken.includes(team) ? "taken" : ""].join(' ')}
-          key={team}
-          onClick={updateSelection.bind(this, team)}
+          key={team} onClick={updateSelection.bind(this, team)}
         >
           <TeamIcon team={team} width='80px' />
           <div className="cell">
