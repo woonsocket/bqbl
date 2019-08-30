@@ -148,6 +148,23 @@ exports.tmpWriteLeague = functions.https.onCall((data, context) => {
     { name: 'Tebow', uid: '8' },])
 });
 
+exports.addPlayerToLeague = functions.https.onCall((data, context) => {
+  const league = data.league;
+  const name = data.name;
+  const uid = data.uid;
+  const year = data.year || '2019';
+  console.log(uid);
+
+  return admin.database().ref(`/tmp/leaguespec/${league}/users/${year}`).once('value').then(
+    dataPromise => {
+      let users = dataPromise.val();
+      console.log(users);
+      users.push({name: name, uid: uid});
+      return admin.database().ref(`/tmp/leaguespec/${league}/users/${year}`).set(users)
+
+    }
+  )})
+
 exports.setDraftOrder = functions.https.onCall((data, context) => {
   const league = data.league;
   const year = data.year || '2019';
@@ -288,10 +305,12 @@ exports.draftTeam = functions.https.onCall((data, context) => {
   const uid = context.auth && context.auth.uid || data.uidOverride;
 
   const draftRef = `tmp/leaguespec/${league}/draft/${year}`;
+  console.log(draftRef)
   return admin.database()
     .ref(draftRef)
     .once('value').then(data => {
       let draft = data.val();
+      console.log(draft)
       for (let i = 0; i < draft.length; i++) {
         if (draft[i].team) {
           if (draft[i].team === team) {
