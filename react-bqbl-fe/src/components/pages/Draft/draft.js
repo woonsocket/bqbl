@@ -60,8 +60,8 @@ class DraftPageBase extends Component {
   selectCallback(team) {
     let params = { team: team, year: this.year, league: this.league };
     // I'm clearly holding this function invocation wrong. Need to figure out the es6y way.
-    this.props.firebase.draftTeam()(params).then(function (result) {
-      console.log(result);
+    this.props.firebase.draftTeam()(params).then(result => {
+      this.setState({successfulSnackbar: true})
     }).catch(error => {
       alert(error);
     });
@@ -88,6 +88,7 @@ class DraftPageBase extends Component {
       <TabPanel value={this.state.value} index={1}>
         <DraftSelectionList draftList={this.state.draftList} />
       </TabPanel>
+      <DraftSuccessfulSnackbar open={this.state.successfulSnackbar}/>
     </React.Fragment>
   }
 }
@@ -167,6 +168,22 @@ function DraftSnackbar({ selectedTeam, selectCallback, setSelectedTeamCallback }
     </div>
   );
 }
+
+function DraftSuccessfulSnackbar(props) {
+
+  return (
+    <Snackbar
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        open={props.open}
+        autoHideDuration={6000}
+        message={<span id="message-id">Draft successful!</span>}
+      />
+  );
+}
+
 
 DraftSelectionList.propTypes = {
   draftList: PropTypes.array.isRequired,
