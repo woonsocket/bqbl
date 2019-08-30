@@ -12,6 +12,10 @@ import "./home.css"
 class HomeBase extends Component {
   constructor(props) {
     super(props);
+    let params = new URLSearchParams(props.location.search);
+    this.league = params.get('league');
+    this.year = params.get('year');
+
     this.state = {
       user: this.props.firebase.getCurrentUser()
     };
@@ -22,7 +26,7 @@ class HomeBase extends Component {
   }
 
   authChanged(user) {
-    this.setState({user: user});
+    this.setState({ user: user });
   }
 
   static propTypes = {
@@ -30,9 +34,12 @@ class HomeBase extends Component {
   };
 
   render() {
-    return (
-      this.state.user ? <LeagueHome/> : <SignIn/>
-    );
+    if (this.state.user && this.league) {
+      return <LeagueHome year={this.year} league={this.league} />;
+    } else if (this.state.user) {
+      return <AllLeagues year={this.year} />;
+    }
+    return <SignIn />;
   }
 }
 
@@ -42,7 +49,13 @@ LeagueHome.propTypes = {
 
 function LeagueHome(props) {
   return (
-    <Navigation/>
+    <Navigation />
+  );
+}
+
+function AllLeagues(props) {
+  return (
+    "All leagues"
   );
 }
 
