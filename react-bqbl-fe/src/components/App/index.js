@@ -13,6 +13,7 @@ import PlayerStandingsPage from '../pages/PlayerStandingsPage/player-standings-p
 import ScorePage from '../pages/TeamScorePage/team-score-page';
 import SignInToggle from '../reusable/SignIn/sign-in-toggle';
 import TeamStandingsPage from '../pages/TeamStandingsPage/team-standings-page';
+import Navigation, {LINKS} from '../reusable/Navigation/navigation'
 
 import AppBar from '@material-ui/core/AppBar';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
@@ -22,10 +23,6 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import { Link } from 'react-router-dom';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
 import Input from '@material-ui/core/Input';
 import NativeSelect from '@material-ui/core/NativeSelect';
 
@@ -98,53 +95,18 @@ function App() {
           <Navigation close={handleDrawerClose}/>
         </Drawer>
       </AppBar>
-
       <div>
-        <Route path={HOME} component={HomePage} />
-        <Route path={LINEUP} component={LineupPage} />
-        <Route path={PLAYER_SCORES} component={PlayerScorePage} />
-        <Route path={PLAYER_STANDINGS} component={PlayerStandingsPage} />
-        <Route path={TEAM_SCORES} component={ScorePage} />
-        <Route path={TEAM_STANDINGS} component={TeamStandingsPage} />
-        <Route path={DRAFT} component={DraftPage} />
+        <Route exact path="/" component={HomePage} />
+        <Route path={LINKS.HOME.path} component={HomePage} />
+        <Route path={LINKS.LINEUP.path} component={LineupPage} />
+        <Route path={LINKS.PLAYER_SCORES.path} component={PlayerScorePage} />
+        <Route path={LINKS.PLAYER_STANDINGS.path} component={PlayerStandingsPage} />
+        <Route path={LINKS.TEAM_SCORES.path} component={ScorePage} />
+        <Route path={LINKS.TEAM_STANDINGS.path} component={TeamStandingsPage} />
+        <Route path={LINKS.DRAFT.path} component={DraftPage} />
       </div>
     </Router>
   );
-}
-
-export const LANDING = '/';
-export const HOME = '/home';
-export const LINEUP = '/lineup';
-export const PLAYER_SCORES = '/player-scores';
-export const PLAYER_STANDINGS = '/player-standings';
-export const TEAM_SCORES = '/team-scores';
-export const TEAM_STANDINGS = '/team-standings';
-export const DRAFT = '/draft';
-
-const LINKS = [
-  { path: HOME, text: 'Home' },
-  { path: LINEUP, text: 'Lineup' },
-  { path: PLAYER_SCORES, text: 'Player Scores' },
-  { path: PLAYER_STANDINGS, text: 'Player Standings' },
-  { path: TEAM_SCORES, text: 'Team Scores' },
-  { path: TEAM_STANDINGS, text: 'Team Standings' },
-  { path: DRAFT, text: 'Draft' },
-];
-
-function Navigation(props) {
-  return (
-    <List>
-      {LINKS.map((item, index) => (
-          <Link to={{pathname: item.path, search: window.location.search}}
-                onClick={props.close} key={"link" + index}>
-            <ListItem button key={item.text}>
-              <ListItemText primary={item.text} />
-            </ListItem>
-          </Link>
-        ))
-      }
-    </List>
-  )
 }
 
 export default App;
