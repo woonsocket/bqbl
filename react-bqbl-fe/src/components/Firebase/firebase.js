@@ -108,6 +108,11 @@ class Firebase {
     return new LeagueSpecDataProxy({ year });
   }
 
+  getAllLeagues() {
+    // TODO: Pull all the leagues this user is in from the db
+    return ['nbqbl', 'abqbl'];
+  }
+
   // have a getter
   // db-derived vals prefixed with db
   getScores(leagueId, year, legal_weeks, callback) {
