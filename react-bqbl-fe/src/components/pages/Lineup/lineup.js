@@ -33,6 +33,12 @@ function LineupPageBase(props) {
     props.firebase.addAuthListener(authChanged)
   });
 
+  useEffect(() => {
+    if (!user) {return;}
+    props.firebase.getStartsYear(user.uid, props.league, props.year, setWeeksList)
+    props.firebase.hasDh(props.league, props.year, setDh);
+  }, [props.firebase, props.league, props.year, user]);
+
   function clickCallback(weekId, cell, val) {
     const weekIndex = weekId * 1 - 1;
     let row = weeksList[weekIndex];
@@ -48,11 +54,6 @@ function LineupPageBase(props) {
     props.firebase.setStartsRow(user.uid, props.league, props.year, weekIndex, row);
   }
 
-  useEffect(() => {
-    if (!user) {return;}
-    props.firebase.getStartsYear(user.uid, props.league, props.year, setWeeksList)
-    props.firebase.hasDh(props.league, props.year, setDh);
-  }, [props.firebase, props.league, props.year, user]);
 
   return (
     <Table size="small">
