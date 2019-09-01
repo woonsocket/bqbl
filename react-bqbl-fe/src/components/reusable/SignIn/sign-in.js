@@ -7,24 +7,7 @@ import { withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
 import Button from '@material-ui/core/Button';
 
-class SignIn extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = { error: null, name: "foo" };
-  }
-
-  render() {
-    return (
-      <div>
-        <SignInGoogle />
-      </div>
-    );
-  }
-};
-
-
-class SignInGoogleBase extends Component {
+class SignInBase extends Component {
   constructor(props) {
     super(props);
 
@@ -60,9 +43,9 @@ class SignInGoogleBase extends Component {
   }
 }
 
-const SignInGoogle = compose(
+const SignIn = compose(
   withRouter,
   withFirebase,
-)(SignInGoogleBase);
+)(SignInBase);
 
 export default SignIn;
