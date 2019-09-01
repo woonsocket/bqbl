@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { withFirebase } from '../../Firebase';
 import ScoreJoiner from '../../ScoreJoiner/score-joiner';
@@ -14,27 +14,14 @@ import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-class PlayerScorePageBase extends Component {
-  static propTypes = {
-    firebase: PropTypes.object.isRequired,
-    match: PropTypes.object.isRequired,
-  };
+function PlayerScorePageBase(props) {
+  let [playerList, setPlayerList] = useState([]);
 
-  constructor(props) {
-    super(props);
-    this.scoreJoiner = new ScoreJoiner(this.props.firebase, props.league, props.year, props.week)
-    this.state = {
-      playerList: [],
-    };
-  }
+  useEffect(() => {
+    new ScoreJoiner(props.firebase, props.league, props.year, props.week).joinScores(setPlayerList)
+  }, [props.firebase, props.league, props.year, props.week]);
 
-  componentDidMount() {
-    this.scoreJoiner.joinScores(this.setState.bind(this))
-  }
-
-  render() {
-    return <PlayerScorePageUI playerList={this.state.playerList}/>
-  }
+  return <PlayerScorePageUI playerList={playerList}/>
 }
 
 PlayerScorePageUI.propTypes = {
