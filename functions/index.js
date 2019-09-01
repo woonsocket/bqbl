@@ -244,7 +244,7 @@ exports.createNewYear = functions.https.onCall((data, context) => {
         let teams = users[i].teams || [];
         console.log(users[i])
         for (let j = 0; j < teams.length; j++) {
-          teams[j].selected = "false";
+          teams[j].selected = false;
         }
         console.log(teams);
         for (let j = 0; j < weeks.length; j++) {
