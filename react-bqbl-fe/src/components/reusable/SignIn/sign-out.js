@@ -6,23 +6,7 @@ import { withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
 import Button from '@material-ui/core/Button';
 
-class SignOut extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { error: null, name: "foo" };
-  }
-
-  render() {
-    return (
-      <div>
-        <SignOutGoogle />
-      </div>
-    );
-  }
-};
-
-
-class SignOutGoogleBase extends Component {
+class SignOutBase extends Component {
   constructor(props) {
     super(props);
 
@@ -49,9 +33,9 @@ class SignOutGoogleBase extends Component {
   }
 }
 
-const SignOutGoogle = compose(
+const SignOut = compose(
   withRouter,
   withFirebase,
-)(SignOutGoogleBase);
+)(SignOutBase);
 
 export default SignOut;
