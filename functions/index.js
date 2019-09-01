@@ -234,14 +234,15 @@ exports.createNewYear = functions.https.onCall((data, context) => {
   const year = data.year || '2019';
 
   return admin.database()
-    .ref(`/tmp/leaguespec/` + leagueId)
+    .ref(`/tmp/leaguespec/${leagueId}/users/${year}`)
     .once('value').then(data => {
-      const users = data.val().users;
+      const users = data.val();
       // TODO: Pull this into constants.
       const weeks = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17"];
       for (let i = 0; i < users.length; i++) {
         let allWeeksList = [];
-        let teams = users[i].teams;
+        let teams = users[i].teams || [];
+        console.log(users[i])
         for (let j = 0; j < teams.length; j++) {
           teams[j].selected = "false";
         }
@@ -253,9 +254,32 @@ exports.createNewYear = functions.https.onCall((data, context) => {
         }
         // TODO: Get rid of /tmp
         const yearRef = admin.database().ref(
-          `tmp/users/${users[i].uid}/plays/${leagueId}/${year}`);
+          `tmp/leaguespec/${leagueId}/plays/${year}/${users[i].uid}/`);
         yearRef.set(allWeeksList);
       }
+    })
+});
+
+
+exports.portStartsNewFormat = functions.https.onCall((data, context) => {
+  const toYear = data.toYear;
+
+  return admin.database()
+    .ref(`tmp/users/`)
+    .once('value').then(data => {
+      const users = Object.entries(data.val());
+      let leagues = {}; 
+      leagueMap = {"-KtE306q7vKIIgOgMbZM": 'abqbl', "-KtC8hcGgvbh2W2Tq79n": 'nbqbl'}
+      const weeks = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17"];
+      for (let [uid, user] of users) {
+        leagues[leagueMap[user.leagueId]] = leagues[leagueMap[user.leagueId]] || {}
+        leagues[leagueMap[user.leagueId]][uid] = user.weeks;
+      }
+      Object.entries(leagues).map(([leagueId, leagueVal]) => {
+        const leagueRef = admin.database().ref(
+         `tmp/leaguespec/${leagueId}/plays/${toYear}/`);
+        leagueRef.set(leagueVal);
+      });
     })
 });
 

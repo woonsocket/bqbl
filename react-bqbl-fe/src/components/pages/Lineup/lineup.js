@@ -33,11 +33,6 @@ function LineupPageBase(props) {
     props.firebase.addAuthListener(authChanged)
   });
 
-  function updateCallback(weekData, weekId) {
-    props.firebase.starts_week(this.user.uid, '2019', weekId)
-      .update(weekData);
-  }
-
   function clickCallback(weekId, cell, val) {
     const weekIndex = weekId * 1 - 1;
     let row = weeksList[weekIndex];
@@ -50,14 +45,12 @@ function LineupPageBase(props) {
     }
     row.teams[cell].selected = !row.teams[cell].selected;
     setWeeksList(weeksList);
-    props.firebase.starts_week(user.uid, '2019', weekIndex).update(row);
+    props.firebase.setStartsRow(user.uid, props.league, props.year, weekIndex, row);
   }
 
   useEffect(() => {
     if (!user) {return;}
-    // TODO: key starts by league && UID.
-    props.firebase.starts_year(user.uid, props.year)
-      .on('value', snapshot => setWeeksList(snapshot.val()));
+    props.firebase.getStartsYear(user.uid, props.league, props.year, setWeeksList)
     props.firebase.hasDh(props.league, props.year, setDh);
   }, [props.firebase, props.league, props.year, user]);
 

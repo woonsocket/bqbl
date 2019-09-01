@@ -75,6 +75,17 @@ class Firebase {
     return this.db.ref(`${PREFIX}leaguespec/${leagueId}`);
   }
 
+  getStartsYear(uid, league, year, callback) {
+    this.db.ref(`${PREFIX}leaguespec/${league}/plays/${year}/${uid}`).on('value',
+    snapshot => {
+      callback(snapshot.val());
+    })
+  }
+
+  setStartsRow(uid, league, year, weekIndex, row) {
+    this.db.ref(`${PREFIX}leaguespec/${league}/plays/${year}/${uid}/${weekIndex}`).update(row);
+  }
+
   authChanged(user) {
     if (!user) {
       console.log("bail!");
