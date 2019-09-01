@@ -25,9 +25,6 @@ class PlayerStandingsPageBase extends Component {
   constructor(props) {
     super(props);
     this.user = null;
-    let params = new URLSearchParams(props.location.search);
-    this.league = params.get('league');
-    this.year = params.get('year');
     this.state = {
       players: [],
       playerTable: {}
@@ -36,7 +33,7 @@ class PlayerStandingsPageBase extends Component {
 
   componentDidMount() {
     this.props.firebase.getScores(
-      this.league, this.year, ALL_WEEKS_REVERSE, this.setState.bind(this));
+      this.props.league, this.props.year, ALL_WEEKS_REVERSE, this.setState.bind(this));
   }
 
   render() {

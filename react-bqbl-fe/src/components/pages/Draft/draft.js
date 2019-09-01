@@ -25,10 +25,6 @@ import Tabs from '@material-ui/core/Tabs';
 class DraftPageBase extends Component {
   constructor(props) {
     super(props);
-    let params = new URLSearchParams(props.location.search);
-    this.league = params.get('league');
-    this.year = params.get('year');
-    this.firebase = props.firebase;
     this.state = {
       inLeague: false,
       value: 0
@@ -36,8 +32,8 @@ class DraftPageBase extends Component {
   }
 
   componentDidMount() {
-    this.props.firebase.league_spec(this.league).once('value').then(data => {
-      let lsdp = this.props.firebase.leagueSpecDataProxy(this.year);
+    this.props.firebase.league_spec(this.props.league).once('value').then(data => {
+      let lsdp = this.props.firebase.leagueSpecDataProxy(this.props.year);
       let uid = this.props.firebase.getCurrentUser() ? this.props.firebase.getCurrentUser().uid : null;
       let isInLeague = lsdp.isInLeague(uid, data.val());
       let takenTeams = lsdp.getTakenTeams(data.val());
@@ -48,17 +44,17 @@ class DraftPageBase extends Component {
 
   addUser() {
     // TODO: Race conditions ahoy!
-    this.props.firebase.league_spec(this.league).once('value').then(data => {
+    this.props.firebase.league_spec(this.props.league).once('value').then(data => {
       let leagueData = data.val();
       let lsdp = this.props.firebase.leagueSpecDataProxy(this.year);
       let uid = this.props.firebase.getCurrentUser() ? this.props.firebase.getCurrentUser().uid : null;
       let newData = lsdp.addUser(uid, leagueData);
-      this.props.firebase.league_spec(this.league).update(newData);
+      this.props.firebase.league_spec(this.props.league).update(newData);
     });
   }
 
   selectCallback(team) {
-    let params = { team: team, year: this.year, league: this.league };
+    let params = { team: team, year: this.props.year, league: this.props.league };
     // I'm clearly holding this function invocation wrong. Need to figure out the es6y way.
     this.props.firebase.draftTeam()(params).then(result => {
       this.setState({successfulSnackbar: true})

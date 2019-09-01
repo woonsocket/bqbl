@@ -14,17 +14,13 @@ class TeamScorePageBase extends Component {
 
   constructor(props) {
     super(props);
-    let params = new URLSearchParams(props.location.search);
-    this.year = params.get('year');
-    this.week = params.get('week');
-
     this.state = {
       valsList: [],
     };
   }
 
   componentDidMount() {
-    this.props.firebase.scores_week(this.year, this.week).on('value', snapshot => {
+    this.props.firebase.scores_week(this.props.year, this.props.week).on('value', snapshot => {
       const vals = snapshot.val();
       const valsList = Object.keys(vals).map(key => ({
         ...vals[key],

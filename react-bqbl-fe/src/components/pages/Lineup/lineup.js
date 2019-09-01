@@ -19,9 +19,6 @@ class LineupPageBase extends Component {
   constructor(props) {
     super(props);
     this.user = null;
-    let params = new URLSearchParams(props.location.search);
-    this.league = params.get('league');
-    this.year = params.get('year');
     this.state = {
       valsList: [],
       dh: false
@@ -40,11 +37,11 @@ class LineupPageBase extends Component {
     }
     this.user = user;
     // TODO: key starts by league && UID.
-    this.props.firebase.starts_year(user.uid, this.year)
+    this.props.firebase.starts_year(user.uid, this.props.year)
       .on('value', snapshot => {
         this.setState({ valsList: Object.values(snapshot.val())});
       })
-    this.props.firebase.hasDh(this.league, this.year,
+    this.props.firebase.hasDh(this.props.league, this.props.year,
       hasDh => {this.setState({dh: hasDh})}
     );
   }

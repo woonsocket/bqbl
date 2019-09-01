@@ -16,12 +16,9 @@ import "./home.css"
 class HomeBase extends Component {
   constructor(props) {
     super(props);
-    let params = new URLSearchParams(props.location.search);
-    this.league = params.get('league');
-    this.year = params.get('year');
-
+    console.log(props)
     this.state = {
-      user: this.props.firebase.getCurrentUser()
+      user: this.props.firebase.getCurrentUser(),
     };
   }
 
@@ -38,40 +35,36 @@ class HomeBase extends Component {
   };
 
   render() {
-    if (this.state.user && this.league) {
-      return <LeagueHome year={this.year} league={this.league} />;
+    if (this.state.user && this.props.league) {
+      return <Navigation year={this.props.year} league={this.props.league} week={this.props.week} />;
     } else if (this.state.user) {
-      return <AllLeagues year={this.year} leagues={this.props.firebase.getAllLeagues()}/>;
+      return <AllLeagues year={this.props.year} leagues={this.props.firebase.getAllLeagues()} week={this.props.week} />;
     }
     return <SignIn />;
   }
 }
 
-
-LeagueHome.propTypes = {
-}
-
-function LeagueHome(props) {
-  return (
-    <Navigation />
-  );
-}
-
 function AllLeagues(props) {
+
+  function makeLeagueParams(league, year, week) {
+    let usp = new URLSearchParams(window.location.search);
+    usp.set('league', league);
+    usp.set('year', year);
+    week && usp.set('week', week);
+    return usp.toString();
+  }
   return (
     <List>
-    {  props.leagues.map((league, index) => (
-      // TODO: hard-coded year
-        <Link to={{pathname: `home?league=${league}&year=2019`, search: window.location.search}}
-              onClick={props.close} key={"link" + index}>
+      {props.leagues.map((league, index) => (
+        <Link to={{ pathname: `home`, search: makeLeagueParams(league, props.year, props.week) }}
+          onClick={props.close} key={"link" + index}>
           <ListItem button key={league}>
             <ListItemText primary={league} />
           </ListItem>
         </Link>
       ))
-    }
-  </List>
-
+      }
+    </List>
   );
 }
 

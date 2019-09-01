@@ -31,8 +31,9 @@ export const WEEK_IDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"
 function App() {
 
   const [drawerOpen, setDrawerOpen] = React.useState(false);
-  const week = new URLSearchParams(window.location.search).get("week");
-  const year = new URLSearchParams(window.location.search).get("year");
+  const [league, setLeague] = React.useState(new URLSearchParams(window.location.search).get("league"));
+  const [year, setYear] = React.useState(new URLSearchParams(window.location.search).get("year") || '2019');
+  const [week, setWeek] = React.useState(new URLSearchParams(window.location.search).get("week") || '1');
 
   function handleDrawerOpen() {
     setDrawerOpen(true);
@@ -41,7 +42,20 @@ function App() {
   function handleDrawerClose() {
     setDrawerOpen(false);
   }
+ 
+  const LeagueYearWeekRoute = ({ component: Component, ...rest }) => (
+    <Route {...rest} render={routeProps => (
+        <Component {...routeProps} league={league} year={year} week={week} />
+    )} />
+  )
 
+  setInterval(() => {
+    let usp = new URLSearchParams(window.location.search);
+    setLeague(usp.get('league'))
+    setYear(usp.get('year') || '2019')
+    setWeek(usp.get('week') || '1')
+  }, 200);
+  
   return (
     <Router>
       <AppBar position="static">
@@ -62,7 +76,7 @@ function App() {
             }}
             input={<Input name="year" id="year-native-helper" />}
           >
-            {["2017", "2018", "2019"].map(id =><option value={id}>{id}</option>)}
+            {["2017", "2018", "2019"].map(id =><option value={id} key={id}>{id}</option>)}
           </NativeSelect>
 
           <NativeSelect 
@@ -74,7 +88,7 @@ function App() {
             }}
             input={<Input name="week" id="week-native-helper" />}
           >
-            {WEEK_IDS.map(id =><option value={id}>Week {id}</option>)}
+            {WEEK_IDS.map(id =><option value={id} key={id}>Week {id}</option>)}
           </NativeSelect>
           <SignInToggle/>
         </Toolbar>
@@ -93,18 +107,18 @@ function App() {
             </IconButton>
           </div>
           <Divider />
-          <Navigation close={handleDrawerClose}/>
+          <Navigation close={handleDrawerClose} league={league} year={year} week={week} />
         </Drawer>
       </AppBar>
       <div>
         <Route exact path="/" component={HomePage} />
-        <Route path={LINKS.HOME.path} component={HomePage} />
-        <Route path={LINKS.LINEUP.path} component={LineupPage} />
-        <Route path={LINKS.PLAYER_SCORES.path} component={PlayerScorePage} />
-        <Route path={LINKS.PLAYER_STANDINGS.path} component={PlayerStandingsPage} />
-        <Route path={LINKS.TEAM_SCORES.path} component={ScorePage} />
-        <Route path={LINKS.TEAM_STANDINGS.path} component={TeamStandingsPage} />
-        <Route path={LINKS.DRAFT.path} component={DraftPage} />
+        <LeagueYearWeekRoute path={LINKS.HOME.path} component={HomePage} />
+        <LeagueYearWeekRoute path={LINKS.LINEUP.path} component={LineupPage} />
+        <LeagueYearWeekRoute path={LINKS.PLAYER_SCORES.path} component={PlayerScorePage} />
+        <LeagueYearWeekRoute path={LINKS.PLAYER_STANDINGS.path} component={PlayerStandingsPage} />
+        <LeagueYearWeekRoute path={LINKS.TEAM_SCORES.path} component={ScorePage} />
+        <LeagueYearWeekRoute path={LINKS.TEAM_STANDINGS.path} component={TeamStandingsPage} />
+        <LeagueYearWeekRoute path={LINKS.DRAFT.path} component={DraftPage} />
       </div>
     </Router>
   );

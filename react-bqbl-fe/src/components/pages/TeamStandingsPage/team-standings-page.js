@@ -15,17 +15,13 @@ import TableRow from '@material-ui/core/TableRow';
 class TeamStandingsPageBase extends Component {
   constructor(props) {
     super(props);
-    let params = new URLSearchParams(props.location.search);
-    this.league = params.get('league');
-    this.year = params.get('year');
-
     this.state = {
       allScores: [],
     };
   }
 
   componentDidMount() {
-    this.props.firebase.scores_year(this.year).on('value', snapshot => {
+    this.props.firebase.scores_year(this.props.year).on('value', snapshot => {
       let weekMap = {};
       for (let [weekId, weekVal] of Object.entries(snapshot.val())) {
         for (let [teamId, teamVal] of Object.entries(weekVal)) {

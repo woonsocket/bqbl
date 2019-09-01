@@ -22,11 +22,7 @@ class PlayerScorePageBase extends Component {
 
   constructor(props) {
     super(props);
-    let params = new URLSearchParams(props.location.search);
-    let league = params.get('league');
-    let year = params.get('year');
-    let week = params.get('week');
-    this.scoreJoiner = new ScoreJoiner(this.props.firebase, league, year, week)
+    this.scoreJoiner = new ScoreJoiner(this.props.firebase, props.league, props.year, props.week)
     this.state = {
       playerList: [],
     };

@@ -27,7 +27,7 @@ function Navigation(props) {
   return (
     <List>
       {Object.entries(LINKS).map(([item_key, item_val], index) => (
-          <Link to={{pathname: item_val.path, search: window.location.search}}
+          <Link to={{pathname: item_val.path, search: new URLSearchParams([["week", props.week],["year", props.year], ['league', props.league]]).toString() }}
                 onClick={props.close} key={"link" + index}>
             <ListItem button key={item_val.text}>
               <ListItemText primary={item_val.text} />
