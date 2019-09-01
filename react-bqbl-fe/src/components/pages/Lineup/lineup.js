@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import './lineup.css'
 import { withFirebase } from '../../Firebase';
@@ -14,76 +14,64 @@ import TableRow from '@material-ui/core/TableRow';
 import Table from '@material-ui/core/Table';
 import PropTypes from 'prop-types';
 
-// TODO: Fully decouple data and UI.
-class LineupPageBase extends Component {
-  constructor(props) {
-    super(props);
-    this.user = null;
-    this.state = {
-      valsList: [],
-      dh: false
-    };
+LineupPageBase.propTypes = {
+  firebase: PropTypes.object.isRequired,
+  league: PropTypes.string.isRequired,
+  year: PropTypes.string.isRequired,
+}
+
+function LineupPageBase(props) {
+  let [weeksList, setWeeksList] = useState([]);
+  let [dh, setDh] = useState(false);
+  let [user, setUser] = useState(props.firebase.getCurrentUser());
+
+  function authChanged(newUser) {
+    setUser(newUser);
   }
 
-  componentDidMount() {
-    this.props.firebase.addAuthListener(this.authChanged.bind(this))
-  }
+  useEffect(() => {
+    props.firebase.addAuthListener(authChanged)
+  });
 
-  authChanged(user) {
-    if (!user) {
-      // eslint-disable-next-line no-console
-      console.log("bail!");
-      return;
-    }
-    this.user = user;
-    // TODO: key starts by league && UID.
-    this.props.firebase.starts_year(user.uid, this.props.year)
-      .on('value', snapshot => {
-        this.setState({ valsList: Object.values(snapshot.val())});
-      })
-    this.props.firebase.hasDh(this.props.league, this.props.year,
-      hasDh => {this.setState({dh: hasDh})}
-    );
-  }
-
-  updateCallback(weekData, weekId) {
-    this.props.firebase.starts_week(this.user.uid, '2019', weekId)
+  function updateCallback(weekData, weekId) {
+    props.firebase.starts_week(this.user.uid, '2019', weekId)
       .update(weekData);
   }
 
-  clickCallback(weekId, cell, val) {
+  function clickCallback(weekId, cell, val) {
     const weekIndex = weekId * 1 - 1;
-    let row = this.state.valsList[weekIndex];
+    let row = weeksList[weekIndex];
     // The DH continues to be my enemy.
     if (cell === 5 && row.teams.length === 4) {
-      row.teams.push({name:'', selected:false})
+      row.teams.push({ name: '', selected: false })
     }
     if (row.teams.length <= cell) {
-      row.teams.push({name:val, selected:false})
+      row.teams.push({ name: val, selected: false })
     }
     row.teams[cell].selected = !row.teams[cell].selected;
-    this.setState({ valsList: this.state.valsList })
-    this.props.firebase.starts_week(this.user.uid, '2019', weekIndex).update(row);
+    setWeeksList(weeksList);
+    props.firebase.starts_week(user.uid, '2019', weekIndex).update(row);
   }
 
-  render() {
-    return (
-      <Table size="small">
-        <TableBody>
-          {this.state.valsList.map((week, index) => (
-            <LineupWeek
-              week={week} index={index} dh={this.state.dh} key={index}
-              clickCallback={this.clickCallback.bind(this)}
-            />
-          ))}
-        </TableBody>
-      </Table>
-    )}
-}
+  useEffect(() => {
+    if (!user) {return;}
+    // TODO: key starts by league && UID.
+    props.firebase.starts_year(user.uid, props.year)
+      .on('value', snapshot => setWeeksList(snapshot.val()));
+    props.firebase.hasDh(props.league, props.year, setDh);
+  }, [props.firebase, props.league, props.year, user]);
 
-LineupPageBase.propTypes = {
-  firebase: PropTypes.object.isRequired,
-  match: PropTypes.object.isRequired,
+  return (
+    <Table size="small">
+      <TableBody>
+        {weeksList.map((week, index) => (
+          <LineupWeek clickCallback={clickCallback}
+            week={week} index={index} dh={dh} key={index}
+          />
+        ))}
+      </TableBody>
+    </Table>
+  )
 }
 
 LineupWeek.propTypes = {
@@ -106,19 +94,19 @@ function LineupWeek(props) {
         </TableCell>
       )}
       {props.dh && <React.Fragment>
-        <TableCell> <DHSelector clickCallback={props.clickCallback} weekId={props.week.id} dhId={4} team={props.week.teams[4] || {}}/> </TableCell>
-        <TableCell> <DHSelector clickCallback={props.clickCallback} weekId={props.week.id} dhId={5} team={props.week.teams[5] || {}}/> </TableCell>
+        <TableCell> <DHSelector clickCallback={props.clickCallback} weekId={props.week.id} dhId={4} team={props.week.teams[4] || {}} /> </TableCell>
+        <TableCell> <DHSelector clickCallback={props.clickCallback} weekId={props.week.id} dhId={5} team={props.week.teams[5] || {}} /> </TableCell>
       </React.Fragment>}
     </TableRow>
   );
 }
 
-function DHSelector(props) {
+function DHSelector({clickCallback, team, weekId, dhId}) {
   return (
     <NativeSelect
-      value={props.team.name || ""}
-      onChange={e => props.clickCallback.bind(null, props.weekId, props.dhId)(e.target.value)}
-      input={<Input/>}
+      value={team.name || ""}
+      onChange={e => clickCallback.bind(null, weekId, dhId)(e.target.value)}
+      input={<Input />}
     >
       <option value="">None</option>
       {FOOTBALL.ALL_TEAMS.map(team => <option value={team} key={team}>{team}</option>)}
