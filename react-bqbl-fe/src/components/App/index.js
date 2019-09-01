@@ -111,7 +111,7 @@ function App() {
         </Drawer>
       </AppBar>
       <div>
-        <Route exact path="/" component={HomePage} />
+        <LeagueYearWeekRoute exact path="/" component={HomePage} />
         <LeagueYearWeekRoute path={LINKS.HOME.path} component={HomePage} />
         <LeagueYearWeekRoute path={LINKS.LINEUP.path} component={LineupPage} />
         <LeagueYearWeekRoute path={LINKS.PLAYER_SCORES.path} component={PlayerScorePage} />

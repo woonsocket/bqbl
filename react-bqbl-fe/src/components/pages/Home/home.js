@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import SignIn from '../../reusable/SignIn/sign-in'
 import { withFirebase } from '../../Firebase';
@@ -13,35 +13,22 @@ import { withRouter } from 'react-router-dom';
 
 import "./home.css"
 
-class HomeBase extends Component {
-  constructor(props) {
-    super(props);
-    console.log(props)
-    this.state = {
-      user: this.props.firebase.getCurrentUser(),
-    };
+function HomeBase(props) {
+  let [user, setUser] = useState(props.firebase.getCurrentUser());
+  function authChanged(newUser) {
+    setUser(newUser);
   }
 
-  componentDidMount() {
-    this.props.firebase.addAuthListener(this.authChanged.bind(this))
-  }
+  useEffect(() => {
+    props.firebase.addAuthListener(authChanged)
+  });
 
-  authChanged(user) {
-    this.setState({ user: user });
+  if (user && props.league) {
+    return <Navigation year={props.year} league={props.league} week={props.week} />;
+  } else if (user) {
+    return <AllLeagues year={props.year} leagues={props.firebase.getAllLeagues()} week={props.week} />;
   }
-
-  static propTypes = {
-    firebase: PropTypes.object.isRequired,
-  };
-
-  render() {
-    if (this.state.user && this.props.league) {
-      return <Navigation year={this.props.year} league={this.props.league} week={this.props.week} />;
-    } else if (this.state.user) {
-      return <AllLeagues year={this.props.year} leagues={this.props.firebase.getAllLeagues()} week={this.props.week} />;
-    }
-    return <SignIn />;
-  }
+  return <SignIn />;
 }
 
 function AllLeagues(props) {
@@ -53,6 +40,7 @@ function AllLeagues(props) {
     week && usp.set('week', week);
     return usp.toString();
   }
+
   return (
     <List>
       {props.leagues.map((league, index) => (
