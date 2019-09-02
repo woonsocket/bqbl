@@ -21,14 +21,14 @@ function TeamScoreCard(props) {
         <div
           style={{
             'backgroundImage': 'url(http://i.nflcdn.com/static/site/7.5/img/logos/svg/' +
-              'teams-matte/' + props.score.uid + '.svg)'
+              'teams-matte/' + props.score.teamName + '.svg)'
           }}
           className="bg">
         </div>
 
         <Box className="header-text">
           <Typography variant="h5" component="h2">
-            {props.score.uid}
+            {props.score.teamName}
           </Typography>
           <Typography>
             {lineScore(props.score.breakdown)} <br />
@@ -66,7 +66,6 @@ function LineItem(props) {
       <div className="comp-score">{props.line.value}</div>
     </div>
   );
-
 }
 
 function breakdownToComponents(breakdown) {

@@ -1,55 +1,39 @@
 import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+
+import React, { useState, useEffect } from 'react';
 
 import { withFirebase } from '../../Firebase';
-import ScoreLine from '../../reusable/TeamScoreCard/team-score-card';
+import TeamScoreCard from '../../reusable/TeamScoreCard/team-score-card';
 
-class TeamScorePageBase extends Component {
-  static propTypes = {
-    firebase: PropTypes.object.isRequired,
-    match: PropTypes.object.isRequired,
-  };
+function TeamScorePageBase2(props) {
+  let [valsList, setValsList] = useState([])
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      valsList: [],
-    };
-  }
-
-  componentDidMount() {
-    this.props.firebase.scores_week(this.props.year, this.props.week).on('value', snapshot => {
+  useEffect(() => {
+    props.firebase.scores_week(props.year, props.week).on('value', snapshot => {
       const vals = snapshot.val();
       const valsList = Object.keys(vals).map(key => ({
         ...vals[key],
-        uid: key,
+        teamName: key,
       }));
-      this.setState({ valsList: valsList })
+      setValsList(valsList);
     })
-  }
+  }, [props.firebase, props.league, props.year, props.week]);
 
-  render() {
-    return (
-      <React.Fragment>
-        {this.state.valsList ? (
-            this.state.valsList.map(score => (
-              <ScoreLine
-                score={score} key={score.uid}
-              />
-            ))
-        ) : (
-            <div>There are no messages ...</div>
-          )}
-      </React.Fragment>
-    );
-  }
+
+  return (
+    <React.Fragment>
+      {valsList.map(score => (
+        <TeamScoreCard score={score} key={score.teamName} />
+      ))}
+    </React.Fragment>
+  );
 }
 
 const TeamScorePage = compose(
   withRouter,
   withFirebase,
-)(TeamScorePageBase);
+)(TeamScorePageBase2);
 
 export default TeamScorePage;
