@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { withFirebase } from '../../Firebase';
 import * as FOOTBALL from '../../../constants/football';
@@ -12,16 +12,12 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 
-class TeamStandingsPageBase extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      allScores: [],
-    };
-  }
+// TODO: Separate the display and fetch logic.
+function TeamStandingsPageBase(props) {
+  let [allScores, setAllScores] = useState([]);
 
-  componentDidMount() {
-    this.props.firebase.scores_year(this.props.year).on('value', snapshot => {
+  useEffect(() => {
+    props.firebase.scores_year(this.props.year).on('value', snapshot => {
       let weekMap = {};
       for (let [weekId, weekVal] of Object.entries(snapshot.val())) {
         for (let [teamId, teamVal] of Object.entries(weekVal)) {
@@ -29,39 +25,36 @@ class TeamStandingsPageBase extends Component {
           weekMap[teamId][weekId] = teamVal.total
         }
       }
-      this.setState({ allScores: weekMap })
+      setAllScores(weekMap);
     })
-  }
+  }, [props.firebase, props.league, props.year, props.week]);
 
-  render() {
-    return (
-      <Paper>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Team</TableCell>
-              {FOOTBALL.WEEK_IDS.map((val, k) =>
-                <TableCell align="right" key={"week"+k}>{val}</TableCell>
+  return (
+    <Paper>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>Team</TableCell>
+            {FOOTBALL.WEEK_IDS.map((val, k) =>
+              <TableCell align="right" key={"week"+k}>{val}</TableCell>
+            )}
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {Object.entries(allScores).map((teamVal, teamKey) => (
+            <TableRow key={"team"+teamKey}>
+              <TableCell>{teamVal[0]}</TableCell>
+              {FOOTBALL.WEEK_IDS.map((weekId) =>
+                <TableCell key={"week2"+weekId}>
+                  {JSON.stringify(teamVal[1][weekId])}
+                </TableCell>
               )}
             </TableRow>
-          </TableHead>
-          <TableBody>
-            {Object.entries(this.state.allScores).map((teamVal, teamKey) => (
-              <TableRow key={"team"+teamKey}>
-                <TableCell>{teamVal[0]}</TableCell>
-                {FOOTBALL.WEEK_IDS.map((weekId) =>
-                  <TableCell key={"week2"+weekId}>
-                    {JSON.stringify(teamVal[1][weekId])}
-                  </TableCell>
-                )}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Paper>
-
-    );
-  }
+          ))}
+        </TableBody>
+      </Table>
+    </Paper>
+  );
 }
 
 const TeamStandingsPage = compose(
