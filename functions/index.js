@@ -240,7 +240,7 @@ exports.createNewYear = functions.https.onCall((data, context) => {
       // TODO: Pull this into constants.
       const weeks = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17"];
       for (let i = 0; i < users.length; i++) {
-        let allWeeksList = [];
+        let allWeeks = {};
         let teams = users[i].teams || [];
         console.log(users[i])
         for (let j = 0; j < teams.length; j++) {
@@ -250,12 +250,12 @@ exports.createNewYear = functions.https.onCall((data, context) => {
         for (let j = 0; j < weeks.length; j++) {
           week = weeks[j];
           let thisWeek = { 'id': week, "teams": teams };
-          allWeeksList.push(thisWeek);
+          allWeeks[week] = thisWeek;
         }
         // TODO: Get rid of /tmp
         const yearRef = admin.database().ref(
           `tmp/leaguespec/${leagueId}/plays/${year}/${users[i].uid}/`);
-        yearRef.set(allWeeksList);
+        yearRef.set(allWeeks);
       }
     })
 });
@@ -273,7 +273,10 @@ exports.portStartsNewFormat = functions.https.onCall((data, context) => {
       const weeks = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17"];
       for (let [uid, user] of users) {
         leagues[leagueMap[user.leagueId]] = leagues[leagueMap[user.leagueId]] || {}
-        leagues[leagueMap[user.leagueId]][uid] = user.weeks;
+        leagues[leagueMap[user.leagueId]][uid] = {};
+        for (let week of user.weeks) {
+          leagues[leagueMap[user.leagueId]][uid][week.id] = week
+        }
       }
       Object.entries(leagues).map(([leagueId, leagueVal]) => {
         const leagueRef = admin.database().ref(

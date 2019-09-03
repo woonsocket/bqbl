@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import './player-standings-page.css';
 import { withFirebase } from '../../Firebase';
@@ -21,31 +21,17 @@ export const WEEK_IDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"
 const ALL_WEEKS_REVERSE = WEEK_IDS.reverse();
 const FOLD = 4;
 
-class PlayerStandingsPageBase extends Component {
-  constructor(props) {
-    super(props);
-    this.user = null;
-    this.state = {
-      players: [],
-      playerTable: {}
-    };
-  }
+function PlayerStandingsPageBase(props) {
+  let [playerTable, setPlayerTable] = useState({})
 
-  componentDidMount() {
-    this.props.firebase.getScores(
-      this.props.league, this.props.year, ALL_WEEKS_REVERSE, this.setState.bind(this));
-  }
-
-  render() {
-    return Object.entries(this.state.playerTable).map(([playerId, player]) => (
-      <PlayerYearCard player={player} name={playerId} key={playerId} />
-    ))
-  }
-}
-
-PlayerStandingsPageBase.propTypes = {
-  firebase: PropTypes.object.isRequired,
-  match: PropTypes.object.isRequired,
+  useEffect(() => {
+    props.firebase.getScores(
+      props.league, props.year, ALL_WEEKS_REVERSE, setPlayerTable);
+  }, [props.firebase, props.league, props.year])
+  console.log(props)
+  return Object.entries(playerTable).map(([playerId, player]) => (
+    <PlayerYearCard player={player} name={playerId} key={playerId} />
+  ))
 }
 
 PlayerYearCard.propTypes = {

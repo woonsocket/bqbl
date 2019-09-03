@@ -124,27 +124,42 @@ class Firebase {
     return ['nbqbl', 'abqbl'];
   }
 
-  // have a getter
-  // db-derived vals prefixed with db
-  getScores(leagueId, year, legal_weeks, callback) {
-    var scoresPromise = this.scores_year(year).once('value');
-    var startsPromise = this.league_starts_year(leagueId, year).once('value');
+  getScores(league, year, legal_weeks, callback) {
+    let scoresPromise = this.scores_year(year).once('value');
+    let startsPromise = this.db.ref(`${PREFIX}leaguespec/${league}/plays/${year}`).once('value');
+    let playersPromise = this.db.ref(`${PREFIX}leaguespec/${league}/users/2019`).once('value');
 
-    Promise.all([scoresPromise, startsPromise]).then(
-      ([scoresSnapshot, startsSnapshot]) => {
+    function scoreForTeam(dbScores, week, team) {
+      if (!team) {
+        return 0;
+      }
+      return dbScores[week] && dbScores[week][team] && dbScores[week][team].total || 0;
+    }
+    function getStartedTeams(dbStarts, uid, week) {
+      let starts = dbStarts[uid][week].teams.filter(team=>team.selected).map(team=>team.name);
+      if (!starts || starts.length == 0) {
+        starts = ['none', 'none'];
+      }
+      return starts;
+    }
+
+    Promise.all([scoresPromise, startsPromise, playersPromise]).then(
+      ([scoresSnapshot, startsSnapshot, playersSnapshot]) => {
         const dbScores = scoresSnapshot.val();
         const dbStarts = startsSnapshot.val();
-        if (!startsSnapshot.val() || !scoresSnapshot.val()) {
+        const dbPlayers = playersSnapshot.val();
+        if (!dbScores || !dbStarts || !dbPlayers) {
+          console.log("bail")
           return;
         }
-        sanitizeStartsData(dbStarts);
-        sanitizeScoresData(dbScores);
+        
         const players = {};
-        for (const weekIndex of Object.keys(dbStarts)) {
-          const dbWeek = dbStarts[weekIndex];
-          for (const playerKey of Object.keys(dbWeek)) {
-            if (!players[playerKey]) {
-              players[playerKey] = {};
+        // TODO: yeah don't do this.
+        for (const playerKey of Object.keys(dbStarts)) {
+          players[playerKey] = {};
+          for (const user of Object.keys(dbPlayers)) {
+            if (dbPlayers[user].uid == playerKey) {
+              players[playerKey].name = dbPlayers[user].name;
             }
           }
         }
@@ -152,17 +167,12 @@ class Firebase {
         for (const [playerId, player] of Object.entries(players)) {
           let start_rows = {};
           for (const weekId of Object.values(legal_weeks)) {
-            const dbWeekPlayer = dbStarts[weekId][playerId];
-            let name_1 = dbWeekPlayer.starts[0].name || "none";
-            let name_2 = dbWeekPlayer.starts[1].name || "none";
-            // TODO handle bye weeks better.
-            let score_1 = (dbScores[weekId][dbWeekPlayer.starts[0].name] && dbScores[weekId][dbWeekPlayer.starts[0].name].total) || 0;
-            let score_2 = (dbScores[weekId][dbWeekPlayer.starts[1].name] && dbScores[weekId][dbWeekPlayer.starts[1].name].total) || 0;
-            
-            start_rows[weekId] = createStartRow(dbStarts[weekId][playerId].name,
-              createStart(name_1, score_1), createStart(name_2, score_2));
+            const startedTeams = getStartedTeams(dbStarts, playerId, weekId)
+            const scores = startedTeams.map(scoreForTeam.bind(null, dbScores, weekId)) || [0,0] 
+            start_rows[weekId] = createStartRow(dbStarts[playerId][weekId].name,
+              createStart(startedTeams[0], scores[0]), createStart(startedTeams[1], scores[1]));
           }
-          const name = (dbStarts[legal_weeks[0]][playerId].name);
+          const name = (player.name);
           playerTable[playerId] = createPlayer(name, 30, start_rows);
         }
         for (const player of Object.values(playerTable)) {
@@ -172,30 +182,8 @@ class Firebase {
           }
           player.total = playerTotal;
         }
-        callback({ players: players, playerTable: playerTable });
+        callback(playerTable);
       })
-  }
-}
-
-function sanitizeStartsData(dbStarts) {
-  for (const weekIndex of Object.keys(dbStarts)) {
-    const dbWeek = dbStarts[weekIndex];
-    for (const playerKey of Object.keys(dbWeek)) {
-      // Players are not required to start two teams.
-      // In these cases, sanitize the data.
-      if (!dbWeek[playerKey].starts) {
-        dbWeek[playerKey].starts = [{name: 'none', score: 0}, {name: 'none', score:0}]
-      }
-      if (dbWeek[playerKey].starts.length === 1) {
-        dbWeek[playerKey].starts.push({name: 'none', score: 0});
-      }
-    }
-  }
-}
-
-function sanitizeScoresData(dbScores) {
-  for (const weekIndex of Object.keys(dbScores)) {
-    dbScores[weekIndex]['none'] = {total: 0}
   }
 }
 

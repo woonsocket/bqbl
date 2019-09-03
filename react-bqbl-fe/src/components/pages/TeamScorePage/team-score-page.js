@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { withFirebase } from '../../Firebase';
 import TeamScoreCard from '../../reusable/TeamScoreCard/team-score-card';
 
-function TeamScorePageBase2(props) {
+function TeamScorePageBase(props) {
   let [valsList, setValsList] = useState([])
 
   useEffect(() => {
@@ -34,6 +34,6 @@ function TeamScorePageBase2(props) {
 const TeamScorePage = compose(
   withRouter,
   withFirebase,
-)(TeamScorePageBase2);
+)(TeamScorePageBase);
 
 export default TeamScorePage;
