@@ -57,6 +57,30 @@ def ordinal(n):
             or str(n))
 
 
+def parse_yard_line(yard_line_str, offense_abbr):
+    """Parses the yard line stat.
+
+    Args:
+      yard_line_str: The string describing the yard line, e.g., "NE 35" for the
+          Patriots 35-yard line.
+      offense_abbr: The abbreviation of the team who started the play with
+          possession.
+
+    Returns:
+      The yard line, expressed as a number of yards away from the offense's own
+      goal line. For example, if the Patriots have the ball, then "NE 28" is 28
+      and "ATL 28" is 72. Returns None if the string could not be parsed.
+    """
+    if not yard_line_str:
+        return None
+    try:
+        team, line_num_str = yard_line_str.split()
+        line_num = int(line_num_str)
+    except ValueError:
+        return None
+    return line_num if team == offense_abbr else 100 - line_num
+
+
 def parse_box(box, is_qb):
     # {player_id: {stat_name: value}}
     outcomes = collections.defaultdict(lambda: collections.defaultdict(int))
@@ -268,8 +292,6 @@ class Plays(object):
             if drive_num == 'crntdrv':
                 continue
             for play_id, play in drive['plays'].items():
-                desc = play['desc']
-
                 outcomes = parse_play(
                     game_id, play_id, play, is_qb, self.events)
                 for pid, qb_outcomes in outcomes.items():
@@ -283,6 +305,27 @@ class Plays(object):
                         else:
                             outcomes_by_player[team][pid][k] += v
                             self.outcomes_by_team[team][k] += v
+            # Compute best field position from drive-wide stats. Field position
+            # is recorded as the number of yards from the team's own goal line.
+            # We ignore field position on drives where the team never gained a
+            # first down (or received one via penalty) so that offenses aren't
+            # rewarded for going 3-and-out after their defense gives them good
+            # position.
+            drive_team = drive['posteam']
+            if drive['fds'] > 0 and drive_team:
+                old = self.outcomes_by_team[drive_team]['FIELDPOS']
+                new = 0
+                if drive['result'] == 'Touchdown':
+                    new = 100
+                else:
+                    for _, play in drive['plays'].items():
+                        team = play['posteam']
+                        if drive_team != team:
+                            continue
+                        yard_line = parse_yard_line(play['yrdln'], team)
+                        if yard_line:
+                            new = max(new, yard_line)
+                self.outcomes_by_team[drive_team]['FIELDPOS'] = max(old, new)
 
         self.outcomes_by_team[home_abbr]['passers'] = (
             outcomes_by_player[home_abbr])
