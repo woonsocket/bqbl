@@ -28,7 +28,6 @@ function PlayerStandingsPageBase(props) {
     props.firebase.getScores(
       props.league, props.year, ALL_WEEKS_REVERSE, setPlayerTable);
   }, [props.firebase, props.league, props.year])
-  console.log(props)
   return Object.entries(playerTable).map(([playerId, player]) => (
     <PlayerYearCard player={player} name={playerId} key={playerId} />
   ))
