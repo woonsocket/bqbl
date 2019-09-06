@@ -40,6 +40,7 @@ function LineupPageBase(props) {
     props.firebase.hasDh(props.league, props.year, setDh);
   }, [props.firebase, props.league, props.year, user]);
 
+  // TODO: Decouple 
   function clickCallback(weekId, cell, val) {
     let row = weeks[weekId];
     // The DH continues to be my enemy.

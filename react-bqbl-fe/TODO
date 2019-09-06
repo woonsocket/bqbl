@@ -5,11 +5,17 @@ Functionality:
 P1: Audit user flows to make sure they don't drop league, week, year
 P1: Hide the selector dropdown when it doesn't make sense
 P1: Secret project involving a profile page
+P2: Pro Bowl!
 P3: Make styling of player scores non-terrible
+
+Bugs:
+Drop week 17 from Lineup
 
 Cleanup:
 Figure out the React-standard way to do styles
 Convert {Draft} to pure-functional components
+Clean up cloud functions
+Merge branch in
 
 Architecture:
 (mostly done) Decouple db reads and writes from the UI
