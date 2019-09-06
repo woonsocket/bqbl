@@ -12,7 +12,6 @@ Figure out the React-standard way to do styles
 Convert {Draft} to pure-functional components
 
 Architecture:
-Test everything off of /tmp
 (mostly done) Decouple db reads and writes from the UI
 Pull constants into a top-level
 
