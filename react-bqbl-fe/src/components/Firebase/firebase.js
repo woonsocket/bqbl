@@ -12,7 +12,7 @@ const config = {
   messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
 };
 
-const PREFIX = "tmp/";
+const PREFIX = "";
 
 class Firebase {
   constructor() {

@@ -300,6 +300,16 @@ exports.portStartsNewFormat = functions.https.onCall((data, context) => {
     })
 });
 
+
+exports.copyFromTmp = functions.https.onCall((data, context) => {
+  const path = data.path;
+
+  return admin.database()
+    .ref(`/tmp/${path}`)
+    .once('value').then(data => {
+      admin.database().ref(`/${path}`).update(data.val())
+    })
+  })
 /**
  * Copy the whole db into /tmp/.
  */
