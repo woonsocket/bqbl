@@ -225,24 +225,40 @@ exports.createLeague = functions.https.onCall((data, context) => {
   return leagueRef.set(stubLeague);
 });
 
+exports.finalizeDraft = functions.https.onCall((data, context) => {
+  const leagueId = data.league;
+  const year = data.year || '2019';
+  return admin.database()
+    .ref(`/tmp/leaguespec/${leagueId}/draft/${year}`)
+    .once('value').then(data => {
+      const draft = data.val();
+      let users = {};
+      for(const draftItem of draft) {
+        users[draftItem.uid] = users[draftItem.uid] || {teams:[], name:draftItem.name, uid:draftItem.uid};
+        users[draftItem.uid].teams.push({name: draftItem.team})
+      }
+      const usersRef = admin.database().ref(
+        `tmp/leaguespec/${leagueId}/users/${year}/`);
+      usersRef.set(users);
+    })
+});
+
 /**
  * Read in a league spec from /leaguespec/{LEAGUEID}.
  * Write out all of the starts for that league.
  */
 exports.createNewYear = functions.https.onCall((data, context) => {
-  const leagueId = data.league;
+  const league = data.league;
   const year = data.year || '2019';
-
   return admin.database()
-    .ref(`/tmp/leaguespec/${leagueId}/users/${year}`)
+    .ref(`/tmp/leaguespec/${league}/users/${year}`)
     .once('value').then(data => {
       const users = data.val();
       // TODO: Pull this into constants.
       const weeks = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17"];
-      for (let i = 0; i < users.length; i++) {
+        for (let [userKey, user] of Object.entries(users)) {
         let allWeeks = {};
-        let teams = users[i].teams || [];
-        console.log(users[i])
+        let teams = user.teams || [];
         for (let j = 0; j < teams.length; j++) {
           teams[j].selected = false;
         }
@@ -254,12 +270,10 @@ exports.createNewYear = functions.https.onCall((data, context) => {
         }
         // TODO: Get rid of /tmp
         const yearRef = admin.database().ref(
-          `tmp/leaguespec/${leagueId}/plays/${year}/${users[i].uid}/`);
+          `tmp/leaguespec/${league}/plays/${year}/${user.uid}`);
         yearRef.set(allWeeks);
-      }
-    })
-});
-
+    }})
+    });
 
 exports.portStartsNewFormat = functions.https.onCall((data, context) => {
   const toYear = data.toYear;
@@ -316,6 +330,11 @@ exports.forkDataToTmp = functions.https.onRequest((req, res) => {
   res.status(200).send("success");
 
 });
+
+DRAFT = [{uid:"1DJFVujDWmZIxCyRnCrjknIJVUa2", name:"David", team:"MIA"},{uid:"46tRhEz00sWKtaEiU9fBsVtd2gJ3", name:"Jason", team:"WAS"},{uid:"ePwyJgCBZDZaVY6V9zN058JicZB2", name:"Doug", team:"BUF"},{uid:"53rC2vSu2jb2SYXXN4hzUDVgK2D2", name:"Neil", team:"NYG"},{uid:"N0thoSRax0hgu4af2rbfHoykYAw1", name:"Jon", team:"CIN"},{uid:"Y80tDYo161XP915qXwjCDbMsZp82", name:"Phil", team:"JAX"},{uid:"kbRk5suraJfCXxxjvQWkq4prHTt2", name:"Chris", team:"TEN"},{uid:"UHQdh2453WUslbc8LinFk4AGupi1", name:"Kelly", team:"ARI"},{uid:"UHQdh2453WUslbc8LinFk4AGupi1", name:"Kelly", team:"NYJ"},{uid:"kbRk5suraJfCXxxjvQWkq4prHTt2", name:"Chris", team:"CAR"},{uid:"Y80tDYo161XP915qXwjCDbMsZp82", name:"Phil", team:"IND"},{uid:"N0thoSRax0hgu4af2rbfHoykYAw1", name:"Jon", team:"DEN"},{uid:"53rC2vSu2jb2SYXXN4hzUDVgK2D2", name:"Neil", team:"TB"},{uid:"ePwyJgCBZDZaVY6V9zN058JicZB2", name:"Doug", team:"SF"},{uid:"46tRhEz00sWKtaEiU9fBsVtd2gJ3", name:"Jason", team:"BAL"},{uid:"1DJFVujDWmZIxCyRnCrjknIJVUa2", name:"David", team:"CHI"},{uid:"1DJFVujDWmZIxCyRnCrjknIJVUa2", name:"David", team:"OAK"},{uid:"46tRhEz00sWKtaEiU9fBsVtd2gJ3", name:"Jason", team:"MIN"},{uid:"Y80tDYo161XP915qXwjCDbMsZp82", name:"Doug", team:"PIT"},{uid:"53rC2vSu2jb2SYXXN4hzUDVgK2D2", name:"Neil", team:"DAL"},{uid:"N0thoSRax0hgu4af2rbfHoykYAw1", name:"Jon", team:"DET"},{uid:"Y80tDYo161XP915qXwjCDbMsZp82", name:"Phil", team:"HOU"},{uid:"kbRk5suraJfCXxxjvQWkq4prHTt2", name:"Chris", team:"NE"},{uid:"UHQdh2453WUslbc8LinFk4AGupi1", name:"Kelly", team:"CLE"},{uid:"UHQdh2453WUslbc8LinFk4AGupi1", name:"Kelly", team:"PHI"},{uid:"kbRk5suraJfCXxxjvQWkq4prHTt2", name:"Chris", team:"SEA"},{uid:"Y80tDYo161XP915qXwjCDbMsZp82", name:"Phil", team:"LAR"},{uid:"N0thoSRax0hgu4af2rbfHoykYAw1", name:"Jon", team:"GB"},{uid:"53rC2vSu2jb2SYXXN4hzUDVgK2D2", name:"Neil", team:"KC"},{uid:"ePwyJgCBZDZaVY6V9zN058JicZB2", name:"Doug", team:"ATL"},{uid:"46tRhEz00sWKtaEiU9fBsVtd2gJ3", name:"Jason", team:"LAC"},{uid:"1DJFVujDWmZIxCyRnCrjknIJVUa2", name:"David", team:"NO"},]
+exports.writeDraft = functions.https.onCall((req, res) => {
+  return admin.database().ref(`tmp/leaguespec/abqbl/draft/2019`).update(DRAFT)
+})
 
 /**
  * Draft a team. 
