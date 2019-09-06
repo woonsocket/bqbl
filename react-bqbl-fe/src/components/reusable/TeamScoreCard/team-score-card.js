@@ -43,6 +43,10 @@ function TeamScoreCard(props) {
               (line, index) => <LineItem line={line} key={"lineitem" + index} />
             )
           }
+            <div className="comp"><b>
+              <div className="comp-desc">Total</div>
+              <div className="comp-score">{props.score.total}</div>
+            </b></div>
           </List>
         </CardContent>
       </CardActionArea>
