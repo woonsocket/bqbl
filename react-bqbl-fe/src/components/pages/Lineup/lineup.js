@@ -64,11 +64,10 @@ function LineupPageBase(props) {
     props.firebase.setStartsRow(user.uid, props.league, props.year, weekId, row);
   }
 
-
   return (
     <Table size="small">
       <TableBody>
-        {Object.entries(weeks).map(([weekId, week], index) => (
+        {Object.values(weeks).map((week, index) => (
           <LineupWeek clickCallback={clickCallback}
             week={week} index={index} dh={dh} key={index}
           />
