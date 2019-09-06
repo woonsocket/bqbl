@@ -21,7 +21,7 @@ LineupPageBase.propTypes = {
 }
 
 function LineupPageBase(props) {
-  let [weeksList, setWeeksList] = useState([]);
+  let [weeks, setWeeks] = useState({});
   let [dh, setDh] = useState(false);
   let [user, setUser] = useState(props.firebase.getCurrentUser());
 
@@ -35,13 +35,12 @@ function LineupPageBase(props) {
 
   useEffect(() => {
     if (!user) {return;}
-    props.firebase.getStartsYear(user.uid, props.league, props.year, setWeeksList)
+    props.firebase.getStartsYear(user.uid, props.league, props.year, setWeeks)
     props.firebase.hasDh(props.league, props.year, setDh);
   }, [props.firebase, props.league, props.year, user]);
 
   function clickCallback(weekId, cell, val) {
-    const weekIndex = weekId * 1 - 1;
-    let row = weeksList[weekIndex];
+    let row = weeks[weekId];
     // The DH continues to be my enemy.
     if (cell === 5 && row.teams.length === 4) {
       row.teams.push({ name: '', selected: false })
@@ -50,15 +49,15 @@ function LineupPageBase(props) {
       row.teams.push({ name: val, selected: false })
     }
     row.teams[cell].selected = !row.teams[cell].selected;
-    setWeeksList(weeksList);
-    props.firebase.setStartsRow(user.uid, props.league, props.year, weekIndex, row);
+    setWeeks(weeks);
+    props.firebase.setStartsRow(user.uid, props.league, props.year, weekId, row);
   }
 
 
   return (
     <Table size="small">
       <TableBody>
-        {weeksList.map((week, index) => (
+        {Object.entries(weeks).map(([weekId, week], index) => (
           <LineupWeek clickCallback={clickCallback}
             week={week} index={index} dh={dh} key={index}
           />
