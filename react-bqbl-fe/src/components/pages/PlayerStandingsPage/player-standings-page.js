@@ -17,7 +17,9 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import IconButton from '@material-ui/core/IconButton';
 import PropTypes from 'prop-types';
 
-export const WEEK_IDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"]
+let WEEK_IDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"]
+// TODO: Auto-update per week
+WEEK_IDS = ["1", ]
 const ALL_WEEKS_REVERSE = WEEK_IDS.reverse();
 const FOLD = 4;
 
