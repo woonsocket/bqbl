@@ -26,7 +26,6 @@ function LineupPageBase(props) {
   let [dh, setDh] = useState(false);
   let [user, setUser] = useState(props.firebase.getCurrentUser());
 
-  console.log(SCHEDULE.SCHEDULE_2019)
   function authChanged(newUser) {
     setUser(newUser);
   }
@@ -49,6 +48,15 @@ function LineupPageBase(props) {
     }
     if (row.teams.length <= cell) {
       row.teams.push({ name: val, selected: false })
+    }
+    let selected = 0;
+    for (let cell of row.teams) {
+      if (cell.selected) {
+        selected++;
+      }
+    }
+    if (selected > 1 && !row.teams[cell].selected) {
+      return;
     }
     row.teams[cell].selected = !row.teams[cell].selected;
     setWeeks(weeks);

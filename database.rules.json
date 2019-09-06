@@ -41,6 +41,18 @@
         ".write": "root.child('roles/admins/' + auth.uid).exists()"
       }
     },
+    "leaguespec": {
+      ".read": true,
+      "$leagueid": {
+        "plays": {
+          "$year": {
+            "$user_id": {
+              ".write": "$user_id === auth.uid"
+            },
+          },
+        },
+      },
+    },
     "users": {
       ".read": true,
       "$user_id": {
