@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import './lineup.css'
 import { withFirebase } from '../../Firebase';
 import * as FOOTBALL from '../../../constants/football';
+import * as SCHEDULE from '../../../constants/schedule';
 
 import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
@@ -25,6 +26,7 @@ function LineupPageBase(props) {
   let [dh, setDh] = useState(false);
   let [user, setUser] = useState(props.firebase.getCurrentUser());
 
+  console.log(SCHEDULE.SCHEDULE_2019)
   function authChanged(newUser) {
     setUser(newUser);
   }
@@ -79,11 +81,13 @@ function LineupWeek(props) {
       <TableCell scope="row" className="lineupWeek">
         Week {props.week.id}
       </TableCell>
+
       {props.week.teams.slice(0, 4).map((team, idx) =>
         <TableCell align="center" key={'' + props.week.id + idx}
           className={team.selected ? "team selected" : "team"}
           onClick={props.clickCallback.bind(null, props.week.id, idx, team.name)}>
-          {team.name}
+          {team.name}<br/>
+          {SCHEDULE.SCHEDULE_2019[team.name][props.week.id]}
         </TableCell>
       )}
       {props.dh && <React.Fragment>
