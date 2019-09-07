@@ -4,7 +4,7 @@ import './player-standings-page.css';
 import { withFirebase } from '../../Firebase';
 import IconScoreCell from '../../reusable/IconScoreCell/icon-score-cell'
 import classNames from 'classnames/bind';
-
+import { allWeeksReverse } from "../../../constants/football";
 import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
@@ -17,20 +17,17 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import IconButton from '@material-ui/core/IconButton';
 import PropTypes from 'prop-types';
 
-// TODO: Auto-update per week
-const WEEK_IDS = ["1", ]
-const ALL_WEEKS_REVERSE = WEEK_IDS.reverse();
 const FOLD = 4;
+
 
 function PlayerStandingsPageBase(props) {
   let [playerTable, setPlayerTable] = useState({})
-
   useEffect(() => {
     props.firebase.getScores(
-      props.league, props.year, ALL_WEEKS_REVERSE, setPlayerTable);
+      props.league, props.year, allWeeksReverse(props.year), setPlayerTable);
   }, [props.firebase, props.league, props.year])
   return Object.entries(playerTable).map(([playerId, player]) => (
-    <PlayerYearCard player={player} name={playerId} key={playerId} />
+    <PlayerYearCard player={player} name={playerId} key={playerId} year={props.year} />
   ))
 }
 
@@ -56,7 +53,7 @@ function PlayerYearCard(props) {
         subheader={"Total: " + props.player.total}
       />
       <CardContent>
-        {ALL_WEEKS_REVERSE.slice(0, FOLD)
+        {allWeeksReverse(props.year).slice(0, FOLD)
           .filter(weekId => Object.keys(props.player.start_rows).includes(weekId))
           .map(weekId => (
             <div key={weekId}>
@@ -68,7 +65,7 @@ function PlayerYearCard(props) {
             </div>
           ))}
         <Collapse in={expanded} timeout="auto" unmountOnExit>
-          {ALL_WEEKS_REVERSE.slice(FOLD)
+          {allWeeksReverse(props.year).slice(FOLD)
             .filter(weekId => Object.keys(props.player.start_rows).includes(weekId))
             .map(weekId => (
               <div key={weekId}>
