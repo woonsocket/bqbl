@@ -22,7 +22,7 @@ class SignInBase extends Component {
       .doSignInWithGoogle()
       .then(socialAuthUser => {
         this.setState({ error: null });
-        this.props.history.push(ROUTES.HOME);
+        this.props.history.push({pathname: ROUTES.HOME, search: window.location.search});
       })
       .catch(error => {
         this.setState({ error });
