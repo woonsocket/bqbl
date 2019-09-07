@@ -27,6 +27,7 @@ import Input from '@material-ui/core/Input';
 import NativeSelect from '@material-ui/core/NativeSelect';
 
 export const WEEK_IDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"]
+const WEEK_SELECTOR_PATHS = [LINKS.PLAYER_SCORES.path, LINKS.TEAM_SCORES.path];
 
 function App() {
 
@@ -34,6 +35,7 @@ function App() {
   const [league, setLeague] = React.useState(new URLSearchParams(window.location.search).get("league"));
   const [year, setYear] = React.useState(new URLSearchParams(window.location.search).get("year") || '2019');
   const [week, setWeek] = React.useState(new URLSearchParams(window.location.search).get("week") || '1');
+  const weekSelector = WEEK_SELECTOR_PATHS.indexOf(window.location.pathname) != -1;
 
   function handleDrawerOpen() {
     setDrawerOpen(true);
@@ -79,17 +81,19 @@ function App() {
             {["2017", "2018", "2019"].map(id =><option value={id} key={id}>{id}</option>)}
           </NativeSelect>
 
-          <NativeSelect 
-            value={week} className="week-select"
-            onChange={event => {
-              let usp = new URLSearchParams(window.location.search);
-              usp.set("week", event.target.value)
-              window.location.search = usp.toString();
-            }}
-            input={<Input name="week" id="week-native-helper" />}
-          >
-            {WEEK_IDS.map(id =><option value={id} key={id}>Week {id}</option>)}
-          </NativeSelect>
+          {weekSelector &&
+            <NativeSelect
+              value={week} className="week-select"
+              onChange={event => {
+                let usp = new URLSearchParams(window.location.search);
+                usp.set("week", event.target.value)
+                window.location.search = usp.toString();
+              }}
+              input={<Input name="week" id="week-native-helper" />}
+            >
+              {WEEK_IDS.map(id => <option value={id} key={id}>Week {id}</option>)}
+            </NativeSelect>
+          }
           <SignInToggle/>
         </Toolbar>
 
