@@ -30,19 +30,12 @@ class Firebase {
     let googleProvider = new app.auth.GoogleAuthProvider();
     return this.auth.signInWithPopup(googleProvider);
   }
+
   doSignOut = () => this.auth.signOut();
+  
   getCurrentUser() {
     return this.auth.currentUser;
   }
-
-  /* Users api */
-  getUserPath(uid) {
-    return this.db.ref(`users/${uid}`);
-  }
-
-  users = () => {
-    return this.db.ref('users');
-  };
 
   scores_year(year) {
     return this.db.ref(`scores/${year}`);
@@ -52,20 +45,8 @@ class Firebase {
     return this.db.ref(`scores/${year}/${week}`);
   }
 
-  starts_year(uid, year) {
-    return this.db.ref(`${PREFIX}users/${uid}/plays/${year}`);
-  }
-
-  starts_week(uid, year, week) {
-    return this.db.ref(`${PREFIX}users/${uid}/plays/${year}/${week}`);
-  }
-
   league_starts_week(leagueId, year, week) {
     return this.db.ref(`${PREFIX}leagues/${leagueId}/${year}/${week}`)
-  }
-
-  league_starts_year(leagueId, year) {
-    return this.db.ref(`${PREFIX}leagues/${leagueId}/${year}`);
   }
 
   league_spec(leagueId) {
