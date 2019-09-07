@@ -2,6 +2,7 @@ import app from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/database';
 import 'firebase/functions';
+import * as TEMPLATES from '../../templates/templates'
 
 const config = {
   apiKey: process.env.REACT_APP_API_KEY,
@@ -81,7 +82,6 @@ class Firebase {
       })
   }
 
-
   draftTeam() {
     return this.functions.httpsCallable('draftTeam');
   }
@@ -156,6 +156,70 @@ class Firebase {
         callback(playerTable);
       })
   }
+
+
+
+  joinScores(firebase, league, year, week, setState) {
+    const scoresPromise = firebase.scores_week(year, week).once('value');
+    const startsPromise = firebase.league_starts(league, year, week).once('value');
+    const usersPromise = firebase.league_users(league, year).once('value');
+    return Promise.all([scoresPromise, startsPromise, usersPromise])
+      .then(([scoresData, startsData, usersData]) => {
+        if (!startsData.val() || !scoresData.val() || !usersData.val()) {
+          alert("invalid response")
+          return;
+        }
+        const scoresDataValue = sanitizeScoresDataWeek(scoresData.val());
+        const usersDataValue = usersData.val()
+        let allStarts = this.getAllFromWeek(startsData.val(), week);
+        this.mergeData(scoresDataValue, allStarts);
+
+        const playerList = []
+        for (let [playerKey, playerVal] of Object.entries(allStarts)) {
+          let starts = [];
+          for (let start of playerVal.teams) {
+            if (start.selected) {
+              starts.push(TEMPLATES.Start(start.name, start.total))
+            }
+          }
+          if (starts.length == 0) {
+            starts.push(TEMPLATES.Start('none', 0))
+            starts.push(TEMPLATES.Start('none', 0))
+          }
+          if (starts.length == 1) {
+            starts.push(TEMPLATES.Start('none', 0))
+          }
+
+          playerList.push(TEMPLATES.StartRow(usersDataValue[playerKey].name, ...starts))
+        }
+        setState(playerList);
+      })
+  }
+
+  getAllFromWeek(startsDataValue, week) {
+    let allStarts = {}
+    for (let [playerKey, playerVal] of Object.entries(startsDataValue)) {
+      allStarts[playerKey] = playerVal[week];
+    }
+    return allStarts;
+  }
+
+  mergeData(scores, starts) {
+    for (let [playerKey, playerVal] of Object.entries(starts)) {
+      if (!playerVal.teams) { // For example, player didn't start anyone
+        continue;
+      }
+      for (let team of playerVal.teams) {
+        team.total = (scores[team.name] && scores[team.name].total) || 0;
+      }
+    }
+  }
+
+}
+
+function sanitizeScoresDataWeek(dbScoresWeek) {
+  dbScoresWeek['none'] = { total: 0 }
+  return dbScoresWeek;
 }
 
 function createPlayer(name, total, start_rows) {
@@ -206,6 +270,8 @@ class LeagueSpecDataProxy {
   hasDh(leagueData, year) {
     return leagueData['settings'][year].dh;
   }
+
+
 }
 
 export default Firebase;

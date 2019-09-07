@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
 import { withFirebase } from '../../Firebase';
-import ScoreJoiner from '../../ScoreJoiner/score-joiner';
 
 import IconScoreCell from '../../reusable/IconScoreCell/icon-score-cell'
 import Table from '@material-ui/core/Table';
@@ -18,12 +17,13 @@ function PlayerScorePageBase(props) {
   let [playerList, setPlayerList] = useState([]);
 
   useEffect(() => {
-    new ScoreJoiner(props.firebase, props.league, props.year, props.week).joinScores(setPlayerList)
+    props.firebase.joinScores(props.firebase, props.league, props.year, props.week, setPlayerList)
   }, [props.firebase, props.league, props.year, props.week]);
 
   return <PlayerScorePageUI playerList={playerList}/>
 }
 
+// Array of TEMPLATES.StartRow
 PlayerScorePageUI.propTypes = {
   playerList: PropTypes.array.isRequired,
 }
