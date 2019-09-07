@@ -139,13 +139,13 @@ exports.tmpWriteLeague = functions.https.onCall((data, context) => {
   const year = data.year || '2019';
   const nbqbl = admin.database().ref(`/tmp/leaguespec/${league}/users/${year}`);
   return nbqbl.update([{ name: 'Joel', uid: '1', teams: [{ name: 'ARI' }, { name: 'BUF' }, { name: 'CLE' }, { name: 'NYJ' }] },
-    { name: 'Jason', uid: '2', teams: [{ name: 'ARI' }, { name: 'BUF' }, { name: 'CLE' }, { name: 'NYJ' }] },
-    { name: 'Harvey', uid: 'jzNyhVtHzKe8ERAaFrOAL2cFwZJ2' },
-    { name: 'Sanchez', uid: '4' },
-    { name: 'Testaverde', uid: '5' },
-    { name: 'Cassell', uid: '6' },
-    { name: 'Hanie', uid: '7' },
-    { name: 'Tebow', uid: '8' },])
+  { name: 'Jason', uid: '2', teams: [{ name: 'ARI' }, { name: 'BUF' }, { name: 'CLE' }, { name: 'NYJ' }] },
+  { name: 'Harvey', uid: 'jzNyhVtHzKe8ERAaFrOAL2cFwZJ2' },
+  { name: 'Sanchez', uid: '4' },
+  { name: 'Testaverde', uid: '5' },
+  { name: 'Cassell', uid: '6' },
+  { name: 'Hanie', uid: '7' },
+  { name: 'Tebow', uid: '8' },])
 });
 
 exports.addPlayerToLeague = functions.https.onCall((data, context) => {
@@ -159,18 +159,19 @@ exports.addPlayerToLeague = functions.https.onCall((data, context) => {
     dataPromise => {
       let users = dataPromise.val();
       console.log(users);
-      users.push({name: name, uid: uid});
+      users.push({ name: name, uid: uid });
       return admin.database().ref(`/tmp/leaguespec/${league}/users/${year}`).set(users)
 
     }
-  )})
+  )
+})
 
 exports.setDraftOrder = functions.https.onCall((data, context) => {
   const league = data.league;
   const year = data.year || '2019';
   return admin.database().ref(`/tmp/leaguespec/${league}/users/${year}`).once('value').then(
     dataPromise => {
-      let filteredUsers = dataPromise.val().map(item => {return {uid: item.uid, name: item.name}});
+      let filteredUsers = dataPromise.val().map(item => { return { uid: item.uid, name: item.name } });
       let shuffledUsers = shuffle(filteredUsers);
       const shuffledUsersReverse = [...shuffledUsers].reverse();
       let order = shuffledUsers.concat(shuffledUsersReverse, shuffledUsers, shuffledUsersReverse);
@@ -188,22 +189,22 @@ exports.setDraftOrder = functions.https.onCall((data, context) => {
  */
 var shuffle = function (array) {
 
-	var currentIndex = array.length;
-	var temporaryValue, randomIndex;
+  var currentIndex = array.length;
+  var temporaryValue, randomIndex;
 
-	// While there remain elements to shuffle...
-	while (0 !== currentIndex) {
-		// Pick a remaining element...
-		randomIndex = Math.floor(Math.random() * currentIndex);
-		currentIndex -= 1;
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
 
-		// And swap it with the current element.
-		temporaryValue = array[currentIndex];
-		array[currentIndex] = array[randomIndex];
-		array[randomIndex] = temporaryValue;
-	}
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
 
-	return array;
+  return array;
 
 };
 
@@ -216,11 +217,11 @@ var shuffle = function (array) {
 exports.createLeague = functions.https.onCall((data, context) => {
   const leagueId = data.league;
   const year = data.year || '2019';
-  
+
   const leagueRef = admin.database().ref(`tmp/leaguespec/${leagueId}`);
   const stubLeague = {
     id: leagueId,
-    settings: {'2019': {dh: false}}
+    settings: { '2019': { dh: false } }
   };
   return leagueRef.set(stubLeague);
 });
@@ -233,9 +234,9 @@ exports.finalizeDraft = functions.https.onCall((data, context) => {
     .once('value').then(data => {
       const draft = data.val();
       let users = {};
-      for(const draftItem of draft) {
-        users[draftItem.uid] = users[draftItem.uid] || {teams:[], name:draftItem.name, uid:draftItem.uid};
-        users[draftItem.uid].teams.push({name: draftItem.team})
+      for (const draftItem of draft) {
+        users[draftItem.uid] = users[draftItem.uid] || { teams: [], name: draftItem.name, uid: draftItem.uid };
+        users[draftItem.uid].teams.push({ name: draftItem.team })
       }
       const usersRef = admin.database().ref(
         `tmp/leaguespec/${leagueId}/users/${year}/`);
@@ -255,8 +256,8 @@ exports.createNewYear = functions.https.onCall((data, context) => {
     .once('value').then(data => {
       const users = data.val();
       // TODO: Pull this into constants.
-      const weeks = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17"];
-        for (let [userKey, user] of Object.entries(users)) {
+      const weeks = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"];
+      for (let [userKey, user] of Object.entries(users)) {
         let allWeeks = {};
         let teams = user.teams || [];
         for (let j = 0; j < teams.length; j++) {
@@ -272,8 +273,9 @@ exports.createNewYear = functions.https.onCall((data, context) => {
         const yearRef = admin.database().ref(
           `tmp/leaguespec/${league}/plays/${year}/${user.uid}`);
         yearRef.set(allWeeks);
-    }})
-    });
+      }
+    })
+});
 
 exports.portStartsNewFormat = functions.https.onCall((data, context) => {
   const toYear = data.toYear;
@@ -282,9 +284,9 @@ exports.portStartsNewFormat = functions.https.onCall((data, context) => {
     .ref(`tmp/users/`)
     .once('value').then(data => {
       const users = Object.entries(data.val());
-      let leagues = {}; 
-      leagueMap = {"-KtE306q7vKIIgOgMbZM": 'abqbl', "-KtC8hcGgvbh2W2Tq79n": 'nbqbl'}
-      const weeks = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17"];
+      let leagues = {};
+      leagueMap = { "-KtE306q7vKIIgOgMbZM": 'abqbl', "-KtC8hcGgvbh2W2Tq79n": 'nbqbl' }
+      const weeks = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"];
       for (let [uid, user] of users) {
         leagues[leagueMap[user.leagueId]] = leagues[leagueMap[user.leagueId]] || {}
         leagues[leagueMap[user.leagueId]][uid] = {};
@@ -294,7 +296,7 @@ exports.portStartsNewFormat = functions.https.onCall((data, context) => {
       }
       Object.entries(leagues).map(([leagueId, leagueVal]) => {
         const leagueRef = admin.database().ref(
-         `tmp/leaguespec/${leagueId}/plays/${toYear}/`);
+          `tmp/leaguespec/${leagueId}/plays/${toYear}/`);
         leagueRef.set(leagueVal);
       });
     })
@@ -309,7 +311,7 @@ exports.copyFromTmp = functions.https.onCall((data, context) => {
     .once('value').then(data => {
       admin.database().ref(`/${path}`).update(data.val())
     })
-  })
+})
 /**
  * Copy the whole db into /tmp/.
  */
@@ -341,7 +343,7 @@ exports.forkDataToTmp = functions.https.onRequest((req, res) => {
 
 });
 
-DRAFT = [{uid:"1DJFVujDWmZIxCyRnCrjknIJVUa2", name:"David", team:"MIA"},{uid:"46tRhEz00sWKtaEiU9fBsVtd2gJ3", name:"Jason", team:"WAS"},{uid:"ePwyJgCBZDZaVY6V9zN058JicZB2", name:"Doug", team:"BUF"},{uid:"53rC2vSu2jb2SYXXN4hzUDVgK2D2", name:"Neil", team:"NYG"},{uid:"N0thoSRax0hgu4af2rbfHoykYAw1", name:"Jon", team:"CIN"},{uid:"Y80tDYo161XP915qXwjCDbMsZp82", name:"Phil", team:"JAX"},{uid:"kbRk5suraJfCXxxjvQWkq4prHTt2", name:"Chris", team:"TEN"},{uid:"UHQdh2453WUslbc8LinFk4AGupi1", name:"Kelly", team:"ARI"},{uid:"UHQdh2453WUslbc8LinFk4AGupi1", name:"Kelly", team:"NYJ"},{uid:"kbRk5suraJfCXxxjvQWkq4prHTt2", name:"Chris", team:"CAR"},{uid:"Y80tDYo161XP915qXwjCDbMsZp82", name:"Phil", team:"IND"},{uid:"N0thoSRax0hgu4af2rbfHoykYAw1", name:"Jon", team:"DEN"},{uid:"53rC2vSu2jb2SYXXN4hzUDVgK2D2", name:"Neil", team:"TB"},{uid:"ePwyJgCBZDZaVY6V9zN058JicZB2", name:"Doug", team:"SF"},{uid:"46tRhEz00sWKtaEiU9fBsVtd2gJ3", name:"Jason", team:"BAL"},{uid:"1DJFVujDWmZIxCyRnCrjknIJVUa2", name:"David", team:"CHI"},{uid:"1DJFVujDWmZIxCyRnCrjknIJVUa2", name:"David", team:"OAK"},{uid:"46tRhEz00sWKtaEiU9fBsVtd2gJ3", name:"Jason", team:"MIN"},{uid:"Y80tDYo161XP915qXwjCDbMsZp82", name:"Doug", team:"PIT"},{uid:"53rC2vSu2jb2SYXXN4hzUDVgK2D2", name:"Neil", team:"DAL"},{uid:"N0thoSRax0hgu4af2rbfHoykYAw1", name:"Jon", team:"DET"},{uid:"Y80tDYo161XP915qXwjCDbMsZp82", name:"Phil", team:"HOU"},{uid:"kbRk5suraJfCXxxjvQWkq4prHTt2", name:"Chris", team:"NE"},{uid:"UHQdh2453WUslbc8LinFk4AGupi1", name:"Kelly", team:"CLE"},{uid:"UHQdh2453WUslbc8LinFk4AGupi1", name:"Kelly", team:"PHI"},{uid:"kbRk5suraJfCXxxjvQWkq4prHTt2", name:"Chris", team:"SEA"},{uid:"Y80tDYo161XP915qXwjCDbMsZp82", name:"Phil", team:"LAR"},{uid:"N0thoSRax0hgu4af2rbfHoykYAw1", name:"Jon", team:"GB"},{uid:"53rC2vSu2jb2SYXXN4hzUDVgK2D2", name:"Neil", team:"KC"},{uid:"ePwyJgCBZDZaVY6V9zN058JicZB2", name:"Doug", team:"ATL"},{uid:"46tRhEz00sWKtaEiU9fBsVtd2gJ3", name:"Jason", team:"LAC"},{uid:"1DJFVujDWmZIxCyRnCrjknIJVUa2", name:"David", team:"NO"},]
+DRAFT = [{ uid: "1DJFVujDWmZIxCyRnCrjknIJVUa2", name: "David", team: "MIA" }, { uid: "46tRhEz00sWKtaEiU9fBsVtd2gJ3", name: "Jason", team: "WAS" }, { uid: "ePwyJgCBZDZaVY6V9zN058JicZB2", name: "Doug", team: "BUF" }, { uid: "53rC2vSu2jb2SYXXN4hzUDVgK2D2", name: "Neil", team: "NYG" }, { uid: "N0thoSRax0hgu4af2rbfHoykYAw1", name: "Jon", team: "CIN" }, { uid: "Y80tDYo161XP915qXwjCDbMsZp82", name: "Phil", team: "JAX" }, { uid: "kbRk5suraJfCXxxjvQWkq4prHTt2", name: "Chris", team: "TEN" }, { uid: "UHQdh2453WUslbc8LinFk4AGupi1", name: "Kelly", team: "ARI" }, { uid: "UHQdh2453WUslbc8LinFk4AGupi1", name: "Kelly", team: "NYJ" }, { uid: "kbRk5suraJfCXxxjvQWkq4prHTt2", name: "Chris", team: "CAR" }, { uid: "Y80tDYo161XP915qXwjCDbMsZp82", name: "Phil", team: "IND" }, { uid: "N0thoSRax0hgu4af2rbfHoykYAw1", name: "Jon", team: "DEN" }, { uid: "53rC2vSu2jb2SYXXN4hzUDVgK2D2", name: "Neil", team: "TB" }, { uid: "ePwyJgCBZDZaVY6V9zN058JicZB2", name: "Doug", team: "SF" }, { uid: "46tRhEz00sWKtaEiU9fBsVtd2gJ3", name: "Jason", team: "BAL" }, { uid: "1DJFVujDWmZIxCyRnCrjknIJVUa2", name: "David", team: "CHI" }, { uid: "1DJFVujDWmZIxCyRnCrjknIJVUa2", name: "David", team: "OAK" }, { uid: "46tRhEz00sWKtaEiU9fBsVtd2gJ3", name: "Jason", team: "MIN" }, { uid: "Y80tDYo161XP915qXwjCDbMsZp82", name: "Doug", team: "PIT" }, { uid: "53rC2vSu2jb2SYXXN4hzUDVgK2D2", name: "Neil", team: "DAL" }, { uid: "N0thoSRax0hgu4af2rbfHoykYAw1", name: "Jon", team: "DET" }, { uid: "Y80tDYo161XP915qXwjCDbMsZp82", name: "Phil", team: "HOU" }, { uid: "kbRk5suraJfCXxxjvQWkq4prHTt2", name: "Chris", team: "NE" }, { uid: "UHQdh2453WUslbc8LinFk4AGupi1", name: "Kelly", team: "CLE" }, { uid: "UHQdh2453WUslbc8LinFk4AGupi1", name: "Kelly", team: "PHI" }, { uid: "kbRk5suraJfCXxxjvQWkq4prHTt2", name: "Chris", team: "SEA" }, { uid: "Y80tDYo161XP915qXwjCDbMsZp82", name: "Phil", team: "LAR" }, { uid: "N0thoSRax0hgu4af2rbfHoykYAw1", name: "Jon", team: "GB" }, { uid: "53rC2vSu2jb2SYXXN4hzUDVgK2D2", name: "Neil", team: "KC" }, { uid: "ePwyJgCBZDZaVY6V9zN058JicZB2", name: "Doug", team: "ATL" }, { uid: "46tRhEz00sWKtaEiU9fBsVtd2gJ3", name: "Jason", team: "LAC" }, { uid: "1DJFVujDWmZIxCyRnCrjknIJVUa2", name: "David", team: "NO" },]
 exports.writeDraft = functions.https.onCall((req, res) => {
   return admin.database().ref(`tmp/leaguespec/abqbl/draft/2019`).update(DRAFT)
 })
@@ -379,7 +381,7 @@ exports.draftTeam = functions.https.onCall((data, context) => {
           throw new functions.https.HttpsError(
             'invalid-argument', `It's not your turn. ${uid} ${draft[i].uid}`);
         } else {
-          admin.database().ref(draftRef+`/${i}/team`).set(team);
+          admin.database().ref(draftRef + `/${i}/team`).set(team);
           return;
         }
       }
