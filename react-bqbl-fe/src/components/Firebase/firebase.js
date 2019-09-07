@@ -56,6 +56,10 @@ class Firebase {
   getStartsYear(uid, league, year, callback) {
     this.db.ref(`${PREFIX}leaguespec/${league}/plays/${year}/${uid}`).on('value',
     snapshot => {
+      if (!snapshot.val()) {
+        alert("can't find you in this league");
+        callback({weeks:[]})
+      }
       callback(snapshot.val());
     })
   }
