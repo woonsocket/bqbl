@@ -11,14 +11,8 @@ function TeamScorePageBase(props) {
   let [valsList, setValsList] = useState([])
 
   useEffect(() => {
-    props.firebase.scores_week(props.year, props.week).on('value', snapshot => {
-      const vals = snapshot.val();
-      const valsList = Object.keys(vals).map(key => ({
-        ...vals[key],
-        teamName: key,
-      }));
-      setValsList(valsList);
-    })
+    props.firebase.scoresWeekPromise(props.year, props.week).then(
+      scoresWeek => setValsList(scoresWeek));
   }, [props.firebase, props.league, props.year, props.week]);
 
 

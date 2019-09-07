@@ -42,6 +42,22 @@ class Firebase {
     return this.db.ref(`scores/${year}`);
   }
 
+  scoresWeekPromise(year, week) {
+    return this.db.ref(`scores/${year}/${week}`).once('value').then(
+      snapshot => {
+        const vals = snapshot.val();
+        if (!vals) {
+          throw new Error('no scores')
+        }
+        const valsList = Object.keys(vals).map(key => ({
+          ...vals[key],
+          teamName: key,
+        }));
+        return valsList;
+      }
+    )
+  }
+
   scores_week(year, week) {
     return this.db.ref(`scores/${year}/${week}`);
   }
