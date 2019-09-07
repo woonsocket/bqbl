@@ -10,10 +10,10 @@ function TeamIcon(props) {
   return (
     props.team && props.team !== 'none' &&
      <img src={
-        'https://i.nflcdn.com/static/site/7.5/img/logos/svg/' +
+        'http://i.nflcdn.com/static/site/7.5/img/logos/svg/' +
         'teams-matte/' + props.team + '.svg'}
       width={props.width}
-      alt="{props.team}" />
+      alt={props.team} />
   )
 }
 export default TeamIcon;
