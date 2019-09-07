@@ -159,10 +159,10 @@ class Firebase {
 
 
 
-  joinScores(firebase, league, year, week, setState) {
-    const scoresPromise = firebase.scores_week(year, week).once('value');
-    const startsPromise = firebase.league_starts(league, year, week).once('value');
-    const usersPromise = firebase.league_users(league, year).once('value');
+  joinScores(league, year, week, setState) {
+    const scoresPromise = this.scores_week(year, week).once('value');
+    const startsPromise = this.league_starts(league, year, week).once('value');
+    const usersPromise = this.league_users(league, year).once('value');
     return Promise.all([scoresPromise, startsPromise, usersPromise])
       .then(([scoresData, startsData, usersData]) => {
         if (!startsData.val() || !scoresData.val() || !usersData.val()) {
@@ -182,11 +182,11 @@ class Firebase {
               starts.push(TEMPLATES.Start(start.name, start.total))
             }
           }
-          if (starts.length == 0) {
+          if (starts.length === 0) {
             starts.push(TEMPLATES.Start('none', 0))
             starts.push(TEMPLATES.Start('none', 0))
           }
-          if (starts.length == 1) {
+          if (starts.length === 1) {
             starts.push(TEMPLATES.Start('none', 0))
           }
 
@@ -198,6 +198,7 @@ class Firebase {
 
   getAllFromWeek(startsDataValue, week) {
     let allStarts = {}
+    
     for (let [playerKey, playerVal] of Object.entries(startsDataValue)) {
       allStarts[playerKey] = playerVal[week];
     }
@@ -205,7 +206,7 @@ class Firebase {
   }
 
   mergeData(scores, starts) {
-    for (let [playerKey, playerVal] of Object.entries(starts)) {
+    for (let playerVal of Object.values(starts)) {
       if (!playerVal.teams) { // For example, player didn't start anyone
         continue;
       }
