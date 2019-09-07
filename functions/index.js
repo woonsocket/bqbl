@@ -117,3 +117,4 @@ exports.draftTeam = create.draftTeam;
 // exports.copyFromTmp = util.copyFromTmp;
 // exports.portStartsNewFormat = util.portStartsNewFormat;
 // exports.tmpWriteLeague = util.tmpWriteLeague;
+exports.makeDuplicateUser = util.makeDuplicateUser;

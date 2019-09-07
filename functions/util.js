@@ -53,3 +53,12 @@ exports.tmpWriteLeague = functions.https.onCall((data, context) => {
   { name: 'Hanie', uid: '7' },
   { name: 'Tebow', uid: '8' },])
 });
+
+exports.makeDuplicateUser = functions.https.onCall(({league, year, fromUid, toUid}, context) => {
+  console.log(`/leaguespec/${league}/plays/${year}/${fromUid}`);
+  return admin.database()
+    .ref(`/leaguespec/${league}/plays/${year}/${fromUid}`)
+    .once('value').then(data => {
+      admin.database().ref(`/leaguespec/${league}/plays/${year}/${toUid}`).set(data.val())
+    })
+})
