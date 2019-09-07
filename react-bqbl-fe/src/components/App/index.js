@@ -14,6 +14,7 @@ import ScorePage from '../pages/TeamScorePage/team-score-page';
 import SignInToggle from '../reusable/SignIn/sign-in-toggle';
 import TeamStandingsPage from '../pages/TeamStandingsPage/team-standings-page';
 import Navigation, {LINKS} from '../reusable/Navigation/navigation'
+import {WEEK_IDS} from '../../constants/football'
 
 import AppBar from '@material-ui/core/AppBar';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
@@ -26,7 +27,6 @@ import Typography from '@material-ui/core/Typography';
 import Input from '@material-ui/core/Input';
 import NativeSelect from '@material-ui/core/NativeSelect';
 
-export const WEEK_IDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"]
 const WEEK_SELECTOR_PATHS = [LINKS.PLAYER_SCORES.path, LINKS.TEAM_SCORES.path];
 
 function App() {
