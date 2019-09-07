@@ -33,7 +33,7 @@ class Firebase {
   }
 
   doSignOut = () => this.auth.signOut();
-  
+
   getCurrentUser() {
     return this.auth.currentUser;
   }
@@ -54,20 +54,19 @@ class Firebase {
     return this.db.ref(`${PREFIX}leaguespec/${leagueId}/users/${year}`)
   }
 
-
   league_spec(leagueId) {
     return this.db.ref(`${PREFIX}leaguespec/${leagueId}`);
   }
 
   getStartsYear(uid, league, year, callback) {
     this.db.ref(`${PREFIX}leaguespec/${league}/plays/${year}/${uid}`).on('value',
-    snapshot => {
-      if (!snapshot.val()) {
-        alert("can't find you in this league");
-        callback({weeks:[]})
-      }
-      callback(snapshot.val());
-    })
+      snapshot => {
+        if (!snapshot.val()) {
+          alert("can't find you in this league");
+          callback({ weeks: [] })
+        }
+        callback(snapshot.val());
+      })
   }
 
   setStartsRow(uid, league, year, weekIndex, row) {
@@ -95,108 +94,85 @@ class Firebase {
     return ['nbqbl', 'abqbl'];
   }
 
-  getScores(league, year, legal_weeks, callback) {
-    let scoresPromise = this.scores_year(year).once('value');
+  scoresStartsUsersPromise(league, year) {
+    let scoresPromise = this.db.ref(`scores/${year}`).once('value');
     let startsPromise = this.db.ref(`${PREFIX}leaguespec/${league}/plays/${year}`).once('value');
-    let playersPromise = this.db.ref(`${PREFIX}leaguespec/${league}/users/2019`).once('value');
+    let usersPromise = this.db.ref(`${PREFIX}leaguespec/${league}/users/2019`).once('value');
 
-    function scoreForTeam(dbScores, week, team) {
-      if (!team) {
-        return 0;
-      }
-      return (dbScores[week] && dbScores[week][team] && dbScores[week][team].total) || 0;
-    }
-    function getStartedTeams(dbStarts, uid, week) {
-      let starts = dbStarts[uid][week].teams.filter(team=>team.selected).map(team=>team.name);
-      if (!starts || starts.length === 0) {
-        starts = ['none', 'none'];
-      }
-      return starts;
-    }
-
-    Promise.all([scoresPromise, startsPromise, playersPromise]).then(
-      ([scoresSnapshot, startsSnapshot, playersSnapshot]) => {
+    return Promise.all([scoresPromise, startsPromise, usersPromise]).then(
+      ([scoresSnapshot, startsSnapshot, usersSnapshot]) => {
         const dbScores = scoresSnapshot.val();
         const dbStarts = startsSnapshot.val();
-        const dbPlayers = playersSnapshot.val();
-        if (!dbScores || !dbStarts || !dbPlayers) {
-          console.log("bail")
-          return;
+        const dbUsers = usersSnapshot.val();
+        if (!dbScores || !dbStarts || !dbUsers) {
+          console.log(dbScores, dbStarts, dbUsers);
+          throw new Error("Can't find one of scores, starts, users");
         }
-        
-        const players = {};
-        // TODO: yeah don't do this.
-        for (const playerKey of Object.keys(dbStarts)) {
-          players[playerKey] = {};
-          for (const user of Object.keys(dbPlayers)) {
-            if (dbPlayers[user].uid === playerKey) {
-              players[playerKey].name = dbPlayers[user].name;
-            }
-          }
-        }
-        let playerTable = {};
-        for (const [playerId, player] of Object.entries(players)) {
-          let start_rows = {};
-          for (const weekId of Object.values(legal_weeks)) {
-            const startedTeams = getStartedTeams(dbStarts, playerId, weekId)
-            const scores = startedTeams.map(scoreForTeam.bind(null, dbScores, weekId)) || [0,0] 
-            start_rows[weekId] = TEMPLATES.StartRow(dbStarts[playerId][weekId].name,
-              TEMPLATES.Start(startedTeams[0], scores[0]), TEMPLATES.Start(startedTeams[1], scores[1]));
-          }
-          const name = (player.name);
-          playerTable[playerId] = createPlayer(name, 30, start_rows);
-        }
-        for (const player of Object.values(playerTable)) {
-          let playerTotal = 0;
-          for (const row of Object.values(player.start_rows)) {
-            playerTotal += row.team_1.score + row.team_2.score;
-          }
-          player.total = playerTotal;
-        }
-        callback(playerTable);
+        return {dbScores, dbStarts, dbUsers}
       })
   }
 
-  joinScores(league, year, week, setState) {
-    const scoresPromise = this.scores_week(year, week).once('value');
-    const startsPromise = this.league_starts(league, year, week).once('value');
-    const usersPromise = this.league_users(league, year).once('value');
-    return Promise.all([scoresPromise, startsPromise, usersPromise])
-      .then(([scoresData, startsData, usersData]) => {
-        if (!startsData.val() || !scoresData.val() || !usersData.val()) {
-          alert("invalid response")
-          return;
+  processYearScores(dbScores, dbStarts, dbPlayers, legal_weeks) {
+    const players = {};
+    // TODO: yeah don't do this.
+    for (const playerKey of Object.keys(dbStarts)) {
+      players[playerKey] = {};
+      for (const user of Object.keys(dbPlayers)) {
+        if (dbPlayers[user].uid === playerKey) {
+          players[playerKey].name = dbPlayers[user].name;
         }
-        const scoresDataValue = sanitizeScoresDataWeek(scoresData.val());
-        const usersDataValue = usersData.val()
-        let allStarts = this.getAllFromWeek(startsData.val(), week);
-        this.mergeData(scoresDataValue, allStarts);
+      }
+    }
+    let playerTable = {};
+    for (const [playerId, player] of Object.entries(players)) {
+      let start_rows = {};
+      for (const weekId of Object.values(legal_weeks)) {
+        const startedTeams = getStartedTeams(dbStarts, playerId, weekId)
+        const scores = startedTeams.map(scoreForTeam.bind(null, dbScores, weekId)) || [0, 0]
+        start_rows[weekId] = TEMPLATES.StartRow(dbStarts[playerId][weekId].name,
+          TEMPLATES.Start(startedTeams[0], scores[0]), TEMPLATES.Start(startedTeams[1], scores[1]));
+      }
+      const name = (player.name);
+      playerTable[playerId] = createPlayer(name, 30, start_rows);
+    }
+    for (const player of Object.values(playerTable)) {
+      let playerTotal = 0;
+      for (const row of Object.values(player.start_rows)) {
+        playerTotal += row.team_1.score + row.team_2.score;
+      }
+      player.total = playerTotal;
+    }
+    return playerTable;
+  }
 
-        const playerList = []
-        for (let [playerKey, playerVal] of Object.entries(allStarts)) {
-          let starts = [];
-          for (let start of playerVal.teams) {
-            if (start.selected) {
-              starts.push(TEMPLATES.Start(start.name, start.total))
-            }
-          }
-          if (starts.length === 0) {
-            starts.push(TEMPLATES.Start('none', 0))
-            starts.push(TEMPLATES.Start('none', 0))
-          }
-          if (starts.length === 1) {
-            starts.push(TEMPLATES.Start('none', 0))
-          }
-
-          playerList.push(TEMPLATES.StartRow(usersDataValue[playerKey].name, ...starts))
+  joinScores2(dbScores, dbStarts, dbUsers, week) {
+    let dbWeekScores = sanitizeScoresDataWeek(dbScores)[week];
+    let allStarts = this.getAllFromWeek(dbStarts, week);
+    this.mergeData(dbWeekScores, allStarts);
+    const playerList = []
+    for (let [playerKey, playerVal] of Object.entries(allStarts)) {
+      let starts = [];
+      for (let start of playerVal.teams) {
+        if (start.selected) {
+          starts.push(TEMPLATES.Start(start.name, start.total))
         }
-        setState(playerList);
-      })
+      }
+      if (starts.length === 0) {
+        starts.push(TEMPLATES.Start('none', 0))
+        starts.push(TEMPLATES.Start('none', 0))
+      }
+      if (starts.length === 1) {
+        starts.push(TEMPLATES.Start('none', 0))
+      }
+
+      playerList.push(TEMPLATES.StartRow(dbUsers[playerKey].name, ...starts))
+    }
+    return playerList;
   }
 
   getAllFromWeek(startsDataValue, week) {
     let allStarts = {}
-    
+
     for (let [playerKey, playerVal] of Object.entries(startsDataValue)) {
       allStarts[playerKey] = playerVal[week];
     }
@@ -204,11 +180,15 @@ class Firebase {
   }
 
   mergeData(scores, starts) {
+    console.log(scores);
+    console.log(starts);
+
     for (let playerVal of Object.values(starts)) {
       if (!playerVal.teams) { // For example, player didn't start anyone
         continue;
       }
       for (let team of playerVal.teams) {
+        console.log(team);
         team.total = (scores[team.name] && scores[team.name].total) || 0;
       }
     }
@@ -223,6 +203,20 @@ function sanitizeScoresDataWeek(dbScoresWeek) {
 
 function createPlayer(name, total, start_rows) {
   return { name, total, start_rows };
+}
+
+function scoreForTeam(dbScores, week, team) {
+  if (!team) {
+    return 0;
+  }
+  return (dbScores[week] && dbScores[week][team] && dbScores[week][team].total) || 0;
+}
+function getStartedTeams(dbStarts, uid, week) {
+  let starts = dbStarts[uid][week].teams.filter(team => team.selected).map(team => team.name);
+  if (!starts || starts.length === 0) {
+    starts = ['none', 'none'];
+  }
+  return starts;
 }
 
 
@@ -263,7 +257,6 @@ class LeagueSpecDataProxy {
   hasDh(leagueData, year) {
     return leagueData['settings'][year].dh;
   }
-
 
 }
 
