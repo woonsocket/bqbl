@@ -18,11 +18,8 @@ class Firebase {
   constructor() {
     app.initializeApp(config);
     this.auth = app.auth();
-    this.googleProvider = new app.auth.GoogleAuthProvider();
     this.db = app.database();
     this.functions = app.functions();
-
-    this.auth.onAuthStateChanged(this.authChanged.bind(this));
   }
 
   addAuthListener(listener) {
@@ -30,7 +27,8 @@ class Firebase {
   }
 
   doSignInWithGoogle() {
-    return this.auth.signInWithPopup(this.googleProvider);
+    let googleProvider = new app.auth.GoogleAuthProvider();
+    return this.auth.signInWithPopup(googleProvider);
   }
   doSignOut = () => this.auth.signOut();
   getCurrentUser() {
@@ -85,18 +83,6 @@ class Firebase {
     this.db.ref(`${PREFIX}leaguespec/${league}/plays/${year}/${uid}/${weekIndex}`).update(row);
   }
 
-  authChanged(user) {
-    if (!user) {
-      console.log("bail!");
-      return;
-    }
-    this.getUserPath(user.uid).on('value', snapshot => {
-      const vals = snapshot.val();
-      this.leagueId = vals.leagueId;
-      this.leagueChanged();
-    })
-  }
-
   hasDh(leagueId, year, callback) {
     return this.db.ref(`${PREFIX}leaguespec/${leagueId}`).on('value',
       snapshot => {
@@ -105,9 +91,6 @@ class Firebase {
       })
   }
 
-  // TODO: delete
-  leagueChanged() {
-  }
 
   draftTeam() {
     return this.functions.httpsCallable('draftTeam');
