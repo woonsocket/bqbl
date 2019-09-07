@@ -25,7 +25,8 @@ function PlayerStandingsPageBase(props) {
   useEffect(() => {
     props.firebase.getScores(
       props.league, props.year, allWeeksReverse(props.year), setPlayerTable);
-  }, [props.firebase, props.league, props.year])
+  }, [props.firebase, props.league, props.year]);
+
   return Object.entries(playerTable).map(([playerId, player]) => (
     <PlayerYearCard player={player} name={playerId} key={playerId} year={props.year} />
   ))
