@@ -23,7 +23,6 @@ class Firebase {
     this.functions = app.functions();
 
     this.auth.onAuthStateChanged(this.authChanged.bind(this));
-    this.uid = "";
   }
 
   addAuthListener(listener) {
@@ -91,8 +90,7 @@ class Firebase {
       console.log("bail!");
       return;
     }
-    this.uid = user.uid;
-    this.getUserPath(this.uid).on('value', snapshot => {
+    this.getUserPath(user.uid).on('value', snapshot => {
       const vals = snapshot.val();
       this.leagueId = vals.leagueId;
       this.leagueChanged();
