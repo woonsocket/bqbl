@@ -140,8 +140,8 @@ class Firebase {
           for (const weekId of Object.values(legal_weeks)) {
             const startedTeams = getStartedTeams(dbStarts, playerId, weekId)
             const scores = startedTeams.map(scoreForTeam.bind(null, dbScores, weekId)) || [0,0] 
-            start_rows[weekId] = createStartRow(dbStarts[playerId][weekId].name,
-              createStart(startedTeams[0], scores[0]), createStart(startedTeams[1], scores[1]));
+            start_rows[weekId] = TEMPLATES.StartRow(dbStarts[playerId][weekId].name,
+              TEMPLATES.Start(startedTeams[0], scores[0]), TEMPLATES.Start(startedTeams[1], scores[1]));
           }
           const name = (player.name);
           playerTable[playerId] = createPlayer(name, 30, start_rows);
@@ -156,8 +156,6 @@ class Firebase {
         callback(playerTable);
       })
   }
-
-
 
   joinScores(league, year, week, setState) {
     const scoresPromise = this.scores_week(year, week).once('value');
@@ -225,12 +223,6 @@ function sanitizeScoresDataWeek(dbScoresWeek) {
 
 function createPlayer(name, total, start_rows) {
   return { name, total, start_rows };
-}
-function createStartRow(name, team_1, team_2) {
-  return { name, team_1, team_2 };
-}
-function createStart(team_name, score) {
-  return { team_name, score }
 }
 
 
