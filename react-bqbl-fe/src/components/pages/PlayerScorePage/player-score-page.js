@@ -19,7 +19,7 @@ function PlayerScorePageBase(props) {
   useEffect(() => {
     props.firebase.scoresStartsUsersPromise(props.league, props.year).then(
       ({ dbScores, dbStarts, dbUsers }) =>
-        props.firebase.joinScores2(dbScores, dbStarts, dbUsers, props.week)
+        props.firebase.joinScores(dbScores, dbStarts, dbUsers, props.week)
       ).then(val => setPlayerList(val));
   }, [props.firebase, props.league, props.year, props.week]);
 

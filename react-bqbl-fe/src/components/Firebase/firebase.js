@@ -46,14 +46,6 @@ class Firebase {
     return this.db.ref(`scores/${year}/${week}`);
   }
 
-  league_starts(leagueId, year) {
-    return this.db.ref(`${PREFIX}leaguespec/${leagueId}/plays/${year}`)
-  }
-
-  league_users(leagueId, year) {
-    return this.db.ref(`${PREFIX}leaguespec/${leagueId}/users/${year}`)
-  }
-
   league_spec(leagueId) {
     return this.db.ref(`${PREFIX}leaguespec/${leagueId}`);
   }
@@ -145,7 +137,7 @@ class Firebase {
     return playerTable;
   }
 
-  joinScores2(dbScores, dbStarts, dbUsers, week) {
+  joinScores(dbScores, dbStarts, dbUsers, week) {
     let dbWeekScores = sanitizeScoresDataWeek(dbScores)[week];
     let allStarts = this.getAllFromWeek(dbStarts, week);
     this.mergeData(dbWeekScores, allStarts);
