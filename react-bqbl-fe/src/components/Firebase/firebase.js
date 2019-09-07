@@ -180,15 +180,11 @@ class Firebase {
   }
 
   mergeData(scores, starts) {
-    console.log(scores);
-    console.log(starts);
-
     for (let playerVal of Object.values(starts)) {
       if (!playerVal.teams) { // For example, player didn't start anyone
         continue;
       }
       for (let team of playerVal.teams) {
-        console.log(team);
         team.total = (scores[team.name] && scores[team.name].total) || 0;
       }
     }
