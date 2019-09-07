@@ -17,9 +17,9 @@ function TeamStandingsPageBase(props) {
   let [allScores, setAllScores] = useState([]);
 
   useEffect(() => {
-    props.firebase.scores_year(props.year).on('value', snapshot => {
+    props.firebase.scoresYearPromise(props.year).then(scores => {
       let weekMap = {};
-      for (let [weekId, weekVal] of Object.entries(snapshot.val())) {
+      for (let [weekId, weekVal] of Object.entries(scores)) {
         for (let [teamId, teamVal] of Object.entries(weekVal)) {
           weekMap[teamId] = weekMap[teamId] || {};
           weekMap[teamId][weekId] = teamVal.total

@@ -38,10 +38,17 @@ class Firebase {
     return this.auth.currentUser;
   }
 
-  scores_year(year) {
-    return this.db.ref(`scores/${year}`);
+  scoresYearPromise(year) {
+    return this.db.ref(`scores/${year}`).once('value').then(
+      snapshot => {
+        const vals = snapshot.val();
+        if (!vals) {
+          throw new Error('no scores')
+        }
+        return vals;
+      })
   }
-
+  
   scoresWeekPromise(year, week) {
     return this.db.ref(`scores/${year}/${week}`).once('value').then(
       snapshot => {
@@ -56,10 +63,6 @@ class Firebase {
         return valsList;
       }
     )
-  }
-
-  scores_week(year, week) {
-    return this.db.ref(`scores/${year}/${week}`);
   }
 
   league_spec(leagueId) {

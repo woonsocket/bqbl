@@ -15,7 +15,6 @@ function TeamScorePageBase(props) {
       scoresWeek => setValsList(scoresWeek));
   }, [props.firebase, props.league, props.year, props.week]);
 
-
   return (
     <React.Fragment>
       {valsList.map(score => (
