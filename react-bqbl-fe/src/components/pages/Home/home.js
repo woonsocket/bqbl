@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import SignIn from '../../reusable/SignIn/sign-in'
 import { withFirebase } from '../../Firebase';
 import Navigation from '../../reusable/Navigation/navigation'

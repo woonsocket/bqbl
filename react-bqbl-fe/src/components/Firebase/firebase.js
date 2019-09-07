@@ -45,9 +45,14 @@ class Firebase {
     return this.db.ref(`scores/${year}/${week}`);
   }
 
-  league_starts_week(leagueId, year, week) {
-    return this.db.ref(`${PREFIX}leagues/${leagueId}/${year}/${week}`)
+  league_starts(leagueId, year) {
+    return this.db.ref(`${PREFIX}leaguespec/${leagueId}/plays/${year}`)
   }
+
+  league_users(leagueId, year) {
+    return this.db.ref(`${PREFIX}leaguespec/${leagueId}/users/${year}`)
+  }
+
 
   league_spec(leagueId) {
     return this.db.ref(`${PREFIX}leaguespec/${leagueId}`);
@@ -99,11 +104,11 @@ class Firebase {
       if (!team) {
         return 0;
       }
-      return dbScores[week] && dbScores[week][team] && dbScores[week][team].total || 0;
+      return (dbScores[week] && dbScores[week][team] && dbScores[week][team].total) || 0;
     }
     function getStartedTeams(dbStarts, uid, week) {
       let starts = dbStarts[uid][week].teams.filter(team=>team.selected).map(team=>team.name);
-      if (!starts || starts.length == 0) {
+      if (!starts || starts.length === 0) {
         starts = ['none', 'none'];
       }
       return starts;
@@ -124,7 +129,7 @@ class Firebase {
         for (const playerKey of Object.keys(dbStarts)) {
           players[playerKey] = {};
           for (const user of Object.keys(dbPlayers)) {
-            if (dbPlayers[user].uid == playerKey) {
+            if (dbPlayers[user].uid === playerKey) {
               players[playerKey].name = dbPlayers[user].name;
             }
           }

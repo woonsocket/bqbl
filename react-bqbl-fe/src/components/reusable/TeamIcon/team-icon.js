@@ -8,7 +8,7 @@ TeamIcon.propTypes = {
 
 function TeamIcon(props) {
   return (
-    props.team && props.team != 'none' &&
+    props.team && props.team !== 'none' &&
      <img src={
         'http://i.nflcdn.com/static/site/7.5/img/logos/svg/' +
         'teams-matte/' + props.team + '.svg'}
