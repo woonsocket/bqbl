@@ -252,7 +252,7 @@ exports.createNewYear = functions.https.onCall((data, context) => {
   const league = data.league;
   const year = data.year || '2019';
   return admin.database()
-    .ref(`/tmp/leaguespec/${league}/users/${year}`)
+    .ref(`/leaguespec/${league}/users/${year}`)
     .once('value').then(data => {
       const users = data.val();
       // TODO: Pull this into constants.
@@ -269,9 +269,8 @@ exports.createNewYear = functions.https.onCall((data, context) => {
           let thisWeek = { 'id': week, "teams": teams };
           allWeeks[week] = thisWeek;
         }
-        // TODO: Get rid of /tmp
         const yearRef = admin.database().ref(
-          `tmp/leaguespec/${league}/plays/${year}/${user.uid}`);
+          `/leaguespec/${league}/plays/${year}/${user.uid}`);
         yearRef.set(allWeeks);
       }
     })
