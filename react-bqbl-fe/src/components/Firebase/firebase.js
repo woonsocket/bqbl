@@ -202,12 +202,14 @@ function sanitizeScoresDataWeek(dbScoresWeek) {
   dbScoresWeek['none'] = { total: 0 }
   return dbScoresWeek;
 }
+
 function scoreForTeam(dbScores, week, team) {
   if (!team) {
     return 0;
   }
   return (dbScores[week] && dbScores[week][team] && dbScores[week][team].total) || 0;
 }
+
 function getStartedTeams(dbStarts, uid, week) {
   let starts = dbStarts[uid][week].teams.filter(team => team.selected).map(team => team.name);
   if (!starts || starts.length === 0) {
