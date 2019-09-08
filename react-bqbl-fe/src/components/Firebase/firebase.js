@@ -91,8 +91,10 @@ class Firebase {
       })
   }
 
-  setStartsRow(uid, league, year, weekIndex, row) {
-    this.db.ref(`${PREFIX}leaguespec/${league}/plays/${year}/${uid}/${weekIndex}`).update(row);
+  setStartsRow(league, year, weekIndex, row) {
+    const uid = this.auth.currentUser.uid;
+    const uri = `${PREFIX}leaguespec/${league}/plays/${year}/${uid}/${weekIndex}`;
+    this.db.ref(uri).update(row);
   }
 
   draftTeam() {

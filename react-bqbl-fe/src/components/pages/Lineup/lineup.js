@@ -4,7 +4,7 @@ import './lineup.css'
 import { withFirebase } from '../../Firebase';
 import * as FOOTBALL from '../../../constants/football';
 import * as SCHEDULE from '../../../constants/schedule';
-import {LeagueSpecDataProxy} from '../../../middle/response';
+import { LeagueSpecDataProxy } from '../../../middle/response';
 
 import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
@@ -36,7 +36,7 @@ function LineupPageBase(props) {
   });
 
   useEffect(() => {
-    if (!user) {return;}
+    if (!user) { return; }
     props.firebase.getStartsYear(user.uid, props.league, props.year, setWeeks);
     props.firebase.getLeagueSpecPromise(props.league).then(data => {
       let lsdp = new LeagueSpecDataProxy(data, props.year);
@@ -44,37 +44,11 @@ function LineupPageBase(props) {
     });
   }, [props.firebase, props.league, props.year, user]);
 
-  // TODO: Decouple 
-  function clickCallback(weekId, cell, val) {
-    let row = weeks[weekId];
-    // The DH continues to be my enemy.
-    if (cell === 5 && row.teams.length === 4) {
-      row.teams.push({ name: '', selected: false })
-    }
-    if (row.teams.length <= cell) {
-      row.teams.push({ name: val, selected: false })
-    }
-    let selected = 0;
-    for (let cell of row.teams) {
-      if (cell.selected) {
-        selected++;
-      }
-    }
-    if (selected > 1 && !row.teams[cell].selected) {
-      return;
-    }
-    row.teams[cell].selected = !row.teams[cell].selected;
-    setWeeks(weeks);
-    props.firebase.setStartsRow(user.uid, props.league, props.year, weekId, row);
-  }
-
   return (
     <Table size="small">
       <TableBody>
         {Object.values(weeks).map((week, index) => (
-          <LineupWeek clickCallback={clickCallback}
-            week={week} index={index} dh={dh} key={index}
-          />
+          <LineupWeek firebase={props.firebase} week={week} league={props.league} year={props.year} index={index} dh={dh} key={index} />
         ))}
       </TableBody>
     </Table>
@@ -82,40 +56,91 @@ function LineupPageBase(props) {
 }
 
 LineupWeek.propTypes = {
-  clickCallback: PropTypes.func.isRequired,
   dh: PropTypes.bool.isRequired,
-  week: PropTypes.object.isRequired
+  week: PropTypes.object.isRequired,
+  league: PropTypes.string.isRequired
 }
 
 function LineupWeek(props) {
+  let [week, setWeek] = useState(props.week);
+
+  function countSelectedMinusCell(cellId) {
+    let selected = 0;
+    for (let cell of week.teams) {
+      if (cell.selected) {
+        selected++;
+      }
+    }
+    if (cellId < week.teams.length && week.teams[cellId].selected) {
+      selected--;
+    }
+    return selected;
+  }
+
+  // TODO: Decouple writes
+  function clickCallback(cellId) {
+    if (countSelectedMinusCell(cellId) >= 2) {
+      throw new Error("somehow selecting an overfull roster");
+    }
+    let newWeek = JSON.parse(JSON.stringify(week));
+    newWeek.teams[cellId].selected = !week.teams[cellId].selected;
+    setWeek(newWeek);
+    props.firebase.setStartsRow(props.league, props.year, week.id, week);
+  }
+
+  function selectCallback(cellId, val) {
+    let newWeek = JSON.parse(JSON.stringify(week));
+
+    while (newWeek.teams.length < cellId) {
+      newWeek.teams.push({ name: '', selected: false });
+    }
+    if (countSelectedMinusCell(cellId) >= 2) {
+      throw new Error("somehow selecting an overfull roster");
+    }
+
+    newWeek.teams[cellId] = { name: val, selected: val !== "" };
+    setWeek(newWeek);
+    props.firebase.setStartsRow(props.league, props.year, week.id, newWeek);
+  }
+
   return (
-    <TableRow key={props.week.id}>
+    <TableRow key={week.id}>
       <TableCell scope="row" className="lineupWeek">
-        Week {props.week.id}
+        Week {week.id}
       </TableCell>
 
-      {props.week.teams.slice(0, 4).map((team, idx) =>
-        <TableCell align="center" key={'' + props.week.id + idx}
+      {week.teams.slice(0, 4).map((team, idx) =>
+        <TableCell align="center" key={'' + week.id + idx}
           className={team.selected ? "team selected" : "team"}
-          onClick={props.clickCallback.bind(null, props.week.id, idx, team.name)}>
-          {team.name}<br/>
-          {SCHEDULE.SCHEDULE_2019[team.name][props.week.id]}
+          onClick={clickCallback.bind(null, idx)}>
+          {team.name}<br />
+          {SCHEDULE.SCHEDULE_2019[team.name][week.id]}
         </TableCell>
       )}
       {props.dh && <React.Fragment>
-        <TableCell> <DHSelector clickCallback={props.clickCallback} weekId={props.week.id} dhId={4} team={props.week.teams[4] || {}} /> </TableCell>
-        <TableCell> <DHSelector clickCallback={props.clickCallback} weekId={props.week.id} dhId={5} team={props.week.teams[5] || {}} /> </TableCell>
+        <TableCell>
+          <DHSelector
+            selectCallback={selectCallback} weekId={props.week.id}
+            dhId={4} team={week.teams[4] || {}}
+            disabled={countSelectedMinusCell(4) >= 2} />
+        </TableCell>
+        <TableCell>
+          <DHSelector selectCallback={selectCallback} weekId={props.week.id}
+            dhId={5} team={week.teams[5] || {}}
+            disabled={countSelectedMinusCell(5) >= 2} />
+        </TableCell>
       </React.Fragment>}
     </TableRow>
   );
 }
 
-function DHSelector({clickCallback, team, weekId, dhId}) {
+function DHSelector({ selectCallback, team, dhId, disabled }) {
   return (
     <NativeSelect
       value={team.name || ""}
-      onChange={e => clickCallback.bind(null, weekId, dhId)(e.target.value)}
+      onChange={e => selectCallback.bind(null, dhId)(e.target.value)}
       input={<Input />}
+      disabled={disabled}
     >
       <option value="">None</option>
       {FOOTBALL.ALL_TEAMS.map(team => <option value={team} key={team}>{team}</option>)}
