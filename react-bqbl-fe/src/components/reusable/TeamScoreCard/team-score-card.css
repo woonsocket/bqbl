@@ -1,11 +1,10 @@
 .team-score-card {
-  margin-top: 10px;
-  margin-bottom: 10px;
+  margin: 10px;
   width: 300px;
-  min-height: 100px;
+  min-height: 300px;
   position: relative;
-  margin-right: auto;
-  margin-left: auto;
+  display: inline-block;
+  text-align: left;
 }
 
 .header-text {
