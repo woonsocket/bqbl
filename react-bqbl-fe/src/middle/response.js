@@ -1,36 +1,33 @@
 
 export class LeagueSpecDataProxy {
   constructor(props) {
-    this.year = props.year;
   }
 
-  isInLeague(uid, leagueData) {
-    const users = (leagueData.users && leagueData.users[this.year]) || [];
-    for (let i = 0; i < users.length; i++) {
-      if (users[i].uid === uid) {
-        return true;
-      }
-    }
-    return false;
+  isInLeague(uid, leagueData, year) {
+    const uids = Object.keys(leagueData.users[year]);
+    return uids.indexOf(uid) !== -1;
   }
 
-  addUser(uid, leagueData) {
+  addUser(uid, leagueData, year) {
     if (!leagueData.users) {
       leagueData.users = {};
-      leagueData.users[this.year] = [];
+      leagueData.users[year] = [];
     }
 
-    let users = leagueData.users[this.year];
+    let users = leagueData.users[year];
     users.push({ name: "Foo", uid: uid, teams: [] });
     return leagueData;
   }
 
-  getTakenTeams(leagueData) {
-    return (leagueData.draft && leagueData.draft[this.year].map(draftItem => { return draftItem.team })) || [];
+  getTakenTeams(leagueData, year) {
+    if (!leagueData || !leagueData.draft || !leagueData.draft[year]) {
+      return;
+    }
+    return leagueData.draft[year].map(draftItem => draftItem.team );
   }
 
-  getDraftList(leagueData) {
-    return (leagueData.draft && leagueData.draft[this.year]) || [];
+  getDraftList(leagueData, year) {
+    return (leagueData.draft && leagueData.draft[year]) || [];
   }
 
   hasDh(leagueData, year) {

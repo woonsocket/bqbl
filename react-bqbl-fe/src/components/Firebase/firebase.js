@@ -70,6 +70,18 @@ class Firebase {
     return this.db.ref(`${PREFIX}leaguespec/${leagueId}`);
   }
 
+  getLeagueSpecPromise(leagueId) {
+    const loc =`${PREFIX}leaguespec/${leagueId}`;
+    return this.db.ref(loc).once('value').then(
+      snapshot => {
+        if (!snapshot.val()) {
+          throw new Error(`couldn't find league ${loc}`);
+        }
+        console.log(snapshot.val())
+        return snapshot.val()
+      })
+  }
+
   getStartsYear(uid, league, year, callback) {
     this.db.ref(`${PREFIX}leaguespec/${league}/plays/${year}/${uid}`).on('value',
       snapshot => {

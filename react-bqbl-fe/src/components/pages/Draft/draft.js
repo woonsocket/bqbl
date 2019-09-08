@@ -33,12 +33,12 @@ class DraftPageBase extends Component {
   }
 
   componentDidMount() {
-    this.props.firebase.league_spec(this.props.league).once('value').then(data => {
+    this.props.firebase.getLeagueSpecPromise(this.props.league).then(data => {
       let lsdp = new LeagueSpecDataProxy(this.props.year);
       let uid = this.props.firebase.getCurrentUser() ? this.props.firebase.getCurrentUser().uid : null;
-      let isInLeague = lsdp.isInLeague(uid, data.val());
-      let takenTeams = lsdp.getTakenTeams(data.val());
-      let draftList = lsdp.getDraftList(data.val())
+      let isInLeague = lsdp.isInLeague(uid, data, this.props.year);
+      let takenTeams = lsdp.getTakenTeams(data, this.props.year);
+      let draftList = lsdp.getDraftList(data, this.props.year)
       this.setState({ inLeague: isInLeague, takenTeams: takenTeams, draftList: draftList });
     });
   }
@@ -49,7 +49,7 @@ class DraftPageBase extends Component {
       let leagueData = data.val();
       let lsdp = new LeagueSpecDataProxy(this.props.year);
       let uid = this.props.firebase.getCurrentUser() ? this.props.firebase.getCurrentUser().uid : null;
-      let newData = lsdp.addUser(uid, leagueData);
+      let newData = lsdp.addUser(uid, leagueData, this.props.year);
       this.props.firebase.league_spec(this.props.league).update(newData);
     });
   }
