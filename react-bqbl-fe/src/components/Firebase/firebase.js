@@ -125,14 +125,10 @@ class Firebase {
 
   processYearScores(dbScores, dbStarts, dbPlayers, legal_weeks) {
     const players = {};
-    // TODO: yeah don't do this.
+
     for (const playerKey of Object.keys(dbStarts)) {
       players[playerKey] = {};
-      for (const user of Object.keys(dbPlayers)) {
-        if (dbPlayers[user].uid === playerKey) {
-          players[playerKey].name = dbPlayers[user].name;
-        }
-      }
+      players[playerKey].name = dbPlayers[playerKey].name;
     }
     let playerTable = {};
     for (const [playerId, player] of Object.entries(players)) {
