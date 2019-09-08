@@ -34,7 +34,7 @@ class DraftPageBase extends Component {
 
   componentDidMount() {
     this.props.firebase.getLeagueSpecPromise(this.props.league).then(data => {
-      let lsdp = new LeagueSpecDataProxy(this.props.year);
+      let lsdp = new LeagueSpecDataProxy(data, this.props.year);
       let uid = this.props.firebase.getCurrentUser() ? this.props.firebase.getCurrentUser().uid : null;
       let isInLeague = lsdp.isInLeague(uid, data, this.props.year);
       let takenTeams = lsdp.getTakenTeams(data, this.props.year);
@@ -46,10 +46,9 @@ class DraftPageBase extends Component {
   addUser() {
     // TODO: Race conditions ahoy!
     this.props.firebase.league_spec(this.props.league).once('value').then(data => {
-      let leagueData = data.val();
-      let lsdp = new LeagueSpecDataProxy(this.props.year);
+      let lsdp = new LeagueSpecDataProxy(data, this.props.year);
       let uid = this.props.firebase.getCurrentUser() ? this.props.firebase.getCurrentUser().uid : null;
-      let newData = lsdp.addUser(uid, leagueData, this.props.year);
+      let newData = lsdp.addUser(uid);
       this.props.firebase.league_spec(this.props.league).update(newData);
     });
   }

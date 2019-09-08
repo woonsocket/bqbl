@@ -4,6 +4,7 @@ import './lineup.css'
 import { withFirebase } from '../../Firebase';
 import * as FOOTBALL from '../../../constants/football';
 import * as SCHEDULE from '../../../constants/schedule';
+import {LeagueSpecDataProxy} from '../../../middle/response';
 
 import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
@@ -36,8 +37,11 @@ function LineupPageBase(props) {
 
   useEffect(() => {
     if (!user) {return;}
-    props.firebase.getStartsYear(user.uid, props.league, props.year, setWeeks)
-    props.firebase.hasDh(props.league, props.year, setDh);
+    props.firebase.getStartsYear(user.uid, props.league, props.year, setWeeks);
+    props.firebase.getLeagueSpecPromise(props.league).then(data => {
+      let lsdp = new LeagueSpecDataProxy(data, props.year);
+      setDh(lsdp.hasDh());
+    });
   }, [props.firebase, props.league, props.year, user]);
 
   // TODO: Decouple 

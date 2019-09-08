@@ -3,7 +3,6 @@ import 'firebase/auth';
 import 'firebase/database';
 import 'firebase/functions';
 import * as TEMPLATES from '../../middle/templates'
-import {LeagueSpecDataProxy} from '../../middle/response'
 
 const config = {
   apiKey: process.env.REACT_APP_API_KEY,
@@ -77,7 +76,6 @@ class Firebase {
         if (!snapshot.val()) {
           throw new Error(`couldn't find league ${loc}`);
         }
-        console.log(snapshot.val())
         return snapshot.val()
       })
   }
@@ -95,14 +93,6 @@ class Firebase {
 
   setStartsRow(uid, league, year, weekIndex, row) {
     this.db.ref(`${PREFIX}leaguespec/${league}/plays/${year}/${uid}/${weekIndex}`).update(row);
-  }
-
-  hasDh(leagueId, year, callback) {
-    return this.db.ref(`${PREFIX}leaguespec/${leagueId}`).on('value',
-      snapshot => {
-        let lsdp = new LeagueSpecDataProxy({ year })
-        callback(lsdp.hasDh(snapshot.val(), year));
-      })
   }
 
   draftTeam() {
