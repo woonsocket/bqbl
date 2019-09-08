@@ -89,15 +89,14 @@ function LineupWeek(props) {
   }
 
   function selectCallback(cellId, val) {
-    let newWeek = JSON.parse(JSON.stringify(week));
-
-    while (newWeek.teams.length < cellId) {
-      newWeek.teams.push({ name: '', selected: false });
-    }
     if (countSelectedMinusCell(cellId) >= 2) {
       throw new Error("somehow selecting an overfull roster");
     }
 
+    let newWeek = JSON.parse(JSON.stringify(week));
+    while (newWeek.teams.length < cellId) {
+      newWeek.teams.push({ name: '', selected: false });
+    }
     newWeek.teams[cellId] = { name: val, selected: val !== "" };
     setWeek(newWeek);
     props.firebase.setStartsRow(props.league, props.year, week.id, newWeek);
