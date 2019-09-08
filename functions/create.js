@@ -74,7 +74,7 @@ exports.createLeague = functions.https.onCall((data, context) => {
   const leagueId = data.league;
   const year = data.year;
 
-  const leagueRef = admin.database().ref(`tmp/leaguespec/${leagueId}`);
+  const leagueRef = admin.database().ref(`/leaguespec/${leagueId}`);
   const stubLeague = {
     id: leagueId,
     settings: {}
@@ -147,7 +147,7 @@ exports.draftTeam = functions.https.onCall((data, context) => {
   const name = context.auth && context.auth.token.name || null;
   const uid = context.auth && context.auth.uid || data.uidOverride;
 
-  const draftRef = `tmp/leaguespec/${league}/draft/${year}`;
+  const draftRef = `/leaguespec/${league}/draft/${year}`;
   console.log(draftRef)
   return admin.database()
     .ref(draftRef)
