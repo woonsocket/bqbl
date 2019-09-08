@@ -32,7 +32,7 @@ const WEEK_SELECTOR_PATHS = [LINKS.PLAYER_SCORES.path, LINKS.TEAM_SCORES.path];
 function App() {
 
   const [drawerOpen, setDrawerOpen] = React.useState(false);
-  const [league, setLeague] = React.useState(new URLSearchParams(window.location.search).get("league"));
+  const [league, setLeague] = React.useState(new URLSearchParams(window.location.search).get("league") || '');
   const [year, setYear] = React.useState(new URLSearchParams(window.location.search).get("year") || '2019');
   const [week, setWeek] = React.useState(new URLSearchParams(window.location.search).get("week") || '1');
   const weekSelector = WEEK_SELECTOR_PATHS.indexOf(window.location.pathname) !== -1;
