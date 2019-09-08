@@ -97,10 +97,6 @@ class Firebase {
     return this.functions.httpsCallable('draftTeam');
   }
 
-  leagueSpecDataProxy(year) {
-    return new LeagueSpecDataProxy({ year });
-  }
-
   getAllLeagues() {
     // TODO: Pull all the leagues this user is in from the db
     return ['nbqbl', 'abqbl'];

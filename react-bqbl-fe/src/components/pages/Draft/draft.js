@@ -1,9 +1,10 @@
 import React, { Component, useState } from 'react';
 
-//TODO: Every stylesheet in the source directory appears to be getting included.
+// TODO: Every stylesheet in the source directory appears to be getting included.
 import './draft.css'
 import { withFirebase } from '../../Firebase';
 import * as FOOTBALL from '../../../constants/football';
+import {LeagueSpecDataProxy} from '../../../middle/response';
 import TabPanel from '../../reusable/TabPanel/tab-panel'
 import TeamIcon from '../../reusable/TeamIcon/team-icon'
 
@@ -33,7 +34,7 @@ class DraftPageBase extends Component {
 
   componentDidMount() {
     this.props.firebase.league_spec(this.props.league).once('value').then(data => {
-      let lsdp = this.props.firebase.leagueSpecDataProxy(this.props.year);
+      let lsdp = new LeagueSpecDataProxy(this.props.year);
       let uid = this.props.firebase.getCurrentUser() ? this.props.firebase.getCurrentUser().uid : null;
       let isInLeague = lsdp.isInLeague(uid, data.val());
       let takenTeams = lsdp.getTakenTeams(data.val());
@@ -46,7 +47,7 @@ class DraftPageBase extends Component {
     // TODO: Race conditions ahoy!
     this.props.firebase.league_spec(this.props.league).once('value').then(data => {
       let leagueData = data.val();
-      let lsdp = this.props.firebase.leagueSpecDataProxy(this.year);
+      let lsdp = new LeagueSpecDataProxy(this.props.year);
       let uid = this.props.firebase.getCurrentUser() ? this.props.firebase.getCurrentUser().uid : null;
       let newData = lsdp.addUser(uid, leagueData);
       this.props.firebase.league_spec(this.props.league).update(newData);
