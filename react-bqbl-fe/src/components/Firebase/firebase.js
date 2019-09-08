@@ -140,7 +140,7 @@ class Firebase {
           TEMPLATES.Start(startedTeams[0], scores[0]), TEMPLATES.Start(startedTeams[1], scores[1]));
       }
       const name = (player.name);
-      playerTable[playerId] = createPlayer(name, 30, start_rows);
+      playerTable[playerId] = TEMPLATES.Player(name, 30, start_rows);
     }
     for (const player of Object.values(playerTable)) {
       let playerTotal = 0;
@@ -203,11 +203,6 @@ function sanitizeScoresDataWeek(dbScoresWeek) {
   dbScoresWeek['none'] = { total: 0 }
   return dbScoresWeek;
 }
-
-function createPlayer(name, total, start_rows) {
-  return { name, total, start_rows };
-}
-
 function scoreForTeam(dbScores, week, team) {
   if (!team) {
     return 0;
