@@ -90,12 +90,12 @@ function breakdownToComponents(breakdown) {
   // have to make that distinction.)
   components.push(simpleMultiple(
     25, breakdown.turnover.types.ot6, 'turnover-TD in OT'));
-  // components.push(simpleMultiple(
-  //   2, breakdown.fumbleKept.count, 'fumble kept')),
-  //   components.push({
-  //     desc: `${breakdown.turnover.count}-turnover bonus`,
-  //     value: breakdown.turnover.bonusValue,
-  //   });
+  components.push(simpleMultiple(
+    2, breakdown.fumbleKept.count, 'fumble kept'));
+  components.push({
+    desc: `${breakdown.turnover.count}-turnover bonus`,
+    value: breakdown.turnover.bonusValue,
+  });
 
   components.push({
     desc: `${breakdown.touchdown.count}-touchdown game`,
