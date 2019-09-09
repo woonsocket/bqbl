@@ -16,21 +16,51 @@ import Collapse from '@material-ui/core/Collapse';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import IconButton from '@material-ui/core/IconButton';
 import PropTypes from 'prop-types';
+import Switch from '@material-ui/core/Switch';
 
 const FOLD = 4;
 
 function PlayerStandingsPageBase(props) {
-  let [playerTable, setPlayerTable] = useState({})
+  let [playerTable, setPlayerTable] = useState([]);
+  let [sortScores, setSortScores] = useState(true);
+
+  function sortClickedCallback() {
+    setSortScores(!sortScores);
+  }
+
   useEffect(() => {
     props.firebase.scoresStartsUsersPromise(props.league, props.year).then(
       ({ dbScores, dbStarts, dbUsers }) =>
         props.firebase.processYearScores(dbScores, dbStarts, dbUsers, allWeeksReverse(props.year))
-    ).then(val => setPlayerTable(val));
-  }, [props.firebase, props.league, props.year]);
+    ).then(val => {
+      let playerList = Object.keys(val).map(key => ({
+        ...val[key],
+        uid: key,
+      }));
+      if (sortScores) {
+        playerList = playerList.sort((team, team2) => team2.total - team.total);
+      }
+      setPlayerTable(playerList)
+    });
+  }, [props.firebase, props.league, props.year, sortScores]);
 
-  return Object.entries(playerTable).map(([playerId, player]) => (
-    <PlayerYearCard player={player} name={playerId} key={playerId} year={props.year} />
-  ))
+  return (
+    <React.Fragment>
+      <div style={{textAlign: "center"}}>
+        Sort Scores
+        <Switch
+          checked={sortScores}
+          onChange={sortClickedCallback}
+          value="sort"
+          color="primary"
+        />
+      </div>
+
+      {Object.entries(playerTable).map(([playerId, player]) => (
+        <PlayerYearCard player={player} name={playerId} key={playerId} year={props.year} />
+      ))}
+    </React.Fragment>
+  )
 }
 
 PlayerYearCard.propTypes = {
