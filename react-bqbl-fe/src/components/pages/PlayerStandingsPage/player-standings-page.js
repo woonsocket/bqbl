@@ -25,12 +25,12 @@ function PlayerStandingsPageBase(props) {
     props.firebase.scoresStartsUsersPromise(props.league, props.year).then(
       ({ dbScores, dbStarts, dbUsers }) =>
         props.firebase.processYearScores(dbScores, dbStarts, dbUsers, allWeeksReverse(props.year))
-      ).then(val => setPlayerTable(val));
-}, [props.firebase, props.league, props.year]);
+    ).then(val => setPlayerTable(val));
+  }, [props.firebase, props.league, props.year]);
 
-return Object.entries(playerTable).map(([playerId, player]) => (
-  <PlayerYearCard player={player} name={playerId} key={playerId} year={props.year} />
-))
+  return Object.entries(playerTable).map(([playerId, player]) => (
+    <PlayerYearCard player={player} name={playerId} key={playerId} year={props.year} />
+  ))
 }
 
 PlayerYearCard.propTypes = {
@@ -48,7 +48,7 @@ function PlayerYearCard(props) {
       <CardHeader
         avatar={
           <Avatar aria-label="">
-            {props.player.name}
+            {props.player.name[0]}
           </Avatar>
         }
         title={props.player.name}
