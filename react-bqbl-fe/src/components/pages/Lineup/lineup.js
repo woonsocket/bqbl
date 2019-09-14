@@ -80,17 +80,19 @@ function LineupWeek(props) {
   // TODO: Decouple writes
   function clickCallback(cellId) {
     if (countSelectedMinusCell(cellId) >= 2) {
-      throw new Error("somehow selecting an overfull roster");
+      console.log("selecting an overfull roster");
+      return;
     }
     let newWeek = JSON.parse(JSON.stringify(week));
     newWeek.teams[cellId].selected = !week.teams[cellId].selected;
     setWeek(newWeek);
-    props.firebase.setStartsRow(props.league, props.year, week.id, week);
+    props.firebase.setStartsRow(props.league, props.year, week.id, newWeek);
   }
 
   function selectCallback(cellId, val) {
     if (countSelectedMinusCell(cellId) >= 2) {
-      throw new Error("somehow selecting an overfull roster");
+      console.log("selecting an overfull roster");
+      return;
     }
 
     let newWeek = JSON.parse(JSON.stringify(week));
