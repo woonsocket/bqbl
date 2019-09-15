@@ -140,6 +140,14 @@ function breakdownToComponents(breakdown) {
     value: breakdown.safety.value,
   });
 
+  if (breakdown.fieldPosition) {
+    let yardLineDesc = describeYardLine(breakdown.fieldPosition.bestYardLine);
+    components.push({
+      desc: `field position (${yardLineDesc})`,
+      value: breakdown.fieldPosition.value,
+    });
+  }
+
   components.push({
     desc: `${breakdown.bench.count}x QB benched`,
     value: breakdown.bench.value,
@@ -180,6 +188,24 @@ function rangeString(range) {
     return `≥ ${min}`;
   }
   return `${min}-${max}`;
+}
+
+/**
+ * @param {number} yardLine An integer from 1 to 100, inclusive. Represents the
+ * distance from the team's own goal line.
+ */
+function describeYardLine(yardLine) {
+  if (yardLine < 50) {
+    return `own ${yardLine}`;
+  } else if (yardLine == 50) {
+    return `50-yard line`;
+  } else if (yardLine < 100) {
+    return `opp. ${yardLine}`;
+  } else if (yardLine == 100) {
+    return `opp. goal`;
+  }
+  // Should not happen.
+  return `${yardLine}-yard line`;
 }
 
 function lineScore(breakdown) {
