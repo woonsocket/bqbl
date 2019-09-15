@@ -1,5 +1,47 @@
 {
   "database": {
     "rules": "database.rules.json"
+  },
+  "hosting": {
+    "public": "public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  },
+  "hosting": {
+    "site": "bqbl-591f3",
+    "public": "react-bqbl-fe/build",
+    "headers": [
+      {
+        "source": "/service-worker.js",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache"
+          }
+        ]
+      }
+    ],
+    // Add the "rewrites" attribute within "hosting"
+    "rewrites": [
+      {
+        // Serves index.html for requests to files or directories that do not exist
+        "source": "**",
+        "destination": "/index.html"
+      },
+      {
+        // Serves index.html for requests to both "/foo" and "/foo/**"
+        // Using "/foo/**" only matches paths like "/foo/xyz", but not "/foo"
+        "source": "/foo{,/**}",
+        "destination": "/index.html"
+      },
+      {
+        // Excludes specified pathways from rewrites
+        "source": "!/@(js|css)/**",
+        "destination": "/index.html"
+      }
+    ]
   }
 }

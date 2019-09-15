@@ -1,6 +1,5 @@
 // If you change rules here, make sure to propagate the changes to
 // database.rules.json in the repo. You can use `firebase deploy --only
-// database` to push the rules file.
 {
   "rules": {
     ".read": "auth != null",
@@ -41,26 +40,40 @@
         ".write": "root.child('roles/admins/' + auth.uid).exists()"
       }
     },
+    "leaguespec": {
+      ".read": true,
+      "$leagueid": {
+        "plays": {
+          "$year": {
+            "$user_id": {
+              "$week_id": {
+                ".write": "$user_id === auth.uid && root.child('unlockedweeks/' +$week_id).val() > now"
+              },
+            },
+          },
+        },
+      },
+    },
     "users": {
       ".read": true,
       "$user_id": {
         // TODO(harveyj): clean this up so there's just a week object
         // and a userdata object.
-        "leagueid" : {
+        "leagueid": {
           ".write": "$user_id === auth.uid"
         },
-        "leaguename" : {
+        "leaguename": {
           ".write": "$user_id === auth.uid"
         },
-        "name" : {
+        "name": {
           ".write": "$user_id === auth.uid"
         },
         "weeks": {
-          "$week_id" : {
+          "$week_id": {
             ".write": "$user_id === auth.uid && root.child('unlockedweeks/' + newData.child('id').val()).val() > now"
           }
         },
-        "probowl" : {
+        "probowl": {
           ".write": "$user_id === auth.uid && root.child('unlockedweeks/probowl').val() > now"
         },
       }
@@ -77,6 +90,5 @@
       ".read": true,
       ".write": true
     }
-
   }
 }

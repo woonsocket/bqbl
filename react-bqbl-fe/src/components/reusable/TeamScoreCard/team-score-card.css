@@ -1,0 +1,60 @@
+.team-score-card {
+  margin: 10px;
+  width: 300px;
+  min-height: 300px;
+  position: relative;
+  display: inline-block;
+  text-align: left;
+}
+
+.header-text {
+  color: rgb(248, 246, 246, 1.0);
+  position:absolute;
+  top:0;
+  left:0;
+  background-color: rgba(0, 0, 0, 0.5);
+  width: 300px;
+  font-size: 24px;
+  font-weight: 300;
+  padding: 16px;
+}
+
+.bg {
+  z-index: -65535;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 300px;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  min-height: 110px;
+}
+
+.total {
+  font-weight: bold;
+  font-size: 14pt;
+  text-transform: uppercase;
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+.comp {
+  -webkit-box-flex: 1;
+  flex-grow: 1;
+  color: rgba(0,0,0,.54);
+  font-size: 1rem;
+  line-height: 18px;
+  overflow: hidden;
+  width: 90%;
+}
+
+.comp-desc {
+  font-size: 1rem;
+  float:left;
+}
+
+.comp-score {
+  font-size: 1rem;
+  float:right;
+}
