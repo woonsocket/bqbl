@@ -6,11 +6,19 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Navigation from '../../reusable/Navigation/navigation'
 import React, { useEffect, useState } from 'react';
 import SignIn from '../../reusable/SignIn/sign-in'
+import PropTypes from 'prop-types';
 
 import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
 
 import "./home.css"
+
+HomeBase.propTypes = {
+  firebase: PropTypes.object.isRequired,
+  league: PropTypes.string,
+  year: PropTypes.string,
+  leagues: PropTypes.array,
+}
 
 function HomeBase(props) {
   let [user, setUser] = useState(props.firebase.getCurrentUser());

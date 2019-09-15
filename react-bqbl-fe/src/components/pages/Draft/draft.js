@@ -40,6 +40,12 @@ const useStyles = makeStyles({
   
 });
 
+DraftPageBase.propTypes = {
+  firebase: PropTypes.object.isRequired,
+  league: PropTypes.string.isRequired,
+  year: PropTypes.string.isRequired,
+}
+
 function DraftPageBase(props) {
   let [isInLeague, setIsInLeague] = useState(false);
   // TODO: rename this
@@ -87,7 +93,7 @@ function DraftPageBase(props) {
     });
   }
 
-  function handleChange(event, newValue) {
+  function handleChange(_event, newValue) {
     setValue(newValue)
   }
 
@@ -188,7 +194,7 @@ function DraftSnackbar({ selectedTeam, selectCallback, setSelectedTeamCallback }
   );
 }
 
-function DraftSuccessfulSnackbar(props) {
+function DraftSuccessfulSnackbar({open}) {
 
   return (
     <Snackbar
@@ -196,7 +202,7 @@ function DraftSuccessfulSnackbar(props) {
         vertical: 'bottom',
         horizontal: 'left',
       }}
-      open={props.open}
+      open={open}
       autoHideDuration={6000}
       message={<span id="message-id">Draft successful!</span>}
     />

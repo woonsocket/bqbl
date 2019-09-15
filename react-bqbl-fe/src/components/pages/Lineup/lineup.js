@@ -57,9 +57,11 @@ function LineupPageBase(props) {
 }
 
 LineupWeek.propTypes = {
+  firebase: PropTypes.object.isRequired,
   dh: PropTypes.bool.isRequired,
   week: PropTypes.object.isRequired,
   league: PropTypes.string.isRequired
+  year: PropTypes.string.isRequired
 }
 
 function LineupWeek(props) {
@@ -87,7 +89,7 @@ function LineupWeek(props) {
     let newWeek = JSON.parse(JSON.stringify(week));
     newWeek.teams[cellId].selected = !week.teams[cellId].selected;
     props.firebase.setStartsRow(props.league, props.year, week.id, newWeek).then(
-      ret => setWeek(newWeek)
+      () => setWeek(newWeek)
     )
   }
 
