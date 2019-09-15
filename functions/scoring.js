@@ -81,6 +81,11 @@ function computeStupidProjection(stats) {
     const currentStat = parseInt(stats[stat] || 0, 10);
     projected[stat] = Math.round(currentStat + (1 - elapsedFrac) * val);
   });
+  // A team can go on a long drive at any time. Until the 4th quarter, assume
+  // that the team is going to score a touchdown at some point.
+  if (elapsedFrac < 0.75) {
+    projected['FIELDPOS'] = 100;
+  }
   return projected;
 };
 
@@ -235,6 +240,17 @@ function computeScoreComponents(qbScore) {
       'min': over75 ? 75 : null,
       'max': over75 ? null : 74,
     },
+  };
+
+  let fieldPositionValue = 0;
+  if (qbScore['FIELDPOS'] <= 50) {
+    fieldPositionValue = 50;
+  } else if (qbScore['FIELDPOS'] <= 80) {
+    fieldPositionValue = 20;
+  }
+  breakdown['fieldPosition'] = {
+    'value': fieldPositionValue,
+    'bestYardLine': qbScore['FIELDPOS'],
   };
 
   let total = 0;
