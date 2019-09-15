@@ -1,12 +1,11 @@
-import React, { Component, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-// TODO: Every stylesheet in the source directory appears to be getting included.
-import './draft.css'
 import { withFirebase } from '../../Firebase';
 import * as FOOTBALL from '../../../constants/football';
-import {LeagueSpecDataProxy} from '../../../middle/response';
+import { LeagueSpecDataProxy } from '../../../middle/response';
 import TabPanel from '../../reusable/TabPanel/tab-panel'
 import TeamIcon from '../../reusable/TeamIcon/team-icon'
+import classNames from 'classnames/bind';
 
 import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
@@ -22,71 +21,94 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Tabs from '@material-ui/core/Tabs';
+import { makeStyles } from '@material-ui/styles';
 
-class DraftPageBase extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      inLeague: false,
-      value: 0
-    };
+const useStyles = makeStyles({
+  gridContainer: { textAlign: 'center' },
+  taken: { opacity: '.3' },
+  team: {
+    padding: '1em',
+    minWidth: '1em',
+    display: 'inline-block',
+  },
+  cell: {
+    textAlign: 'center'
+  },
+  teamSelected: {
+    background: 'lightblue'
+  }
+  
+});
+
+function DraftPageBase(props) {
+  let [isInLeague, setIsInLeague] = useState(false);
+  // TODO: rename this
+  let [value, setValue] = useState(0);
+  let [takenTeams, setTakenTeams] = useState([]);
+  let [successfulSnackbar, setSuccessfulSnackbar] = useState(false);
+  let [draftList, setDraftList] = useState([]);
+  let [user, setUser] = useState(props.firebase.getCurrentUser());
+
+  function authChanged(newUser) {
+    setUser(newUser);
   }
 
-  componentDidMount() {
-    this.props.firebase.getLeagueSpecPromise(this.props.league).then(data => {
-      let lsdp = new LeagueSpecDataProxy(data, this.props.year);
-      let uid = this.props.firebase.getCurrentUser() ? this.props.firebase.getCurrentUser().uid : null;
-      let isInLeague = lsdp.isInLeague(uid, data, this.props.year);
-      let takenTeams = lsdp.getTakenTeams(data, this.props.year);
-      let draftList = lsdp.getDraftList(data, this.props.year)
-      this.setState({ inLeague: isInLeague, takenTeams: takenTeams, draftList: draftList });
+  useEffect(() => {
+    props.firebase.addAuthListener(authChanged)
+  });
+
+  useEffect(() => {
+    props.firebase.getLeagueSpecPromise(props.league).then(data => {
+      let lsdp = new LeagueSpecDataProxy(data, props.year);
+      let uid = props.firebase.getCurrentUser() ? props.firebase.getCurrentUser().uid : null;
+      setIsInLeague(lsdp.isInLeague(uid))
+      setTakenTeams(lsdp.getTakenTeams());
+      setDraftList(lsdp.getDraftList());
     });
-  }
+  },  [props.firebase, props.league, props.year, user]);
 
-  addUser() {
+  function addUser() {
     // TODO: Race conditions ahoy!
-    this.props.firebase.league_spec(this.props.league).once('value').then(data => {
-      let lsdp = new LeagueSpecDataProxy(data, this.props.year);
-      let uid = this.props.firebase.getCurrentUser() ? this.props.firebase.getCurrentUser().uid : null;
+    props.firebase.league_spec(props.league).once('value').then(data => {
+      let lsdp = new LeagueSpecDataProxy(data, props.year);
+      let uid = props.firebase.getCurrentUser() ? props.firebase.getCurrentUser().uid : null;
       let newData = lsdp.addUser(uid);
-      this.props.firebase.league_spec(this.props.league).update(newData);
+      props.firebase.league_spec(props.league).update(newData);
     });
   }
 
-  selectCallback(team) {
-    let params = { team: team, year: this.props.year, league: this.props.league };
+  function selectCallback(team) {
+    let params = { team: team, year: props.year, league: props.league };
     // I'm clearly holding this function invocation wrong. Need to figure out the es6y way.
-    this.props.firebase.draftTeam()(params).then(result => {
-      this.setState({successfulSnackbar: true})
+    props.firebase.draftTeam()(params).then(() => {
+      setSuccessfulSnackbar(true);
     }).catch(error => {
       alert(error);
     });
   }
 
-  handleChange(event, newValue) {
-    this.setState({ value: newValue });
+  function handleChange(event, newValue) {
+    setValue(newValue)
   }
 
-  render() {
-    // TODO: Redirect away from this page entirely for signed-out users.
-    return <React.Fragment>
-      <Tabs value={this.state.value} onChange={this.handleChange.bind(this)} variant="fullWidth">
-        <Tab label="Select" />
-        <Tab label="History" />
-      </Tabs>
-      <TabPanel value={this.state.value} index={0}>
-        {this.state.inLeague ?
-          <DraftSelectionGrid selectCallback={this.selectCallback.bind(this)}
-            taken={this.state.takenTeams} />
-          : <NotInLeagueUI addUser={this.addUser.bind(this)} />
-        }
-      </TabPanel>
-      <TabPanel value={this.state.value} index={1}>
-        <DraftSelectionList draftList={this.state.draftList} />
-      </TabPanel>
-      <DraftSuccessfulSnackbar open={this.state.successfulSnackbar}/>
-    </React.Fragment>
-  }
+  // TODO: Redirect away from this page entirely for signed-out users.
+  return <React.Fragment>
+    <Tabs value={value} onChange={handleChange} variant="fullWidth">
+      <Tab label="Select" />
+      <Tab label="History" />
+    </Tabs>
+    <TabPanel value={value} index={0}>
+      {isInLeague ?
+        <DraftSelectionGrid selectCallback={selectCallback}
+          taken={takenTeams} />
+        : <NotInLeagueUI addUser={addUser} />
+      }
+    </TabPanel>
+    <TabPanel value={value} index={1}>
+      <DraftSelectionList draftList={draftList} />
+    </TabPanel>
+    <DraftSuccessfulSnackbar open={successfulSnackbar} />
+  </React.Fragment>
 }
 
 DraftSelectionGrid.propTypes = {
@@ -95,6 +117,8 @@ DraftSelectionGrid.propTypes = {
 }
 
 function DraftSelectionGrid({ taken = [], selectCallback }) {
+  const styles = useStyles();
+
   const [selectedTeam, setSelectedTeam] = useState("");
 
   function updateSelection(team) {
@@ -104,11 +128,10 @@ function DraftSelectionGrid({ taken = [], selectCallback }) {
   }
 
   return (
-    <div className="grid-container">
+    <div className={styles.gridContainer}>
       {FOOTBALL.ALL_TEAMS.map(team =>
-        // TODO: Clean up by using the classnames package.
-        <div className={["team", selectedTeam === team ? "team-selected" : "", taken.includes(team) ? "taken" : ""].join(' ')}
-          key={team} onClick={updateSelection.bind(this, team)}
+        <div className={classNames(styles.team, selectedTeam === team ? styles.teamSelected : "", taken.includes(team) ? styles.taken : "")}
+          key={team} onClick={updateSelection.bind(null, team)}
         >
           <TeamIcon team={team} width='80px' />
           <div className="cell">
@@ -169,14 +192,14 @@ function DraftSuccessfulSnackbar(props) {
 
   return (
     <Snackbar
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
-        }}
-        open={props.open}
-        autoHideDuration={6000}
-        message={<span id="message-id">Draft successful!</span>}
-      />
+      anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'left',
+      }}
+      open={props.open}
+      autoHideDuration={6000}
+      message={<span id="message-id">Draft successful!</span>}
+    />
   );
 }
 
@@ -213,7 +236,7 @@ function DraftSelectionList({ draftList = [{ team: 'DAL', uid: 15 }] }) {
 }
 
 NotInLeagueUI.propTypes = {
-  addUser: PropTypes.array.isRequired,
+  addUser: PropTypes.func.isRequired,
 }
 
 function NotInLeagueUI(props) {
