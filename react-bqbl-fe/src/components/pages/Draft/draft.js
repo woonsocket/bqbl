@@ -37,7 +37,6 @@ const useStyles = makeStyles({
   teamSelected: {
     background: 'lightblue'
   }
-  
 });
 
 DraftPageBase.propTypes = {
@@ -163,7 +162,7 @@ function DraftSnackbar({ selectedTeam, selectCallback, setSelectedTeamCallback }
     handleClose(event, reason);
   }
 
-  function handleClose(event, reason) {
+  function handleClose(_event, reason) {
     if (reason === 'clickaway') {
       return;
     }
@@ -194,6 +193,9 @@ function DraftSnackbar({ selectedTeam, selectCallback, setSelectedTeamCallback }
   );
 }
 
+DraftSuccessfulSnackbar.propTypes = {
+  open: PropTypes.bool.isRequired,
+}
 function DraftSuccessfulSnackbar({open}) {
 
   return (

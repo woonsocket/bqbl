@@ -16,13 +16,13 @@ function TeamScorePageBase(props) {
     setSortScores(!sortScores);
   }
   useEffect(() => {
-    props.firebase.scoresWeekPromise(props.year, props.week).then(
+    props.firebase.scoresWeekThen(props.year, props.week,
       scoresWeek => {
         if (sortScores) {
           scoresWeek = scoresWeek.sort((team, team2) => team2.total - team.total);
         }
         setValsList(scoresWeek)
-      });
+      })
   }, [props.firebase, props.league, props.year, props.week, sortScores]);
 
   return (

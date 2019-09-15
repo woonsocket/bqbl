@@ -11,8 +11,6 @@ import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
 
-import "./home.css"
-
 HomeBase.propTypes = {
   firebase: PropTypes.object.isRequired,
   league: PropTypes.string,
@@ -21,6 +19,7 @@ HomeBase.propTypes = {
 }
 
 function HomeBase(props) {
+
   let [user, setUser] = useState(props.firebase.getCurrentUser());
   function authChanged(newUser) {
     setUser(newUser);

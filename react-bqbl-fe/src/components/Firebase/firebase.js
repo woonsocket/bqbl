@@ -38,19 +38,19 @@ class Firebase {
     return this.auth.currentUser;
   }
 
-  scoresYearPromise(year) {
-    return this.db.ref(`scores/${year}`).once('value').then(
+  scoresYearThen(year, cb) {
+    return this.db.ref(`scores/${year}`).on('value', 
       snapshot => {
         const vals = snapshot.val();
         if (!vals) {
           throw new Error('no scores')
         }
-        return vals;
+        cb(vals);
       })
   }
   
-  scoresWeekPromise(year, week) {
-    return this.db.ref(`scores/${year}/${week}`).once('value').then(
+  scoresWeekThen(year, week, cb) {
+    return this.db.ref(`scores/${year}/${week}`).on('value',
       snapshot => {
         const vals = snapshot.val();
         if (!vals) {
@@ -60,7 +60,7 @@ class Firebase {
           ...vals[key],
           teamName: key,
         }));
-        return valsList;
+        cb(valsList);
       }
     )
   }
