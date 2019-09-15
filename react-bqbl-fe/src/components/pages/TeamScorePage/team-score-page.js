@@ -64,7 +64,7 @@ function TeamScorePageBase(props) {
       </div>
       {valsList.map(score => (
         <TeamScoreCard score={score} key={score.teamName} boxScoreLink={boxScoreLink(props.year, props.week, score.gameInfo.id)} />
-      ))}{console.log(valsList[0] && valsList[0].gameInfo.id)}
+      ))}
     </div>
   );
 }
