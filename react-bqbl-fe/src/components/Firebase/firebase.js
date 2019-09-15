@@ -65,7 +65,7 @@ class Firebase {
     )
   }
 
-  league_spec(leagueId) {
+  leagueSpecRef(leagueId) {
     return this.db.ref(`${PREFIX}leaguespec/${leagueId}`);
   }
 

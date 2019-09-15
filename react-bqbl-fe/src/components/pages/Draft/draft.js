@@ -70,15 +70,15 @@ function DraftPageBase(props) {
       setTakenTeams(lsdp.getTakenTeams());
       setDraftList(lsdp.getDraftList());
     });
-  },  [props.firebase, props.league, props.year, user]);
+  }, [props.firebase, props.league, props.year, user]);
 
   function addUser() {
     // TODO: Race conditions ahoy!
-    props.firebase.league_spec(props.league).once('value').then(data => {
+    props.firebase.getLeagueSpecPromise(props.league).then(data => {
       let lsdp = new LeagueSpecDataProxy(data, props.year);
       let uid = props.firebase.getCurrentUser() ? props.firebase.getCurrentUser().uid : null;
       let newData = lsdp.addUser(uid);
-      props.firebase.league_spec(props.league).update(newData);
+      props.firebase.leagueSpecRef(props.league).update(newData);
     });
   }
 
@@ -196,7 +196,7 @@ function DraftSnackbar({ selectedTeam, selectCallback, setSelectedTeamCallback }
 DraftSuccessfulSnackbar.propTypes = {
   open: PropTypes.bool.isRequired,
 }
-function DraftSuccessfulSnackbar({open}) {
+function DraftSuccessfulSnackbar({ open }) {
 
   return (
     <Snackbar
