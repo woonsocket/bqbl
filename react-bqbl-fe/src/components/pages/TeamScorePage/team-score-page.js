@@ -18,19 +18,29 @@ TeamScorePageBase.propTypes = {
 function TeamScorePageBase(props) {
   let [valsList, setValsList] = useState([]);
   let [sortScores, setSortScores] = useState(true);
+  let [useProjections, setUseProjections] = useState(true);
 
   function sortClickedCallback() {
     setSortScores(!sortScores);
   }
+
+  function setUseProjectionsCallback() {
+    setUseProjections(!useProjections);
+  }
+
   useEffect(() => {
     props.firebase.scoresWeekThen(props.year, props.week,
       scoresWeek => {
         if (sortScores) {
-          scoresWeek = scoresWeek.sort((team, team2) => team2.total - team.total);
+          if (useProjections) {
+            scoresWeek = scoresWeek.sort((team, team2) => team2.projection.total - team.projection.total);
+          } else {
+            scoresWeek = scoresWeek.sort((team, team2) => team2.total - team.total);
+          }
         }
         setValsList(scoresWeek)
       })
-  }, [props.firebase, props.league, props.year, props.week, sortScores]);
+  }, [props.firebase, props.league, props.year, props.week, sortScores, useProjections]);
 
   return (
     <div style={{ textAlign: 'center' }}>
@@ -42,6 +52,15 @@ function TeamScorePageBase(props) {
           value="sort"
           color="primary"
         />
+        Use Projections
+        <Switch
+          checked={useProjections}
+          onChange={setUseProjectionsCallback}
+          value="sort"
+          color="primary"
+          disabled={!sortScores}
+        />
+
       </div>
       {valsList.map(score => (
         <TeamScoreCard score={score} key={score.teamName} />
