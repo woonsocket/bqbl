@@ -2,6 +2,9 @@ import React from 'react';
 
 import './team-score-card.css';
 
+import CardActions from '@material-ui/core/CardActions';
+import Button from '@material-ui/core/Button';
+
 import Box from '@material-ui/core/Box';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
@@ -12,9 +15,11 @@ import Typography from '@material-ui/core/Typography';
 
 TeamScoreCard.propTypes = {
   score: PropTypes.object.isRequired,
+  boxScoreLink: PropTypes.string.isRequired,
 }
 
 function TeamScoreCard(props) {
+
   return (
     <Card className="team-score-card">
       <div>
@@ -56,11 +61,11 @@ function TeamScoreCard(props) {
           </List>
         </CardContent>
       </CardActionArea>
-      {/* <CardActions>
-        <Button size="small" color="primary">
+      <CardActions>
+        <Button size="small" color="primary" href={props.boxScoreLink}>
           Box Score Link
           </Button>
-      </CardActions> */}
+      </CardActions>
     </Card>
   )
 }

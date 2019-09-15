@@ -63,10 +63,24 @@ function TeamScorePageBase(props) {
 
       </div>
       {valsList.map(score => (
-        <TeamScoreCard score={score} key={score.teamName} />
-      ))}
+        <TeamScoreCard score={score} key={score.teamName} boxScoreLink={boxScoreLink(props.year, props.week, score.gameInfo.id)} />
+      ))}{console.log(valsList[0] && valsList[0].gameInfo.id)}
     </div>
   );
+}
+
+function boxScoreLink(year, week, gameId) {
+  if (!gameId) {
+    return 'http://www.nfl.com';
+  }
+  const nflWeek = `REG${week}`;
+  // Actually, this component of the path doesn't seem to matter at all, as
+  // long as it's non-empty. NFL.com puts the team nicknames in there
+  // ('patriots@falcons'), but it appears to be purely for URL aesthetics.
+  const atCode = 'score';
+  return 'http://www.nfl.com/gamecenter/' +
+      `${gameId}/${year}/${nflWeek}/${atCode}` +
+      '#tab=analyze&analyze=boxscore';
 }
 
 const TeamScorePage = compose(
