@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 
-import { withFirebase } from '../../Firebase';
 import * as FOOTBALL from '../../../constants/football';
 import { LeagueSpecDataProxy } from '../../../middle/response';
+import { withFirebase } from '../../Firebase';
 import TabPanel from '../../reusable/TabPanel/tab-panel'
 import TeamIcon from '../../reusable/TeamIcon/team-icon'
 import classNames from 'classnames/bind';
 
 import { compose } from 'recompose';
+import { makeStyles } from '@material-ui/styles';
 import { withRouter } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import CloseIcon from '@material-ui/icons/Close';
@@ -21,7 +22,6 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Tabs from '@material-ui/core/Tabs';
-import { makeStyles } from '@material-ui/styles';
 
 const useStyles = makeStyles({
   gridContainer: { textAlign: 'center' },

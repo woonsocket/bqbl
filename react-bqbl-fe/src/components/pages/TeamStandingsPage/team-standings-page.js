@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
-import { withFirebase } from '../../Firebase';
 import * as FOOTBALL from '../../../constants/football';
+import { withFirebase } from '../../Firebase';
 
 import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';

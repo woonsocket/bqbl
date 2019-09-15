@@ -7,8 +7,8 @@ import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
 import List from '@material-ui/core/List';
-import Typography from '@material-ui/core/Typography';
 import PropTypes from 'prop-types';
+import Typography from '@material-ui/core/Typography';
 
 TeamScoreCard.propTypes = {
   score: PropTypes.object.isRequired,

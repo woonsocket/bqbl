@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 
 import { withFirebase } from '../../Firebase';
 
-import { withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
+import { withRouter } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 
 class SignOutBase extends Component {

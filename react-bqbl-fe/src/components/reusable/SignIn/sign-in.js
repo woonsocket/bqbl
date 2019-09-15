@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 
-import { withFirebase } from '../../Firebase';
 import * as ROUTES from '../../../constants/routes';
+import { withFirebase } from '../../Firebase';
 
-import { withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
+import { withRouter } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 
 class SignInBase extends Component {

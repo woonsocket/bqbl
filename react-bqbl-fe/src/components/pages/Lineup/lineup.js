@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from 'react';
 
 import './lineup.css'
-import { withFirebase } from '../../Firebase';
+
 import * as FOOTBALL from '../../../constants/football';
 import * as SCHEDULE from '../../../constants/schedule';
-import { LeagueSpecDataProxy } from '../../../middle/response';
 
+import { LeagueSpecDataProxy } from '../../../middle/response';
 import { compose } from 'recompose';
+import { withFirebase } from '../../Firebase';
 import { withRouter } from 'react-router-dom';
 import Input from '@material-ui/core/Input';
 import NativeSelect from '@material-ui/core/NativeSelect';
+import PropTypes from 'prop-types';
+import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
-import Table from '@material-ui/core/Table';
-import PropTypes from 'prop-types';
 
 LineupPageBase.propTypes = {
   firebase: PropTypes.object.isRequired,

@@ -1,8 +1,8 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 
-import TeamIcon from '../TeamIcon/team-icon'
 import './icon-score-cell.css';
+import TeamIcon from '../TeamIcon/team-icon'
 
 IconScoreCell.propTypes = {
   team: PropTypes.string.isRequired,

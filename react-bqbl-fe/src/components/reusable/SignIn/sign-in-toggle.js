@@ -4,8 +4,8 @@ import { withFirebase } from '../../Firebase';
 import SignIn from './sign-in';
 import SignOut from './sign-out';
 
-import { withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
+import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 class SignInToggleBase extends Component {

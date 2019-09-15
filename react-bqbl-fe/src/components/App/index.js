@@ -1,31 +1,31 @@
-import React from 'react';
 import {
   Route,
   BrowserRouter as Router,
 } from 'react-router-dom';
+import React from 'react';
 
+import {CURRENT_YEAR, WEEK_IDS, footballWeek} from '../../constants/football'
 import DraftPage from '../pages/Draft/draft';
 import HomePage from '../pages/Home/home';
 import LineupPage from '../pages/Lineup/lineup';
+import Navigation, {LINKS} from '../reusable/Navigation/navigation'
 import PlayerScorePage from '../pages/PlayerScorePage/player-score-page';
 import PlayerStandingsPage from '../pages/PlayerStandingsPage/player-standings-page';
 import ScorePage from '../pages/TeamScorePage/team-score-page';
 import SignInToggle from '../reusable/SignIn/sign-in-toggle';
 import TeamStandingsPage from '../pages/TeamStandingsPage/team-standings-page';
-import Navigation, {LINKS} from '../reusable/Navigation/navigation'
-import {CURRENT_YEAR, WEEK_IDS, footballWeek} from '../../constants/football'
 
+import { makeStyles } from '@material-ui/styles';
 import AppBar from '@material-ui/core/AppBar';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import Divider from '@material-ui/core/Divider';
 import Drawer from '@material-ui/core/Drawer';
 import IconButton from '@material-ui/core/IconButton';
+import Input from '@material-ui/core/Input';
 import MenuIcon from '@material-ui/icons/Menu';
+import NativeSelect from '@material-ui/core/NativeSelect';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import Input from '@material-ui/core/Input';
-import NativeSelect from '@material-ui/core/NativeSelect';
-import { makeStyles } from '@material-ui/styles';
 
 const WEEK_SELECTOR_PATHS = [LINKS.PLAYER_SCORES.path, LINKS.TEAM_SCORES.path];
 const YEAR_SELECTOR_PATHS = [LINKS.PLAYER_SCORES.path, LINKS.TEAM_SCORES.path, LINKS.PLAYER_STANDINGS.path, LINKS.TEAM_STANDINGS.path, LINKS.DRAFT.path];

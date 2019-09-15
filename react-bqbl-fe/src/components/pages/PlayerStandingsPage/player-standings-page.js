@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
 
 import './player-standings-page.css';
-import { withFirebase } from '../../Firebase';
-import IconScoreCell from '../../reusable/IconScoreCell/icon-score-cell'
-import classNames from 'classnames/bind';
 import { allWeeksReverse } from "../../../constants/football";
 import { compose } from 'recompose';
+import { withFirebase } from '../../Firebase';
 import { withRouter } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
 import Card from '@material-ui/core/Card';
@@ -15,8 +13,10 @@ import CardHeader from '@material-ui/core/CardHeader';
 import Collapse from '@material-ui/core/Collapse';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import IconButton from '@material-ui/core/IconButton';
+import IconScoreCell from '../../reusable/IconScoreCell/icon-score-cell'
 import PropTypes from 'prop-types';
 import Switch from '@material-ui/core/Switch';
+import classNames from 'classnames/bind';
 
 const FOLD = 4;
 
