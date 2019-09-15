@@ -47,6 +47,12 @@ function TeamScoreCard(props) {
               <div className="comp-desc">Total</div>
               <div className="comp-score">{props.score.total}</div>
             </b></div>
+            {props.score.total !== props.score.projection.total &&
+            <div className="comp"><b>
+              <div className="comp-desc">Projection</div>
+              <div className="comp-score">{props.score.projection.total}</div>
+            </b></div>
+            }
           </List>
         </CardContent>
       </CardActionArea>
