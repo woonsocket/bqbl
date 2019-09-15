@@ -85,8 +85,9 @@ function LineupWeek(props) {
     }
     let newWeek = JSON.parse(JSON.stringify(week));
     newWeek.teams[cellId].selected = !week.teams[cellId].selected;
-    setWeek(newWeek);
-    props.firebase.setStartsRow(props.league, props.year, week.id, newWeek);
+    props.firebase.setStartsRow(props.league, props.year, week.id, newWeek).then(
+      ret => setWeek(newWeek)
+    )
   }
 
   function selectCallback(cellId, val) {

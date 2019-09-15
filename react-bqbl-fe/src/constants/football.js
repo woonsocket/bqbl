@@ -26,7 +26,7 @@ function dayOfYear() {
   return day;
 }
 
-function footballWeek() {
+export function footballWeek() {
   const day = dayOfYear();
   let week = Math.ceil((day - 246) / 7);
   if (week < 1) {

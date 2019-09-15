@@ -14,7 +14,7 @@ import ScorePage from '../pages/TeamScorePage/team-score-page';
 import SignInToggle from '../reusable/SignIn/sign-in-toggle';
 import TeamStandingsPage from '../pages/TeamStandingsPage/team-standings-page';
 import Navigation, {LINKS} from '../reusable/Navigation/navigation'
-import {WEEK_IDS} from '../../constants/football'
+import {WEEK_IDS, CURRENT_YEAR, footballWeek} from '../../constants/football'
 
 import AppBar from '@material-ui/core/AppBar';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
@@ -28,6 +28,7 @@ import Input from '@material-ui/core/Input';
 import NativeSelect from '@material-ui/core/NativeSelect';
 
 const WEEK_SELECTOR_PATHS = [LINKS.PLAYER_SCORES.path, LINKS.TEAM_SCORES.path];
+const YEAR_SELECTOR_PATHS = [LINKS.PLAYER_SCORES.path, LINKS.TEAM_SCORES.path, LINKS.PLAYER_STANDINGS.path, LINKS.TEAM_STANDINGS.path, LINKS.DRAFT.path];
 
 function App() {
 
@@ -36,6 +37,7 @@ function App() {
   const [year, setYear] = React.useState(new URLSearchParams(window.location.search).get("year") || '2019');
   const [week, setWeek] = React.useState(new URLSearchParams(window.location.search).get("week") || '1');
   const weekSelector = WEEK_SELECTOR_PATHS.indexOf(window.location.pathname) !== -1;
+  const yearSelector = YEAR_SELECTOR_PATHS.indexOf(window.location.pathname) !== -1;
 
   function handleDrawerOpen() {
     setDrawerOpen(true);
@@ -54,8 +56,8 @@ function App() {
   setInterval(() => {
     let usp = new URLSearchParams(window.location.search);
     setLeague(usp.get('league'))
-    setYear(usp.get('year') || '2019')
-    setWeek(usp.get('week') || '1')
+    setYear(usp.get('year') || CURRENT_YEAR)
+    setWeek(usp.get('week') || footballWeek())
   }, 200);
   
   return (
@@ -69,6 +71,7 @@ function App() {
           <Typography variant="h6" className="title">
             BQBL
           </Typography>
+          {yearSelector &&
           <NativeSelect 
             value={year} className="week-select"
             onChange={event => {
@@ -80,6 +83,7 @@ function App() {
           >
             {["2017", "2018", "2019"].map(id =><option value={id} key={id}>{id}</option>)}
           </NativeSelect>
+          }
 
           {weekSelector &&
             <NativeSelect
