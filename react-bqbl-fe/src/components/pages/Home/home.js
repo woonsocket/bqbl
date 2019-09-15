@@ -4,9 +4,9 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Navigation from '../../reusable/Navigation/navigation'
+import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import SignIn from '../../reusable/SignIn/sign-in'
-import PropTypes from 'prop-types';
 
 import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
