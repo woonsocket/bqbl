@@ -20,6 +20,12 @@ import classNames from 'classnames/bind';
 
 const FOLD = 4;
 
+PlayerStandingsPageBase.propTypes = {
+  firebase: PropTypes.object.isRequired,
+  year: PropTypes.string.isRequired,
+  league: PropTypes.string.isRequired,
+}
+
 function PlayerStandingsPageBase(props) {
   let [playerTable, setPlayerTable] = useState([]);
   let [sortScores, setSortScores] = useState(true);

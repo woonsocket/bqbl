@@ -60,8 +60,8 @@ LineupWeek.propTypes = {
   firebase: PropTypes.object.isRequired,
   dh: PropTypes.bool.isRequired,
   week: PropTypes.object.isRequired,
-  league: PropTypes.string.isRequired
-  year: PropTypes.string.isRequired
+  league: PropTypes.string.isRequired,
+  year: PropTypes.string.isRequired,
 }
 
 function LineupWeek(props) {

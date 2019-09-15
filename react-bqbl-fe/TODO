@@ -2,17 +2,10 @@ Testing:
 Write a unit test suite
 
 Functionality:
-P1: Audit user flows to make sure they don't drop league, week, year
 P1: Secret project involving a profile page
 P2: Pro Bowl!
 
 Cleanup:
-Figure out the React-standard way to do styles
 Convert {Sign*} to pure-functional components
-Merge branch in
+Merge branch!
 Make ScoreJoiner non-terrible
-
-Architecture:
-(mostly done) Decouple db reads and writes from the UI
-Pull constants into a top-level
-
