@@ -26,11 +26,23 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Input from '@material-ui/core/Input';
 import NativeSelect from '@material-ui/core/NativeSelect';
+import { makeStyles } from '@material-ui/styles';
 
 const WEEK_SELECTOR_PATHS = [LINKS.PLAYER_SCORES.path, LINKS.TEAM_SCORES.path];
 const YEAR_SELECTOR_PATHS = [LINKS.PLAYER_SCORES.path, LINKS.TEAM_SCORES.path, LINKS.PLAYER_STANDINGS.path, LINKS.TEAM_STANDINGS.path, LINKS.DRAFT.path];
 
+const useStyles = makeStyles({
+  weekSelect: {
+    background: 'white',
+    paddingRight: '30px',
+    paddingLeft: '10px',
+    marginRight: '5px',
+  },
+  title: { flexGrow: 1 }  
+});
+
 function App() {
+  const classes = useStyles();
 
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const [league, setLeague] = React.useState(new URLSearchParams(window.location.search).get("league") || '');
@@ -68,12 +80,12 @@ function App() {
             onClick={handleDrawerOpen}>
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" className="title">
+          <Typography variant="h6" className={classes.title}>
             BQBL
           </Typography>
           {yearSelector &&
           <NativeSelect 
-            value={year} className="week-select"
+            value={year} className={classes.weekSelect}
             onChange={event => {
               let usp = new URLSearchParams(window.location.search);
               usp.set("year", event.target.value)
@@ -87,7 +99,7 @@ function App() {
 
           {weekSelector &&
             <NativeSelect
-              value={week} className="week-select"
+              value={week} className={classes.weekSelect}
               onChange={event => {
                 let usp = new URLSearchParams(window.location.search);
                 usp.set("week", event.target.value)
