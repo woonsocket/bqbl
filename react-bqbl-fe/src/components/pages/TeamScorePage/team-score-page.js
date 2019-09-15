@@ -8,6 +8,13 @@ import React, { useEffect, useState } from 'react';
 import { withFirebase } from '../../Firebase';
 import TeamScoreCard from '../../reusable/TeamScoreCard/team-score-card';
 
+TeamScorePageBase.propTypes = {
+  firebase: PropTypes.object.isRequired,
+  league: PropTypes.string.isRequired,
+  week: PropTypes.string.isRequired,
+  year: PropTypes.string.isRequired,
+}
+
 function TeamScorePageBase(props) {
   let [valsList, setValsList] = useState([]);
   let [sortScores, setSortScores] = useState(true);
