@@ -8,7 +8,7 @@ P2: Pro Bowl!
 
 Cleanup:
 Figure out the React-standard way to do styles
-Convert {Draft, Sign*} to pure-functional components
+Convert {Sign*} to pure-functional components
 Merge branch in
 Make ScoreJoiner non-terrible
 
