@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import './player-standings-page.css';
 import { withFirebase } from '../../Firebase';

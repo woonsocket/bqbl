@@ -1,7 +1,7 @@
 import React from 'react';
 import {
-  BrowserRouter as Router,
   Route,
+  BrowserRouter as Router,
 } from 'react-router-dom';
 
 import DraftPage from '../pages/Draft/draft';
@@ -13,7 +13,7 @@ import ScorePage from '../pages/TeamScorePage/team-score-page';
 import SignInToggle from '../reusable/SignIn/sign-in-toggle';
 import TeamStandingsPage from '../pages/TeamStandingsPage/team-standings-page';
 import Navigation, {LINKS} from '../reusable/Navigation/navigation'
-import {WEEK_IDS, CURRENT_YEAR, footballWeek} from '../../constants/football'
+import {CURRENT_YEAR, WEEK_IDS, footballWeek} from '../../constants/football'
 
 import AppBar from '@material-ui/core/AppBar';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';

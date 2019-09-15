@@ -3,7 +3,7 @@ import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Switch from '@material-ui/core/Switch';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { withFirebase } from '../../Firebase';
 import TeamScoreCard from '../../reusable/TeamScoreCard/team-score-card';
