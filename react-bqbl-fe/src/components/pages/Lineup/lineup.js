@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 
-import './lineup.css'
-
 import * as FOOTBALL from '../../../constants/football';
 import * as SCHEDULE from '../../../constants/schedule';
 
+import { makeStyles } from '@material-ui/styles';
 import { LeagueSpecDataProxy } from '../../../middle/response';
 import { compose } from 'recompose';
 import { withFirebase } from '../../Firebase';
@@ -17,6 +16,20 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 
+const useStyles = makeStyles({
+  team: {
+    display: 'inline-block',
+  },
+  id: {
+    display: 'inline-block',
+    minWidth: '4em',
+    fontWeight: 'bold',
+  },
+  lineupWeek: {maxWidth: '20px'},
+  selected: {background: 'lightblue'},
+  
+})
+
 LineupPageBase.propTypes = {
   firebase: PropTypes.object.isRequired,
   league: PropTypes.string.isRequired,
@@ -24,6 +37,8 @@ LineupPageBase.propTypes = {
 }
 
 function LineupPageBase(props) {
+  const classes = useStyles();
+
   let [weeks, setWeeks] = useState({});
   let [dh, setDh] = useState(false);
   let [user, setUser] = useState(props.firebase.getCurrentUser());
@@ -65,6 +80,8 @@ LineupWeek.propTypes = {
 }
 
 function LineupWeek(props) {
+  const classes = useStyles();
+
   let [week, setWeek] = useState(props.week);
 
   function countSelectedMinusCell(cellId) {
@@ -110,13 +127,13 @@ function LineupWeek(props) {
 
   return (
     <TableRow key={week.id}>
-      <TableCell scope="row" className="lineupWeek">
+      <TableCell scope="row" className={classes.lineupWeek}>
         Week {week.id}
       </TableCell>
 
       {week.teams.slice(0, 4).map((team, idx) =>
         <TableCell align="center" key={'' + week.id + idx}
-          className={team.selected ? "team selected" : "team"}
+          className={team.selected ? "team " + classes.selected : "team"}
           onClick={clickCallback.bind(null, idx)}>
           {team.name}<br />
           {SCHEDULE.SCHEDULE_2019[team.name][week.id]}
