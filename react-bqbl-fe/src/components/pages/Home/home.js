@@ -15,6 +15,7 @@ HomeBase.propTypes = {
   firebase: PropTypes.object.isRequired,
   league: PropTypes.string,
   year: PropTypes.string,
+  week: PropTypes.string,
   leagues: PropTypes.array,
 }
 
