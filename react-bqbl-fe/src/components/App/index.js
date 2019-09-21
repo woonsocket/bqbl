@@ -43,12 +43,14 @@ const useStyles = makeStyles({
 function App() {
   const classes = useStyles();
 
-  const [drawerOpen, setDrawerOpen] = React.useState(false);
-  const [league, setLeague] = React.useState(new URLSearchParams(window.location.search).get("league") || '');
-  const [year, setYear] = React.useState(new URLSearchParams(window.location.search).get("year") || '2019');
-  const [week, setWeek] = React.useState(new URLSearchParams(window.location.search).get("week") || '1');
+  const searchParams = new URLSearchParams(window.location.search);
+  const [league, setLeague] = React.useState(searchParams.get("league") || '');
+  const [year, setYear] = React.useState(searchParams.get("year") || '2019');
+  const [week, setWeek] = React.useState(searchParams.get("week") || '1');
   const weekSelector = WEEK_SELECTOR_PATHS.indexOf(window.location.pathname) !== -1;
   const yearSelector = YEAR_SELECTOR_PATHS.indexOf(window.location.pathname) !== -1;
+  const [drawerOpen, setDrawerOpen] = React.useState(false);
+  const [drawerActive, setDrawerActive] = React.useState(searchParams.get('league'));
 
   function handleDrawerOpen() {
     setDrawerOpen(true);
@@ -69,16 +71,19 @@ function App() {
     setLeague(usp.get('league'))
     setYear(usp.get('year') || CURRENT_YEAR)
     setWeek(usp.get('week') || footballWeek())
+    setDrawerActive(usp.get('league'));
   }, 200);
   
   return (
     <Router>
       <AppBar position="static">
         <Toolbar>
-          <IconButton edge="start" color="inherit" aria-label="Menu"
-            onClick={handleDrawerOpen}>
-            <MenuIcon />
-          </IconButton>
+          {drawerActive &&
+            <IconButton edge="start" color="inherit" aria-label="Menu"
+              onClick={handleDrawerOpen}>
+              <MenuIcon />
+            </IconButton>
+          }
           <Typography variant="h6" className={classes.title}>
             BQBL
           </Typography>
