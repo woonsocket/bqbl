@@ -97,15 +97,36 @@ class Firebase {
       })
   }
 
-  getStartsYear(uid, league, year, callback) {
-    this.db.ref(`${PREFIX}leaguespec/${league}/plays/${year}/${uid}`).on('value',
+  getLockedWeeks(nowMs) {
+    // TODO(aerion): Namespace the unlock times by year.
+    return this.db.ref('/unlockedweeks').once('value').then(
       snapshot => {
         if (!snapshot.val()) {
-          alert("can't find you in this league");
-          callback({ weeks: [] })
+          throw new Error(`can't read unlockedweeks`);
         }
-        callback(snapshot.val());
-      })
+        const weeks = snapshot.val();
+        const lockedWeeks = new Set();
+        weeks.forEach((weekLockMs, idx) => {
+          if (weekLockMs === null) {
+            return;
+          }
+          if (weekLockMs < nowMs) {
+            lockedWeeks.add('' + idx);
+          }
+        });
+        return lockedWeeks;
+      });
+  }
+
+  getStartsYear(uid, league, year) {
+    return this.db.ref(`${PREFIX}leaguespec/${league}/plays/${year}/${uid}`)
+      .once('value').then(
+        snapshot => {
+          if (!snapshot.val()) {
+            throw new Error("can't find you in this league");
+          }
+          return snapshot.val();
+        });
   }
 
   setStartsRow(league, year, weekIndex, row) {
