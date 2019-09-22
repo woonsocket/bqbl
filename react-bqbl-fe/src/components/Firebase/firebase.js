@@ -65,6 +65,23 @@ class Firebase {
     )
   }
 
+  eventsThen(year, week, cb) {
+    return this.db.ref(`events/${year}/${week}`).on('value',
+      snapshot => {
+        const vals = snapshot.val();
+        if (!vals) {
+          throw new Error('no passers')
+        }
+        
+        cb(vals);
+      }
+    )
+  }
+
+  setEventsOverrides(year, week, data) {
+    this.db.ref(`events/${year}/${week}/overrides`).update(data);
+  }
+
   leagueSpecRef(leagueId) {
     return this.db.ref(`${PREFIX}leaguespec/${leagueId}`);
   }

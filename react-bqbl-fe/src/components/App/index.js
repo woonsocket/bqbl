@@ -11,6 +11,7 @@ import LineupPage from '../pages/Lineup/lineup';
 import Navigation, {LINKS} from '../reusable/Navigation/navigation'
 import PlayerScorePage from '../pages/PlayerScorePage/player-score-page';
 import PlayerStandingsPage from '../pages/PlayerStandingsPage/player-standings-page';
+import BenchingPage from '../pages/BenchingPage/benching-page';
 import ScorePage from '../pages/TeamScorePage/team-score-page';
 import SignInToggle from '../reusable/SignIn/sign-in-toggle';
 import TeamStandingsPage from '../pages/TeamStandingsPage/team-standings-page';
@@ -27,7 +28,7 @@ import NativeSelect from '@material-ui/core/NativeSelect';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 
-const WEEK_SELECTOR_PATHS = [LINKS.PLAYER_SCORES.path, LINKS.TEAM_SCORES.path];
+const WEEK_SELECTOR_PATHS = [LINKS.PLAYER_SCORES.path, LINKS.TEAM_SCORES.path, LINKS.BENCHING.path];
 const YEAR_SELECTOR_PATHS = [LINKS.PLAYER_SCORES.path, LINKS.TEAM_SCORES.path, LINKS.PLAYER_STANDINGS.path, LINKS.TEAM_STANDINGS.path, LINKS.DRAFT.path];
 
 const useStyles = makeStyles({
@@ -47,10 +48,10 @@ function App() {
   const [league, setLeague] = React.useState(searchParams.get("league") || '');
   const [year, setYear] = React.useState(searchParams.get("year") || '2019');
   const [week, setWeek] = React.useState(searchParams.get("week") || '1');
-  const weekSelector = WEEK_SELECTOR_PATHS.indexOf(window.location.pathname) !== -1;
-  const yearSelector = YEAR_SELECTOR_PATHS.indexOf(window.location.pathname) !== -1;
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const [drawerActive, setDrawerActive] = React.useState(searchParams.get('league'));
+  const weekSelector = WEEK_SELECTOR_PATHS.indexOf(window.location.pathname) !== -1;
+  const yearSelector = YEAR_SELECTOR_PATHS.indexOf(window.location.pathname) !== -1;
 
   function handleDrawerOpen() {
     setDrawerOpen(true);
@@ -143,6 +144,8 @@ function App() {
         <LeagueYearWeekRoute path={LINKS.TEAM_SCORES.path} component={ScorePage} />
         <LeagueYearWeekRoute path={LINKS.TEAM_STANDINGS.path} component={TeamStandingsPage} />
         <LeagueYearWeekRoute path={LINKS.DRAFT.path} component={DraftPage} />
+        <LeagueYearWeekRoute path={LINKS.BENCHING.path} component={BenchingPage} />
+        {/* <LeagueYearWeekRoute path={LINKS.TWENTYFOUR.path} component={TwentyFourPage} /> */}
       </div>
     </Router>
   );

@@ -12,6 +12,8 @@ const PLAYER_STANDINGS = '/player-standings';
 const TEAM_SCORES = '/team-scores';
 const TEAM_STANDINGS = '/team-standings';
 const DRAFT = '/draft';
+const BENCHING = '/benching';
+const TWENTYFOUR = '/247';
 
 export const LINKS = {
   HOME: { path: HOME, text: 'Home' },
@@ -21,6 +23,8 @@ export const LINKS = {
   TEAM_SCORES: { path: TEAM_SCORES, text: 'Team Scores' },
   TEAM_STANDINGS: { path: TEAM_STANDINGS, text: 'Team Standings' },
   DRAFT: { path: DRAFT, text: 'Draft' },
+  BENCHING: { path: BENCHING, text: 'Benching' },
+  TWENTYFOUR: { path: TWENTYFOUR, text: '24/7 Points' },
 };
 
 function Navigation(props) {
