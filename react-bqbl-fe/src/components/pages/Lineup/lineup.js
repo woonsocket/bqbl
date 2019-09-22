@@ -94,7 +94,6 @@ function LineupWeek(props) {
   const classes = useStyles();
 
   let [week, setWeek] = useState(props.week);
-  let [locked, setLocked] = useState(props.locked);
 
   function countSelectedMinusCell(cellId) {
     let selected = 0;
@@ -141,7 +140,7 @@ function LineupWeek(props) {
     <TableRow key={week.id}>
       <TableCell scope="row" className={classes.lineupWeek}>
         Week {week.id}
-        {locked && <Lock titleAccess="week is locked" fontSize="small" />}
+        {props.locked && <Lock titleAccess="week is locked" fontSize="small" />}
       </TableCell>
 
       {week.teams.slice(0, 4).map((team, idx) =>
