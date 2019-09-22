@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 
-import * as FOOTBALL from '../../../constants/football';
 import { withFirebase } from '../../Firebase';
 
 import { compose } from 'recompose';
@@ -8,7 +7,6 @@ import { withRouter } from 'react-router-dom';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Checkbox from '@material-ui/core/Checkbox';
 
@@ -30,7 +28,7 @@ function BenchingPageBase(props) {
     props.firebase.setEventsOverrides(props.year, props.week, newOverrides);
   };
 
-  function getBenched(passerId) {
+  const getBenched = passerId => {
     try {
       const passer = events.passers[passerId];
       return events.overrides[passer.team].benchings[passerId];
@@ -39,6 +37,7 @@ function BenchingPageBase(props) {
       return false;
     }
   }
+
   return (
     <Table>
       <TableBody>
