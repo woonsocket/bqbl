@@ -101,15 +101,15 @@ class Firebase {
       });
   }
 
-  getStartsYear(uid, league, year, callback) {
-    this.db.ref(`${PREFIX}leaguespec/${league}/plays/${year}/${uid}`).on('value',
-      snapshot => {
-        if (!snapshot.val()) {
-          alert("can't find you in this league");
-          callback({ weeks: [] })
-        }
-        callback(snapshot.val());
-      })
+  getStartsYear(uid, league, year) {
+    return this.db.ref(`${PREFIX}leaguespec/${league}/plays/${year}/${uid}`)
+      .once('value').then(
+        snapshot => {
+          if (!snapshot.val()) {
+            throw new Error("can't find you in this league");
+          }
+          return snapshot.val();
+        });
   }
 
   setStartsRow(league, year, weekIndex, row) {

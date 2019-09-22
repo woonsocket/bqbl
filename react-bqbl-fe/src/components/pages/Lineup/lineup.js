@@ -57,7 +57,9 @@ function LineupPageBase(props) {
 
   useEffect(() => {
     if (!user) { return; }
-    props.firebase.getStartsYear(user.uid, props.league, props.year, setWeeks);
+    props.firebase.getStartsYear(user.uid, props.league, props.year).then(
+      setWeeks,
+      (err) => { alert("can't find you in this league"); });
     props.firebase.getLeagueSpecPromise(props.league).then(data => {
       let lsdp = new LeagueSpecDataProxy(data, props.year);
       setDh(lsdp.hasDh());
