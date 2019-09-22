@@ -80,6 +80,27 @@ class Firebase {
       })
   }
 
+  getLockedWeeks(nowMs) {
+    // TODO(aerion): Namespace the unlock times by year.
+    return this.db.ref('/unlockedweeks').once('value').then(
+      snapshot => {
+        if (!snapshot.val()) {
+          throw new Error(`can't read unlockedweeks`);
+        }
+        const weeks = snapshot.val();
+        const lockedWeeks = new Set();
+        weeks.forEach((weekLockMs, idx) => {
+          if (weekLockMs === null) {
+            return;
+          }
+          if (weekLockMs < nowMs) {
+            lockedWeeks.add('' + idx);
+          }
+        });
+        return lockedWeeks;
+      });
+  }
+
   getStartsYear(uid, league, year, callback) {
     this.db.ref(`${PREFIX}leaguespec/${league}/plays/${year}/${uid}`).on('value',
       snapshot => {

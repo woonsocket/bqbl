@@ -8,6 +8,7 @@ import { LeagueSpecDataProxy } from '../../../middle/response';
 import { compose } from 'recompose';
 import { withFirebase } from '../../Firebase';
 import { withRouter } from 'react-router-dom';
+import { Lock } from '@material-ui/icons';
 import Input from '@material-ui/core/Input';
 import NativeSelect from '@material-ui/core/NativeSelect';
 import PropTypes from 'prop-types';
@@ -42,6 +43,9 @@ function LineupPageBase(props) {
   let [weeks, setWeeks] = useState({});
   let [dh, setDh] = useState(false);
   let [user, setUser] = useState(props.firebase.getCurrentUser());
+  // TODO(aerion): Update lockedWeeks if the lock time passes while the
+  // component is visible.
+  let [lockedWeeks, setLockedWeeks] = useState([]);
 
   function authChanged(newUser) {
     setUser(newUser);
@@ -60,11 +64,17 @@ function LineupPageBase(props) {
     });
   }, [props.firebase, props.league, props.year, user]);
 
+  useEffect(() => {
+    props.firebase.getLockedWeeks(Date.now()).then(setLockedWeeks);
+  }, [props.firebase]);
+
   return (
     <Table size="small">
       <TableBody>
         {Object.values(weeks).map((week, index) => (
-          <LineupWeek firebase={props.firebase} week={week} league={props.league} year={props.year} index={index} dh={dh} key={index} />
+          <LineupWeek firebase={props.firebase} week={week}
+              league={props.league} locked={lockedWeeks.has(week.id)}
+              year={props.year} index={index} dh={dh} key={index} />
         ))}
       </TableBody>
     </Table>
@@ -74,6 +84,7 @@ function LineupPageBase(props) {
 LineupWeek.propTypes = {
   firebase: PropTypes.object.isRequired,
   dh: PropTypes.bool.isRequired,
+  locked: PropTypes.bool.isRequired,
   week: PropTypes.object.isRequired,
   league: PropTypes.string.isRequired,
   year: PropTypes.string.isRequired,
@@ -83,6 +94,7 @@ function LineupWeek(props) {
   const classes = useStyles();
 
   let [week, setWeek] = useState(props.week);
+  let [locked, setLocked] = useState(props.locked);
 
   function countSelectedMinusCell(cellId) {
     let selected = 0;
@@ -129,6 +141,7 @@ function LineupWeek(props) {
     <TableRow key={week.id}>
       <TableCell scope="row" className={classes.lineupWeek}>
         Week {week.id}
+        {locked && <Lock titleAccess="week is locked" fontSize="small" />}
       </TableCell>
 
       {week.teams.slice(0, 4).map((team, idx) =>
