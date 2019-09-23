@@ -12,6 +12,7 @@ import Navigation, {LINKS} from '../reusable/Navigation/navigation'
 import PlayerScorePage from '../pages/PlayerScorePage/player-score-page';
 import PlayerStandingsPage from '../pages/PlayerStandingsPage/player-standings-page';
 import BenchingPage from '../pages/BenchingPage/benching-page';
+import TwentyFourPage from '../pages/TwentyFourPage/twentyfour-page';
 import ScorePage from '../pages/TeamScorePage/team-score-page';
 import SignInToggle from '../reusable/SignIn/sign-in-toggle';
 import TeamStandingsPage from '../pages/TeamStandingsPage/team-standings-page';
@@ -145,7 +146,7 @@ function App() {
         <LeagueYearWeekRoute path={LINKS.TEAM_STANDINGS.path} component={TeamStandingsPage} />
         <LeagueYearWeekRoute path={LINKS.DRAFT.path} component={DraftPage} />
         <LeagueYearWeekRoute path={LINKS.BENCHING.path} component={BenchingPage} />
-        {/* <LeagueYearWeekRoute path={LINKS.TWENTYFOUR.path} component={TwentyFourPage} /> */}
+        <LeagueYearWeekRoute path={LINKS.TWENTYFOUR.path} component={TwentyFourPage} />
       </div>
     </Router>
   );

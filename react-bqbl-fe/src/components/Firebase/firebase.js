@@ -79,7 +79,11 @@ class Firebase {
   }
 
   setEventsOverrides(year, week, data) {
-    this.db.ref(`events/${year}/${week}/overrides`).update(data);
+    this.db.ref(`events/${year}/${week}`).update(data);
+  }
+
+  add247(year, data) {
+    this.db.ref(`scores247/${year}`).push(data);
   }
 
   leagueSpecRef(leagueId) {
