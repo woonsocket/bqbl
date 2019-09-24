@@ -12,6 +12,8 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 
+import ScoreValue from '../../reusable/ScoreValue/score-value';
+
 // TODO: Separate the display and fetch logic.
 function TeamStandingsPageBase(props) {
   let [allScores, setAllScores] = useState([]);
@@ -45,8 +47,8 @@ function TeamStandingsPageBase(props) {
             <TableRow key={"team"+teamKey}>
               <TableCell>{teamVal[0]}</TableCell>
               {FOOTBALL.WEEK_IDS.map((weekId) =>
-                <TableCell key={"week2"+weekId}>
-                  {JSON.stringify(teamVal[1][weekId])}
+                <TableCell key={"week2"+weekId} align="right">
+                  <ScoreValue score={teamVal[1][weekId]} />
                 </TableCell>
               )}
             </TableRow>

@@ -2,7 +2,8 @@ import { makeStyles } from '@material-ui/styles';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import TeamIcon from '../TeamIcon/team-icon'
+import ScoreValue from '../ScoreValue/score-value';
+import TeamIcon from '../TeamIcon/team-icon';
 
 IconScoreCell.propTypes = {
   team: PropTypes.string.isRequired,
@@ -21,8 +22,8 @@ const useStyles = makeStyles({
     minWidth: '35px',
     textAlign: 'right',
     verticalAlign: 'super',
-  }
-})
+  },
+});
 
 function IconScoreCell(props) {
   const classes = useStyles();
@@ -31,9 +32,9 @@ function IconScoreCell(props) {
     <div className={classes.outer}>
       <TeamIcon team={props.team} width='30px' />
       <span className={classes.cell}>
-        {props.score}
+        <ScoreValue score={props.score} />
       </span>
     </div>
-  )
+  );
 }
 export default IconScoreCell;

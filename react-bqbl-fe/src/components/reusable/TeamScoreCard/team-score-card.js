@@ -13,6 +13,8 @@ import List from '@material-ui/core/List';
 import PropTypes from 'prop-types';
 import Typography from '@material-ui/core/Typography';
 
+import ScoreValue from '../ScoreValue/score-value';
+
 TeamScoreCard.propTypes = {
   score: PropTypes.object.isRequired,
   boxScoreLink: PropTypes.string.isRequired,
@@ -50,12 +52,16 @@ function TeamScoreCard(props) {
           }
             <div className="comp"><b>
               <div className="comp-desc">Total</div>
-              <div className="comp-score">{props.score.total}</div>
+              <div className="comp-score">
+                <ScoreValue score={props.score.total} />
+              </div>
             </b></div>
             {props.score.total !== props.score.projection.total &&
             <div className="comp"><b>
               <div className="comp-desc">Projection</div>
-              <div className="comp-score">{props.score.projection.total}</div>
+              <div className="comp-score">
+                <ScoreValue score={props.score.projection.total} />
+              </div>
             </b></div>
             }
           </List>
@@ -78,7 +84,9 @@ function LineItem(props) {
   return (
     <div className="comp">
       <div className="comp-desc">{props.line.desc}</div>
-      <div className="comp-score">{props.line.value}</div>
+      <div className="comp-score">
+        <ScoreValue score={props.line.value} />
+      </div>
     </div>
   );
 }
