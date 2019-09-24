@@ -322,6 +322,9 @@ class Plays(object):
                         team = play['posteam']
                         if drive_team != team:
                             continue
+                        if not play['down']:
+                            # Exclude tries (extra points) and free kicks.
+                            continue
                         yard_line = parse_yard_line(play['yrdln'], team)
                         if yard_line:
                             new = max(new, yard_line)
