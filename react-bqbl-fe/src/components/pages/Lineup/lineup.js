@@ -45,7 +45,7 @@ function LineupPageBase(props) {
   let [user, setUser] = useState(props.firebase.getCurrentUser());
   // TODO(aerion): Update lockedWeeks if the lock time passes while the
   // component is visible.
-  let [lockedWeeks, setLockedWeeks] = useState([]);
+  let [lockedWeeks, setLockedWeeks] = useState(new Set());
 
   function authChanged(newUser) {
     setUser(newUser);
