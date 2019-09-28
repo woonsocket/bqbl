@@ -38,7 +38,7 @@ class Firebase {
     return this.auth.currentUser;
   }
 
-  scoresYearThen(year, cb) {
+  getScoresYearThen(year, cb) {
     return this.db.ref(`scores/${year}`).on('value',
       snapshot => {
         const vals = snapshot.val();
@@ -49,7 +49,7 @@ class Firebase {
       })
   }
 
-  scoresWeekThen(year, week, cb) {
+  getScoresWeekThen(year, week, cb) {
     return this.db.ref(`scores/${year}/${week}`).on('value',
       snapshot => {
         const vals = snapshot.val();
@@ -65,7 +65,7 @@ class Firebase {
     )
   }
 
-  eventsThen(year, week, cb) {
+  getEventsThen(year, week, cb) {
     return this.db.ref(`events/${year}/${week}`).on('value',
       snapshot => {
         const vals = snapshot.val();
@@ -78,27 +78,22 @@ class Firebase {
     )
   }
 
-  setEventsOverrides(year, week, data) {
+  updateEventsOverrides(year, week, data) {
     this.db.ref(`events/${year}/${week}`).update(data);
   }
 
-  add247(year, data) {
+  push247(year, data) {
     this.db.ref(`scores247/${year}`).push(data);
   }
 
-  leagueSpecRef(leagueId) {
-    return this.db.ref(`${PREFIX}leaguespec/${leagueId}`);
-  }
-
-  getLeagueSpecPromise(leagueId) {
+  getLeagueSpecThen(leagueId, cb) {
     const loc = `${PREFIX}leaguespec/${leagueId}`;
-    return this.db.ref(loc).once('value').then(
-      snapshot => {
-        if (!snapshot.val()) {
-          throw new Error(`couldn't find league ${loc}`);
-        }
-        return snapshot.val()
-      })
+    this.db.ref(loc).on('value', snapshot => {
+      if (!snapshot.val()) {
+        throw new Error(`couldn't find league ${loc}`);
+      }
+      cb(snapshot.val());
+    })
   }
 
   getLockedWeeks(nowMs) {
@@ -133,7 +128,7 @@ class Firebase {
         });
   }
 
-  setStartsRow(league, year, weekIndex, row) {
+  updateStartsRow(league, year, weekIndex, row) {
     const uid = this.auth.currentUser.uid;
     const uri = `${PREFIX}leaguespec/${league}/plays/${year}/${uid}/${weekIndex}`;
     return this.db.ref(uri).update(row);
@@ -148,7 +143,7 @@ class Firebase {
     return ['nbqbl', 'abqbl'];
   }
 
-  scoresStartsUsersThen(league, year, cb) {
+  getScoresStartsUsersThen(league, year, cb) {
     let scoresRef = this.db.ref(`scores/${year}`);
     let startsRef = this.db.ref(`${PREFIX}leaguespec/${league}/plays/${year}`);
     let usersRef = this.db.ref(`${PREFIX}leaguespec/${league}/users/2019`);

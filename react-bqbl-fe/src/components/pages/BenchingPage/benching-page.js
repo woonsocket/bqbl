@@ -14,7 +14,7 @@ function BenchingPageBase(props) {
   let [events, setEvents] = useState({ passers: {} });
 
   useEffect(() => {
-    props.firebase.eventsThen(props.year, props.week, newEvents => {
+    props.firebase.getEventsThen(props.year, props.week, newEvents => {
       setEvents(newEvents);
     })
   }, [props.firebase, props.year, props.week]);
@@ -25,7 +25,7 @@ function BenchingPageBase(props) {
     newOverrides[passer.team] = newOverrides[passer.team] || {};
     newOverrides[passer.team].benchings = newOverrides[passer.team].benchings || {};
     newOverrides[passer.team].benchings[passerId] = event.target.checked;
-    props.firebase.setEventsOverrides(props.year, props.week, newOverrides);
+    props.firebase.updateEventsOverrides(props.year, props.week, newOverrides);
   };
 
   const getBenched = passerId => {

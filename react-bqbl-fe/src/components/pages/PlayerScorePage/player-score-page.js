@@ -18,7 +18,7 @@ function PlayerScorePageBase(props) {
   let [playerList, setPlayerList] = useState([]);
 
   useEffect(() => {
-    props.firebase.scoresStartsUsersThen(props.league, props.year,
+    props.firebase.getScoresStartsUsersThen(props.league, props.year,
       ({ dbScores, dbStarts, dbUsers }) => {
         setPlayerList(joinScores(dbScores, dbStarts, dbUsers, props.week))
       })

@@ -29,7 +29,7 @@ function TeamScorePageBase(props) {
   }
 
   useEffect(() => {
-    props.firebase.scoresWeekThen(props.year, props.week,
+    props.firebase.getScoresWeekThen(props.year, props.week,
       scoresWeek => {
         if (sortScores) {
           if (useProjections) {

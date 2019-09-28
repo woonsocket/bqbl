@@ -27,7 +27,7 @@ function TwentyFourPageBase(props) {
   };
 
   const onClick = () => {
-    props.firebase.add247(props.year, values);
+    props.firebase.push247(props.year, values);
   };
 
   return (

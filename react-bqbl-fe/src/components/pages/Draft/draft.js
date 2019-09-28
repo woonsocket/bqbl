@@ -63,7 +63,7 @@ function DraftPageBase(props) {
   });
 
   useEffect(() => {
-    props.firebase.getLeagueSpecPromise(props.league).then(data => {
+    props.firebase.getLeagueSpecThen(props.league, data => {
       let lsdp = new LeagueSpecDataProxy(data, props.year);
       let uid = props.firebase.getCurrentUser() ? props.firebase.getCurrentUser().uid : null;
       setIsInLeague(lsdp.isInLeague(uid))
@@ -74,7 +74,7 @@ function DraftPageBase(props) {
 
   function addUser() {
     // TODO: Race conditions ahoy!
-    props.firebase.getLeagueSpecPromise(props.league).then(data => {
+    props.firebase.getLeagueSpecThen(props.league, data => {
       let lsdp = new LeagueSpecDataProxy(data, props.year);
       let uid = props.firebase.getCurrentUser() ? props.firebase.getCurrentUser().uid : null;
       let newData = lsdp.addUser(uid);

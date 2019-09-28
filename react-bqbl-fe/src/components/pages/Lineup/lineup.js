@@ -62,7 +62,7 @@ function LineupPageBase(props) {
     props.firebase.getStartsYear(user.uid, props.league, props.year).then(
       setWeeks,
       (err) => { alert("can't find you in this league"); });
-    props.firebase.getLeagueSpecPromise(props.league).then(data => {
+    props.firebase.getLeagueSpecThen(props.league, data => {
       let lsdp = new LeagueSpecDataProxy(data, props.year);
       setDh(lsdp.hasDh());
     });
@@ -120,7 +120,7 @@ function LineupWeek(props) {
     }
     let newWeek = JSON.parse(JSON.stringify(week));
     newWeek.teams[cellId].selected = !week.teams[cellId].selected;
-    props.firebase.setStartsRow(props.league, props.year, week.id, newWeek).then(
+    props.firebase.updateStartsRow(props.league, props.year, week.id, newWeek).then(
       () => setWeek(newWeek)
     )
   }
@@ -137,7 +137,7 @@ function LineupWeek(props) {
     }
     newWeek.teams[cellId] = { name: val, selected: val !== "" };
     setWeek(newWeek);
-    props.firebase.setStartsRow(props.league, props.year, week.id, newWeek);
+    props.firebase.updateStartsRow(props.league, props.year, week.id, newWeek);
   }
 
   return (
