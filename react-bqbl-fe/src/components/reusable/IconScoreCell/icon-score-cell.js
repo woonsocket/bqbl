@@ -10,6 +10,11 @@ IconScoreCell.propTypes = {
   score: PropTypes.number.isRequired
 }
 
+IconScoreCell.defaultProps = {
+  team: '',
+  score: 0
+};
+
 const useStyles = makeStyles({
   outer: {
     display: 'inline-block',

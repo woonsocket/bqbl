@@ -64,7 +64,6 @@ function TwentyFourPageBase(props) {
         margin="normal"
         value={values.week}
         onChange={handleChange('week')}
-
         variant="outlined" /><br />
       <Button value="Submit" onClick={onClick}> Submit</Button>
     </React.Fragment>
