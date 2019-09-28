@@ -197,8 +197,8 @@ class Firebase {
 
   joinScores(dbScores, dbStarts, dbUsers, week) {
     let dbWeekScores = sanitizeScoresDataWeek(dbScores)[week];
-    let allStarts = this.getAllFromWeek(dbStarts, week);
-    this.mergeData(dbWeekScores, allStarts);
+    let allStarts = getAllFromWeek(dbStarts, week);
+    mergeData(dbWeekScores, allStarts);
     const playerList = []
     for (let [playerKey, playerVal] of Object.entries(allStarts)) {
       let starts = [];
@@ -220,25 +220,7 @@ class Firebase {
     return playerList;
   }
 
-  getAllFromWeek(startsDataValue, week) {
-    let allStarts = {}
 
-    for (let [playerKey, playerVal] of Object.entries(startsDataValue)) {
-      allStarts[playerKey] = playerVal[week];
-    }
-    return allStarts;
-  }
-
-  mergeData(scores, starts) {
-    for (let playerVal of Object.values(starts)) {
-      if (!playerVal.teams) { // For example, player didn't start anyone
-        continue;
-      }
-      for (let team of playerVal.teams) {
-        team.total = (scores[team.name] && scores[team.name].total) || 0;
-      }
-    }
-  }
 
 }
 
@@ -261,6 +243,27 @@ function getStartedTeams(dbStarts, uid, week) {
   }
   return starts;
 }
+
+function mergeData(scores, starts) {
+  for (let playerVal of Object.values(starts)) {
+    if (!playerVal.teams) { // For example, player didn't start anyone
+      continue;
+    }
+    for (let team of playerVal.teams) {
+      team.total = (scores[team.name] && scores[team.name].total) || 0;
+    }
+  }
+}
+
+function getAllFromWeek(startsDataValue, week) {
+  let allStarts = {}
+
+  for (let [playerKey, playerVal] of Object.entries(startsDataValue)) {
+    allStarts[playerKey] = playerVal[week];
+  }
+  return allStarts;
+}
+
 
 
 export default Firebase;
