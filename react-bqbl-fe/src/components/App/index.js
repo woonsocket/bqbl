@@ -119,14 +119,8 @@ function App() {
           <SignInToggle />
         </Toolbar>
 
-        <Drawer
-          className="drawer"
-          anchor="left"
-          open={drawerOpen}
-          classes={{
-            paper: "drawerPaper",
-          }}
-        >
+        <Drawer className="drawer" anchor="left"
+          open={drawerOpen}>
           <div className="drawerHeader">
             <IconButton onClick={handleDrawerClose}>
               <ChevronLeftIcon />
