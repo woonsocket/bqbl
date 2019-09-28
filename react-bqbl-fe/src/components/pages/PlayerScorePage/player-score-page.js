@@ -12,6 +12,7 @@ import TableRow from '@material-ui/core/TableRow';
 import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import {joinScores} from '../../../middle/response'
 
 function PlayerScorePageBase(props) {
   let [playerList, setPlayerList] = useState([]);
@@ -19,7 +20,7 @@ function PlayerScorePageBase(props) {
   useEffect(() => {
     props.firebase.scoresStartsUsersPromise(props.league, props.year).then(
       ({ dbScores, dbStarts, dbUsers }) =>
-        props.firebase.joinScores(dbScores, dbStarts, dbUsers, props.week)
+        joinScores(dbScores, dbStarts, dbUsers, props.week)
       ).then(val => setPlayerList(val));
   }, [props.firebase, props.league, props.year, props.week]);
 

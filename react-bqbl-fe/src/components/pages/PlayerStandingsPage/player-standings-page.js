@@ -17,6 +17,7 @@ import IconScoreCell from '../../reusable/IconScoreCell/icon-score-cell'
 import PropTypes from 'prop-types';
 import Switch from '@material-ui/core/Switch';
 import classNames from 'classnames/bind';
+import {processYearScores} from '../../../middle/response'
 
 const FOLD = 4;
 
@@ -37,7 +38,7 @@ function PlayerStandingsPageBase(props) {
   useEffect(() => {
     props.firebase.scoresStartsUsersPromise(props.league, props.year).then(
       ({ dbScores, dbStarts, dbUsers }) =>
-        props.firebase.processYearScores(dbScores, dbStarts, dbUsers, allWeeksReverse(props.year))
+        processYearScores(dbScores, dbStarts, dbUsers, allWeeksReverse(props.year))
     ).then(val => {
       let playerList = Object.keys(val).map(key => ({
         ...val[key],
