@@ -52,11 +52,13 @@ function LineupPageBase(props) {
   }
 
   useEffect(() => {
-    props.firebase.addAuthListener(authChanged)
+    return props.firebase.addAuthListener(authChanged);
   });
 
   useEffect(() => {
-    if (!user) { return; }
+    if (!user) { 
+      return;
+    }
     props.firebase.getStartsYear(user.uid, props.league, props.year).then(
       setWeeks,
       (err) => { alert("can't find you in this league"); });

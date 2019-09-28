@@ -24,7 +24,7 @@ class Firebase {
   }
 
   addAuthListener(listener) {
-    this.auth.onAuthStateChanged(listener)
+    return this.auth.onAuthStateChanged(listener);
   }
 
   doSignInWithGoogle() {
