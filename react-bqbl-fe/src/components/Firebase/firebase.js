@@ -219,9 +219,6 @@ class Firebase {
     }
     return playerList;
   }
-
-
-
 }
 
 function sanitizeScoresDataWeek(dbScoresWeek) {
