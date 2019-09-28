@@ -4,11 +4,11 @@ import {
 } from 'react-router-dom';
 import React from 'react';
 
-import {CURRENT_YEAR, WEEK_IDS, footballWeek} from '../../constants/football'
+import { CURRENT_YEAR, WEEK_IDS, footballWeek } from '../../constants/football'
 import DraftPage from '../pages/Draft/draft';
 import HomePage from '../pages/Home/home';
 import LineupPage from '../pages/Lineup/lineup';
-import Navigation, {LINKS} from '../reusable/Navigation/navigation'
+import Navigation, { LINKS } from '../reusable/Navigation/navigation'
 import PlayerScorePage from '../pages/PlayerScorePage/player-score-page';
 import PlayerStandingsPage from '../pages/PlayerStandingsPage/player-standings-page';
 import BenchingPage from '../pages/BenchingPage/benching-page';
@@ -39,7 +39,7 @@ const useStyles = makeStyles({
     paddingLeft: '10px',
     marginRight: '5px',
   },
-  title: { flexGrow: 1 }  
+  title: { flexGrow: 1 }
 });
 
 function App() {
@@ -61,10 +61,10 @@ function App() {
   function handleDrawerClose() {
     setDrawerOpen(false);
   }
- 
+
   const LeagueYearWeekRoute = ({ component: Component, ...rest }) => (
     <Route {...rest} render={routeProps => (
-        <Component {...routeProps} league={league} year={year} week={week} />
+      <Component {...routeProps} league={league} year={year} week={week} />
     )} />
   )
 
@@ -75,7 +75,7 @@ function App() {
     setWeek(usp.get('week') || footballWeek())
     setDrawerActive(usp.get('league'));
   }, 200);
-  
+
   return (
     <Router>
       <AppBar position="static">
@@ -90,17 +90,17 @@ function App() {
             BQBL
           </Typography>
           {yearSelector &&
-          <NativeSelect 
-            value={year} className={classes.weekSelect}
-            onChange={event => {
-              let usp = new URLSearchParams(window.location.search);
-              usp.set("year", event.target.value)
-              window.location.search = usp.toString();
-            }}
-            input={<Input name="year" id="year-native-helper" />}
-          >
-            {["2017", "2018", "2019"].map(id =><option value={id} key={id}>{id}</option>)}
-          </NativeSelect>
+            <NativeSelect
+              value={year} className={classes.weekSelect}
+              onChange={event => {
+                let usp = new URLSearchParams(window.location.search);
+                usp.set("year", event.target.value)
+                window.location.search = usp.toString();
+              }}
+              input={<Input name="year" id="year-native-helper" />}
+            >
+              {["2017", "2018", "2019"].map(id => <option value={id} key={id}>{id}</option>)}
+            </NativeSelect>
           }
 
           {weekSelector &&
@@ -116,7 +116,7 @@ function App() {
               {WEEK_IDS.map(id => <option value={id} key={id}>Week {id}</option>)}
             </NativeSelect>
           }
-          <SignInToggle/>
+          <SignInToggle />
         </Toolbar>
 
         <Drawer
