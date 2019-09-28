@@ -17,7 +17,7 @@ import IconScoreCell from '../../reusable/IconScoreCell/icon-score-cell'
 import PropTypes from 'prop-types';
 import Switch from '@material-ui/core/Switch';
 import classNames from 'classnames/bind';
-import {processYearScores} from '../../../middle/response'
+import { processYearScores } from '../../../middle/response'
 
 const FOLD = 4;
 
@@ -36,24 +36,23 @@ function PlayerStandingsPageBase(props) {
   }
 
   useEffect(() => {
-    props.firebase.scoresStartsUsersPromise(props.league, props.year).then(
-      ({ dbScores, dbStarts, dbUsers }) =>
-        processYearScores(dbScores, dbStarts, dbUsers, allWeeksReverse(props.year))
-    ).then(val => {
-      let playerList = Object.keys(val).map(key => ({
-        ...val[key],
-        uid: key,
-      }));
-      if (sortScores) {
-        playerList = playerList.sort((team, team2) => team2.total - team.total);
-      }
-      setPlayerTable(playerList)
-    });
+    props.firebase.scoresStartsUsersThen(props.league, props.year,
+      ({ dbScores, dbStarts, dbUsers }) => {
+        let val = processYearScores(dbScores, dbStarts, dbUsers, allWeeksReverse(props.year))
+        let playerList = Object.keys(val).map(key => ({
+          ...val[key],
+          uid: key,
+        }));
+        if (sortScores) {
+          playerList = playerList.sort((team, team2) => team2.total - team.total);
+        }
+        setPlayerTable(playerList)
+      })
   }, [props.firebase, props.league, props.year, sortScores]);
 
   return (
     <React.Fragment>
-      <div style={{textAlign: "center"}}>
+      <div style={{ textAlign: "center" }}>
         Sort Scores
         <Switch
           checked={sortScores}

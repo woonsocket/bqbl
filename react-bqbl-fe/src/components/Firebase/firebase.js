@@ -39,7 +39,7 @@ class Firebase {
   }
 
   scoresYearThen(year, cb) {
-    return this.db.ref(`scores/${year}`).on('value', 
+    return this.db.ref(`scores/${year}`).on('value',
       snapshot => {
         const vals = snapshot.val();
         if (!vals) {
@@ -48,7 +48,7 @@ class Firebase {
         cb(vals);
       })
   }
-  
+
   scoresWeekThen(year, week, cb) {
     return this.db.ref(`scores/${year}/${week}`).on('value',
       snapshot => {
@@ -72,7 +72,7 @@ class Firebase {
         if (!vals) {
           throw new Error('no passers')
         }
-        
+
         cb(vals);
       }
     )
@@ -91,7 +91,7 @@ class Firebase {
   }
 
   getLeagueSpecPromise(leagueId) {
-    const loc =`${PREFIX}leaguespec/${leagueId}`;
+    const loc = `${PREFIX}leaguespec/${leagueId}`;
     return this.db.ref(loc).once('value').then(
       snapshot => {
         if (!snapshot.val()) {
@@ -148,27 +148,29 @@ class Firebase {
     return ['nbqbl', 'abqbl'];
   }
 
-  scoresStartsUsersPromise(league, year) {
-    let scoresPromise = this.db.ref(`scores/${year}`).once('value');
-    let startsPromise = this.db.ref(`${PREFIX}leaguespec/${league}/plays/${year}`).once('value');
-    let usersPromise = this.db.ref(`${PREFIX}leaguespec/${league}/users/2019`).once('value');
+  scoresStartsUsersThen(league, year, cb) {
+    let scoresRef = this.db.ref(`scores/${year}`);
+    let startsRef = this.db.ref(`${PREFIX}leaguespec/${league}/plays/${year}`);
+    let usersRef = this.db.ref(`${PREFIX}leaguespec/${league}/users/2019`);
 
-    return Promise.all([scoresPromise, startsPromise, usersPromise]).then(
-      ([scoresSnapshot, startsSnapshot, usersSnapshot]) => {
-        const dbScores = scoresSnapshot.val();
-        const dbStarts = startsSnapshot.val();
-        const dbUsers = usersSnapshot.val();
-        if (!dbScores || !dbStarts || !dbUsers) {
-          console.log(dbScores, dbStarts, dbUsers);
-          throw new Error("Can't find one of scores, starts, users");
-        }
-        return {dbScores, dbStarts, dbUsers}
+    return scoresRef.on('value',
+      scoresSnap => {
+        startsRef.on('value',
+          startsSnap => {
+            usersRef.on('value',
+              usersSnap => {
+                const dbScores = scoresSnap.val();
+                const dbStarts = startsSnap.val();
+                const dbUsers = usersSnap.val();
+                if (!dbScores || !dbStarts || !dbUsers) {
+                  console.log(dbScores, dbStarts, dbUsers);
+                  throw new Error("Can't find one of scores, starts, users");
+                }
+                cb({ dbScores, dbStarts, dbUsers });
+              })
+          })
       })
   }
-
 }
-
-
-
 
 export default Firebase;
