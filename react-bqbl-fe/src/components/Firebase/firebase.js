@@ -79,7 +79,7 @@ class Firebase {
   }
 
   updateEventsOverrides(year, week, data) {
-    this.db.ref(`events/${year}/${week}`).update(data);
+    this.db.ref(`events/${year}/${week}/overrides`).update(data);
   }
 
   push247(year, data) {

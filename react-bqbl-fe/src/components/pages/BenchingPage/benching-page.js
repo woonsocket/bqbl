@@ -21,7 +21,7 @@ function BenchingPageBase(props) {
 
   const handleChange = passerId => event => {
     const passer = events.passers[passerId];
-    let newOverrides = JSON.parse(JSON.stringify(events.overrides));
+    let newOverrides = JSON.parse(JSON.stringify(events.overrides || {}));
     newOverrides[passer.team] = newOverrides[passer.team] || {};
     newOverrides[passer.team].benchings = newOverrides[passer.team].benchings || {};
     newOverrides[passer.team].benchings[passerId] = event.target.checked;
@@ -29,13 +29,12 @@ function BenchingPageBase(props) {
   };
 
   const getBenched = passerId => {
-    try {
-      const passer = events.passers[passerId];
-      return events.overrides[passer.team].benchings[passerId];
-    } catch (err) {
-      console.log(err)
+    const passer = events.passers[passerId];
+    if (!passer || !events.overrides || !events.overrides[passer.team]) {
       return false;
     }
+    let overrides = events.overrides[passer.team];
+    return overrides.benchings[passerId];
   }
 
   return (
