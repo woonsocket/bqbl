@@ -82,6 +82,12 @@ class Firebase {
     this.db.ref(`events/${year}/${week}/overrides`).update(data);
   }
 
+  get247(year, cb) {
+    this.db.ref(`scores247/${year}`).on('value', snapshot => {
+      cb(snapshot.val() || {});
+    });
+  }
+
   push247(year, data) {
     this.db.ref(`scores247/${year}`).push(data);
   }

@@ -7,10 +7,20 @@ import { compose } from 'recompose';
 import { withRouter } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import MenuItem from '@material-ui/core/MenuItem';
+import PropTypes from 'prop-types';
 import Select from '@material-ui/core/Select';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
 import TextField from '@material-ui/core/TextField';
 
+import TeamIcon from '../../reusable/TeamIcon/team-icon';
+
 function TwentyFourPageBase(props) {
+
+  let [scores247, setScores247] = React.useState({});
 
   const [values, setValues] = React.useState({
     desc: '',
@@ -19,6 +29,10 @@ function TwentyFourPageBase(props) {
     url: '',
     week: ''
   });
+
+  React.useEffect(() => {
+    return props.firebase.get247(props.year, setScores247);
+  }, [props.firebase]);
 
   const handleChange = name => event => {
     setValues({...values,
@@ -66,7 +80,48 @@ function TwentyFourPageBase(props) {
         onChange={handleChange('week')}
         variant="outlined" /><br />
       <Button value="Submit" onClick={onClick}> Submit</Button>
+
+      <ScoreTable scores={scores247} />
     </React.Fragment>
+  );
+}
+
+ScoreTable.propTypes = {
+  scores: PropTypes.object.isRequired,
+};
+
+function ScoreTable(props) {
+  // TODO(aerion): Validate the props.scores.
+  return (
+    <Table size="small">
+      <TableHead>
+        <TableRow>
+          <TableCell scope="row">Team</TableCell>
+          <TableCell scope="row">Week</TableCell>
+          <TableCell scope="row">Points</TableCell>
+          <TableCell scope="row">Description</TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {Object.entries(props.scores).map(([key, item]) => (
+          <TableRow key={key}>
+            <TableCell scope="row">
+              <TeamIcon team={item.team} width="40px" />
+            </TableCell>
+            <TableCell scope="row">{item.week}</TableCell>
+            <TableCell scope="row">{item.points}</TableCell>
+            <TableCell scope="row">
+              {item.desc}
+              {item.url && (
+                <Button size="small" color="primary" href={item.url}>
+                  Link
+                </Button>
+              )}
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   );
 }
 
