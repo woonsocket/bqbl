@@ -98,7 +98,7 @@ class Firebase {
 
   getLockedWeeksThen(nowMs, cb) {
     // TODO(aerion): Namespace the unlock times by year.
-    this.db.ref('/unlockedweeks').once('value').then(
+    this.db.ref('/unlockedweeks').on('value',
       snapshot => {
         if (!snapshot.val()) {
           throw new Error(`can't read unlockedweeks`);
