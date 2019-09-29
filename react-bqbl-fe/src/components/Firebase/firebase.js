@@ -96,9 +96,9 @@ class Firebase {
     })
   }
 
-  getLockedWeeks(nowMs) {
+  getLockedWeeksThen(nowMs, cb) {
     // TODO(aerion): Namespace the unlock times by year.
-    return this.db.ref('/unlockedweeks').once('value').then(
+    this.db.ref('/unlockedweeks').once('value').then(
       snapshot => {
         if (!snapshot.val()) {
           throw new Error(`can't read unlockedweeks`);
@@ -113,7 +113,7 @@ class Firebase {
             lockedWeeks.add('' + idx);
           }
         });
-        return lockedWeeks;
+        cb(lockedWeeks);
       });
   }
 
@@ -125,6 +125,17 @@ class Firebase {
             throw new Error("can't find you in this league");
           }
           return snapshot.val();
+        });
+  }
+
+  getStartsYearThen(uid, league, year, cb) {
+     this.db.ref(`${PREFIX}leaguespec/${league}/plays/${year}/${uid}`)
+      .once('value').then(
+        snapshot => {
+          if (!snapshot.val()) {
+            throw new Error("can't find you in this league");
+          }
+          cb(snapshot.val());
         });
   }
 

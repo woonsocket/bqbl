@@ -59,9 +59,7 @@ function LineupPageBase(props) {
     if (!user) { 
       return;
     }
-    props.firebase.getStartsYear(user.uid, props.league, props.year).then(
-      setWeeks,
-      (err) => { alert("can't find you in this league"); });
+    props.firebase.getStartsYearThen(user.uid, props.league, props.year, setWeeks);
     props.firebase.getLeagueSpecThen(props.league, data => {
       let lsdp = new LeagueSpecDataProxy(data, props.year);
       setDh(lsdp.hasDh());
@@ -69,7 +67,7 @@ function LineupPageBase(props) {
   }, [props.firebase, props.league, props.year, user]);
 
   useEffect(() => {
-    props.firebase.getLockedWeeks(Date.now()).then(setLockedWeeks);
+    props.firebase.getLockedWeeksThen(Date.now(), setLockedWeeks);
   }, [props.firebase]);
 
   return (
@@ -143,7 +141,7 @@ function LineupWeek(props) {
   return (
     <TableRow key={week.id}>
       <TableCell scope="row" className={classes.lineupWeek}>
-        Week {week.id}
+        {week.id}
         {props.locked && <Lock titleAccess="week is locked" fontSize="small" />}
       </TableCell>
 
