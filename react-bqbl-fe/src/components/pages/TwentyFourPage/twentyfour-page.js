@@ -31,7 +31,7 @@ function TwentyFourPageBase(props) {
       <h2>{props.year} scores</h2>
       <ScoreTable scores={scores247} />
       <h2>Award points</h2>
-      <ScoreForm firebase={props.firebase} year={props.year} />
+      <ScoreForm firebase={props.firebase} year={props.year} week={props.week} />
     </>
   );
 }
@@ -39,6 +39,7 @@ function TwentyFourPageBase(props) {
 ScoreForm.propTypes = {
   firebase: PropTypes.object.isRequired,
   year: PropTypes.string.isRequired,
+  week: PropTypes.string,
 };
 
 function ScoreForm(props) {
@@ -47,7 +48,7 @@ function ScoreForm(props) {
     points: 0,
     team: 'NYJ',
     url: '',
-    week: ''
+    week: props.week || '1',
   });
 
   const handleChange = name => event => {
@@ -90,7 +91,6 @@ function ScoreForm(props) {
         variant="outlined" /><br />
       <TextField
         label="Week"
-        defaultValue="1"
         margin="normal"
         value={values.week}
         onChange={handleChange('week')}
