@@ -22,6 +22,26 @@ function TwentyFourPageBase(props) {
 
   let [scores247, setScores247] = React.useState({});
 
+  React.useEffect(() => {
+    return props.firebase.get247(props.year, setScores247);
+  }, [props.firebase]);
+
+  return (
+    <>
+      <h2>{props.year} scores</h2>
+      <ScoreTable scores={scores247} />
+      <h2>Award points</h2>
+      <ScoreForm firebase={props.firebase} year={props.year} />
+    </>
+  );
+}
+
+ScoreForm.propTypes = {
+  firebase: PropTypes.object.isRequired,
+  year: PropTypes.number.isRequired,
+};
+
+function ScoreForm(props) {
   const [values, setValues] = React.useState({
     desc: '',
     points: 0,
@@ -29,10 +49,6 @@ function TwentyFourPageBase(props) {
     url: '',
     week: ''
   });
-
-  React.useEffect(() => {
-    return props.firebase.get247(props.year, setScores247);
-  }, [props.firebase]);
 
   const handleChange = name => event => {
     setValues({...values,
@@ -45,7 +61,7 @@ function TwentyFourPageBase(props) {
   };
 
   return (
-    <React.Fragment>
+    <>
       <TextField
         label="Desc"
         margin="normal"
@@ -79,10 +95,10 @@ function TwentyFourPageBase(props) {
         value={values.week}
         onChange={handleChange('week')}
         variant="outlined" /><br />
-      <Button value="Submit" onClick={onClick}> Submit</Button>
-
-      <ScoreTable scores={scores247} />
-    </React.Fragment>
+      <Button value="Submit" color="primary" variant="contained" onClick={onClick}>
+        Add
+      </Button>
+    </>
   );
 }
 
