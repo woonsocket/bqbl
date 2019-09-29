@@ -38,7 +38,7 @@ function TwentyFourPageBase(props) {
 
 ScoreForm.propTypes = {
   firebase: PropTypes.object.isRequired,
-  year: PropTypes.number.isRequired,
+  year: PropTypes.string.isRequired,
 };
 
 function ScoreForm(props) {
