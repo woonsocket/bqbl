@@ -205,11 +205,11 @@ function rangeString(range) {
 function describeYardLine(yardLine) {
   if (yardLine < 50) {
     return `own ${yardLine}`;
-  } else if (yardLine == 50) {
+  } else if (yardLine === 50) {
     return `50-yard line`;
   } else if (yardLine < 100) {
     return `opp. ${yardLine}`;
-  } else if (yardLine == 100) {
+  } else if (yardLine === 100) {
     return `opp. goal`;
   }
   // Should not happen.
