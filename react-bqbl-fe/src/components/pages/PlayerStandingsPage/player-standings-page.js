@@ -36,7 +36,7 @@ function PlayerStandingsPageBase(props) {
   }
 
   useEffect(() => {
-    props.firebase.getScoresStartsUsersThen(props.league, props.year,
+    return props.firebase.getScoresStartsUsersThen(props.league, props.year,
       ({ dbScores, dbScores247, dbStarts, dbUsers }) => {
         let val = processYearScores(
             dbScores, dbScores247, dbStarts, dbUsers, allWeeksReverse(props.year));

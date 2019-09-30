@@ -15,6 +15,11 @@ const config = {
 
 const PREFIX = "";
 
+/**
+ * Methods that subscribe to database updates should return a zero-argument
+ * function that cleans up, e.g., by removing any database callbacks added by
+ * the method.
+ */
 class Firebase {
   constructor() {
     app.initializeApp(config);
@@ -55,10 +60,16 @@ class Firebase {
         cb({ dbScores, dbScores247 });
       });
     });
+
+    return () => {
+      scoresRef.off('value');
+      scores247Ref.off('value');
+    };
   }
 
   getScoresWeekThen(year, week, cb) {
-    return this.db.ref(`scores/${year}/${week}`).on('value',
+    const ref = this.db.ref(`scores/${year}/${week}`);
+    ref.on('value',
       snapshot => {
         const vals = snapshot.val();
         if (!vals) {
@@ -69,12 +80,13 @@ class Firebase {
           teamName: key,
         }));
         cb(valsList);
-      }
-    )
+      });
+    return () => ref.off('value');
   }
 
   getEventsThen(year, week, cb) {
-    return this.db.ref(`events/${year}/${week}`).on('value',
+    const ref = this.db.ref(`events/${year}/${week}`);
+    ref.on('value',
       snapshot => {
         const vals = snapshot.val();
         if (!vals) {
@@ -82,8 +94,8 @@ class Firebase {
         }
 
         cb(vals);
-      }
-    )
+      });
+    return () => ref.off('value');
   }
 
   updateEventsOverrides(year, week, data) {
@@ -91,9 +103,11 @@ class Firebase {
   }
 
   get247(year, cb) {
-    this.db.ref(`scores247/${year}`).on('value', snapshot => {
+    const ref = this.db.ref(`scores247/${year}`);
+    ref.on('value', snapshot => {
       cb(snapshot.val() || {});
     });
+    return () => ref.off('value');
   }
 
   push247(year, data) {
@@ -102,17 +116,20 @@ class Firebase {
 
   getLeagueSpecThen(leagueId, cb) {
     const loc = `${PREFIX}leaguespec/${leagueId}`;
-    this.db.ref(loc).on('value', snapshot => {
+    const ref = this.db.ref(loc);
+    ref.on('value', snapshot => {
       if (!snapshot.val()) {
         throw new Error(`couldn't find league ${loc}`);
       }
       cb(snapshot.val());
-    })
+    });
+    return () => ref.off('value');
   }
 
   getLockedWeeksThen(nowMs, cb) {
     // TODO(aerion): Namespace the unlock times by year.
-    this.db.ref('/unlockedweeks').on('value',
+    const ref = this.db.ref('/unlockedweeks');
+    ref.on('value',
       snapshot => {
         if (!snapshot.val()) {
           throw new Error(`can't read unlockedweeks`);
@@ -129,6 +146,7 @@ class Firebase {
         });
         cb(lockedWeeks);
       });
+    return () => ref.off('value');
   }
 
   getStartsYear(uid, league, year) {
@@ -143,14 +161,15 @@ class Firebase {
   }
 
   getStartsYearThen(uid, league, year, cb) {
-     this.db.ref(`${PREFIX}leaguespec/${league}/plays/${year}/${uid}`)
-      .once('value').then(
-        snapshot => {
-          if (!snapshot.val()) {
-            throw new Error("can't find you in this league");
-          }
-          cb(snapshot.val());
-        });
+    const ref = this.db.ref(
+        `${PREFIX}leaguespec/${league}/plays/${year}/${uid}`);
+    ref.on('value', snapshot => {
+      if (!snapshot.val()) {
+        throw new Error("can't find you in this league");
+      }
+      cb(snapshot.val());
+    });
+    return () => ref.off('value');
   }
 
   updateStartsRow(league, year, weekIndex, row) {
@@ -174,7 +193,7 @@ class Firebase {
     let startsRef = this.db.ref(`${PREFIX}leaguespec/${league}/plays/${year}`);
     let usersRef = this.db.ref(`${PREFIX}leaguespec/${league}/users/2019`);
 
-    return scoresRef.on('value',
+    scoresRef.on('value',
       scoresSnap => {
         scores247Ref.on('value',
           scores247Snap => {
@@ -196,6 +215,13 @@ class Firebase {
               });
           });
       });
+
+    return () => {
+      scoresRef.off('value');
+      scores247Ref.off('value');
+      startsRef.off('value');
+      usersRef.off('value');
+    };
   }
 }
 

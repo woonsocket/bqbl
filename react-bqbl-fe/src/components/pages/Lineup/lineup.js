@@ -56,18 +56,24 @@ function LineupPageBase(props) {
   });
 
   useEffect(() => {
-    if (!user) { 
+    if (!user) {
       return;
     }
-    props.firebase.getStartsYearThen(user.uid, props.league, props.year, setWeeks);
-    props.firebase.getLeagueSpecThen(props.league, data => {
-      let lsdp = new LeagueSpecDataProxy(data, props.year);
-      setDh(lsdp.hasDh());
-    });
+    const unsubStarts = props.firebase.getStartsYearThen(
+        user.uid, props.league, props.year, setWeeks);
+    const unsubLeagueSpec = props.firebase.getLeagueSpecThen(
+        props.league, data => {
+          let lsdp = new LeagueSpecDataProxy(data, props.year);
+          setDh(lsdp.hasDh());
+        });
+    return () => {
+      unsubStarts();
+      unsubLeagueSpec();
+    };
   }, [props.firebase, props.league, props.year, user]);
 
   useEffect(() => {
-    props.firebase.getLockedWeeksThen(Date.now(), setLockedWeeks);
+    return props.firebase.getLockedWeeksThen(Date.now(), setLockedWeeks);
   }, [props.firebase]);
 
   return (

@@ -18,13 +18,13 @@ function PlayerScorePageBase(props) {
   let [playerList, setPlayerList] = useState([]);
 
   useEffect(() => {
-    props.firebase.getScoresStartsUsersThen(props.league, props.year,
+    return props.firebase.getScoresStartsUsersThen(props.league, props.year,
       ({ dbScores, dbStarts, dbUsers }) => {
-        setPlayerList(joinScores(dbScores, dbStarts, dbUsers, props.week))
-      })
+        setPlayerList(joinScores(dbScores, dbStarts, dbUsers, props.week));
+      });
   }, [props.firebase, props.league, props.year, props.week]);
 
-  return <PlayerScorePageUI playerList={playerList} />
+  return <PlayerScorePageUI playerList={playerList} />;
 }
 
 // Array of TEMPLATES.StartRow

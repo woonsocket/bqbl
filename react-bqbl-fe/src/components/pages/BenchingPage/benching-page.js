@@ -14,9 +14,9 @@ function BenchingPageBase(props) {
   let [events, setEvents] = useState({ passers: {} });
 
   useEffect(() => {
-    props.firebase.getEventsThen(props.year, props.week, newEvents => {
+    return props.firebase.getEventsThen(props.year, props.week, newEvents => {
       setEvents(newEvents);
-    })
+    });
   }, [props.firebase, props.year, props.week]);
 
   const handleChange = passerId => event => {

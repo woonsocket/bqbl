@@ -59,14 +59,14 @@ function DraftPageBase(props) {
   }
 
   useEffect(() => {
-    props.firebase.addAuthListener(authChanged)
+    return props.firebase.addAuthListener(authChanged);
   });
 
   useEffect(() => {
-    props.firebase.getLeagueSpecThen(props.league, data => {
+    return props.firebase.getLeagueSpecThen(props.league, data => {
       let lsdp = new LeagueSpecDataProxy(data, props.year);
       let uid = props.firebase.getCurrentUser() ? props.firebase.getCurrentUser().uid : null;
-      setIsInLeague(lsdp.isInLeague(uid))
+      setIsInLeague(lsdp.isInLeague(uid));
       setTakenTeams(lsdp.getTakenTeams());
       setDraftList(lsdp.getDraftList());
     });

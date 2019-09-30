@@ -29,7 +29,7 @@ function TeamScorePageBase(props) {
   }
 
   useEffect(() => {
-    props.firebase.getScoresWeekThen(props.year, props.week,
+    return props.firebase.getScoresWeekThen(props.year, props.week,
       scoresWeek => {
         if (sortScores) {
           if (useProjections) {
@@ -38,8 +38,8 @@ function TeamScorePageBase(props) {
             scoresWeek = scoresWeek.sort((team, team2) => team2.total - team.total);
           }
         }
-        setValsList(scoresWeek)
-      })
+        setValsList(scoresWeek);
+      });
   }, [props.firebase, props.league, props.year, props.week, sortScores, useProjections]);
 
   return (

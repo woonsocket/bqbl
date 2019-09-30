@@ -27,7 +27,7 @@ function HomeBase(props) {
   }
 
   useEffect(() => {
-    props.firebase.addAuthListener(authChanged)
+    return props.firebase.addAuthListener(authChanged);
   });
 
   if (user && props.league) {

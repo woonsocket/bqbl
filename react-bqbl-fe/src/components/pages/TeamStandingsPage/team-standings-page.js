@@ -20,9 +20,11 @@ function TeamStandingsPageBase(props) {
   let [allScores, setAllScores] = useState([]);
 
   useEffect(() => {
-    props.firebase.getScoresYearThen(props.year, ({dbScores, dbScores247}) => {
-      setAllScores(processYearScoresByNflTeam(dbScores, dbScores247));
-    });
+    return props.firebase.getScoresYearThen(
+        props.year,
+        ({dbScores, dbScores247}) => {
+          setAllScores(processYearScoresByNflTeam(dbScores, dbScores247));
+        });
   }, [props.firebase, props.league, props.year]);
 
   return (
