@@ -116,17 +116,15 @@ function PlayerYearCard(props) {
         <Collapse in={expanded} timeout="auto" unmountOnExit>
           {weeks.slice(FOLD)}
         </Collapse>
-
       </CardContent>
       <CardActions disableSpacing>
-        <IconButton
-          className={classNames({ expanded: expanded })}
-          onClick={handleExpandClick}
-          aria-expanded={expanded}
-          aria-label="Show more"
-        >
-          <ExpandMoreIcon />
-        </IconButton>
+        {weeks.length > FOLD &&
+         <IconButton className={classNames({ expanded: expanded })}
+                     onClick={handleExpandClick}
+                     aria-expanded={expanded}
+                     aria-label="Show more" >
+           <ExpandMoreIcon />
+         </IconButton>}
       </CardActions>
     </Card>
   );
