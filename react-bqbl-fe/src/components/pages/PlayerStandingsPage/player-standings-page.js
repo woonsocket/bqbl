@@ -13,11 +13,11 @@ import CardHeader from '@material-ui/core/CardHeader';
 import Collapse from '@material-ui/core/Collapse';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import IconButton from '@material-ui/core/IconButton';
-import IconScoreCell from '../../reusable/IconScoreCell/icon-score-cell'
+import IconScoreCell from '../../reusable/IconScoreCell/icon-score-cell';
 import PropTypes from 'prop-types';
 import Switch from '@material-ui/core/Switch';
 import classNames from 'classnames/bind';
-import { processYearScores } from '../../../middle/response'
+import { processYearScores } from '../../../middle/response';
 
 const FOLD = 4;
 
@@ -25,7 +25,7 @@ PlayerStandingsPageBase.propTypes = {
   firebase: PropTypes.object.isRequired,
   year: PropTypes.string.isRequired,
   league: PropTypes.string.isRequired,
-}
+};
 
 function PlayerStandingsPageBase(props) {
   let [playerTable, setPlayerTable] = useState([]);
@@ -67,15 +67,34 @@ function PlayerStandingsPageBase(props) {
         <PlayerYearCard player={player} name={playerId} key={playerId} year={props.year} />
       ))}
     </React.Fragment>
-  )
+  );
 }
 
 PlayerYearCard.propTypes = {
   player: PropTypes.object.isRequired,
-}
+};
 
 function PlayerYearCard(props) {
   const [expanded, setExpanded] = React.useState(false);
+
+  const scoreEntries247 = props.player.teams.map((team) => {
+    return {team: team.name, score: team.score247};
+  });
+
+  const startedWeeks = new Map(Object.entries(props.player.start_rows));
+  const weeks = allWeeksReverse(props.year)
+      .filter((weekId) => startedWeeks.has(weekId))
+      .map((weekId) => {
+        const startRow = startedWeeks.get(weekId);
+        const entries = [
+          {team: startRow.team_1.team_name, score: startRow.team_1.score},
+          {team: startRow.team_2.team_name, score: startRow.team_2.score},
+        ];
+        return (
+          <ScoreRow key={weekId} label={'Week ' + weekId} entries={entries} />
+        );
+      });
+
   function handleExpandClick() {
     setExpanded(!expanded);
   }
@@ -92,49 +111,10 @@ function PlayerYearCard(props) {
         subheader={"Total: " + props.player.total}
       />
       <CardContent>
-        <PlayerScores247 player={props.player} />
-        {allWeeksReverse(props.year).slice(0, FOLD)
-          .filter(weekId => Object.keys(props.player.start_rows).includes(weekId))
-          .map(weekId => (
-            <div key={weekId} className="score-row">
-              <div className="week-cell">
-                {"Week " + weekId}
-              </div>
-              <div className="score-cells">
-                <div className="score-cell">
-                  <IconScoreCell
-                      team={props.player.start_rows[weekId].team_1.team_name}
-                      score={props.player.start_rows[weekId].team_1.score} />
-                </div>
-                <div className="score-cell">
-                  <IconScoreCell
-                      team={props.player.start_rows[weekId].team_2.team_name}
-                      score={props.player.start_rows[weekId].team_2.score} />
-                </div>
-              </div>
-            </div>
-          ))}
+        <ScoreRow label="24/7" entries={scoreEntries247} />
+        {weeks.slice(0, FOLD)}
         <Collapse in={expanded} timeout="auto" unmountOnExit>
-          {allWeeksReverse(props.year).slice(FOLD)
-            .filter(weekId => Object.keys(props.player.start_rows).includes(weekId))
-            .map(weekId => (
-              <div key={weekId}>
-                <div className="week-cell">
-                  {"Week " + weekId}
-                </div>
-                <div className="score-cells">
-                  <div className="score-cell">
-                    <IconScoreCell
-                        team={props.player.start_rows[weekId].team_1.team_name}
-                        score={props.player.start_rows[weekId].team_1.score} />
-                  </div>
-                  <div className="score-cell">
-                    <IconScoreCell
-                        team={props.player.start_rows[weekId].team_2.team_name}
-                        score={props.player.start_rows[weekId].team_2.score} />
-                  </div>
-                </div>
-              </div>))}
+          {weeks.slice(FOLD)}
         </Collapse>
 
       </CardContent>
@@ -164,6 +144,27 @@ function PlayerScores247(props) {
         {props.player.teams.map((team) => (
           <div key={team.name} className="score-cell">
             <IconScoreCell team={team.name} score={team.score247} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+ScoreRow.propTypes = {
+  label: PropTypes.string.isRequired,
+  // An array of {team: string, score: number} objects.
+  entries: PropTypes.arrayOf(PropTypes.object),
+};
+
+function ScoreRow(props) {
+  return (
+    <div className="score-row">
+      <div className="week-cell">{props.label}</div>
+      <div className="score-cells">
+        {props.entries.map((entry) => (
+          <div key={entry.team} className="score-cell">
+            <IconScoreCell team={entry.team} score={entry.score} />
           </div>
         ))}
       </div>
