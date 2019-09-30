@@ -16,7 +16,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TextField from '@material-ui/core/TextField';
 
-import TeamIcon from '../../reusable/TeamIcon/team-icon';
+import IconAndName from '../../reusable/IconAndName/icon-and-name';
 
 function TwentyFourPageBase(props) {
 
@@ -123,7 +123,7 @@ function ScoreTable(props) {
         {Object.entries(props.scores).map(([key, item]) => (
           <TableRow key={key}>
             <TableCell scope="row">
-              <TeamIcon team={item.team} width="40px" />
+              <IconAndName team={item.team} width="40px" />
             </TableCell>
             <TableCell scope="row">{item.week}</TableCell>
             <TableCell scope="row">{item.points}</TableCell>

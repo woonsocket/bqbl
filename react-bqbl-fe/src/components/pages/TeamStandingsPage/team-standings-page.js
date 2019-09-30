@@ -13,6 +13,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 
 import { processYearScoresByNflTeam } from '../../../middle/response';
+import IconAndName from '../../reusable/IconAndName/icon-and-name';
 import ScoreValue from '../../reusable/ScoreValue/score-value';
 
 function TeamStandingsPageBase(props) {
@@ -40,7 +41,7 @@ function TeamStandingsPageBase(props) {
         <TableBody>
           {Object.entries(allScores).map(([teamId, teamScores], index) => (
             <TableRow key={"team" + index}>
-              <TableCell>{teamId}</TableCell>
+              <TableCell><IconAndName team={teamId} /></TableCell>
               <TableCell align="right">
                 <ScoreValue score={teamScores.total} />
               </TableCell>
