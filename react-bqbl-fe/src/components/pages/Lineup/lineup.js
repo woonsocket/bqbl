@@ -38,8 +38,6 @@ LineupPageBase.propTypes = {
 }
 
 function LineupPageBase(props) {
-  const classes = useStyles();
-
   let [weeks, setWeeks] = useState({});
   let [dh, setDh] = useState(false);
   let [user, setUser] = useState(props.firebase.getCurrentUser());
