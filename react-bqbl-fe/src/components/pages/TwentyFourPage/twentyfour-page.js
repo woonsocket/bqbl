@@ -24,7 +24,7 @@ function TwentyFourPageBase(props) {
 
   React.useEffect(() => {
     return props.firebase.get247(props.year, setScores247);
-  }, [props.firebase]);
+  }, [props.firebase, props.year]);
 
   return (
     <>
