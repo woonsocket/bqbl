@@ -72,6 +72,7 @@ function ScoreForm(props) {
       <TextField
         label="Points"
         margin="normal"
+        type="number"
         value={values.points}
         onChange={handleChange('points')}
         variant="outlined" /><br />
