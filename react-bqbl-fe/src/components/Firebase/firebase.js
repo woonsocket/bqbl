@@ -39,14 +39,22 @@ class Firebase {
   }
 
   getScoresYearThen(year, cb) {
-    return this.db.ref(`scores/${year}`).on('value',
-      snapshot => {
-        const vals = snapshot.val();
-        if (!vals) {
-          throw new Error('no scores')
+    let scoresRef = this.db.ref(`scores/${year}`);
+    let scores247Ref = this.db.ref(`scores247/${year}`);
+
+    scoresRef.on('value', scoresSnap => {
+      scores247Ref.on('value', scores247Snap => {
+        const dbScores = scoresSnap.val();
+        const dbScores247 = scores247Snap.val();
+        if (!dbScores) {
+          throw new Error("Can't read NFL team scores");
         }
-        cb(vals);
-      })
+        if (!dbScores247) {
+          throw new Error("Can't read 24/7 scores");
+        }
+        cb({ dbScores, dbScores247 });
+      });
+    });
   }
 
   getScoresWeekThen(year, week, cb) {

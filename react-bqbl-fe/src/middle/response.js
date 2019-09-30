@@ -1,3 +1,4 @@
+import { ALL_TEAMS } from '../constants/football';
 import * as TEMPLATES from './templates';
 
 export class LeagueSpecDataProxy {
@@ -77,6 +78,31 @@ export function processYearScores(
         name, playerTotal, start_rows, playerTeams);
   }
   return playerTable;
+}
+
+export function processYearScoresByNflTeam(dbScores, dbScores247) {
+  const scores247ByTeam = process247ByTeam(dbScores247);
+
+  const teamTable = {};
+  for (const teamId of ALL_TEAMS) {
+    const points247 = scores247ByTeam.get(teamId) || 0;
+    teamTable[teamId] = {
+      weeks: {},
+      points247,
+      total: points247,
+    };
+  }
+  for (const [weekId, weekScoresByTeam] of Object.entries(dbScores)) {
+    for (const [teamId, weekScores] of Object.entries(weekScoresByTeam)) {
+      if (!(teamId in teamTable)) {
+        console.warn(`unknown team ${teamId}`);
+        continue;
+      }
+      teamTable[teamId].weeks[weekId] = weekScores.total;
+      teamTable[teamId].total += weekScores.total;
+    }
+  }
+  return teamTable;
 }
 
 export function joinScores(dbScores, dbStarts, dbUsers, week) {

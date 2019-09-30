@@ -12,24 +12,17 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 
+import { processYearScoresByNflTeam } from '../../../middle/response';
 import ScoreValue from '../../reusable/ScoreValue/score-value';
 
-// TODO: Separate the display and fetch logic.
 function TeamStandingsPageBase(props) {
   let [allScores, setAllScores] = useState([]);
 
   useEffect(() => {
-    props.firebase.getScoresYearThen(props.year, scores => {
-      let weekMap = {};
-      for (let [weekId, weekVal] of Object.entries(scores)) {
-        for (let [teamId, teamVal] of Object.entries(weekVal)) {
-          weekMap[teamId] = weekMap[teamId] || {};
-          weekMap[teamId][weekId] = teamVal.total
-        }
-      }
-      setAllScores(weekMap);
-    })
-  }, [props.firebase, props.league, props.year, props.week]);
+    props.firebase.getScoresYearThen(props.year, ({dbScores, dbScores247}) => {
+      setAllScores(processYearScoresByNflTeam(dbScores, dbScores247));
+    });
+  }, [props.firebase, props.league, props.year]);
 
   return (
     <Paper>
@@ -37,18 +30,26 @@ function TeamStandingsPageBase(props) {
         <TableHead>
           <TableRow>
             <TableCell>Team</TableCell>
+            <TableCell>Total</TableCell>
+            <TableCell>24/7</TableCell>
             {FOOTBALL.WEEK_IDS.map((val, k) =>
-              <TableCell align="right" key={"week"+k}>{val}</TableCell>
+              <TableCell align="right" key={"week_" + k}>{val}</TableCell>
             )}
           </TableRow>
         </TableHead>
         <TableBody>
-          {Object.entries(allScores).map((teamVal, teamKey) => (
-            <TableRow key={"team"+teamKey}>
-              <TableCell>{teamVal[0]}</TableCell>
+          {Object.entries(allScores).map(([teamId, teamScores], index) => (
+            <TableRow key={"team" + index}>
+              <TableCell>{teamId}</TableCell>
+              <TableCell align="right">
+                <ScoreValue score={teamScores.total} />
+              </TableCell>
+              <TableCell align="right">
+                <ScoreValue score={teamScores.points247} />
+              </TableCell>
               {FOOTBALL.WEEK_IDS.map((weekId) =>
-                <TableCell key={"week2"+weekId} align="right">
-                  <ScoreValue score={teamVal[1][weekId]} />
+                <TableCell key={"week2_" + weekId} align="right">
+                  <ScoreValue score={teamScores.weeks[weekId]} />
                 </TableCell>
               )}
             </TableRow>
