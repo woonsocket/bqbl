@@ -37,8 +37,9 @@ function PlayerStandingsPageBase(props) {
 
   useEffect(() => {
     props.firebase.getScoresStartsUsersThen(props.league, props.year,
-      ({ dbScores, dbStarts, dbUsers }) => {
-        let val = processYearScores(dbScores, dbStarts, dbUsers, allWeeksReverse(props.year))
+      ({ dbScores, dbScores247, dbStarts, dbUsers }) => {
+        let val = processYearScores(
+            dbScores, dbScores247, dbStarts, dbUsers, allWeeksReverse(props.year));
         let playerList = Object.keys(val).map(key => ({
           ...val[key],
           uid: key,
@@ -46,8 +47,8 @@ function PlayerStandingsPageBase(props) {
         if (sortScores) {
           playerList = playerList.sort((team, team2) => team2.total - team.total);
         }
-        setPlayerTable(playerList)
-      })
+        setPlayerTable(playerList);
+      });
   }, [props.firebase, props.league, props.year, sortScores]);
 
   return (
@@ -91,15 +92,26 @@ function PlayerYearCard(props) {
         subheader={"Total: " + props.player.total}
       />
       <CardContent>
+        <PlayerScores247 player={props.player} />
         {allWeeksReverse(props.year).slice(0, FOLD)
           .filter(weekId => Object.keys(props.player.start_rows).includes(weekId))
           .map(weekId => (
-            <div key={weekId}>
+            <div key={weekId} className="score-row">
               <div className="week-cell">
                 {"Week " + weekId}
               </div>
-              <div className="score-cell"><IconScoreCell team={props.player.start_rows[weekId].team_1.team_name} score={props.player.start_rows[weekId].team_1.score} /> </div>
-              <div className="score-cell"><IconScoreCell team={props.player.start_rows[weekId].team_2.team_name} score={props.player.start_rows[weekId].team_2.score} /> </div>
+              <div className="score-cells">
+                <div className="score-cell">
+                  <IconScoreCell
+                      team={props.player.start_rows[weekId].team_1.team_name}
+                      score={props.player.start_rows[weekId].team_1.score} />
+                </div>
+                <div className="score-cell">
+                  <IconScoreCell
+                      team={props.player.start_rows[weekId].team_2.team_name}
+                      score={props.player.start_rows[weekId].team_2.score} />
+                </div>
+              </div>
             </div>
           ))}
         <Collapse in={expanded} timeout="auto" unmountOnExit>
@@ -110,8 +122,18 @@ function PlayerYearCard(props) {
                 <div className="week-cell">
                   {"Week " + weekId}
                 </div>
-                <div className="score-cell"><IconScoreCell team={props.player.start_rows[weekId].team_1.team_name} score={props.player.start_rows[weekId].team_1.score} /> </div>
-                <div className="score-cell"><IconScoreCell team={props.player.start_rows[weekId].team_2.team_name} score={props.player.start_rows[weekId].team_2.score} /> </div>
+                <div className="score-cells">
+                  <div className="score-cell">
+                    <IconScoreCell
+                        team={props.player.start_rows[weekId].team_1.team_name}
+                        score={props.player.start_rows[weekId].team_1.score} />
+                  </div>
+                  <div className="score-cell">
+                    <IconScoreCell
+                        team={props.player.start_rows[weekId].team_2.team_name}
+                        score={props.player.start_rows[weekId].team_2.score} />
+                  </div>
+                </div>
               </div>))}
         </Collapse>
 
@@ -127,8 +149,26 @@ function PlayerYearCard(props) {
         </IconButton>
       </CardActions>
     </Card>
+  );
+}
 
-  )
+PlayerScores247.propTypes = {
+  player: PropTypes.object.isRequired,
+};
+
+function PlayerScores247(props) {
+  return (
+    <div className="score-row">
+      <div className="week-cell">24/7 points</div>
+      <div className="score-cells">
+        {props.player.teams.map((team) => (
+          <div key={team.name} className="score-cell">
+            <IconScoreCell team={team.name} score={team.score247} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 const PlayerStandingsPage = compose(

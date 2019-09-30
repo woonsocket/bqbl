@@ -17,12 +17,11 @@ IconScoreCell.defaultProps = {
 
 const useStyles = makeStyles({
   outer: {
-    display: 'inline-block',
+    display: 'flex',
     marginLeft: '5px',
     minWidth: '50px',
   },
   cell: {
-    display: 'inline-block',
     fontSize: '14px',
     minWidth: '35px',
     textAlign: 'right',

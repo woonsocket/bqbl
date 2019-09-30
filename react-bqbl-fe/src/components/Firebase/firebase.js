@@ -162,26 +162,32 @@ class Firebase {
 
   getScoresStartsUsersThen(league, year, cb) {
     let scoresRef = this.db.ref(`scores/${year}`);
+    let scores247Ref = this.db.ref(`scores247/${year}`);
     let startsRef = this.db.ref(`${PREFIX}leaguespec/${league}/plays/${year}`);
     let usersRef = this.db.ref(`${PREFIX}leaguespec/${league}/users/2019`);
 
     return scoresRef.on('value',
       scoresSnap => {
-        startsRef.on('value',
-          startsSnap => {
-            usersRef.on('value',
-              usersSnap => {
-                const dbScores = scoresSnap.val();
-                const dbStarts = startsSnap.val();
-                const dbUsers = usersSnap.val();
-                if (!dbScores || !dbStarts || !dbUsers) {
-                  console.log(dbScores, dbStarts, dbUsers);
-                  throw new Error("Can't find one of scores, starts, users");
-                }
-                cb({ dbScores, dbStarts, dbUsers });
-              })
-          })
-      })
+        scores247Ref.on('value',
+          scores247Snap => {
+            startsRef.on('value',
+              startsSnap => {
+                usersRef.on('value',
+                  usersSnap => {
+                    const dbScores = scoresSnap.val();
+                    const dbScores247 = scores247Snap.val();
+                    const dbStarts = startsSnap.val();
+                    const dbUsers = usersSnap.val();
+                    if (!dbScores || !dbScores247 || !dbStarts || !dbUsers) {
+                      console.log(dbScores, dbScores247, dbStarts, dbUsers);
+                      throw new Error(
+                          "Can't find one of scores, scores247, starts, users");
+                    }
+                    cb({ dbScores, dbScores247, dbStarts, dbUsers });
+                  });
+              });
+          });
+      });
   }
 }
 

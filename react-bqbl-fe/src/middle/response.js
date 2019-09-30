@@ -1,4 +1,4 @@
-import * as TEMPLATES from './templates'
+import * as TEMPLATES from './templates';
 
 export class LeagueSpecDataProxy {
   constructor(leagueData, year) {
@@ -39,12 +39,17 @@ export class LeagueSpecDataProxy {
 
 }
 
-export function processYearScores(dbScores, dbStarts, dbPlayers, legal_weeks) {
+export function processYearScores(
+    dbScores, dbScores247, dbStarts, dbPlayers, legal_weeks) {
   const players = {};
 
+  const scores247ByTeam = process247ByTeam(dbScores247);
+
   for (const playerKey of Object.keys(dbStarts)) {
-    players[playerKey] = {};
-    players[playerKey].name = dbPlayers[playerKey].name;
+    players[playerKey] = {
+      name: dbPlayers[playerKey].name,
+      teams: dbPlayers[playerKey].teams,
+    };
   }
   let playerTable = {};
   for (const [playerId, player] of Object.entries(players)) {
@@ -56,14 +61,20 @@ export function processYearScores(dbScores, dbStarts, dbPlayers, legal_weeks) {
         TEMPLATES.Start(startedTeams[0], scores[0]), TEMPLATES.Start(startedTeams[1], scores[1]));
     }
     const name = (player.name);
-    playerTable[playerId] = TEMPLATES.Player(name, 30, start_rows);
-  }
-  for (const player of Object.values(playerTable)) {
+    const playerTeams = player.teams.map((team) => {
+      return TEMPLATES.PlayerTeam(team.name, scores247ByTeam.get(team.name) || 0);
+    });
+
     let playerTotal = 0;
-    for (const row of Object.values(player.start_rows)) {
+    for (const row of Object.values(start_rows)) {
       playerTotal += row.team_1.score + row.team_2.score;
     }
-    player.total = playerTotal;
+    for (const team of playerTeams) {
+      playerTotal += team.score247;
+    }
+
+    playerTable[playerId] = TEMPLATES.Player(
+        name, playerTotal, start_rows, playerTeams);
   }
   return playerTable;
 }
@@ -131,4 +142,13 @@ function getAllFromWeek(startsDataValue, week) {
     allStarts[playerKey] = playerVal[week];
   }
   return allStarts;
+}
+
+/** Sums 24/7 scores for each team. */
+function process247ByTeam(dbScoresObj) {
+  const byTeam = new Map();
+  for (const entry of Object.values(dbScoresObj)) {
+    byTeam.set(entry.team, (byTeam.get(entry.team) || 0) + entry.points);
+  }
+  return byTeam;
 }
