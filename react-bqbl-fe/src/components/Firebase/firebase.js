@@ -148,17 +148,6 @@ class Firebase {
     return () => ref.off('value');
   }
 
-  getStartsYear(uid, league, year) {
-    return this.db.ref(`${PREFIX}leaguespec/${league}/plays/${year}/${uid}`)
-      .once('value').then(
-        snapshot => {
-          if (!snapshot.val()) {
-            throw new Error("can't find you in this league");
-          }
-          return snapshot.val();
-        });
-  }
-
   getStartsYearThen(uid, league, year, cb) {
     const ref = this.db.ref(
         `${PREFIX}leaguespec/${league}/plays/${year}/${uid}`);
