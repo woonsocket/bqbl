@@ -160,8 +160,8 @@ function ScoreRow(props) {
     <div className="score-row">
       <div className="week-cell">{props.label}</div>
       <div className="score-cells">
-        {props.entries.map((entry) => (
-          <div key={entry.team} className="score-cell">
+        {props.entries.map((entry, index) => (
+          <div key={index} className="score-cell">
             <IconScoreCell team={entry.team} score={entry.score} />
           </div>
         ))}
