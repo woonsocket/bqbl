@@ -58,12 +58,15 @@ export function processYearScores(
     for (const weekId of Object.values(legal_weeks)) {
       const startedTeams = getStartedTeams(dbStarts, playerId, weekId)
       const scores = startedTeams.map(scoreForTeam.bind(null, dbScores, weekId)) || [0, 0]
-      start_rows[weekId] = TEMPLATES.StartRow(dbStarts[playerId][weekId].name,
-        TEMPLATES.Start(startedTeams[0], scores[0]), TEMPLATES.Start(startedTeams[1], scores[1]));
+      start_rows[weekId] = TEMPLATES.StartRow(
+          dbStarts[playerId][weekId].name,
+          TEMPLATES.Start(startedTeams[0], Number(scores[0])),
+          TEMPLATES.Start(startedTeams[1], Number(scores[1])));
     }
     const name = (player.name);
     const playerTeams = player.teams.map((team) => {
-      return TEMPLATES.PlayerTeam(team.name, scores247ByTeam.get(team.name) || 0);
+      return TEMPLATES.PlayerTeam(
+          team.name, Number(scores247ByTeam.get(team.name)) || 0);
     });
 
     let playerTotal = 0;

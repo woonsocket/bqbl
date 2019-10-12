@@ -52,8 +52,13 @@ function ScoreForm(props) {
   });
 
   const handleChange = name => event => {
+    // Coerce the numeric field to be a number. There's probably a better way to
+    // deal with this.
+    const newValue = (name === 'points') ?
+        Number(event.target.value) :
+        event.target.value;
     setValues({...values,
-      [name]: event.target.value,
+      [name]: newValue,
     });
   };
 
