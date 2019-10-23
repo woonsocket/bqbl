@@ -208,7 +208,7 @@ function describeYardLine(yardLine) {
   } else if (yardLine === 50) {
     return `50-yard line`;
   } else if (yardLine < 100) {
-    return `opp. ${yardLine}`;
+    return `opp. ${100 - yardLine}`;
   } else if (yardLine === 100) {
     return `opp. goal`;
   }
