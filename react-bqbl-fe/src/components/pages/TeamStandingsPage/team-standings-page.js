@@ -23,7 +23,12 @@ function TeamStandingsPageBase(props) {
     return props.firebase.getScoresYearThen(
         props.year,
         ({dbScores, dbScores247}) => {
-          setAllScores(processYearScoresByNflTeam(dbScores, dbScores247));
+          const scoreEntries = Object.entries(
+              processYearScoresByNflTeam(dbScores, dbScores247));
+          scoreEntries.sort(([id1, scores1], [id2, scores2]) => {
+            return scores2.total - scores1.total;
+          });
+          setAllScores(scoreEntries);
         });
   }, [props.firebase, props.league, props.year]);
 
@@ -41,7 +46,7 @@ function TeamStandingsPageBase(props) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {Object.entries(allScores).map(([teamId, teamScores], index) => (
+          {allScores.map(([teamId, teamScores], index) => (
             <TableRow key={"team" + index}>
               <TableCell><IconAndName team={teamId} /></TableCell>
               <TableCell align="right">
