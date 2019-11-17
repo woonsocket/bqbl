@@ -146,9 +146,12 @@ function scoreForTeam(dbScores, week, team) {
 }
 
 function getStartedTeams(dbStarts, uid, week) {
-  let starts = dbStarts[uid][week].teams.filter(team => team.selected).map(team => team.name);
-  if (!starts || starts.length === 0) {
-    starts = ['none', 'none'];
+  let starts = dbStarts[uid][week].teams
+      .filter(team => team.selected)
+      .map(team => team.name);
+  starts = starts || [];
+  while (starts.length < 2) {
+    starts.push('none');
   }
   return starts;
 }
