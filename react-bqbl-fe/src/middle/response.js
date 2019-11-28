@@ -109,7 +109,7 @@ export function processYearScoresByNflTeam(dbScores, dbScores247) {
 }
 
 export function joinScores(dbScores, dbStarts, dbUsers, week) {
-  let dbWeekScores = sanitizeScoresDataWeek(dbScores)[week];
+  let dbWeekScores = sanitizeScoresDataWeek(dbScores)[week] || {};
   let allStarts = getAllFromWeek(dbStarts, week);
   mergeData(dbWeekScores, allStarts);
   const playerList = []
