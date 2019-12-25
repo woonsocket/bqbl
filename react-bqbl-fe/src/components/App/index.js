@@ -11,6 +11,7 @@ import LineupPage from '../pages/Lineup/lineup';
 import Navigation, { LINKS } from '../reusable/Navigation/navigation'
 import PlayerScorePage from '../pages/PlayerScorePage/player-score-page';
 import PlayerStandingsPage from '../pages/PlayerStandingsPage/player-standings-page';
+import ProBowlPage from '../pages/ProBowlPage/pro-bowl-page';
 import BenchingPage from '../pages/BenchingPage/benching-page';
 import TwentyFourPage from '../pages/TwentyFourPage/twentyfour-page';
 import ScorePage from '../pages/TeamScorePage/team-score-page';
@@ -134,6 +135,7 @@ function App() {
         <LeagueYearWeekRoute exact path="/" component={HomePage} />
         <LeagueYearWeekRoute path={LINKS.HOME.path} component={HomePage} />
         <LeagueYearWeekRoute path={LINKS.LINEUP.path} component={LineupPage} />
+        <LeagueYearWeekRoute path={LINKS.PROBOWL.path} component={ProBowlPage} />
         <LeagueYearWeekRoute path={LINKS.PLAYER_SCORES.path} component={PlayerScorePage} />
         <LeagueYearWeekRoute path={LINKS.PLAYER_STANDINGS.path} component={PlayerStandingsPage} />
         <LeagueYearWeekRoute path={LINKS.TEAM_SCORES.path} component={ScorePage} />

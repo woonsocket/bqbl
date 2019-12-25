@@ -166,6 +166,21 @@ class Firebase {
     return this.db.ref(uri).update(row);
   }
 
+  getProBowlYearThen(uid, league, year, cb) {
+    const ref = this.db.ref(`${PREFIX}leaguespec/${league}/probowl/${year}/${uid}`);
+    ref.on('value', snapshot => {
+      cb(snapshot.val() || []);
+    })
+    return () => ref.off('value');
+  }
+
+  updateProBowlStarts(league, year, teams) {
+    // TODO(aerion): Be consistent about whether uid is a param or not.
+    const uid = this.auth.currentUser.uid;
+    const uri = `${PREFIX}leaguespec/${league}/probowl/${year}/${uid}`;
+    return this.db.ref(uri).set(teams);
+  }
+
   draftTeam() {
     return this.functions.httpsCallable('draftTeam');
   }
