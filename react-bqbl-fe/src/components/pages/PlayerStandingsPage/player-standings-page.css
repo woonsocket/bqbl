@@ -7,28 +7,6 @@
   margin-left:auto;
 }
 
-div.score-row {
-  display: flex;
-  margin: 4px 0px;
-}
-
-div.week-cell {
-  min-width: 70px;
-  font-size: 1rem;
-  text-align: left;
-  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
-  font-weight: 400;
-  vertical-align: top;
-}
-
-div.score-cells {
-  display: flex;
-  flex-wrap: wrap;
-}
-div.score-cell {
-  min-width: 50px;
-}
-
 .expanded {
   transform: rotate(180deg); 
 }

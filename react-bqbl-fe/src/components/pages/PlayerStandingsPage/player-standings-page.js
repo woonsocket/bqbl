@@ -14,6 +14,7 @@ import Collapse from '@material-ui/core/Collapse';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import IconButton from '@material-ui/core/IconButton';
 import IconScoreCell from '../../reusable/IconScoreCell/icon-score-cell';
+import PlayerScoreList from '../../reusable/PlayerScoreList/player-score-list';
 import PropTypes from 'prop-types';
 import Switch from '@material-ui/core/Switch';
 import classNames from 'classnames/bind';
@@ -91,7 +92,7 @@ function PlayerYearCard(props) {
           {team: startRow.team_2.team_name, score: startRow.team_2.score},
         ];
         return (
-          <ScoreRow key={weekId} label={'Week ' + weekId} entries={entries} />
+          <PlayerScoreList key={weekId} label={'Week ' + weekId} entries={entries} />
         );
       });
 
@@ -111,7 +112,7 @@ function PlayerYearCard(props) {
         subheader={"Total: " + props.player.total}
       />
       <CardContent>
-        <ScoreRow label="24/7" entries={scoreEntries247} />
+        <PlayerScoreList label="24/7" entries={scoreEntries247} />
         {weeks.slice(0, FOLD)}
         <Collapse in={expanded} timeout="auto" unmountOnExit>
           {weeks.slice(FOLD)}
@@ -142,27 +143,6 @@ function PlayerScores247(props) {
         {props.player.teams.map((team) => (
           <div key={team.name} className="score-cell">
             <IconScoreCell team={team.name} score={team.score247} />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-ScoreRow.propTypes = {
-  label: PropTypes.string.isRequired,
-  // An array of {team: string, score: number} objects.
-  entries: PropTypes.arrayOf(PropTypes.object),
-};
-
-function ScoreRow(props) {
-  return (
-    <div className="score-row">
-      <div className="week-cell">{props.label}</div>
-      <div className="score-cells">
-        {props.entries.map((entry, index) => (
-          <div key={index} className="score-cell">
-            <IconScoreCell team={entry.team} score={entry.score} />
           </div>
         ))}
       </div>
