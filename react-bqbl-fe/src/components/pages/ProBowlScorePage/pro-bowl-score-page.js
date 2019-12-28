@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 
+import { compose } from 'recompose';
+import { makeStyles } from '@material-ui/styles';
+import { withRouter } from 'react-router-dom';
+import PropTypes from 'prop-types';
+
 import { withFirebase } from '../../Firebase';
 import PlayerScoreList from '../../reusable/PlayerScoreList/player-score-list';
 import { joinProBowlScores } from '../../../middle/response';
-
-import { compose } from 'recompose';
-import { withRouter } from 'react-router-dom';
-import PropTypes from 'prop-types';
 
 const PRO_BOWL_WEEK = '17';
 
@@ -16,7 +17,15 @@ ProBowlScoresPageBase.propTypes = {
   year: PropTypes.string.isRequired,
 };
 
+const useStyles = makeStyles({
+  player: {
+    margin: '18px 0px',
+  },
+});
+
 function ProBowlScoresPageBase(props) {
+  const classes = useStyles();
+
   let [playerScores, setPlayerScores] = useState([]);
 
   useEffect(() => {
@@ -47,7 +56,9 @@ function ProBowlScoresPageBase(props) {
   // it's easy to show multiple league scores at once.
   return <React.Fragment>
     {playerScores.map(({name, id, teams}) => (
-      <PlayerScoreList key={id} label={name} entries={teams} />
+      <div className={classes.player}>
+        <PlayerScoreList key={id} label={name} entries={teams} showTotal />
+      </div>
     ))}
   </React.Fragment>
 }
