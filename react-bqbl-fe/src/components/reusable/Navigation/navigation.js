@@ -8,6 +8,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 const HOME = '/home';
 const LINEUP = '/lineup';
 const PROBOWL = '/probowl';
+const PROBOWL_SCORES = '/probowl-scores';
 const PLAYER_SCORES = '/player-scores';
 const PLAYER_STANDINGS = '/player-standings';
 const TEAM_SCORES = '/team-scores';
@@ -20,6 +21,7 @@ export const LINKS = {
   HOME: { path: HOME, text: 'Home' },
   LINEUP: { path: LINEUP, text: 'Lineup' },
   PROBOWL: { path: PROBOWL, text: 'Pro Bowl' },
+  PROBOWL_SCORES: { path: PROBOWL_SCORES, text: 'Pro Bowl Scores' },
   PLAYER_SCORES: { path: PLAYER_SCORES, text: 'Player Scores' },
   PLAYER_STANDINGS: { path: PLAYER_STANDINGS, text: 'Player Standings' },
   TEAM_SCORES: { path: TEAM_SCORES, text: 'Team Scores' },

@@ -12,6 +12,23 @@ export class LeagueSpecDataProxy {
     return uids.indexOf(uid) !== -1;
   }
 
+  // Returns a copy of the user data for this league spec.
+  getUsers() {
+    const users = this.leagueData.users[this.year];
+    if (!users) {
+      return {};
+    }
+    const copy = {};
+    for (const [uid, value] of Object.entries(users)) {
+      const teams = value['teams'] || [];
+      copy[uid] = {
+        name: value['name'],
+        teams: teams.slice(),
+      };
+    }
+    return copy;
+  }
+
   addUser(uid) {
     if (!this.leagueData.users) {
       this.leagueData.users = {};
@@ -21,6 +38,14 @@ export class LeagueSpecDataProxy {
     let users = this.leagueData.users[this.year];
     users.push({ name: "Foo", uid: uid, teams: [] });
     return this.leagueData;
+  }
+
+  getProBowlStarts() {
+    const probowl = this.leagueData.probowl;
+    if (!probowl) {
+      return {};
+    }
+    return probowl[this.year] || {};
   }
 
   getTakenTeams() {
@@ -131,6 +156,26 @@ export function joinScores(dbScores, dbStarts, dbUsers, week) {
     playerList.push(TEMPLATES.StartRow(dbUsers[playerKey].name, ...starts))
   }
   return playerList;
+}
+
+// TODO(aerion): This is terrible, but it's separate from joinScores because
+// the database schemas for regular season and pro bowl are different.
+export function joinProBowlScores(dbScores, proBowlStarts, week) {
+  let dbWeekScores = sanitizeScoresDataWeek(dbScores)[week] || {};
+  const players = [];
+  for (const {name, id, starts} of proBowlStarts) {
+    players.push({
+      name,
+      id,
+      teams: starts.map((teamName) => {
+        return {
+          team: teamName,
+          score: (dbWeekScores[teamName] && dbWeekScores[teamName].total) || 0,
+        };
+      }),
+    });
+  }
+  return players;
 }
 
 function sanitizeScoresDataWeek(dbScoresWeek) {

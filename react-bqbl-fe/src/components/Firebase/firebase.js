@@ -3,6 +3,8 @@ import 'firebase/database';
 import 'firebase/functions';
 import app from 'firebase/app';
 
+import { LeagueSpecDataProxy } from '../../middle/response';
+
 const config = {
   apiKey: process.env.REACT_APP_API_KEY,
   authDomain: process.env.REACT_APP_AUTH_DOMAIN,
@@ -170,8 +172,32 @@ class Firebase {
     const ref = this.db.ref(`${PREFIX}leaguespec/${league}/probowl/${year}/${uid}`);
     ref.on('value', snapshot => {
       cb(snapshot.val() || []);
-    })
+    });
     return () => ref.off('value');
+  }
+
+  // Calls back with an array of objects, one per player. Each describes the
+  // player and their starts:
+  //   {name: 'Player name', starts: ['Team1', 'Team2', ...]}
+  // Empty if the league does not exist. Players who have not chosen any teams
+  // are included in the returned list, but with an empty `starts` array.
+  getProBowlStartsForLeague(league, year, cb) {
+    return this.getLeagueSpecThen(league, (spec) => {
+      if (!spec) {
+        return [];
+      }
+      const ldsp = new LeagueSpecDataProxy(spec, year);
+      const proBowlStarts = ldsp.getProBowlStarts();
+      const users = [];
+      for (const [uid, data] of Object.entries(ldsp.getUsers())) {
+        users.push({
+          name: data.name,
+          id: uid,
+          starts: proBowlStarts[uid] || [],
+        });
+      }
+      cb(users);
+    });
   }
 
   updateProBowlStarts(league, year, teams) {
