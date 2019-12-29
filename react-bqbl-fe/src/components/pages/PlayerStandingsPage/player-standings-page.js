@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import './player-standings-page.css';
-import { allWeeksReverse } from "../../../constants/football";
+import { seasonWeeksReverse } from "../../../constants/football";
 import { compose } from 'recompose';
 import { withFirebase } from '../../Firebase';
 import { withRouter } from 'react-router-dom';
@@ -40,7 +40,7 @@ function PlayerStandingsPageBase(props) {
     return props.firebase.getScoresStartsUsersThen(props.league, props.year,
       ({ dbScores, dbScores247, dbStarts, dbUsers }) => {
         let val = processYearScores(
-            dbScores, dbScores247, dbStarts, dbUsers, allWeeksReverse(props.year));
+            dbScores, dbScores247, dbStarts, dbUsers, seasonWeeksReverse(props.year));
         let playerList = Object.keys(val).map(key => ({
           ...val[key],
           uid: key,
@@ -83,7 +83,7 @@ function PlayerYearCard(props) {
   });
 
   const startedWeeks = new Map(Object.entries(props.player.start_rows));
-  const weeks = allWeeksReverse(props.year)
+  const weeks = seasonWeeksReverse(props.year)
       .filter((weekId) => startedWeeks.has(weekId))
       .map((weekId) => {
         const startRow = startedWeeks.get(weekId);

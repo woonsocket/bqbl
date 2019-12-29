@@ -2,17 +2,19 @@ export const ALL_TEAMS = ["ARI", "ATL", "BAL", "BUF", "CAR", "CHI", "CIN", "CLE"
   "GB", "HOU", "IND", "JAX", "KC", "LA", "LAC", "MIA", "MIN", "NE", "NO", "NYG", "NYJ",
   "OAK", "PHI", "PIT", "SEA", "SF", "TB", "TEN", "WAS"];
 
-export const WEEK_IDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16",];
+// Weeks that are part of the NFL season.
+export const WEEK_IDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17"];
 
-export const CURRENT_YEAR_WEEK_IDS = WEEK_IDS.slice(0, footballWeek());
+// Weeks that are part of the BQBL regular season.
+const REGULAR_SEASON_WEEK_IDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"];
 
 export const CURRENT_YEAR = '2019';
 
-export function allWeeksReverse(year) {
+export function seasonWeeksReverse(year) {
   if (year === CURRENT_YEAR) {
-    return CURRENT_YEAR_WEEK_IDS.slice().reverse()
+    return REGULAR_SEASON_WEEK_IDS.slice(0, footballWeek()).reverse();
   }
-  return WEEK_IDS.slice().reverse();
+  return REGULAR_SEASON_WEEK_IDS.slice().reverse();
 }
 
 
