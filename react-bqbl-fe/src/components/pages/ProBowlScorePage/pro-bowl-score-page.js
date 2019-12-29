@@ -43,6 +43,14 @@ const pageStyles = makeStyles({
 function ProBowlScoresPageBase(props) {
   const classes = pageStyles();
 
+  const [nflScores, setNflScores] = useState({});
+
+  useEffect(() => {
+    return props.firebase.getScoresYearThen(props.year, (scores) => {
+      setNflScores(scores.dbScores);
+    });
+  }, [props.firebase, props.year]);
+
   const leagues = ALL_LEAGUES.slice();
   // Place the viewing player's league first.
   leagues.sort((a, b) => {
@@ -58,7 +66,7 @@ function ProBowlScoresPageBase(props) {
     <div className={classes.leagueContainer}>
       {leagues.map((league) => (
         <div key={league} className={classes.leagueCard}>
-          <ProBowlScoresCard league={league}
+          <ProBowlScoresCard league={league} nflScores={nflScores}
               firebase={props.firebase} year={props.year} />
         </div>
       ))}
@@ -69,6 +77,8 @@ function ProBowlScoresPageBase(props) {
 ProBowlScoresCard.propTypes = {
   firebase: PropTypes.object.isRequired,
   league: PropTypes.string.isRequired,
+  // BQBL scores for NFL teams for the given year.
+  nflScores: PropTypes.object.isRequired,
   year: PropTypes.string.isRequired,
 };
 
@@ -91,21 +101,12 @@ function ProBowlScoresCard(props) {
   let [playerScores, setPlayerScores] = useState([]);
 
   useEffect(() => {
-    const cleanupFuncs = [];
-    const scoresPromise = new Promise((resolve) => {
-      cleanupFuncs.push(
-          props.firebase.getScoresYearThen(props.year, (scores) => {
-            resolve(scores.dbScores);
-          }));
-    });
-    const startsPromise = new Promise((resolve) => {
-      cleanupFuncs.push(
-          props.firebase.getProBowlStartsForLeague(
-              props.league, props.year, resolve));
-    });
-    Promise.all([scoresPromise, startsPromise]).then(
-        ([scores, starts]) => {
-          const playerScores = joinProBowlScores(scores, starts, PRO_BOWL_WEEK);
+    return props.firebase.getProBowlStartsForLeague(
+        props.league,
+        props.year,
+        (starts) => {
+          const playerScores =
+              joinProBowlScores(props.nflScores, starts, PRO_BOWL_WEEK);
           playerScores.sort((a, b) => b.totalScore - a.totalScore);
           setPlayerScores(playerScores);
           let leagueScore = 0;
@@ -114,12 +115,7 @@ function ProBowlScoresCard(props) {
           }
           setLeagueScore(leagueScore);
         });
-    return () => {
-      for (const f of cleanupFuncs) {
-        f();
-      }
-    };
-  }, [props.firebase, props.league, props.year]);
+  }, [props.firebase, props.league, props.nflScores, props.year]);
 
   function playerClass(index) {
     const c = {};
