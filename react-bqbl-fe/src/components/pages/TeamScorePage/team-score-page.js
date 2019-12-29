@@ -16,7 +16,8 @@ TeamScorePageBase.propTypes = {
 }
 
 function TeamScorePageBase(props) {
-  let [valsList, setValsList] = useState([]);
+  let [isLoaded, setIsLoaded] = useState(false);
+  let [scoresList, setScoresList] = useState([]);
   let [sortScores, setSortScores] = useState(true);
   let [useProjections, setUseProjections] = useState(true);
 
@@ -38,7 +39,8 @@ function TeamScorePageBase(props) {
             scoresWeek = scoresWeek.sort((team, team2) => team2.total - team.total);
           }
         }
-        setValsList(scoresWeek);
+        setScoresList(scoresWeek);
+        setIsLoaded(true);
       });
   }, [props.firebase, props.league, props.year, props.week, sortScores, useProjections]);
 
@@ -62,9 +64,12 @@ function TeamScorePageBase(props) {
         />
 
       </div>
-      {valsList.map(score => (
+      {scoresList.map(score => (
         <TeamScoreCard score={score} key={score.teamName} boxScoreLink={boxScoreLink(props.year, props.week, score.gameInfo.id)} />
       ))}
+      {isLoaded && !scoresList.length &&
+        <div>No scores found for week {props.week}</div>
+      }
     </div>
   );
 }

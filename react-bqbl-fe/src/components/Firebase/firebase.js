@@ -72,10 +72,7 @@ class Firebase {
     const ref = this.db.ref(`scores/${year}/${week}`);
     ref.on('value',
       snapshot => {
-        const vals = snapshot.val();
-        if (!vals) {
-          throw new Error('no scores')
-        }
+        const vals = snapshot.val() || [];
         const valsList = Object.keys(vals).map(key => ({
           ...vals[key],
           teamName: key,
