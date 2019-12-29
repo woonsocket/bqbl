@@ -214,7 +214,9 @@ function getAllFromWeek(startsDataValue, week) {
   let allStarts = {}
 
   for (let [playerKey, playerVal] of Object.entries(startsDataValue)) {
-    allStarts[playerKey] = playerVal[week];
+    if (playerVal[week]) {
+      allStarts[playerKey] = playerVal[week];
+    }
   }
   return allStarts;
 }
