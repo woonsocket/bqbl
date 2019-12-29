@@ -17,6 +17,10 @@ import { joinProBowlScores } from '../../../middle/response';
 const PRO_BOWL_WEEK = '17';
 // The league score is the sum of the top 3 player scores.
 const LEAGUE_SCORE_PLAYER_COUNT = 3;
+// TODO(aerion): This is hard-coded to the two existing leagues. That's good
+// enough for now. Seems silly to generalize to reading every league from the
+// database at this moment.
+const ALL_LEAGUES = ['abqbl', 'nbqbl'];
 
 ProBowlScoresPageBase.propTypes = {
   firebase: PropTypes.object.isRequired,
@@ -24,7 +28,51 @@ ProBowlScoresPageBase.propTypes = {
   year: PropTypes.string.isRequired,
 };
 
-const useStyles = makeStyles({
+const pageStyles = makeStyles({
+  leagueContainer: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    justifyContent: 'space-around',
+  },
+  leagueCard: {
+    margin: '12px',
+    maxWidth: '350px',
+  },
+});
+
+function ProBowlScoresPageBase(props) {
+  const classes = pageStyles();
+
+  const leagues = ALL_LEAGUES.slice();
+  // Place the viewing player's league first.
+  leagues.sort((a, b) => {
+    if (a === props.league) {
+      return -1;
+    } else if (b === props.league) {
+      return 1;
+    }
+    return a.localeCompare(b);
+  });
+
+  return (
+    <div className={classes.leagueContainer}>
+      {leagues.map((league) => (
+        <div key={league} className={classes.leagueCard}>
+          <ProBowlScoresCard league={league}
+              firebase={props.firebase} year={props.year} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+ProBowlScoresCard.propTypes = {
+  firebase: PropTypes.object.isRequired,
+  league: PropTypes.string.isRequired,
+  year: PropTypes.string.isRequired,
+};
+
+const cardStyles = makeStyles({
   player: {
     margin: 0,
     padding: '4px',
@@ -35,8 +83,8 @@ const useStyles = makeStyles({
   },
 });
 
-function ProBowlScoresPageBase(props) {
-  const classes = useStyles();
+function ProBowlScoresCard(props) {
+  const classes = cardStyles();
   const cx = classNames.bind(classes);
 
   let [leagueScore, setLeagueScore] = useState(0);
@@ -80,9 +128,7 @@ function ProBowlScoresPageBase(props) {
     return cx(c);
   }
 
-  // TODO(aerion): Factor out a component for a league's score card so that
-  // it's easy to show multiple league scores at once.
-  return <React.Fragment>
+  return (
     <Card>
       <CardHeader
         title={props.league}
@@ -96,7 +142,7 @@ function ProBowlScoresPageBase(props) {
         ))}
       </CardContent>
     </Card>
-  </React.Fragment>
+  );
 }
 
 const ProBowlScoresPage = compose(
