@@ -10,12 +10,8 @@ PlayerScoreList.propTypes = {
   label: PropTypes.string.isRequired,
   // An array of {team: string, score: number} objects.
   entries: PropTypes.arrayOf(PropTypes.object),
-  showTotal: PropTypes.bool.isRequired,
+  total: PropTypes.number,
 };
-
-PlayerScoreList.defaultProps = {
-  showTotal: false,
-}
 
 const useStyles = makeStyles({
   scoreRow: {
@@ -53,11 +49,6 @@ const useStyles = makeStyles({
 function PlayerScoreList(props) {
   const classes = useStyles();
 
-  let total = 0;
-  for (const entry of props.entries) {
-    total += entry.score;
-  }
-
   return (
     <div className={classes.scoreRow}>
       <div className={classes.labelCell}>{props.label}</div>
@@ -69,10 +60,10 @@ function PlayerScoreList(props) {
             </div>
           ))}
         </div>
-        {props.showTotal && (
+        {props.total !== undefined && (
           <div>
             <span className={classes.totalLabel}>Total:</span>&nbsp;
-            <ScoreValue score={total} />
+            <ScoreValue score={props.total} />
           </div>
         )}
       </div>

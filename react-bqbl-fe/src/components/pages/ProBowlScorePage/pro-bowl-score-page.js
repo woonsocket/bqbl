@@ -55,9 +55,9 @@ function ProBowlScoresPageBase(props) {
   // TODO(aerion): Factor out a component for a league's score card so that
   // it's easy to show multiple league scores at once.
   return <React.Fragment>
-    {playerScores.map(({name, id, teams}) => (
-      <div className={classes.player}>
-        <PlayerScoreList key={id} label={name} entries={teams} showTotal />
+    {playerScores.map(({name, id, teams, totalScore}) => (
+      <div key={id} className={classes.player}>
+        <PlayerScoreList label={name} entries={teams} total={totalScore} />
       </div>
     ))}
   </React.Fragment>

@@ -164,16 +164,14 @@ export function joinProBowlScores(dbScores, proBowlStarts, week) {
   let dbWeekScores = sanitizeScoresDataWeek(dbScores)[week] || {};
   const players = [];
   for (const {name, id, starts} of proBowlStarts) {
-    players.push({
-      name,
-      id,
-      teams: starts.map((teamName) => {
-        return {
-          team: teamName,
-          score: (dbWeekScores[teamName] && dbWeekScores[teamName].total) || 0,
-        };
-      }),
-    });
+    const teams = [];
+    let totalScore = 0;
+    for (const teamName of starts) {
+      const score = (dbWeekScores[teamName] && dbWeekScores[teamName].total) || 0;
+      totalScore += score;
+      teams.push({team: teamName, score: score});
+    }
+    players.push({name, id, teams, totalScore});
   }
   return players;
 }
