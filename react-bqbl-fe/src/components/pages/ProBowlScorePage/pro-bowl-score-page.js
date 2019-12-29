@@ -43,7 +43,9 @@ function ProBowlScoresPageBase(props) {
     });
     Promise.all([scoresPromise, startsPromise]).then(
         ([scores, starts]) => {
-          setPlayerScores(joinProBowlScores(scores, starts, PRO_BOWL_WEEK));
+          const playerScores = joinProBowlScores(scores, starts, PRO_BOWL_WEEK);
+          playerScores.sort((a, b) => b.totalScore - a.totalScore);
+          setPlayerScores(playerScores);
         });
     return () => {
       for (const f of cleanupFuncs) {
