@@ -20,7 +20,7 @@ const TWENTYFOUR = '/247';
 export const LINKS = {
   HOME: { path: HOME, text: 'Home' },
   LINEUP: { path: LINEUP, text: 'Lineup' },
-  PROBOWL: { path: PROBOWL, text: 'Pro Bowl' },
+  PROBOWL: { path: PROBOWL, text: 'Pro Bowl Lineup' },
   PROBOWL_SCORES: { path: PROBOWL_SCORES, text: 'Pro Bowl Scores' },
   PLAYER_SCORES: { path: PLAYER_SCORES, text: 'Player Scores' },
   PLAYER_STANDINGS: { path: PLAYER_STANDINGS, text: 'Player Standings' },
