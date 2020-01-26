@@ -39,6 +39,11 @@ parser.add_option("--all", dest="all", action="store_true",
                   help="Scrape all games, not just those that are 'due'")
 parser.add_option("--firebase_creds", dest="firebase_cred_file",
                   help="File containing Firebase service account credentials")
+parser.add_option("--no_events", dest="publish_events", default=True,
+                  action="store_false",
+                  help=("Don't publish new events to the event ticker. The "
+                        "ticker feeds things like the BQBL Red Zone bot. Use "
+                        "this flag when backfilling historical data."))
 
 
 def init_firebase(cred_file, firebase_project):
@@ -445,15 +450,17 @@ def main():
         if scrape_status:
             scrape_status_ref.update(scrape_status)
 
-        events_ref = db.reference('/events/{0}/{1}'.format(season, week))
-        if plays.events.fumbles:
-            events_ref.child('fumbles').update(plays.events.fumbles)
-        if plays.events.safeties:
-            events_ref.child('safeties').update(plays.events.safeties)
-        if plays.events.interceptions:
-            events_ref.child('interceptions').update(plays.events.interceptions)
-        if plays.events.passers:
-            events_ref.child('passers').update(plays.events.passers)
+        if options.publish_events:
+            events_ref = db.reference('/events/{0}/{1}'.format(season, week))
+            if plays.events.fumbles:
+                events_ref.child('fumbles').update(plays.events.fumbles)
+            if plays.events.safeties:
+                events_ref.child('safeties').update(plays.events.safeties)
+            if plays.events.interceptions:
+                events_ref.child('interceptions').update(
+                    plays.events.interceptions)
+            if plays.events.passers:
+                events_ref.child('passers').update(plays.events.passers)
 
         if plays.outcomes_by_team:
             db.reference('/stats/%s/%s' % (season, week)).update(
