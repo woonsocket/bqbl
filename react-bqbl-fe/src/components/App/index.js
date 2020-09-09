@@ -49,7 +49,7 @@ function App() {
 
   const searchParams = new URLSearchParams(window.location.search);
   const [league, setLeague] = React.useState(searchParams.get("league") || '');
-  const [year, setYear] = React.useState(searchParams.get("year") || '2019');
+  const [year, setYear] = React.useState(searchParams.get("year") || '2020');
   const [week, setWeek] = React.useState(searchParams.get("week") || '1');
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const [drawerActive, setDrawerActive] = React.useState(searchParams.get('league'));

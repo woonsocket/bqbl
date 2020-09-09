@@ -8,7 +8,7 @@ export const WEEK_IDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"
 // Weeks that are part of the BQBL regular season.
 const REGULAR_SEASON_WEEK_IDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"];
 
-export const CURRENT_YEAR = '2019';
+export const CURRENT_YEAR = '2020';
 
 export function seasonWeeksReverse(year) {
   if (year === CURRENT_YEAR) {

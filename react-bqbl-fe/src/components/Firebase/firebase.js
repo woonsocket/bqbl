@@ -217,7 +217,7 @@ class Firebase {
     let scoresRef = this.db.ref(`scores/${year}`);
     let scores247Ref = this.db.ref(`scores247/${year}`);
     let startsRef = this.db.ref(`${PREFIX}leaguespec/${league}/plays/${year}`);
-    let usersRef = this.db.ref(`${PREFIX}leaguespec/${league}/users/2019`);
+    let usersRef = this.db.ref(`${PREFIX}leaguespec/${league}/users/${year}`);
 
     scoresRef.on('value',
       scoresSnap => {
