@@ -1,19 +1,29 @@
+# keys
+private-keys
+react-bqbl-fe/.env
+
+# deliberately-private
+private
+
+# misc
 *.txt
 *~
 .#*
 \#*
 __pycache__
 events/BQBL-2c621a7cef1f.json
-private-keys
 sandbox/*
-functions/node_modules/*
-react-bqbl-fe/node_modules/*
-functions/firebase-debug.log
-react-bqbl-fe/.env
 react-bqbl-fe/.eslintrc.js
 .DS_Store
-react-bqbl-fe/src/components/PlayerScorePage/player-score-page.firebasetst-scratch.js
 .firebase/hosting.cmVhY3QtYnFibC1mZS9idWlsZA.cache
 .firebase/hosting.cHVibGlj.cache
 firebase-debug.log
+
+# build
 web3/dist
+
+# functions
+functions/node_modules/*
+functions/firebase-debug.log
+functions/database-debug.log
+functions/ui-debug.log
