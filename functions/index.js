@@ -110,7 +110,7 @@ exports.rescoreAll = functions.https.onRequest((req, res) => {
 exports.addPlayerToLeague = create.addPlayerToLeague;
 exports.setDraftOrder = create.setDraftOrder;
 exports.createLeague = create.createLeague;
-exports.finalizeLeague = create.finalizeLeague;
+exports.finalizeDraft = create.finalizeDraft;
 exports.createNewYear = create.createNewYear;
 exports.draftTeam = create.draftTeam;
 
