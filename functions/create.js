@@ -79,7 +79,7 @@ exports.createLeague = functions.https.onCall((data, context) => {
     id: leagueId,
     settings: {}
   };
-  stubLeague[settings][year] = { dh: false };
+  stubLeague["settings"][year] = { dh: false };
   return leagueRef.set(stubLeague);
 });
 
