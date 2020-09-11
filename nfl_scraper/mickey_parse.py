@@ -25,6 +25,8 @@ TWO_NAME = '//div[contains(@class, "home")]//span[@class="abbrev"]'
 CLOCK = '//span[@class="status-detail"]'
 GAMES = "//a[@name='&lpos=nfl:scoreboard:boxscore']"
 
+
+# let ids = []; for (let anchor of $x("//a[@name='&lpos=nfl:scoreboard:gamecast']")) {let components = anchor.href.split('/'); ids.push(components[components.length - 1])}; console.log(ids)
 def all_games(year, week):
   if week == "1":
     return ["401220225", "401220131", "401220352", "401220313", "401220116", "401220282", "401220300", "401220268", "401220370", "401220195", "401220147", "401220161", "401220369", "401220347", "401220256", "401220217"]
