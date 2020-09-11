@@ -65,9 +65,8 @@ def main():
         print('--year and --week are required if a game ID file is used',
                 file=sys.stderr)
         sys.exit(1)
-    # game_ids = [gid.strip() for gid in open(args[0])]
-    # games_with_alerts = set()
-
+    games_with_alerts = set()
+    game_ids = mickey_parse.all_games(season, week)
     if not options.firebase_cred_file:
         sys.stderr.write('must supply --firebase_creds\n')
         parser.print_help(file=sys.stderr)
@@ -75,18 +74,21 @@ def main():
 
     init_firebase(options.firebase_cred_file, options.firebase_project)
 
-    # scrape_status_ref = db.reference(
-    #     '/scrapestatus/{0}/{1}'.format(season, week))
-    # if options.all:
-    #     scrape_status = collections.defaultdict(dict)
-    # else:
-    #     scrape_status = collections.defaultdict(dict,
-    #                                             scrape_status_ref.get() or {})
+    scrape_status_ref = db.reference(
+        '/scrapestatus/{0}/{1}'.format(season, week))
+    if options.all:
+        scrape_status = collections.defaultdict(dict)
+    else:
+        scrape_status = collections.defaultdict(dict,
+                                                scrape_status_ref.get() or {})
     now = datetime.datetime.now(tz=datetime.timezone.utc)
-    urls = ["https://www.espn.com/nfl/boxscore?gameId=401220225"]
     dst = {}
-    for url in urls:
-        mickey_parse.mickey_parse(url, dst)
+    for id in game_ids:
+        url = ('https://www.espn.com/nfl/boxscore?gameId={0}'
+               .format(id))
+        try: 
+            mickey_parse.mickey_parse(url, dst)
+        except: pass
     for team_name, value in dst.items():
         db.reference('/stats/%s/%s/%s' % (season, week, team_name)).update(value)
     # for id in game_ids:

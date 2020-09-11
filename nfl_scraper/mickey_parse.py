@@ -23,6 +23,11 @@ PLAYER = './/td[@class="name"]'
 ONE_NAME = '//div[contains(@class, "away")]//span[@class="abbrev"]'
 TWO_NAME = '//div[contains(@class, "home")]//span[@class="abbrev"]'
 CLOCK = '//span[@class="status-detail"]'
+GAMES = "//a[@name='&lpos=nfl:scoreboard:boxscore']"
+
+def all_games(year, week):
+  if week == "1":
+    return ["401220225", "401220131", "401220352", "401220313", "401220116", "401220282", "401220300", "401220268", "401220370", "401220195", "401220147", "401220161", "401220369", "401220347", "401220256", "401220217"]
 
 
 def all_passers(tree):
