@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 
 import './player-standings-page.css';
 import { seasonWeeksReverse } from "../../../constants/football";
-import { compose } from 'recompose';
-import { withFirebase } from '../../Firebase';
-import { withRouter } from 'react-router-dom';
+import { FirebaseContext } from '../../Firebase';
 import Avatar from '@material-ui/core/Avatar';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
@@ -22,22 +20,22 @@ import { processYearScores } from '../../../middle/response';
 
 const FOLD = 4;
 
-PlayerStandingsPageBase.propTypes = {
-  firebase: PropTypes.object.isRequired,
+PlayerStandingsPage.propTypes = {
   year: PropTypes.string.isRequired,
   league: PropTypes.string.isRequired,
 };
 
-function PlayerStandingsPageBase(props) {
+function PlayerStandingsPage(props) {
   let [playerTable, setPlayerTable] = useState([]);
   let [sortScores, setSortScores] = useState(true);
+  const firebase = useContext(FirebaseContext);
 
   function sortClickedCallback() {
     setSortScores(!sortScores);
   }
 
   useEffect(() => {
-    return props.firebase.getScoresStartsUsersThen(props.league, props.year,
+    return firebase.getScoresStartsUsersThen(props.league, props.year,
       ({ dbScores, dbScores247, dbStarts, dbUsers }) => {
         let val = processYearScores(
             dbScores, dbScores247, dbStarts, dbUsers, seasonWeeksReverse(props.year));
@@ -50,7 +48,7 @@ function PlayerStandingsPageBase(props) {
         }
         setPlayerTable(playerList);
       });
-  }, [props.firebase, props.league, props.year, sortScores]);
+  }, [firebase, props.league, props.year, sortScores]);
 
   return (
     <React.Fragment>
@@ -149,10 +147,5 @@ function PlayerScores247(props) {
     </div>
   );
 }
-
-const PlayerStandingsPage = compose(
-  withRouter,
-  withFirebase,
-)(PlayerStandingsPageBase);
 
 export default PlayerStandingsPage;
