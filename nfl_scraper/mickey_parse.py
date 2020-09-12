@@ -22,7 +22,7 @@ INTERCEPTIONS = './/*[@id="gamepackage-interceptions"]'
 PLAYER = './/td[@class="name"]'
 ONE_NAME = '//div[contains(@class, "away")]//span[@class="abbrev"]'
 TWO_NAME = '//div[contains(@class, "home")]//span[@class="abbrev"]'
-CLOCK = '//span[@class="status-detail"]'
+CLOCK = '//span[contains(@class,"status-detail")]'
 GAMES = "//a[@name='&lpos=nfl:scoreboard:boxscore']"
 
 

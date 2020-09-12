@@ -88,7 +88,8 @@ def main():
                .format(id))
         try: 
             mickey_parse.mickey_parse(url, dst)
-        except: pass
+        except: 
+            print("ERROR", id)
     for team_name, value in dst.items():
         db.reference('/stats/%s/%s/%s' % (season, week, team_name)).update(value)
     # for id in game_ids:
