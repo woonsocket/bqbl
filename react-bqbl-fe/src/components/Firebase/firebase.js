@@ -51,12 +51,12 @@ class Firebase {
     scoresRef.on('value', scoresSnap => {
       scores247Ref.on('value', scores247Snap => {
         const dbScores = scoresSnap.val();
-        const dbScores247 = scores247Snap.val();
+        const dbScores247 = scores247Snap.val() || [];
         if (!dbScores) {
           throw new Error("Can't read NFL team scores");
         }
         if (!dbScores247) {
-          throw new Error("Can't read 24/7 scores");
+          console.log("Can't read 24/7 scores. Have the quarterbacks really been that good?");
         }
         cb({ dbScores, dbScores247 });
       });
@@ -228,7 +228,7 @@ class Firebase {
                 usersRef.on('value',
                   usersSnap => {
                     const dbScores = scoresSnap.val();
-                    const dbScores247 = scores247Snap.val();
+                    const dbScores247 = scores247Snap.val() || {};
                     const dbStarts = startsSnap.val();
                     const dbUsers = usersSnap.val();
                     if (!dbScores || !dbScores247 || !dbStarts || !dbUsers) {
