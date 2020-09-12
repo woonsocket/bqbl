@@ -1,39 +1,36 @@
 import { Link } from 'react-router-dom';
-import { withFirebase } from '../../Firebase';
+import { FirebaseContext } from '../../Firebase';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Navigation from '../../reusable/Navigation/navigation'
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import SignIn from '../../reusable/SignIn/sign-in'
 
-import { compose } from 'recompose';
-import { withRouter } from 'react-router-dom';
-
-HomeBase.propTypes = {
-  firebase: PropTypes.object.isRequired,
+Home.propTypes = {
   league: PropTypes.string,
   year: PropTypes.string,
   week: PropTypes.string,
   leagues: PropTypes.array,
 }
 
-function HomeBase(props) {
+function Home(props) {
+  const firebase = useContext(FirebaseContext);
+  let [user, setUser] = useState(firebase.getCurrentUser());
 
-  let [user, setUser] = useState(props.firebase.getCurrentUser());
   function authChanged(newUser) {
     setUser(newUser);
   }
 
   useEffect(() => {
-    return props.firebase.addAuthListener(authChanged);
+    return firebase.addAuthListener(authChanged);
   });
 
   if (user && props.league) {
     return <Navigation year={props.year} league={props.league} week={props.week} />;
   } else if (user) {
-    return <AllLeagues year={props.year} leagues={props.firebase.getAllLeagues()} week={props.week} />;
+    return <AllLeagues year={props.year} leagues={firebase.getAllLeagues()} week={props.week} />;
   }
   return <SignIn />;
 }
@@ -62,10 +59,5 @@ function AllLeagues(props) {
     </List>
   );
 }
-
-const Home = compose(
-  withRouter,
-  withFirebase,
-)(HomeBase);
 
 export default Home;
