@@ -1,21 +1,17 @@
-import { compose } from 'recompose';
-import { withRouter } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import Switch from '@material-ui/core/Switch';
-
-import React, { useEffect, useState } from 'react';
-
-import { withFirebase } from '../../Firebase';
+import PropTypes from 'prop-types';
+import React, { useContext, useEffect, useState } from 'react';
+import { FirebaseContext } from '../../Firebase';
 import TeamScoreCard from '../../reusable/TeamScoreCard/team-score-card';
 
-TeamScorePageBase.propTypes = {
-  firebase: PropTypes.object.isRequired,
+TeamScorePage.propTypes = {
   league: PropTypes.string.isRequired,
   week: PropTypes.string.isRequired,
   year: PropTypes.string.isRequired,
 }
 
-function TeamScorePageBase(props) {
+function TeamScorePage(props) {
+  const firebase = useContext(FirebaseContext);
   let [isLoaded, setIsLoaded] = useState(false);
   let [scoresList, setScoresList] = useState([]);
   let [sortScores, setSortScores] = useState(true);
@@ -30,7 +26,7 @@ function TeamScorePageBase(props) {
   }
 
   useEffect(() => {
-    return props.firebase.getScoresWeekThen(props.year, props.week,
+    return firebase.getScoresWeekThen(props.year, props.week,
       scoresWeek => {
         if (sortScores) {
           if (useProjections) {
@@ -42,7 +38,7 @@ function TeamScorePageBase(props) {
         setScoresList(scoresWeek);
         setIsLoaded(true);
       });
-  }, [props.firebase, props.league, props.year, props.week, sortScores, useProjections]);
+  }, [firebase, props.league, props.year, props.week, sortScores, useProjections]);
 
   return (
     <div style={{ textAlign: 'center' }}>
@@ -87,10 +83,5 @@ function boxScoreLink(year, week, gameId) {
       `${gameId}/${year}/${nflWeek}/${atCode}` +
       '#tab=analyze&analyze=boxscore';
 }
-
-const TeamScorePage = compose(
-  withRouter,
-  withFirebase,
-)(TeamScorePageBase);
 
 export default TeamScorePage;
