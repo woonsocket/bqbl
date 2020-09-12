@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 
-import { withFirebase } from '../../Firebase';
+import { FirebaseContext } from '../../Firebase';
 
 import IconScoreCell from '../../reusable/IconScoreCell/icon-score-cell'
 import Table from '@material-ui/core/Table';
@@ -9,30 +9,19 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 
-import { compose } from 'recompose';
-import { withRouter } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import { joinScores } from '../../../middle/response'
 
-function PlayerScorePageBase(props) {
+function PlayerScorePage(props) {
   let [playerList, setPlayerList] = useState([]);
+  const firebase = useContext(FirebaseContext);
 
   useEffect(() => {
-    return props.firebase.getScoresStartsUsersThen(props.league, props.year,
+    return firebase.getScoresStartsUsersThen(props.league, props.year,
       ({ dbScores, dbStarts, dbUsers }) => {
         setPlayerList(joinScores(dbScores, dbStarts, dbUsers, props.week));
       });
-  }, [props.firebase, props.league, props.year, props.week]);
+  }, [firebase, props.league, props.year, props.week]);
 
-  return <PlayerScorePageUI playerList={playerList} />;
-}
-
-// Array of TEMPLATES.StartRow
-PlayerScorePageUI.propTypes = {
-  playerList: PropTypes.array.isRequired,
-}
-
-function PlayerScorePageUI(props) {
   return (
     <Table>
       <TableHead>
@@ -43,7 +32,7 @@ function PlayerScorePageUI(props) {
         </TableRow>
       </TableHead>
       <TableBody>
-        {props.playerList.map(row => (
+        {playerList.map(row => (
           <TableRow key={row.name}>
             <TableCell component="th" scope="row">
               {row.name}
@@ -56,10 +45,5 @@ function PlayerScorePageUI(props) {
     </Table>
   )
 }
-
-const PlayerScorePage = compose(
-  withRouter,
-  withFirebase,
-)(PlayerScorePageBase);
 
 export default PlayerScorePage;
