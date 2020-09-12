@@ -1,26 +1,25 @@
-import React, { useEffect, useState } from 'react';
-
-import * as FOOTBALL from '../../../constants/football';
-import { withFirebase } from '../../Firebase';
-
-import { compose } from 'recompose';
-import { withRouter } from 'react-router-dom';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-
+import React, { useContext, useEffect, useState } from 'react';
+import * as FOOTBALL from '../../../constants/football';
 import { processYearScoresByNflTeam } from '../../../middle/response';
+import { FirebaseContext } from '../../Firebase';
 import IconAndName from '../../reusable/IconAndName/icon-and-name';
 import ScoreValue from '../../reusable/ScoreValue/score-value';
 
-function TeamStandingsPageBase(props) {
+
+
+
+function TeamStandingsPage(props) {
+  const firebase = useContext(FirebaseContext);
   let [allScores, setAllScores] = useState([]);
 
   useEffect(() => {
-    return props.firebase.getScoresYearThen(
+    return firebase.getScoresYearThen(
         props.year,
         ({dbScores, dbScores247}) => {
           const scoreEntries = Object.entries(
@@ -30,7 +29,7 @@ function TeamStandingsPageBase(props) {
           });
           setAllScores(scoreEntries);
         });
-  }, [props.firebase, props.league, props.year]);
+  }, [firebase, props.league, props.year]);
 
   return (
     <Paper>
@@ -67,10 +66,5 @@ function TeamStandingsPageBase(props) {
     </Paper>
   );
 }
-
-const TeamStandingsPage = compose(
-  withRouter,
-  withFirebase,
-)(TeamStandingsPageBase);
 
 export default TeamStandingsPage;
