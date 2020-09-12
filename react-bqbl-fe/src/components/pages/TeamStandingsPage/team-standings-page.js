@@ -24,7 +24,7 @@ function TeamStandingsPage(props) {
         ({dbScores, dbScores247}) => {
           const scoreEntries = Object.entries(
               processYearScoresByNflTeam(dbScores, dbScores247));
-          scoreEntries.sort(([id1, scores1], [id2, scores2]) => {
+          scoreEntries.sort(([_id1, scores1], [_id2, scores2]) => {
             return scores2.total - scores1.total;
           });
           setAllScores(scoreEntries);
