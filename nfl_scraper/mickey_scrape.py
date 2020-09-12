@@ -65,7 +65,7 @@ def main():
         print('--year and --week are required if a game ID file is used',
                 file=sys.stderr)
         sys.exit(1)
-    games_with_alerts = set()
+    # games_with_alerts = set()
     game_ids = mickey_parse.all_games(season, week)
     if not options.firebase_cred_file:
         sys.stderr.write('must supply --firebase_creds\n')
