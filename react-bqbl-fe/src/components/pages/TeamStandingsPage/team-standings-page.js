@@ -11,9 +11,6 @@ import { FirebaseContext } from '../../Firebase';
 import IconAndName from '../../reusable/IconAndName/icon-and-name';
 import ScoreValue from '../../reusable/ScoreValue/score-value';
 
-
-
-
 function TeamStandingsPage(props) {
   const firebase = useContext(FirebaseContext);
   let [allScores, setAllScores] = useState([]);
