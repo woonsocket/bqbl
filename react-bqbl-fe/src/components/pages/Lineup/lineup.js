@@ -1,21 +1,18 @@
-import React, { useEffect, useState } from 'react';
-
-import * as FOOTBALL from '../../../constants/football';
-import * as SCHEDULE from '../../../constants/schedule';
-
-import { makeStyles } from '@material-ui/styles';
-import { LeagueSpecDataProxy } from '../../../middle/response';
-import { compose } from 'recompose';
-import { withFirebase } from '../../Firebase';
-import { withRouter } from 'react-router-dom';
-import { Lock } from '@material-ui/icons';
 import Input from '@material-ui/core/Input';
 import NativeSelect from '@material-ui/core/NativeSelect';
-import PropTypes from 'prop-types';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
+import { Lock } from '@material-ui/icons';
+import { makeStyles } from '@material-ui/styles';
+import PropTypes from 'prop-types';
+import React, { useContext, useEffect, useState } from 'react';
+import * as FOOTBALL from '../../../constants/football';
+import * as SCHEDULE from '../../../constants/schedule';
+import { LeagueSpecDataProxy } from '../../../middle/response';
+import { FirebaseContext } from '../../Firebase';
+
 
 const useStyles = makeStyles({
   team: {
@@ -31,16 +28,16 @@ const useStyles = makeStyles({
   
 })
 
-LineupPageBase.propTypes = {
-  firebase: PropTypes.object.isRequired,
+LineupPage.propTypes = {
   league: PropTypes.string.isRequired,
   year: PropTypes.string.isRequired,
 }
 
-function LineupPageBase(props) {
+function LineupPage(props) {
+  const firebase = useContext(FirebaseContext);
   let [weeks, setWeeks] = useState({});
   let [dh, setDh] = useState(false);
-  let [user, setUser] = useState(props.firebase.getCurrentUser());
+  let [user, setUser] = useState(firebase.getCurrentUser());
   // TODO(aerion): Update lockedWeeks if the lock time passes while the
   // component is visible.
   let [lockedWeeks, setLockedWeeks] = useState(new Set());
@@ -50,16 +47,16 @@ function LineupPageBase(props) {
   }
 
   useEffect(() => {
-    return props.firebase.addAuthListener(authChanged);
+    return firebase.addAuthListener(authChanged);
   });
 
   useEffect(() => {
     if (!user) {
       return;
     }
-    const unsubStarts = props.firebase.getStartsYearThen(
+    const unsubStarts = firebase.getStartsYearThen(
         user.uid, props.league, props.year, setWeeks);
-    const unsubLeagueSpec = props.firebase.getLeagueSpecThen(
+    const unsubLeagueSpec = firebase.getLeagueSpecThen(
         props.league, data => {
           let lsdp = new LeagueSpecDataProxy(data, props.year);
           setDh(lsdp.hasDh());
@@ -68,17 +65,17 @@ function LineupPageBase(props) {
       unsubStarts();
       unsubLeagueSpec();
     };
-  }, [props.firebase, props.league, props.year, user]);
+  }, [firebase, props.league, props.year, user]);
 
   useEffect(() => {
-    return props.firebase.getLockedWeeksThen(Date.now(), setLockedWeeks);
-  }, [props.firebase]);
+    return firebase.getLockedWeeksThen(Date.now(), setLockedWeeks);
+  }, [firebase]);
 
   return (
     <Table size="small">
       <TableBody>
         {Object.values(weeks).map((week, index) => (
-          <LineupWeek firebase={props.firebase} week={week}
+          <LineupWeek week={week}
               league={props.league} locked={lockedWeeks.has(week.id)}
               year={props.year} index={index} dh={dh} key={index} />
         ))}
@@ -88,7 +85,6 @@ function LineupPageBase(props) {
 }
 
 LineupWeek.propTypes = {
-  firebase: PropTypes.object.isRequired,
   dh: PropTypes.bool.isRequired,
   locked: PropTypes.bool.isRequired,
   week: PropTypes.object.isRequired,
@@ -97,6 +93,7 @@ LineupWeek.propTypes = {
 }
 
 function LineupWeek(props) {
+  const firebase = useContext(FirebaseContext);
   const classes = useStyles();
 
   let [week, setWeek] = useState(props.week);
@@ -122,7 +119,7 @@ function LineupWeek(props) {
     }
     let newWeek = JSON.parse(JSON.stringify(week));
     newWeek.teams[cellId].selected = !week.teams[cellId].selected;
-    props.firebase.updateStartsRow(props.league, props.year, week.id, newWeek).then(
+    firebase.updateStartsRow(props.league, props.year, week.id, newWeek).then(
       () => setWeek(newWeek)
     )
   }
@@ -139,7 +136,7 @@ function LineupWeek(props) {
     }
     newWeek.teams[cellId] = { name: val, selected: val !== "" };
     setWeek(newWeek);
-    props.firebase.updateStartsRow(props.league, props.year, week.id, newWeek);
+    firebase.updateStartsRow(props.league, props.year, week.id, newWeek);
   }
 
   return (
@@ -187,10 +184,5 @@ function DHSelector({ selectCallback, team, dhId, disabled }) {
     </NativeSelect>
   )
 }
-
-const LineupPage = compose(
-  withRouter,
-  withFirebase,
-)(LineupPageBase);
 
 export default LineupPage;
