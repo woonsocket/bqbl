@@ -34,8 +34,8 @@ export function footballWeek() {
     return 17;
   }
   const day = dayOfYear();
-  // This 246 is hard-coded for the first day of the season in 2019...
-  let week = Math.ceil((day - 246) / 7);
+  // This 257 is hard-coded for the first day of the season in 2020...
+  let week = Math.ceil((day - 257) / 7);
   if (week < 1) {
     week = 1;
   }
