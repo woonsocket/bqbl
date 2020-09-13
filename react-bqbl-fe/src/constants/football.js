@@ -1,7 +1,13 @@
 // TODO: good lord...
-export const ALL_TEAMS = ["ARI", "ATL", "BAL", "BUF", "CAR", "CHI", "CIN", "CLE", "DAL", "DEN", "DET",
+export const ALL_TEAMS_2020 = ["ARI", "ATL", "BAL", "BUF", "CAR", "CHI", "CIN", "CLE", "DAL", "DEN", "DET",
   "GB", "HOU", "IND", "JAX", "KC", "LA", "LAC", "MIA", "MIN", "NE", "NO", "NYG", "NYJ",
   "OAK", "PHI", "PIT", "SEA", "SF", "TB", "TEN", "WAS"];
+
+export const ALL_TEAMS_2019 = ["ARI", "ATL", "BAL", "BUF", "CAR", "CHI", "CIN", "CLE", "DAL", "DEN", "DET",
+  "GB", "HOU", "IND", "JAX", "KC", "LA", "LAC", "MIA", "MIN", "NE", "NO", "NYG", "NYJ",
+  "OAK", "PHI", "PIT", "SEA", "SF", "TB", "TEN", "WAS"];
+
+export const ALL_TEAMS = ALL_TEAMS_2020;
 
 // Weeks that are part of the NFL season.
 export const WEEK_IDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17"];
