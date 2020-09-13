@@ -172,19 +172,18 @@ def extract_game(tree, home=True):
   team['TD'] = team['RUSHTD'] + team["PASSTD"]
   return team, team_name
 
-# stats/YEAR/WEEK/TEAM(3-letter)/
 def mickey_parse(url, dst):
   headers = {'Content-Type': 'text/html',}
   response = requests.get(url, headers=headers)
   html = response.text
   tree = etree.HTML(html)
-  # print(html)
   team, team_key = extract_game(tree, home=False)
   if team:
     dst[team_key] = team
-  team, team_key = extract_game(tree, home=True)
-  if team:
-    dst[team_key] = team
+  team_2, team_key_2 = extract_game(tree, home=True)
+  if team_2:
+    dst[team_key_2] = team_2
+  return team_key, team_key_2
 
 if __name__ == "__main__":
   url = 'https://www.espn.com/nfl/boxscore?gameId=401128096'

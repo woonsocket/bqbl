@@ -65,7 +65,7 @@ def main():
         print('--year and --week are required if a game ID file is used',
                 file=sys.stderr)
         sys.exit(1)
-    # games_with_alerts = set()
+    games_with_alerts = set()
     game_ids = mickey_parse.all_games(season, week)
     if not options.firebase_cred_file:
         sys.stderr.write('must supply --firebase_creds\n')
@@ -82,16 +82,31 @@ def main():
         scrape_status = collections.defaultdict(dict,
                                                 scrape_status_ref.get() or {})
     now = datetime.datetime.now(tz=datetime.timezone.utc)
-    dst = {}
+    data = {}
     for id in game_ids:
+        if scrape_status[id].get('isFinal'):
+            continue
+        last_scrape = datetime.datetime.fromtimestamp(
+            scrape_status[id].get('lastScrape', 0), tz=datetime.timezone.utc)
+        if last_scrape + SCRAPE_INTERVAL > now and id not in games_with_alerts:
+            continue
+
         url = ('https://www.espn.com/nfl/boxscore?gameId={0}'
                .format(id))
         try:
-            mickey_parse.mickey_parse(url, dst)
+            team_key_1, team_key_2 = mickey_parse.mickey_parse(url, data)
+            scrape_status[id]['lastScrape'] = now.timestamp()
+            # TODO: We shouldn't be parsing data here.
+            scrape_status[id]['isFinal'] = data[team_key_1]['CLOCK'] == 'Final'
         except Exception as e:
             print("ERROR", id, e)
-    for team_name, value in dst.items():
-        db.reference('/stats/%s/%s/%s' % (season, week, team_name)).update(value)
+
+    if options.firebase:
+        if scrape_status:
+            scrape_status_ref.update(scrape_status)
+
+        for team_name, value in data.items():
+            db.reference('/stats/%s/%s/%s' % (season, week, team_name)).update(value)
     # for id in game_ids:
     #     # IDs might be integers if we read them out of JSON, but we always use
     #     # string keys in the database.
