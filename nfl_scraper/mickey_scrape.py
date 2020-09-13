@@ -56,6 +56,17 @@ def init_firebase(cred_file, firebase_project):
         },
     })
 
+def consolidate_passers(data):
+    passers = {}
+    for id, item in data.items():
+        # If there's more than one, insert an event that lets us manually
+        # flag one of them as having been benched.
+        if len(item['PASSERS']) > 1:
+            # TODO: Not really the second...
+            second_key = list(item['PASSERS'])[1]
+            second_passer = item['PASSERS'][second_key]
+            passers[second_key] = {"name": second_passer['NAME'], "team": id}
+    return passers
 
 def main():
     options, args = parser.parse_args()
@@ -100,6 +111,7 @@ def main():
             scrape_status[id]['isFinal'] = data[team_key_1]['CLOCK'] == 'Final'
         except Exception as e:
             print("ERROR", id, e)
+    passers = consolidate_passers(data)
 
     if options.firebase:
         if scrape_status:
@@ -107,6 +119,12 @@ def main():
 
         for team_name, value in data.items():
             db.reference('/stats/%s/%s/%s' % (season, week, team_name)).update(value)
+
+        if options.publish_events:
+            events_ref = db.reference('/events/{0}/{1}'.format(season, week))
+            if passers:
+                events_ref.child('passers').update(passers)
+
     # for id in game_ids:
     #     # IDs might be integers if we read them out of JSON, but we always use
     #     # string keys in the database.
