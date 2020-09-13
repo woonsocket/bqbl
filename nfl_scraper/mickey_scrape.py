@@ -86,10 +86,10 @@ def main():
     for id in game_ids:
         url = ('https://www.espn.com/nfl/boxscore?gameId={0}'
                .format(id))
-        try: 
+        try:
             mickey_parse.mickey_parse(url, dst)
-        except: 
-            print("ERROR", id)
+        except Exception as e:
+            print("ERROR", id, e)
     for team_name, value in dst.items():
         db.reference('/stats/%s/%s/%s' % (season, week, team_name)).update(value)
     # for id in game_ids:
