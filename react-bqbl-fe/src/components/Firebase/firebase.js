@@ -249,6 +249,18 @@ class Firebase {
       usersRef.off('value');
     };
   }
+
+  addFumbleSix(year, week, fumble) {
+    this.db.ref(`${PREFIX}events/${year}/${week}/fumbles`).push(fumble);
+    this.db.ref(`${PREFIX}events/${year}/${week}/overrides/${fumble.team}/fumblesixes`).push(fumble);
+
+  }
+
+  addSafety(year, week, safety) {
+    this.db.ref(`${PREFIX}events/${year}/${week}/safeties`).push(safety);
+    this.db.ref(`${PREFIX}events/${year}/${week}/overrides/${safety.team}/safeties`).push(safety);
+  }
+
 }
 
 export default Firebase;

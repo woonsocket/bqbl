@@ -16,7 +16,7 @@
     "stats": {
       ".read": true,
       "$season": {
-        ".write": "auth.uid == 'score-scraper' && $season == '2019'"
+        ".write": "auth.uid == 'score-scraper' && $season == '2020'"
       }
     },
     "scrapestatus": {
@@ -25,7 +25,7 @@
     "events": {
       ".read": true,
       "$season": {
-        ".write": "auth.uid == 'score-scraper' && $season == '2019'",
+        ".write": "(auth.uid == 'score-scraper' || root.child('roles/admins/' + auth.uid).exists()) && $season == '2020'",
         "$week": {
           "overrides": {
             ".write": "root.child('roles/admins/' + auth.uid).exists()"

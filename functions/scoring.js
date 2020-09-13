@@ -36,6 +36,12 @@ exports.computeScore = function(stats, overrides) {
         .length;
     stats['BENCH'] = (stats['BENCH'] || 0) + benchings;
   }
+  if (overrides.fumblesixes) {
+    const fumblesixes = entries(overrides.fumblesixes)
+        .filter(([_, value]) => value)
+        .length;
+    stats['FUM6'] = (stats['FUM6'] || 0) + fumblesixes;
+  }
 
   let score = computeScoreComponents(stats);
   let projScore = computeScoreComponents(computeStupidProjection(stats));
