@@ -21,14 +21,18 @@ TeamScoreCard.propTypes = {
 }
 
 function TeamScoreCard(props) {
+  function makeUrl() {
+    let team = props.score.teamName;
+    if (team === "WSH") {team = "WAS"}
+    return `https://static.nfl.com/static/content/public/static/wildcat/assets/img/logos/teams/${team}.svg`
+  }
 
   return (
     <Card className="team-score-card">
       <div>
         <div
           style={{
-            'backgroundImage': 'url(http://i.nflcdn.com/static/site/7.5/img/logos/svg/' +
-              'teams-matte/' + props.score.teamName + '.svg)'
+            'backgroundImage': `url(${makeUrl()})`
           }}
           className="bg">
         </div>
