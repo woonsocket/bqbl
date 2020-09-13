@@ -147,7 +147,7 @@ def extract_passer_fumbling(tree, name, dst):
     extract_fumble_attrs([root], dst)
 
 
-def extract_game(tree, home=True): 
+def extract_game(tree, home=True):
   column = TWO if home else ONE
   other_column = ONE if home else TWO
   team_path = TWO_NAME if home else ONE_NAME
@@ -158,6 +158,9 @@ def extract_game(tree, home=True):
    'OPP': opp_name, 'PASSERS': [], 'PASSTD': 0, 'PASSYD': 0, 'RUSHYD': 0, 'RUSHTD': 0, 'SACK': 0, 'SACKYD': 0, 'SCORE': [], 'TD': 0
   }
   team["CLOCK"] = tree.xpath(CLOCK)[0].text
+  if not team["CLOCK"]:
+    # Game hasn't started yet
+    return None, team_name
   extract_pass_attrs(tree.xpath(PASSING + column + TOTAL), team)
   extract_receiving_attrs(tree.xpath(RECEIVING + column + TOTAL), team)
   extract_interception_attrs(tree.xpath(INTERCEPTIONS + other_column + TOTAL), team)
@@ -176,10 +179,12 @@ def mickey_parse(url, dst):
   html = response.text
   tree = etree.HTML(html)
   # print(html)
-  team, team_key  = extract_game(tree, home=False)
-  dst[team_key] = team
-  team, team_key  = extract_game(tree, home=True)
-  dst[team_key] = team
+  team, team_key = extract_game(tree, home=False)
+  if team:
+    dst[team_key] = team
+  team, team_key = extract_game(tree, home=True)
+  if team:
+    dst[team_key] = team
 
 if __name__ == "__main__":
   url = 'https://www.espn.com/nfl/boxscore?gameId=401128096'
