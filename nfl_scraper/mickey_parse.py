@@ -66,7 +66,7 @@ def all_games(year, week):
 
 
 def all_passers(tree):
-  if not tree: return
+  if not tree: return []
   assert len(tree) == 1
   tree = tree[0]
 
