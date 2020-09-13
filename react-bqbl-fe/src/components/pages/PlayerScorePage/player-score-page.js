@@ -1,26 +1,33 @@
-import React, { useEffect, useContext, useState } from 'react';
-
-import { FirebaseContext } from '../../Firebase';
-
-import IconScoreCell from '../../reusable/IconScoreCell/icon-score-cell'
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import React, { useContext, useEffect, useState } from 'react';
+import { joinScores } from '../../../middle/response';
+import { useLeague, useWeek, useYear } from '../../AppState';
+import { FirebaseContext } from '../../Firebase';
+import IconScoreCell from '../../reusable/IconScoreCell/icon-score-cell';
+import RequireLeague from '../../reusable/RequireLeague';
 
-import { joinScores } from '../../../middle/response'
+function PlayerScorePage() {
+  return <RequireLeague><PlayerScore/></RequireLeague>
+}
 
-function PlayerScorePage(props) {
+
+function PlayerScore(props) {
   let [playerList, setPlayerList] = useState([]);
   const firebase = useContext(FirebaseContext);
+  const week = useWeek();
+  const year = useYear();
+  const league = useLeague();
 
   useEffect(() => {
-    return firebase.getScoresStartsUsersThen(props.league, props.year,
+    return firebase.getScoresStartsUsersThen(league, year,
       ({ dbScores, dbStarts, dbUsers }) => {
-        setPlayerList(joinScores(dbScores, dbStarts, dbUsers, props.week));
+        setPlayerList(joinScores(dbScores, dbStarts, dbUsers, week));
       });
-  }, [firebase, props.league, props.year, props.week]);
+  }, [firebase, league, year, week]);
 
   return (
     <Table>

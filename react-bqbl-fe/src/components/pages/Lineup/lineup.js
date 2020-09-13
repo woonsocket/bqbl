@@ -12,6 +12,8 @@ import * as FOOTBALL from '../../../constants/football';
 import * as SCHEDULE from '../../../constants/schedule';
 import { LeagueSpecDataProxy } from '../../../middle/response';
 import { FirebaseContext } from '../../Firebase';
+import {useYear, useLeague} from '../../AppState'
+import RequireLeague from '../../reusable/RequireLeague';
 
 
 const useStyles = makeStyles({
@@ -28,12 +30,11 @@ const useStyles = makeStyles({
   
 })
 
-LineupPage.propTypes = {
-  league: PropTypes.string.isRequired,
-  year: PropTypes.string.isRequired,
+function LineupPage() {
+  return <RequireLeague><Lineup/></RequireLeague>
 }
 
-function LineupPage(props) {
+function Lineup(props) {
   const firebase = useContext(FirebaseContext);
   let [weeks, setWeeks] = useState({});
   let [dh, setDh] = useState(false);
@@ -41,6 +42,9 @@ function LineupPage(props) {
   // TODO(aerion): Update lockedWeeks if the lock time passes while the
   // component is visible.
   let [lockedWeeks, setLockedWeeks] = useState(new Set());
+
+  let year = useYear();
+  let league = useLeague();
 
   function authChanged(newUser) {
     setUser(newUser);
@@ -55,17 +59,17 @@ function LineupPage(props) {
       return;
     }
     const unsubStarts = firebase.getStartsYearThen(
-        user.uid, props.league, props.year, setWeeks);
+        user.uid, league, year, setWeeks);
     const unsubLeagueSpec = firebase.getLeagueSpecThen(
-        props.league, data => {
-          let lsdp = new LeagueSpecDataProxy(data, props.year);
+        league, data => {
+          let lsdp = new LeagueSpecDataProxy(data, year);
           setDh(lsdp.hasDh());
         });
     return () => {
       unsubStarts();
       unsubLeagueSpec();
     };
-  }, [firebase, props.league, props.year, user]);
+  }, [firebase, league, year, user]);
 
   useEffect(() => {
     return firebase.getLockedWeeksThen(Date.now(), setLockedWeeks);
@@ -76,8 +80,8 @@ function LineupPage(props) {
       <TableBody>
         {Object.values(weeks).map((week, index) => (
           <LineupWeek week={week}
-              league={props.league} locked={lockedWeeks.has(week.id)}
-              year={props.year} index={index} dh={dh} key={index} />
+              league={league} locked={lockedWeeks.has(week.id)}
+              year={year} index={index} dh={dh} key={index} />
         ))}
       </TableBody>
     </Table>

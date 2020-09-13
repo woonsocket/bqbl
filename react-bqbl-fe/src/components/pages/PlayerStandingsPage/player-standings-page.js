@@ -1,44 +1,47 @@
-import React, { useEffect, useContext, useState } from 'react';
-
-import './player-standings-page.css';
-import { seasonWeeksReverse } from "../../../constants/football";
-import { FirebaseContext } from '../../Firebase';
 import Avatar from '@material-ui/core/Avatar';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
 import Collapse from '@material-ui/core/Collapse';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import IconButton from '@material-ui/core/IconButton';
+import Switch from '@material-ui/core/Switch';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import classNames from 'classnames/bind';
+import PropTypes from 'prop-types';
+import React, { useContext, useEffect, useState } from 'react';
+import { seasonWeeksReverse } from "../../../constants/football";
+import { processYearScores } from '../../../middle/response';
+import { useLeague, useYear } from '../../AppState';
+import { FirebaseContext } from '../../Firebase';
 import IconScoreCell from '../../reusable/IconScoreCell/icon-score-cell';
 import PlayerScoreList from '../../reusable/PlayerScoreList/player-score-list';
-import PropTypes from 'prop-types';
-import Switch from '@material-ui/core/Switch';
-import classNames from 'classnames/bind';
-import { processYearScores } from '../../../middle/response';
+import './player-standings-page.css';
+import RequireLeague from '../../reusable/RequireLeague';
 
 const FOLD = 4;
 
-PlayerStandingsPage.propTypes = {
-  year: PropTypes.string.isRequired,
-  league: PropTypes.string.isRequired,
-};
+function PlayerStandingsPage() {
+  return <RequireLeague><PlayerStandings/></RequireLeague>
+}
 
-function PlayerStandingsPage(props) {
+function PlayerStandings(props) {
   let [playerTable, setPlayerTable] = useState([]);
   let [sortScores, setSortScores] = useState(true);
   const firebase = useContext(FirebaseContext);
+  let year = useYear();
+  let league = useLeague();
 
   function sortClickedCallback() {
     setSortScores(!sortScores);
   }
 
   useEffect(() => {
-    return firebase.getScoresStartsUsersThen(props.league, props.year,
+    if (!league) {return;}
+    return firebase.getScoresStartsUsersThen(league, year,
       ({ dbScores, dbScores247, dbStarts, dbUsers }) => {
         let val = processYearScores(
-            dbScores, dbScores247, dbStarts, dbUsers, seasonWeeksReverse(props.year));
+            dbScores, dbScores247, dbStarts, dbUsers, seasonWeeksReverse(year));
         let playerList = Object.keys(val).map(key => ({
           ...val[key],
           uid: key,
@@ -48,7 +51,8 @@ function PlayerStandingsPage(props) {
         }
         setPlayerTable(playerList);
       });
-  }, [firebase, props.league, props.year, sortScores]);
+  }, [firebase, league, year, sortScores]);
+
 
   return (
     <React.Fragment>
@@ -63,7 +67,7 @@ function PlayerStandingsPage(props) {
       </div>
 
       {Object.entries(playerTable).map(([playerId, player]) => (
-        <PlayerYearCard player={player} name={playerId} key={playerId} year={props.year} />
+        <PlayerYearCard player={player} name={playerId} key={playerId} year={year} />
       ))}
     </React.Fragment>
   );

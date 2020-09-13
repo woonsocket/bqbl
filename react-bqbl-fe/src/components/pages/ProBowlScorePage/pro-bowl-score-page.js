@@ -13,6 +13,7 @@ import indigo from '@material-ui/core/colors/indigo';
 import { withFirebase } from '../../Firebase';
 import PlayerScoreList from '../../reusable/PlayerScoreList/player-score-list';
 import { joinProBowlScores } from '../../../middle/response';
+import { useYear } from '../../AppState';
 
 const PRO_BOWL_WEEK = '17';
 // The league score is the sum of the top 3 player scores.
@@ -44,12 +45,13 @@ function ProBowlScoresPageBase(props) {
   const classes = pageStyles();
 
   const [nflScores, setNflScores] = useState({});
+  let year = useYear();
 
   useEffect(() => {
-    return props.firebase.getScoresYearThen(props.year, (scores) => {
+    return props.firebase.getScoresYearThen(year, (scores) => {
       setNflScores(scores.dbScores);
     });
-  }, [props.firebase, props.year]);
+  }, [props.firebase, year]);
 
   const leagues = ALL_LEAGUES.slice();
   // Place the viewing player's league first.
@@ -67,7 +69,7 @@ function ProBowlScoresPageBase(props) {
       {leagues.map((league) => (
         <div key={league} className={classes.leagueCard}>
           <ProBowlScoresCard league={league} nflScores={nflScores}
-              firebase={props.firebase} year={props.year} />
+              firebase={props.firebase} year={year} />
         </div>
       ))}
     </div>
@@ -99,11 +101,12 @@ function ProBowlScoresCard(props) {
 
   let [leagueScore, setLeagueScore] = useState(0);
   let [playerScores, setPlayerScores] = useState([]);
+  let year = useYear();
 
   useEffect(() => {
     return props.firebase.getProBowlStartsForLeague(
         props.league,
-        props.year,
+        year,
         (starts) => {
           const playerScores =
               joinProBowlScores(props.nflScores, starts, PRO_BOWL_WEEK);
@@ -115,7 +118,7 @@ function ProBowlScoresCard(props) {
           }
           setLeagueScore(leagueScore);
         });
-  }, [props.firebase, props.league, props.nflScores, props.year]);
+  }, [props.firebase, props.league, props.nflScores, year]);
 
   function playerClass(index) {
     const c = {};

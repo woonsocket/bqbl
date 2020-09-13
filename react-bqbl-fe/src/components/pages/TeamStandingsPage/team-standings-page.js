@@ -7,6 +7,7 @@ import TableRow from '@material-ui/core/TableRow';
 import React, { useContext, useEffect, useState } from 'react';
 import * as FOOTBALL from '../../../constants/football';
 import { processYearScoresByNflTeam } from '../../../middle/response';
+import { useLeague, useYear } from '../../AppState';
 import { FirebaseContext } from '../../Firebase';
 import IconAndName from '../../reusable/IconAndName/icon-and-name';
 import ScoreValue from '../../reusable/ScoreValue/score-value';
@@ -14,10 +15,12 @@ import ScoreValue from '../../reusable/ScoreValue/score-value';
 function TeamStandingsPage(props) {
   const firebase = useContext(FirebaseContext);
   let [allScores, setAllScores] = useState([]);
+  let year = useYear();
+  let league = useLeague();
 
   useEffect(() => {
     return firebase.getScoresYearThen(
-        props.year,
+        year,
         ({dbScores, dbScores247}) => {
           const scoreEntries = Object.entries(
               processYearScoresByNflTeam(dbScores, dbScores247));
@@ -26,7 +29,7 @@ function TeamStandingsPage(props) {
           });
           setAllScores(scoreEntries);
         });
-  }, [firebase, props.league, props.year]);
+  }, [firebase, league, year]);
 
   return (
     <Paper>

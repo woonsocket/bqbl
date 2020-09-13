@@ -1,21 +1,19 @@
 import Switch from '@material-ui/core/Switch';
-import PropTypes from 'prop-types';
 import React, { useContext, useEffect, useState } from 'react';
+import { useWeek, useYear } from '../../AppState';
 import { FirebaseContext } from '../../Firebase';
 import TeamScoreCard from '../../reusable/TeamScoreCard/team-score-card';
 
-TeamScorePage.propTypes = {
-  league: PropTypes.string.isRequired,
-  week: PropTypes.string.isRequired,
-  year: PropTypes.string.isRequired,
-}
-
 function TeamScorePage(props) {
   const firebase = useContext(FirebaseContext);
+
   let [isLoaded, setIsLoaded] = useState(false);
   let [scoresList, setScoresList] = useState([]);
   let [sortScores, setSortScores] = useState(true);
   let [useProjections, setUseProjections] = useState(true);
+
+  let year = useYear();
+  let week = useWeek();
 
   function sortClickedCallback() {
     setSortScores(!sortScores);
@@ -26,7 +24,7 @@ function TeamScorePage(props) {
   }
 
   useEffect(() => {
-    return firebase.getScoresWeekThen(props.year, props.week,
+    return firebase.getScoresWeekThen(year, week,
       scoresWeek => {
         if (sortScores) {
           if (useProjections) {
@@ -38,7 +36,7 @@ function TeamScorePage(props) {
         setScoresList(scoresWeek);
         setIsLoaded(true);
       });
-  }, [firebase, props.league, props.year, props.week, sortScores, useProjections]);
+  }, [firebase, year, week, sortScores, useProjections]);
 
   return (
     <div style={{ textAlign: 'center' }}>
@@ -61,7 +59,7 @@ function TeamScorePage(props) {
 
       </div>
       {scoresList.map(score => (
-        <TeamScoreCard score={score} key={score.teamName} boxScoreLink={boxScoreLink(props.year, props.week, score.gameInfo.id)} />
+        <TeamScoreCard score={score} key={score.teamName} boxScoreLink={boxScoreLink(year, props.week, score.gameInfo.id)} />
       ))}
       {isLoaded && !scoresList.length &&
         <div>No scores found for week {props.week}</div>

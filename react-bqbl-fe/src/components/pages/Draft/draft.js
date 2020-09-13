@@ -1,19 +1,5 @@
-import React, { useEffect, useState } from 'react';
-
-import * as FOOTBALL from '../../../constants/football';
-import { LeagueSpecDataProxy } from '../../../middle/response';
-import { withFirebase } from '../../Firebase';
-import TabPanel from '../../reusable/TabPanel/tab-panel'
-import TeamIcon from '../../reusable/TeamIcon/team-icon'
-import classNames from 'classnames/bind';
-
-import { compose } from 'recompose';
-import { makeStyles } from '@material-ui/styles';
-import { withRouter } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
-import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
-import PropTypes from 'prop-types';
 import Snackbar from '@material-ui/core/Snackbar';
 import Tab from '@material-ui/core/Tab';
 import Table from '@material-ui/core/Table';
@@ -22,6 +8,20 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Tabs from '@material-ui/core/Tabs';
+import CloseIcon from '@material-ui/icons/Close';
+import { makeStyles } from '@material-ui/styles';
+import classNames from 'classnames/bind';
+import PropTypes from 'prop-types';
+import React, { useEffect, useState } from 'react';
+import { withRouter } from 'react-router-dom';
+import { compose } from 'recompose';
+import * as FOOTBALL from '../../../constants/football';
+import { LeagueSpecDataProxy } from '../../../middle/response';
+import { useYear } from '../../AppState';
+import { withFirebase } from '../../Firebase';
+import TabPanel from '../../reusable/TabPanel/tab-panel';
+import TeamIcon from '../../reusable/TeamIcon/team-icon';
+
 
 const useStyles = makeStyles({
   gridContainer: { textAlign: 'center' },
@@ -53,7 +53,8 @@ function DraftPageBase(props) {
   let [successfulSnackbar, setSuccessfulSnackbar] = useState(false);
   let [draftList, setDraftList] = useState([]);
   let [user, setUser] = useState(props.firebase.getCurrentUser());
-
+  let year = useYear();
+  
   function authChanged(newUser) {
     setUser(newUser);
   }
@@ -64,18 +65,18 @@ function DraftPageBase(props) {
 
   useEffect(() => {
     return props.firebase.getLeagueSpecThen(props.league, data => {
-      let lsdp = new LeagueSpecDataProxy(data, props.year);
+      let lsdp = new LeagueSpecDataProxy(data, year);
       let uid = props.firebase.getCurrentUser() ? props.firebase.getCurrentUser().uid : null;
       setIsInLeague(lsdp.isInLeague(uid));
       setTakenTeams(lsdp.getTakenTeams());
       setDraftList(lsdp.getDraftList());
     });
-  }, [props.firebase, props.league, props.year, user]);
+  }, [props.firebase, props.league, year, user]);
 
   function addUser() {
     // TODO: Race conditions ahoy!
     props.firebase.getLeagueSpecThen(props.league, data => {
-      let lsdp = new LeagueSpecDataProxy(data, props.year);
+      let lsdp = new LeagueSpecDataProxy(data, year);
       let uid = props.firebase.getCurrentUser() ? props.firebase.getCurrentUser().uid : null;
       let newData = lsdp.addUser(uid);
       props.firebase.leagueSpecRef(props.league).update(newData);
@@ -83,7 +84,7 @@ function DraftPageBase(props) {
   }
 
   function selectCallback(team) {
-    let params = { team: team, year: props.year, league: props.league };
+    let params = { team: team, year: year, league: props.league };
     // I'm clearly holding this function invocation wrong. Need to figure out the es6y way.
     props.firebase.draftTeam()(params).then(() => {
       setSuccessfulSnackbar(true);

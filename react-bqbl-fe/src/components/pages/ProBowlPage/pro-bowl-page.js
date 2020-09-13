@@ -11,6 +11,7 @@ import { makeStyles } from '@material-ui/styles';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Snackbar from '@material-ui/core/Snackbar';
+import { useYear } from '../../AppState';
 
 const MAX_SELECTED_TEAMS = 6;
 const TEAM_ICON_WIDTH = '80px';
@@ -46,6 +47,7 @@ function ProBowlPageBase(props) {
   let [snackbarMessage, setSnackbarMessage] = useState('');
   let [snackbarOpen, setSnackbarOpen] = useState(false);
   let [user, setUser] = useState(props.firebase.getCurrentUser());
+  let year = useYear();
 
   function authChanged(newUser) {
     setUser(newUser);
@@ -60,20 +62,20 @@ function ProBowlPageBase(props) {
       return;
     }
     const unsubLeagueSpec = props.firebase.getLeagueSpecThen(props.league, data => {
-      let lsdp = new LeagueSpecDataProxy(data, props.year);
+      let lsdp = new LeagueSpecDataProxy(data, year);
       let uid = props.firebase.getCurrentUser() ? props.firebase.getCurrentUser().uid : null;
       setIsInLeague(lsdp.isInLeague(uid));
     });
     const unsubStarts = props.firebase.getProBowlYearThen(
-        user.uid, props.league, props.year, setSelectedTeams);
+        user.uid, props.league, year, setSelectedTeams);
     return () => {
       unsubLeagueSpec();
       unsubStarts();
     };
-  }, [props.firebase, props.league, props.year, user]);
+  }, [props.firebase, props.league, year, user]);
 
   function selectCallback(teams) {
-    props.firebase.updateProBowlStarts(props.league, props.year, teams)
+    props.firebase.updateProBowlStarts(props.league, year, teams)
         .then(() => setSelectedTeams(teams))
         .catch((err) => {
           setSnackbarOpen(true);

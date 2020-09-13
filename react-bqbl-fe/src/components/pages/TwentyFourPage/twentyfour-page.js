@@ -1,13 +1,5 @@
-import React from 'react';
-
-import { withFirebase } from '../../Firebase';
-import * as FOOTBALL from '../../../constants/football';
-
-import { compose } from 'recompose';
-import { withRouter } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import MenuItem from '@material-ui/core/MenuItem';
-import PropTypes from 'prop-types';
 import Select from '@material-ui/core/Select';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -15,23 +7,34 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TextField from '@material-ui/core/TextField';
-
+import PropTypes from 'prop-types';
+import React from 'react';
+import { withRouter } from 'react-router-dom';
+import { compose } from 'recompose';
+import * as FOOTBALL from '../../../constants/football';
+import { useWeek, useYear } from '../../AppState';
+import { withFirebase } from '../../Firebase';
 import IconAndName from '../../reusable/IconAndName/icon-and-name';
+
+
+
 
 function TwentyFourPageBase(props) {
 
   let [scores247, setScores247] = React.useState({});
+  let year = useYear();
+  let week = useWeek();
 
   React.useEffect(() => {
-    return props.firebase.get247(props.year, setScores247);
-  }, [props.firebase, props.year]);
+    return props.firebase.get247(year, setScores247);
+  }, [props.firebase, year]);
 
   return (
     <>
       <h2>{props.year} scores</h2>
       <ScoreTable scores={scores247} />
       <h2>Award points</h2>
-      <ScoreForm firebase={props.firebase} year={props.year} week={props.week} />
+      <ScoreForm firebase={props.firebase} year={year} week={week} />
     </>
   );
 }

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import { useWeek, useYear, useLeague } from '../../AppState';
 
 const HOME = '/home';
 const LINEUP = '/lineup';
@@ -32,11 +33,25 @@ export const LINKS = {
 };
 
 function Navigation(props) {
+  let week = useWeek();
+  let year = useYear();
+  let league = useLeague();
+
+  function makeParams(league, year, week) {
+    let usp = new URLSearchParams(window.location.search);
+    league && usp.set('league', league);
+    year && usp.set('year', year);
+    week && usp.set('week', week);
+    return usp.toString();
+  }
+
   return (
     <List>
-      {Object.entries(LINKS).map(([item_key, item_val], index) => (
-          <Link to={{pathname: item_val.path, search: new URLSearchParams([["week", props.week],["year", props.year], ['league', props.league]]).toString() }}
-                onClick={props.close} key={"link" + index}>
+      {Object.entries(LINKS).map(([_item_key, item_val], index) => (
+          <Link to={{pathname: item_val.path, 
+            search: makeParams(league, year, week)}}
+                onClick={props.close} key={"link" + index}
+>
             <ListItem button key={item_val.text}>
               <ListItemText primary={item_val.text} />
             </ListItem>

@@ -1,22 +1,23 @@
-import React, { useEffect, useState, useContext } from 'react';
-
-import { FirebaseContext } from '../../Firebase';
-
+import Checkbox from '@material-ui/core/Checkbox';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
-import Checkbox from '@material-ui/core/Checkbox';
+import React, { useContext, useEffect, useState } from 'react';
+import { useWeek, useYear } from '../../AppState';
+import { FirebaseContext } from '../../Firebase';
 
 function BenchingPage(props) {
   let [events, setEvents] = useState({ passers: {} });
   let firebase = useContext(FirebaseContext)
+  let year = useYear();
+  let week = useWeek();
 
   useEffect(() => {
-    return firebase.getEventsThen(props.year, props.week, newEvents => {
+    return firebase.getEventsThen(year, week, newEvents => {
       setEvents(newEvents);
     });
-  }, [firebase, props.year, props.week]);
+  }, [firebase, year, week]);
 
   const handleChange = passerId => event => {
     const passer = events.passers[passerId];
@@ -24,7 +25,7 @@ function BenchingPage(props) {
     newOverrides[passer.team] = newOverrides[passer.team] || {};
     newOverrides[passer.team].benchings = newOverrides[passer.team].benchings || {};
     newOverrides[passer.team].benchings[passerId] = event.target.checked;
-    firebase.updateEventsOverrides(props.year, props.week, newOverrides);
+    firebase.updateEventsOverrides(year, week, newOverrides);
   };
 
   const getBenched = passerId => {
