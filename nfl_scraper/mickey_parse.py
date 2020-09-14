@@ -154,7 +154,7 @@ def extract_game(tree, home=True):
   opp_path = ONE_NAME if home else TWO_NAME
   team_name = tree.xpath(team_path)[0].text
   opp_name = tree.xpath(team_path)[0].text
-  team = {'ATT': 0, 'CLOCK': 0, 'CMP': 0, 'FIELDPOS': 100, 'ID': 0, 'INT': 0, 'LONG': 0,
+  team = {'ATT': 0, 'CLOCK': 0, 'CMP': 0, 'FIELDPOS': 100, 'ID': 0, 'INT': 0, 'LONG': 0, 'FUM': 0, 'FUMLOST': 0,
    'OPP': opp_name, 'PASSERS': [], 'PASSTD': 0, 'PASSYD': 0, 'RUSHYD': 0, 'RUSHTD': 0, 'SACK': 0, 'SACKYD': 0, 'SCORE': [], 'TD': 0
   }
   team["CLOCK"] = tree.xpath(CLOCK)[0].text
@@ -169,6 +169,9 @@ def extract_game(tree, home=True):
   for passer_id in team['PASSERS']:
     extract_passer_rushing(tree.xpath(RUSHING + column), team['PASSERS'][passer_id]['NAME'], team['PASSERS'][passer_id])
     extract_passer_fumbling(tree.xpath(FUMBLING + column), team['PASSERS'][passer_id]['NAME'], team['PASSERS'][passer_id])
+    team['FUM'] += team['PASSERS'][passer_id].get('FUM', 0)
+    team['FUMLOST'] += team['PASSERS'][passer_id].get('FUMLOST', 0)
+    
   team['TD'] = team['RUSHTD'] + team["PASSTD"]
   return team, team_name
 
@@ -188,6 +191,7 @@ def mickey_parse(url, dst):
 if __name__ == "__main__":
   url = 'https://www.espn.com/nfl/boxscore?gameId=401128096'
   url = 'https://www.espn.com/nfl/boxscore?gameId=401128100'
+  url = 'https://www.espn.com/nfl/boxscore?gameId=401220268'
   dst = {}
   mickey_parse(url, dst)
   print(dst)
