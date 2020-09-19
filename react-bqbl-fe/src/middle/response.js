@@ -134,7 +134,7 @@ export function processYearScoresByNflTeam(dbScores, dbScores247) {
 }
 
 export function joinScores(dbScores, dbStarts, dbUsers, week) {
-  let dbWeekScores = sanitizeScoresDataWeek(dbScores)[week] || {};
+  let dbWeekScores = sanitizeScoresDataWeek(dbScores[week]) || {};
   let allStarts = getAllFromWeek(dbStarts, week);
   mergeData(dbWeekScores, allStarts);
   const playerList = []
@@ -178,6 +178,10 @@ export function joinProBowlScores(dbScores, proBowlStarts, week) {
 
 function sanitizeScoresDataWeek(dbScoresWeek) {
   dbScoresWeek['none'] = { total: 0 }
+  // TODO: OK this is what my team means when they say technical debt.
+  if (!dbScoresWeek['WAS']) {
+    dbScoresWeek['WAS'] = JSON.parse(JSON.stringify(dbScoresWeek['WSH']));
+  }
   return dbScoresWeek;
 }
 

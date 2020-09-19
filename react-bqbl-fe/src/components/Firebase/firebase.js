@@ -253,7 +253,6 @@ class Firebase {
   addFumbleSix(year, week, fumble) {
     this.db.ref(`${PREFIX}events/${year}/${week}/fumbles`).push(fumble);
     this.db.ref(`${PREFIX}events/${year}/${week}/overrides/${fumble.team}/fumblesixes`).push(fumble);
-
   }
 
   addSafety(year, week, safety) {
