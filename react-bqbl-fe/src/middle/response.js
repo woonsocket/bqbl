@@ -179,7 +179,7 @@ export function joinProBowlScores(dbScores, proBowlStarts, week) {
 function sanitizeScoresDataWeek(dbScoresWeek) {
   dbScoresWeek['none'] = { total: 0 }
   // TODO: OK this is what my team means when they say technical debt.
-  if (!dbScoresWeek['WAS']) {
+  if (!dbScoresWeek['WAS'] && dbScoresWeek['WSH']) {
     dbScoresWeek['WAS'] = JSON.parse(JSON.stringify(dbScoresWeek['WSH']));
   }
   return dbScoresWeek;
