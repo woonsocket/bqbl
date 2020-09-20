@@ -1,4 +1,3 @@
-import { ALL_TEAMS } from '../constants/football';
 import * as TEMPLATES from './templates';
 
 export class LeagueSpecDataProxy {
@@ -112,7 +111,8 @@ export function processYearScoresByNflTeam(dbScores, dbScores247) {
   const scores247ByTeam = process247ByTeam(dbScores247);
 
   const teamTable = {};
-  for (const teamId of ALL_TEAMS) {
+  const allTeams = Object.keys(dbScores[Object.keys(dbScores)[0]]);
+  for (const teamId of allTeams) {
     const points247 = scores247ByTeam.get(teamId) || 0;
     teamTable[teamId] = {
       weeks: {},
