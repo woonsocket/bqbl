@@ -10,7 +10,6 @@ function RequireLeague(props) {
   let league = useLeague();
   let firebase = useContext(FirebaseContext);
 
-  console.log(league);
   if (!league) {
     return <LeagueSelector leagues={firebase.getAllLeagues()}/>
   }
