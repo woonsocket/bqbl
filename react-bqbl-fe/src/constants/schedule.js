@@ -64,3 +64,20 @@ export const SCHEDULE_2019 = { "ARI": { "1": "DET", "2": "@BAL", "3": "CAR", "4"
 ,"TEN":{"1":"@DEN","2":"JAX","3":"@MIN","4":"PIT","5":"BUF","6":"HOU","7":"BYE","8":"@CIN","9":"CHI","10":"IND","11":"@BAL","12":"@IND","13":"CLE","14":"@JAX","15":"DET","16":"@GB","17":"@HOU"}
 ,"WAS":{"1":"PHI","2":"@ARI","3":"@CLE","4":"BAL","5":"LAR","6":"@NYG","7":"DAL","8":"BYE","9":"NYG","10":"@DET","11":"CIN","12":"@DAL","13":"@PIT","14":"@SF","15":"SEA","16":"CAR","17":"@PHI"}
 };
+
+
+export function getOpponent(year, team, week) {
+  if (team === 'WSH') {
+    team = 'WAS';
+  }
+  if (team === 'LA') {
+    team = 'LAR';
+  }
+
+  if (year === '2020') {
+    return SCHEDULE_2020[team][week]
+  } else if (year === '2019') {
+    return SCHEDULE_2019[team][week]
+  }
+  return '';
+}

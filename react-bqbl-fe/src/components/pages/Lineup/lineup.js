@@ -101,6 +101,7 @@ function LineupWeek(props) {
   const classes = useStyles();
 
   let [week, setWeek] = useState(props.week);
+  let [year, setYear] = useState(props.year);
 
   function countSelectedMinusCell(cellId) {
     let selected = 0;
@@ -155,7 +156,7 @@ function LineupWeek(props) {
           className={team.selected ? "team " + classes.selected : "team"}
           onClick={clickCallback.bind(null, idx)}>
           {team.name}<br />
-          {SCHEDULE.SCHEDULE_2020[team.name][week.id]}
+          {SCHEDULE.getOpponent(team.name, props.year, week.id)}
         </TableCell>
       )}
       {props.dh && <React.Fragment>
