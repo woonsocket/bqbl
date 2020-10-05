@@ -110,7 +110,7 @@ def main():
             # TODO: We shouldn't be parsing data here.
             scrape_status[id]['isFinal'] = data[team_key_1]['CLOCK'] == 'Final'
         except Exception as e:
-            print("ERROR", id, e)
+            print("ERROR", season, week, id, e)
     passers = consolidate_passers(data)
 
     if options.firebase:
@@ -194,5 +194,6 @@ def main():
     #     print(json.dumps(plays.outcomes_by_team))
 
 
+# TODO: What's up with 311121017, 310911025, 400554375, 330922016, 321118017,330922029,330922033 331208018, 330922010, 
 if __name__ == '__main__':
     main()
