@@ -156,7 +156,7 @@ function LineupWeek(props) {
           className={team.selected ? "team " + classes.selected : "team"}
           onClick={clickCallback.bind(null, idx)}>
           {team.name}<br />
-          {SCHEDULE.getOpponent(team.name, props.year, week.id)}
+          {SCHEDULE.getOpponent(team.name, year, week.id)}
         </TableCell>
       )}
       {props.dh && <React.Fragment>

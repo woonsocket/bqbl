@@ -66,7 +66,7 @@ export const SCHEDULE_2019 = { "ARI": { "1": "DET", "2": "@BAL", "3": "CAR", "4"
 };
 
 
-export function getOpponent(year, team, week) {
+export function getOpponent(team, year, week) {
   if (team === 'WSH') {
     team = 'WAS';
   }
