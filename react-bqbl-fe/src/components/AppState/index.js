@@ -1,4 +1,4 @@
-import React, { useContext, useReducer, useState, useEffect } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import { CURRENT_YEAR, footballWeek } from '../../constants/football'
 
 const AppStateContext = React.createContext(null);

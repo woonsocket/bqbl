@@ -50,7 +50,6 @@ function App() {
   let year = useYear()
   let week = useWeek()
   const [drawerOpen, setDrawerOpen] = React.useState(false);
-  const [drawerActive, setDrawerActive] = React.useState(true);
   const weekSelector = WEEK_SELECTOR_PATHS.indexOf(window.location.pathname) !== -1;
   const yearSelector = YEAR_SELECTOR_PATHS.indexOf(window.location.pathname) !== -1;
 
@@ -66,12 +65,10 @@ function App() {
     <div>
       <AppBar position="static">
         <Toolbar>
-          {drawerActive &&
             <IconButton edge="start" color="inherit" aria-label="Menu"
               onClick={handleDrawerOpen}>
               <MenuIcon />
             </IconButton>
-          }
           <Typography variant="h6" className={classes.title}>
             BQBL
           </Typography>
