@@ -21,7 +21,7 @@ jobs:
         uses: actions/upload-artifact@master
         with:
           name: dist
-          path: react-bqbl-fe/dist
+          path: react-bqbl-fe/build
   deploy:
     name: Deploy
     needs: build
