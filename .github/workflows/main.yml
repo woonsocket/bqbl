@@ -1,9 +1,11 @@
 name: Build and Deploy
+defaults:
+  run:
+    working-directory: react-bqbl-fe
 on:
   push:
     branches:
       - master
-
 jobs:
   build:
     name: Build
