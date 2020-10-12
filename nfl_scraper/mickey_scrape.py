@@ -106,6 +106,9 @@ def main():
                .format(id))
         try:
             team_key_1, team_key_2 = mickey_parse.mickey_parse(url, data)
+            if not team_key_1 in data:
+                print('skipping', id)
+                continue
             scrape_status[id]['lastScrape'] = now.timestamp()
             # TODO: We shouldn't be parsing data here.
             scrape_status[id]['isFinal'] = data[team_key_1]['CLOCK'] == 'Final'
