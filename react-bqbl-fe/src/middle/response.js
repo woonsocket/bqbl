@@ -121,7 +121,8 @@ export function processYearScoresByNflTeam(dbScores, dbScores247) {
     };
   }
   for (const [weekId, weekScoresByTeam] of Object.entries(dbScores)) {
-    for (const [teamId, weekScores] of Object.entries(weekScoresByTeam)) {
+    let dbWeekScores = sanitizeScoresDataWeek(weekScoresByTeam) || {};
+    for (const [teamId, weekScores] of Object.entries(dbWeekScores)) {
       if (!(teamId in teamTable)) {
         console.warn(`unknown team ${teamId}`);
         continue;
@@ -189,6 +190,8 @@ function scoreForTeam(dbScores, week, team) {
   if (!team) {
     return 0;
   }
+  // TODO: DEBT DEBT DEBT
+  sanitizeScoresDataWeek(dbScores[week]);
   return (dbScores[week] && dbScores[week][team] && dbScores[week][team].total) || 0;
 }
 
