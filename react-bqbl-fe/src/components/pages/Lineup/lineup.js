@@ -71,7 +71,7 @@ function Lineup(props) {
       unsubStarts();
       unsubLeagueSpec();
     };
-  }, [firebase, league, year, user]);
+  }, [firebase, league, year, user, uidOverride]);
 
   useEffect(() => {
     return firebase.getLockedWeeksThen(Date.now(), setLockedWeeks);
