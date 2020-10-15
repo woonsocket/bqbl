@@ -11,7 +11,8 @@ export const AppStateContextProvider = props => {
     return {
       'league': usp.get('league'),
       'year': usp.get('year') || CURRENT_YEAR,
-      'week': usp.get('week') || footballWeek()
+      'week': usp.get('week') || footballWeek(),
+      'uidOverride': usp.get('uidOverride') || ''
     }
   }
 
@@ -29,20 +30,22 @@ export const AppStateContextProvider = props => {
 
 function useWeek() {
   let [state] = useContext(AppStateContext);
-  // console.log("week", state.week);
   return state.week;
 }
 
 function useYear() {
   let [state] = useContext(AppStateContext);
-  // console.log("year", state.year);
   return state.year;
 }
 
 function useLeague() {
   let [state] = useContext(AppStateContext);
-  // console.log("league", state.league);
   return state.league;
 }
 
-export { AppStateContext, useWeek, useYear, useLeague };
+function useUidOverride() {
+  let [state] = useContext(AppStateContext);
+  return state.uidOverride;
+}
+
+export { AppStateContext, useWeek, useYear, useLeague, useUidOverride };

@@ -12,7 +12,7 @@ import * as FOOTBALL from '../../../constants/football';
 import * as SCHEDULE from '../../../constants/schedule';
 import { LeagueSpecDataProxy } from '../../../middle/response';
 import { FirebaseContext } from '../../Firebase';
-import {useYear, useLeague} from '../../AppState'
+import {useYear, useLeague, useUidOverride} from '../../AppState'
 import RequireLeague from '../../reusable/RequireLeague';
 
 
@@ -45,6 +45,7 @@ function Lineup(props) {
 
   let year = useYear();
   let league = useLeague();
+  let uidOverride = useUidOverride();
 
   function authChanged(newUser) {
     setUser(newUser);
@@ -58,8 +59,9 @@ function Lineup(props) {
     if (!user) {
       return;
     }
+    let uid = uidOverride || user.uid;
     const unsubStarts = firebase.getStartsYearThen(
-        user.uid, league, year, setWeeks);
+        uid, league, year, setWeeks);
     const unsubLeagueSpec = firebase.getLeagueSpecThen(
         league, data => {
           let lsdp = new LeagueSpecDataProxy(data, year);
