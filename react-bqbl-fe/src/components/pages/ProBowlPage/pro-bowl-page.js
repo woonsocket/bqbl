@@ -8,10 +8,11 @@ import classNames from 'classnames/bind';
 
 import { compose } from 'recompose';
 import { makeStyles } from '@material-ui/styles';
+import { useUser } from '../../Firebase/firebase';
+import { useLeague, useYear } from '../../AppState';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Snackbar from '@material-ui/core/Snackbar';
-import { useYear } from '../../AppState';
 
 const MAX_SELECTED_TEAMS = 6;
 const TEAM_ICON_WIDTH = '80px';
@@ -46,24 +47,17 @@ function ProBowlPageBase(props) {
   let [selectedTeams, setSelectedTeams] = useState([]);
   let [snackbarMessage, setSnackbarMessage] = useState('');
   let [snackbarOpen, setSnackbarOpen] = useState(false);
-  let [user, setUser] = useState(props.firebase.getCurrentUser());
+  let user = useUser();
   let year = useYear();
-
-  function authChanged(newUser) {
-    setUser(newUser);
-  }
-
-  useEffect(() => {
-    return props.firebase.addAuthListener(authChanged);
-  });
+  let league = useLeague();
 
   useEffect(() => {
     if (!user) {
       return;
     }
-    const unsubLeagueSpec = props.firebase.getLeagueSpecThen(props.league, data => {
+    const unsubLeagueSpec = props.firebase.getLeagueSpecThen(league, data => {
       let lsdp = new LeagueSpecDataProxy(data, year);
-      let uid = props.firebase.getCurrentUser() ? props.firebase.getCurrentUser().uid : null;
+      let uid = user ? user.uid : null;
       setIsInLeague(lsdp.isInLeague(uid));
     });
     const unsubStarts = props.firebase.getProBowlYearThen(
@@ -72,7 +66,7 @@ function ProBowlPageBase(props) {
       unsubLeagueSpec();
       unsubStarts();
     };
-  }, [props.firebase, props.league, year, user]);
+  }, [props.firebase, props.league, year, user, league]);
 
   function selectCallback(teams) {
     props.firebase.updateProBowlStarts(props.league, year, teams)

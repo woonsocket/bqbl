@@ -19,6 +19,7 @@ import * as FOOTBALL from '../../../constants/football';
 import { LeagueSpecDataProxy } from '../../../middle/response';
 import { useYear } from '../../AppState';
 import { withFirebase } from '../../Firebase';
+import { useUser } from '../../Firebase/firebase';
 import TabPanel from '../../reusable/TabPanel/tab-panel';
 import TeamIcon from '../../reusable/TeamIcon/team-icon';
 
@@ -52,21 +53,13 @@ function DraftPageBase(props) {
   let [takenTeams, setTakenTeams] = useState([]);
   let [successfulSnackbar, setSuccessfulSnackbar] = useState(false);
   let [draftList, setDraftList] = useState([]);
-  let [user, setUser] = useState(props.firebase.getCurrentUser());
+  let user = useUser();
   let year = useYear();
   
-  function authChanged(newUser) {
-    setUser(newUser);
-  }
-
-  useEffect(() => {
-    return props.firebase.addAuthListener(authChanged);
-  });
-
   useEffect(() => {
     return props.firebase.getLeagueSpecThen(props.league, data => {
       let lsdp = new LeagueSpecDataProxy(data, year);
-      let uid = props.firebase.getCurrentUser() ? props.firebase.getCurrentUser().uid : null;
+      let uid = user ? user.uid : null;
       setIsInLeague(lsdp.isInLeague(uid));
       setTakenTeams(lsdp.getTakenTeams());
       setDraftList(lsdp.getDraftList());
@@ -77,7 +70,7 @@ function DraftPageBase(props) {
     // TODO: Race conditions ahoy!
     props.firebase.getLeagueSpecThen(props.league, data => {
       let lsdp = new LeagueSpecDataProxy(data, year);
-      let uid = props.firebase.getCurrentUser() ? props.firebase.getCurrentUser().uid : null;
+      let uid = user ? user.uid : null;
       let newData = lsdp.addUser(uid);
       props.firebase.leagueSpecRef(props.league).update(newData);
     });

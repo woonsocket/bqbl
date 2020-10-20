@@ -4,6 +4,8 @@ import 'firebase/functions';
 import app from 'firebase/app';
 
 import { LeagueSpecDataProxy } from '../../middle/response';
+import { useContext, useState, useEffect } from 'react';
+import FirebaseContext from './context';
 
 const config = {
   apiKey: process.env.REACT_APP_API_KEY,
@@ -29,20 +31,12 @@ class Firebase {
     this.functions = app.functions();
   }
 
-  addAuthListener(listener) {
-    return this.auth.onAuthStateChanged(listener);
-  }
-
   doSignInWithGoogle() {
     let googleProvider = new app.auth.GoogleAuthProvider();
     return this.auth.signInWithPopup(googleProvider);
   }
 
   doSignOut = () => this.auth.signOut();
-
-  getCurrentUser() {
-    return this.auth.currentUser;
-  }
 
   getScoresYearThen(year, cb) {
     let scoresRef = this.db.ref(`scores/${year}`);
@@ -119,6 +113,7 @@ class Firebase {
       if (!snapshot.val()) {
         throw new Error(`couldn't find league ${loc}`);
       }
+      console.log(snapshot.val())
       cb(snapshot.val());
     });
     return () => ref.off('value');
@@ -261,5 +256,17 @@ class Firebase {
   }
 
 }
+
+export function useUser() {
+  let firebase = useContext(FirebaseContext);
+  let [user, setUser] = useState(firebase.auth.currentUser)
+
+  useEffect(() => {
+    return firebase.auth.onAuthStateChanged(setUser);
+  }, [firebase, setUser]);
+
+  return user;
+}
+
 
 export default Firebase;

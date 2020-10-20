@@ -14,6 +14,7 @@ import { LeagueSpecDataProxy } from '../../../middle/response';
 import { FirebaseContext } from '../../Firebase';
 import {useYear, useLeague, useUidOverride} from '../../AppState'
 import RequireLeague from '../../reusable/RequireLeague';
+import { useUser } from '../../Firebase/firebase';
 
 
 const useStyles = makeStyles({
@@ -38,7 +39,7 @@ function Lineup(props) {
   const firebase = useContext(FirebaseContext);
   let [weeks, setWeeks] = useState({});
   let [dh, setDh] = useState(false);
-  let [user, setUser] = useState(firebase.getCurrentUser());
+  let user = useUser();
   // TODO(aerion): Update lockedWeeks if the lock time passes while the
   // component is visible.
   let [lockedWeeks, setLockedWeeks] = useState(new Set());
@@ -46,14 +47,6 @@ function Lineup(props) {
   let year = useYear();
   let league = useLeague();
   let uidOverride = useUidOverride();
-
-  function authChanged(newUser) {
-    setUser(newUser);
-  }
-
-  useEffect(() => {
-    return firebase.addAuthListener(authChanged);
-  });
 
   useEffect(() => {
     if (!user) {

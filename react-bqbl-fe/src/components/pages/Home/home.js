@@ -1,9 +1,9 @@
-import { FirebaseContext } from '../../Firebase';
 import Navigation from '../../reusable/Navigation/navigation'
 import PropTypes from 'prop-types';
-import React, { useEffect, useContext, useState } from 'react';
+import React from 'react';
 import SignIn from '../../reusable/SignIn/sign-in'
 import RequireLeague from '../../reusable/RequireLeague';
+import { useUser } from '../../Firebase/firebase';
 
 Home.propTypes = {
   league: PropTypes.string,
@@ -13,16 +13,7 @@ Home.propTypes = {
 }
 
 function Home(props) {
-  const firebase = useContext(FirebaseContext);
-  let [user, setUser] = useState(firebase.getCurrentUser());
-
-  function authChanged(newUser) {
-    setUser(newUser);
-  }
-
-  useEffect(() => {
-    return firebase.addAuthListener(authChanged);
-  });
+  let user = useUser();
 
   if (user) {
     return <RequireLeague> <Navigation /> </RequireLeague>;
