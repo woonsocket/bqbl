@@ -30,7 +30,7 @@ function BenchingPage(props) {
 
   const getBenched = passerId => {
     const passer = events.passers[passerId];
-    if (!passer || !events.overrides || !events.overrides[passer.team]) {
+    if (!passer || !events.overrides || !events.overrides[passer.team] || !events.overrides[passer.team].benchings ) {
       return false;
     }
     let overrides = events.overrides[passer.team];
