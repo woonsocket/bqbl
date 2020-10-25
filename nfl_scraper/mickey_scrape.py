@@ -45,6 +45,8 @@ parser.add_option("--no_events", dest="publish_events", default=True,
                   help=("Don't publish new events to the event ticker. The "
                         "ticker feeds things like the BQBL Red Zone bot. Use "
                         "this flag when backfilling historical data."))
+parser.add_option("--ids", dest="ids",
+                  help="Scrape specifically these games")
 
 
 def init_firebase(cred_file, firebase_project):
@@ -77,7 +79,10 @@ def main():
                 file=sys.stderr)
         sys.exit(1)
     games_with_alerts = set()
-    game_ids = mickey_parse.all_games(season, week)
+    if options.ids:
+        game_ids = options.ids.split(',')
+    else:
+        game_ids = mickey_parse.all_games(season, week)
     if not options.firebase_cred_file:
         sys.stderr.write('must supply --firebase_creds\n')
         parser.print_help(file=sys.stderr)
