@@ -183,6 +183,9 @@ function sanitizeScoresDataWeek(dbScoresWeek) {
   if (!dbScoresWeek['WAS'] && dbScoresWeek['WSH']) {
     dbScoresWeek['WAS'] = JSON.parse(JSON.stringify(dbScoresWeek['WSH']));
   }
+  if (!dbScoresWeek['LA'] && dbScoresWeek['LAR']) {
+    dbScoresWeek['LA'] = JSON.parse(JSON.stringify(dbScoresWeek['LAR']));
+  }
   return dbScoresWeek;
 }
 
