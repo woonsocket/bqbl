@@ -25,6 +25,13 @@ export function seasonWeeksReverse(year) {
 }
 
 
+export function teamLogoImage(team) {
+  if (team === 'WSH') team = 'WAS';
+  if (team === 'LAR') team = 'LA';
+  return `https://static.nfl.com/static/content/public/static/wildcat/assets/img/logos/teams/${team}.svg`;
+}
+
+
 // https://stackoverflow.com/questions/8619879/javascript-calculate-the-day-of-the-year-1-366
 function dayOfYear() {
   var now = new Date();
