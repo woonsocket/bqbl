@@ -72,8 +72,8 @@ function TeamScoreCard(props) {
       </CardActionArea>
       <CardActions>
         <Button size="small" color="primary" href={props.boxScoreLink}>
-          Box Score Link
-          </Button>
+          {boxScoreLinkText(props.score)}
+        </Button>
       </CardActions>
     </Card>
   )
@@ -232,6 +232,14 @@ function lineScore(breakdown) {
   const td = breakdown.touchdown.count;
 
   return `${cmp}/${att}, ${yd} yd, ${td} TD, ${int} INT`;
+}
+
+function boxScoreLinkText(score) {
+  if (score.gameInfo && score.gameInfo.aName) {
+    const {aName, aScore, hName, hScore} = score.gameInfo;
+    return `${aName} ${aScore} @ ${hName} ${hScore}`;
+  }
+  return 'Box Score Link';
 }
 
 export default TeamScoreCard;
