@@ -70,16 +70,9 @@ function TeamScorePage(props) {
 
 function boxScoreLink(year, week, gameId) {
   if (!gameId) {
-    return 'http://www.nfl.com';
+    return `https://www.espn.com/nfl/scoreboard/_/${year}/2020/seasontype/2/week/${week}`;
   }
-  const nflWeek = `REG${week}`;
-  // Actually, this component of the path doesn't seem to matter at all, as
-  // long as it's non-empty. NFL.com puts the team nicknames in there
-  // ('patriots@falcons'), but it appears to be purely for URL aesthetics.
-  const atCode = 'score';
-  return 'http://www.nfl.com/gamecenter/' +
-      `${gameId}/${year}/${nflWeek}/${atCode}` +
-      '#tab=analyze&analyze=boxscore';
+  return `https://www.espn.com/nfl/game/_/gameId/${gameId}`;
 }
 
 export default TeamScorePage;
