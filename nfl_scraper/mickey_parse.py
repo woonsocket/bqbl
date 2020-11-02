@@ -93,8 +93,13 @@ def extract_pass_attrs(tree, dst):
   assert len(tree) == 1
   tree = tree[0]
   dst["CMP"], dst["ATT"] = map(int, tree.xpath(C_ATT)[0].text.split('/'))
-  dst["SACK"], dst["SACKYD"] = map(int, tree.xpath(SACKS)[0].text.split('-'))
-  dst["PASSYD"] = int(tree.xpath(YDS)[0].text)
+  sacks, sack_yards = map(int, tree.xpath(SACKS)[0].text.split('-'))
+  # ESPN's passing yard total already deducts sack yardage. Our score
+  # calculator expects PASSYD to *not* deduct it, so we need to add it
+  # back in here.
+  dst["PASSYD"] = int(tree.xpath(YDS)[0].text) + sack_yards
+  dst["SACK"] = sacks
+  dst["SACKYD"] = -1 * sack_yards
   dst["PASSTD"] = int(tree.xpath(TD)[0].text)
   dst["INT"] = int(tree.xpath(INT)[0].text)
 
