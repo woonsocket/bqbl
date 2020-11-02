@@ -157,14 +157,14 @@ def extract_passer_fumbling(tree, name, dst):
     extract_fumble_attrs([root], dst)
 
 
-def extract_game(tree, home=True):
+def extract_game(tree, home=True, game_id=None):
   column = TWO if home else ONE
   other_column = ONE if home else TWO
   team_path = TWO_NAME if home else ONE_NAME
   opp_path = ONE_NAME if home else TWO_NAME
   team_name = tree.xpath(team_path)[0].text
-  opp_name = tree.xpath(team_path)[0].text
-  team = {'ATT': 0, 'CLOCK': 0, 'CMP': 0, 'FIELDPOS': 100, 'ID': 0, 'INT': 0, 'LONG': 0, 'FUM': 0, 'FUML': 0,
+  opp_name = tree.xpath(opp_path)[0].text
+  team = {'ATT': 0, 'CLOCK': 0, 'CMP': 0, 'FIELDPOS': 100, 'ID': game_id or '', 'INT': 0, 'LONG': 0, 'FUM': 0, 'FUML': 0,
    'OPP': opp_name, 'PASSERS': [], 'PASSTD': 0, 'PASSYD': 0, 'RUSHYD': 0, 'RUSHTD': 0, 'SACK': 0, 'SACKYD': 0, 'SCORE': [], 'TD': 0
   }
   team["CLOCK"] = tree.xpath(CLOCK)[0].text
@@ -186,15 +186,15 @@ def extract_game(tree, home=True):
   team['TD'] = team['RUSHTD'] + team["PASSTD"]
   return team, team_name
 
-def mickey_parse(url, dst):
+def mickey_parse(url, dst, game_id=None):
   headers = {'Content-Type': 'text/html',}
   response = requests.get(url, headers=headers)
   html = response.text
   tree = etree.HTML(html)
-  team, team_key = extract_game(tree, home=False)
+  team, team_key = extract_game(tree, home=False, game_id=game_id)
   if team:
     dst[team_key] = team
-  team_2, team_key_2 = extract_game(tree, home=True)
+  team_2, team_key_2 = extract_game(tree, home=True, game_id=game_id)
   if team_2:
     dst[team_key_2] = team_2
   return team_key, team_key_2
