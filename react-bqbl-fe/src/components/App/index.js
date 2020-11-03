@@ -126,7 +126,7 @@ function App() {
         <Route path={LINKS.DRAFT.path} component={DraftPage} />
         <Route path={LINKS.BENCHING.path} component={BenchingPage} />
         <Route path={LINKS.TWENTYFOUR.path} component={TwentyFourPage} />
-        <Route path="/fumblesix" component={FumbleSixPage} />
+        <Route path={LINKS.FUMBLESIX.path} component={FumbleSixPage} />
         <Route path="/safety" component={SafetyPage} />
       </div>
       </div>

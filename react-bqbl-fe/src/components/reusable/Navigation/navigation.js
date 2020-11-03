@@ -17,6 +17,7 @@ const TEAM_STANDINGS = '/team-standings';
 const DRAFT = '/draft';
 const BENCHING = '/benching';
 const TWENTYFOUR = '/247';
+const FUMBLESIX = '/fumblesix';
 
 export const LINKS = {
   HOME: { path: HOME, text: 'Home' },
@@ -30,6 +31,7 @@ export const LINKS = {
   DRAFT: { path: DRAFT, text: 'Draft' },
   BENCHING: { path: BENCHING, text: 'Benching' },
   TWENTYFOUR: { path: TWENTYFOUR, text: '24/7 Points' },
+  FUMBLESIX: { path: FUMBLESIX, text: 'Fumble Sixes' },
 };
 
 function Navigation(props) {
