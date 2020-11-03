@@ -17,6 +17,7 @@ IconScoreCell.defaultProps = {
 
 const useStyles = makeStyles({
   outer: {
+    alignItems: 'center',
     display: 'flex',
     marginLeft: '5px',
     minWidth: '50px',
@@ -25,7 +26,6 @@ const useStyles = makeStyles({
     fontSize: '14px',
     minWidth: '35px',
     textAlign: 'right',
-    verticalAlign: 'super',
   },
 });
 

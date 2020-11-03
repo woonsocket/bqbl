@@ -13,6 +13,7 @@ import List from '@material-ui/core/List';
 import PropTypes from 'prop-types';
 import Typography from '@material-ui/core/Typography';
 
+import { teamLogoImage } from '../../../constants/football';
 import ScoreValue from '../ScoreValue/score-value';
 
 TeamScoreCard.propTypes = {
@@ -22,9 +23,7 @@ TeamScoreCard.propTypes = {
 
 function TeamScoreCard(props) {
   function makeUrl() {
-    let team = props.score.teamName;
-    if (team === "WSH") {team = "WAS"}
-    return `https://static.nfl.com/static/content/public/static/wildcat/assets/img/logos/teams/${team}.svg`
+    return teamLogoImage(props.score.teamName);
   }
 
   return (
@@ -73,8 +72,8 @@ function TeamScoreCard(props) {
       </CardActionArea>
       <CardActions>
         <Button size="small" color="primary" href={props.boxScoreLink}>
-          Box Score Link
-          </Button>
+          {boxScoreLinkText(props.score)}
+        </Button>
       </CardActions>
     </Card>
   )
@@ -233,6 +232,14 @@ function lineScore(breakdown) {
   const td = breakdown.touchdown.count;
 
   return `${cmp}/${att}, ${yd} yd, ${td} TD, ${int} INT`;
+}
+
+function boxScoreLinkText(score) {
+  if (score.gameInfo && score.gameInfo.aName) {
+    const {aName, aScore, hName, hScore} = score.gameInfo;
+    return `${aName} ${aScore} @ ${hName} ${hScore}`;
+  }
+  return 'Box Score Link';
 }
 
 export default TeamScoreCard;

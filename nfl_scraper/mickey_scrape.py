@@ -110,7 +110,7 @@ def main():
         url = ('https://www.espn.com/nfl/boxscore?gameId={0}'
                .format(id))
         try:
-            team_key_1, team_key_2 = mickey_parse.mickey_parse(url, data)
+            team_key_1, team_key_2 = mickey_parse.mickey_parse(url, data, game_id=id)
             if not team_key_1 in data:
                 print('skipping', id)
                 continue

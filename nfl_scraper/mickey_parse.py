@@ -21,7 +21,9 @@ RECEIVING = './/*[@id="gamepackage-receiving"]'
 INTERCEPTIONS = './/*[@id="gamepackage-interceptions"]'
 PLAYER = './/td[@class="name"]'
 ONE_NAME = '//div[contains(@class, "away")]//span[@class="abbrev"]'
+ONE_SCORE = '//div[contains(@class, "away")]//div[@class="score-container"]'
 TWO_NAME = '//div[contains(@class, "home")]//span[@class="abbrev"]'
+TWO_SCORE = '//div[contains(@class, "home")]//div[@class="score-container"]'
 CLOCK = '//span[contains(@class,"status-detail")]'
 GAMES = "//a[@name='&lpos=nfl:scoreboard:boxscore']"
 
@@ -63,8 +65,13 @@ def extract_pass_attrs(tree, dst):
   assert len(tree) == 1
   tree = tree[0]
   dst["CMP"], dst["ATT"] = map(int, tree.xpath(C_ATT)[0].text.split('/'))
-  dst["SACK"], dst["SACKYD"] = map(int, tree.xpath(SACKS)[0].text.split('-'))
-  dst["PASSYD"] = int(tree.xpath(YDS)[0].text)
+  sacks, sack_yards = map(int, tree.xpath(SACKS)[0].text.split('-'))
+  # ESPN's passing yard total already deducts sack yardage. Our score
+  # calculator expects PASSYD to *not* deduct it, so we need to add it
+  # back in here.
+  dst["PASSYD"] = int(tree.xpath(YDS)[0].text) + sack_yards
+  dst["SACK"] = sacks
+  dst["SACKYD"] = -1 * sack_yards
   dst["PASSTD"] = int(tree.xpath(TD)[0].text)
   dst["INT"] = int(tree.xpath(INT)[0].text)
 
@@ -122,20 +129,31 @@ def extract_passer_fumbling(tree, name, dst):
     extract_fumble_attrs([root], dst)
 
 
-def extract_game(tree, home=True):
+def extract_game(tree, home=True, game_id=None):
   column = TWO if home else ONE
   other_column = ONE if home else TWO
-  team_path = TWO_NAME if home else ONE_NAME
-  opp_path = ONE_NAME if home else TWO_NAME
-  team_name = tree.xpath(team_path)[0].text
-  opp_name = tree.xpath(team_path)[0].text
-  team = {'ATT': 0, 'CLOCK': 0, 'CMP': 0, 'FIELDPOS': 100, 'ID': 0, 'INT': 0, 'LONG': 0, 'FUM': 0, 'FUML': 0,
+
+  away_score = ''.join(t for t in tree.xpath(ONE_SCORE)[0].itertext())
+  home_score = ''.join(t for t in tree.xpath(TWO_SCORE)[0].itertext())
+  away_team = tree.xpath(ONE_NAME)[0].text
+  home_team = tree.xpath(TWO_NAME)[0].text
+  team_name = home_team if home else away_team
+  opp_name = away_team if home else home_team
+  
+  team = {'ATT': 0, 'CLOCK': 0, 'CMP': 0, 'FIELDPOS': 100, 'ID': game_id or '', 'INT': 0, 'LONG': 0, 'FUM': 0, 'FUML': 0,
    'OPP': opp_name, 'PASSERS': [], 'PASSTD': 0, 'PASSYD': 0, 'RUSHYD': 0, 'RUSHTD': 0, 'SACK': 0, 'SACKYD': 0, 'SCORE': [], 'TD': 0
   }
   team["CLOCK"] = tree.xpath(CLOCK)[0].text
   if not team["CLOCK"]:
     # Game hasn't started yet
     return None, team_name
+  team['SCORE'] = {
+    'AWAY': away_team,
+    'ASCORE': away_score,
+    'HOME': home_team,
+    'HSCORE': home_score,
+  }
+
   extract_pass_attrs(tree.xpath(PASSING + column + TOTAL), team)
   extract_receiving_attrs(tree.xpath(RECEIVING + column + TOTAL), team)
   extract_interception_attrs(tree.xpath(INTERCEPTIONS + other_column + TOTAL), team)
@@ -151,15 +169,15 @@ def extract_game(tree, home=True):
   team['TD'] = team['RUSHTD'] + team["PASSTD"]
   return team, team_name
 
-def mickey_parse(url, dst):
+def mickey_parse(url, dst, game_id=None):
   headers = {'Content-Type': 'text/html',}
   response = requests.get(url, headers=headers)
   html = response.text
   tree = etree.HTML(html)
-  team, team_key = extract_game(tree, home=False)
+  team, team_key = extract_game(tree, home=False, game_id=game_id)
   if team:
     dst[team_key] = team
-  team_2, team_key_2 = extract_game(tree, home=True)
+  team_2, team_key_2 = extract_game(tree, home=True, game_id=game_id)
   if team_2:
     dst[team_key_2] = team_2
   return team_key, team_key_2
