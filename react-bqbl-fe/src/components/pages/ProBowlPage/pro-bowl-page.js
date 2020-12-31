@@ -38,8 +38,6 @@ const useStyles = makeStyles({
 
 ProBowlPageBase.propTypes = {
   firebase: PropTypes.object.isRequired,
-  league: PropTypes.string.isRequired,
-  year: PropTypes.string.isRequired,
 }
 
 function ProBowlPageBase(props) {
@@ -61,15 +59,15 @@ function ProBowlPageBase(props) {
       setIsInLeague(lsdp.isInLeague(uid));
     });
     const unsubStarts = props.firebase.getProBowlYearThen(
-        user.uid, props.league, year, setSelectedTeams);
+        user.uid, league, year, setSelectedTeams);
     return () => {
       unsubLeagueSpec();
       unsubStarts();
     };
-  }, [props.firebase, props.league, year, user, league]);
+  }, [props.firebase, league, year, user, league]);
 
   function selectCallback(teams) {
-    props.firebase.updateProBowlStarts(props.league, year, teams)
+    props.firebase.updateProBowlStarts(league, year, teams)
         .then(() => setSelectedTeams(teams))
         .catch((err) => {
           setSnackbarOpen(true);
