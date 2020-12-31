@@ -14,7 +14,6 @@
     "firebase-admin": "^9.4.2",
     "firebase-functions": "^3.13.0",
     "firebase-tools": "^9.1.0",
-    "grpc": "^1.24.3",
     "object.entries": "^1.1.2",
     "request": "^2.88.2",
     "request-promise-native": "^1.0.9"
