@@ -64,7 +64,7 @@ function ProBowlPageBase(props) {
       unsubLeagueSpec();
       unsubStarts();
     };
-  }, [props.firebase, league, year, user, league]);
+  }, [props.firebase, year, user, league]);
 
   function selectCallback(teams) {
     props.firebase.updateProBowlStarts(league, year, teams)
