@@ -162,7 +162,7 @@ export function joinScores(dbScores, dbStarts, dbUsers, week) {
 // TODO(aerion): This is terrible, but it's separate from joinScores because
 // the database schemas for regular season and pro bowl are different.
 export function joinProBowlScores(dbScores, proBowlStarts, week) {
-  let dbWeekScores = sanitizeScoresDataWeek(dbScores)[week] || {};
+  let dbWeekScores = sanitizeScoresDataWeek(dbScores[week] || {});
   const players = [];
   for (const {name, id, starts} of proBowlStarts) {
     const teams = [];
