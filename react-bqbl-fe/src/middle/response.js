@@ -90,7 +90,7 @@ export function processYearScores(
     const name = (player.name);
     const playerTeams = player.teams.map((team) => {
       return TEMPLATES.PlayerTeam(
-          team.name, Number(scores247ByTeam.get(team.name)) || 0);
+          team.name, Number(scores247ByTeam[team.name]) || 0);
     });
 
     let playerTotal = 0;
@@ -113,7 +113,7 @@ export function processYearScoresByNflTeam(dbScores, dbScores247) {
   const teamTable = {};
   const allTeams = Object.keys(dbScores[Object.keys(dbScores)[0]]);
   for (const teamId of allTeams) {
-    const points247 = scores247ByTeam.get(teamId) || 0;
+    const points247 = scores247ByTeam[teamId] || 0;
     teamTable[teamId] = {
       weeks: {},
       points247,
@@ -233,9 +233,9 @@ function getAllFromWeek(startsDataValue, week) {
 
 /** Sums 24/7 scores for each team. */
 function process247ByTeam(dbScoresObj) {
-  const byTeam = new Map();
+  const byTeam = {};
   for (const entry of Object.values(dbScoresObj)) {
-    byTeam.set(entry.team, (byTeam.get(entry.team) || 0) + entry.points);
+    byTeam[entry.team] = (byTeam[entry.team] || 0) + entry.points;
   }
-  return byTeam;
+  return sanitizeScoresDataWeek(byTeam);
 }
