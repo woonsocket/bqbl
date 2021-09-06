@@ -82,7 +82,8 @@ function App() {
               }}
               input={<Input name="year" id="year-native-helper" />}
             >
-              {["2017", "2018", "2019", "2020"].map(id => <option value={id} key={id}>{id}</option>)}
+              {/* ANNUAL */}
+              {["2017", "2018", "2019", "2020", "2021"].map(id => <option value={id} key={id}>{id}</option>)}
             </NativeSelect>
           }
 

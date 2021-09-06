@@ -3,7 +3,6 @@ Write a unit test suite
 
 Functionality:
 P1: Secret project involving a profile page
-P2: Pro Bowl!
 
 Cleanup:
 Convert {Sign*} to pure-functional components

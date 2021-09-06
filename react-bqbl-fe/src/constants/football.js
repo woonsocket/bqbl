@@ -10,12 +10,13 @@ export const ALL_TEAMS_2019 = ["ARI", "ATL", "BAL", "BUF", "CAR", "CHI", "CIN", 
 export const ALL_TEAMS = ALL_TEAMS_2020;
 
 // Weeks that are part of the NFL season.
-export const WEEK_IDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17"];
+export const WEEK_IDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18"];
 
 // Weeks that are part of the BQBL regular season.
-const REGULAR_SEASON_WEEK_IDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"];
+const REGULAR_SEASON_WEEK_IDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17"];
 
-export const CURRENT_YEAR = '2020';
+// ANNUAL UPDATE
+export const CURRENT_YEAR = '2021';
 
 export function seasonWeeksReverse(year) {
   if (year === CURRENT_YEAR) {
@@ -47,8 +48,8 @@ export function footballWeek() {
     return 17;
   }
   const day = dayOfYear();
-  // This 254 is hard-coded for the first day of the season in 2020...
-  let week = Math.ceil((day - 254) / 7);
+  // ANNUAL UPDATE
+  let week = Math.ceil((day - 257) / 7);
   if (week < 1) {
     week = 1;
   }

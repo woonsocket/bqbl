@@ -70,6 +70,7 @@ function TeamScorePage(props) {
 
 function boxScoreLink(year, week, gameId) {
   if (!gameId) {
+    // TODO: Fix this. ANNUAL
     return `https://www.espn.com/nfl/scoreboard/_/${year}/2020/seasontype/2/week/${week}`;
   }
   return `https://www.espn.com/nfl/game/_/gameId/${gameId}`;
