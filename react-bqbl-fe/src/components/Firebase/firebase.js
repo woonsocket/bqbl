@@ -144,7 +144,7 @@ class Firebase {
 
   getStartsYearThen(uid, league, year, cb) {
     const ref = this.db.ref(
-        `${PREFIX}leaguespec/${league}/plays/${year}/${uid}`);
+      `${PREFIX}leaguespec/${league}/plays/${year}/${uid}`);
     ref.on('value', snapshot => {
       if (!snapshot.val()) {
         throw new Error("can't find you in this league");
@@ -229,7 +229,7 @@ class Firebase {
                     if (!dbScores || !dbScores247 || !dbStarts || !dbUsers) {
                       console.log(dbScores, dbScores247, dbStarts, dbUsers);
                       throw new Error(
-                          "Can't find one of scores, scores247, starts, users");
+                        "Can't find one of scores, scores247, starts, users");
                     }
                     cb({ dbScores, dbScores247, dbStarts, dbUsers });
                   });

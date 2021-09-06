@@ -65,10 +65,10 @@ function App() {
     <div>
       <AppBar position="static">
         <Toolbar>
-            <IconButton edge="start" color="inherit" aria-label="Menu"
-              onClick={handleDrawerOpen}>
-              <MenuIcon />
-            </IconButton>
+          <IconButton edge="start" color="inherit" aria-label="Menu"
+            onClick={handleDrawerOpen}>
+            <MenuIcon />
+          </IconButton>
           <Typography variant="h6" className={classes.title}>
             BQBL
           </Typography>
@@ -130,7 +130,7 @@ function App() {
         <Route path={LINKS.FUMBLESIX.path} component={FumbleSixPage} />
         <Route path="/safety" component={SafetyPage} />
       </div>
-      </div>
+    </div>
   );
 }
 
