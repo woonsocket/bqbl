@@ -13,7 +13,7 @@ import indigo from '@material-ui/core/colors/indigo';
 import { withFirebase } from '../../Firebase';
 import PlayerScoreList from '../../reusable/PlayerScoreList/player-score-list';
 import { joinProBowlScores } from '../../../middle/response';
-import { useYear } from '../../AppState';
+import { useLeague, useYear } from '../../AppState';
 
 const PRO_BOWL_WEEK = '17';
 // The league score is the sum of the top 3 player scores.
@@ -25,8 +25,6 @@ const ALL_LEAGUES = ['abqbl', 'nbqbl'];
 
 ProBowlScoresPageBase.propTypes = {
   firebase: PropTypes.object.isRequired,
-  league: PropTypes.string.isRequired,
-  year: PropTypes.string.isRequired,
 };
 
 const pageStyles = makeStyles({
@@ -45,6 +43,7 @@ function ProBowlScoresPageBase(props) {
   const classes = pageStyles();
 
   const [nflScores, setNflScores] = useState({});
+  let league = useLeague();
   let year = useYear();
 
   useEffect(() => {
@@ -56,9 +55,9 @@ function ProBowlScoresPageBase(props) {
   const leagues = ALL_LEAGUES.slice();
   // Place the viewing player's league first.
   leagues.sort((a, b) => {
-    if (a === props.league) {
+    if (a === league) {
       return -1;
-    } else if (b === props.league) {
+    } else if (b === league) {
       return 1;
     }
     return a.localeCompare(b);

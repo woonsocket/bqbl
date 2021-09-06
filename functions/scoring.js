@@ -206,7 +206,10 @@ function computeScoreComponents(qbScore) {
 
   const passerStats = [];
   let passerRatingTotalValue = 0;
-  for (let [_, passer] of entries(qbScore['passers'] || {})) {
+  // Different versions of the scraping code are inconsistent about capitalizing
+  // this key.
+  const rawPasserStats = qbScore['passers'] || qbScore['PASSERS'] || {};
+  for (let [_, passer] of entries(rawPasserStats)) {
     const stats = {
       'cmp': passer['CMP'] || 0,
       'att': passer['ATT'] || 0,

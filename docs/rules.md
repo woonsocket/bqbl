@@ -4,18 +4,17 @@ These rules are an adaptation of
 [the original Grantland rules](http://grantland.com/the-triangle/introducing-grantlands-bad-quarterback-league/)
 from 2011.
 
-Rule changes for 2019:
+Rule changes for 2021:
 
-* Generalized the Kurt Warner rule to apply to all retired QBs. Added
-  exponential bonuses for QBs who have retired multiple times.
-
-* Awarded points for horrible field position.
+* Points for unvaccinated players missing games due to COVID protocol
+* Repealed no-longer-topical Kaepernick/Manziel rules
+* Repealed rules about Trump tweets because lol he can't tweet
 
 ## General rules
 
 Before the season, each person drafts 4 teams.
 
-Each week during the season (NFL weeks 1-16), you choose 2 of the 32 NFL teams
+Each week during the season (NFL weeks 1-17), you choose 2 of the 32 NFL teams
 to play.
 
 Over the course of the season:
@@ -255,26 +254,19 @@ separate competition.
     * Point values are doubled for each time the quarterback has unretired and
       then re-retired
 
-* Colin Kaepernick
+* COVID-19
 
-    * Your team denies interest in Colin Kaepernick (cowards):
-      **10 points**
+    * Vocally unvaccinated QB misses practice because of COVID protocols: **10
+      points**
 
-    * Your team shows interest in Colin Kaepernick, but then backs down
-      (COWARDS): **20 points**
+    * Vocally unvaccinated QB misses a game because of COVID protocols: **20
+      points**
 
-    * Your team becomes interested in Johnny Manziel after denying interest in
-      Colin Kaepernick (**INEPT** COWARDS): **50 points**
-
-* Donald Trump
-
-    * Donald Trump tweets about your QB: **10 points**
-
-    * The tweet is positive: **25 points** instead
+* QB abruptly retires to pursue his lifelong dream of hosting a syndicated TV
+  trivia show: **2000 points**
 
 * Commissioner discretion
 
     * If a QB misses games for some
       [unprecedented awesome reason](http://deadspin.com/geno-smith-punched-by-teammate-out-6-10-weeks-1723397727),
       commissioners can award either **10 or 20 points** per game missed.
-
