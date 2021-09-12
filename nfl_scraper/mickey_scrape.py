@@ -1,19 +1,12 @@
 import collections
 import datetime
-import itertools
-import json
 import optparse
-import re
-import requests
 import sys
 import mickey_parse
 
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
-
-import event
-import linescore
 
 
 # Default time to wait between scrapes for a given game ID. Scrapes may occur
@@ -100,8 +93,8 @@ def main():
     now = datetime.datetime.now(tz=datetime.timezone.utc)
     data = {}
     for id in game_ids:
-        if scrape_status[id].get('isFinal'):
-            continue
+        # if scrape_status[id].get('isFinal'):
+        #     continue
         last_scrape = datetime.datetime.fromtimestamp(
             scrape_status[id].get('lastScrape', 0), tz=datetime.timezone.utc)
         if last_scrape + SCRAPE_INTERVAL > now and id not in games_with_alerts:
@@ -132,74 +125,6 @@ def main():
             events_ref = db.reference('/events/{0}/{1}'.format(season, week))
             if passers:
                 events_ref.child('passers').update(passers)
-
-    # for id in game_ids:
-    #     # IDs might be integers if we read them out of JSON, but we always use
-    #     # string keys in the database.
-    #     id = str(id)
-    #     if scrape_status[id].get('isFinal'):
-    #         continue
-    #     last_scrape = datetime.datetime.fromtimestamp(
-    #         scrape_status[id].get('lastScrape', 0), tz=datetime.timezone.utc)
-    #     if last_scrape + SCRAPE_INTERVAL > now and id not in games_with_alerts:
-    #         continue
-    #     url = ('http://www.nfl.com/liveupdate/game-center/{0}/{0}_gtd.json'
-    #            .format(id))
-    #     resp = requests.get(url)
-    #     if resp.status_code >= 400:
-    #         if resp.status_code != 404:
-    #             print('error fetching {url}: {err}'.format(url=url, err=e),
-    #                   file=sys.stderr)
-    #         continue
-    #     data = resp.json()
-    #     plays.process(season, week, id, data)
-    #     scrape_status[id]['lastScrape'] = now.timestamp()
-    #     # TODO: We shouldn't be parsing data here.
-    #     scrape_status[id]['isFinal'] = data[id]['qtr'] == 'Final'
-
-    # # Log which teams were updated. In prod, we'll write this to disk for later
-    # # inspection.
-    # print('{0} {1}'.format(datetime.datetime.now(),
-    #                        ' '.join(sorted(plays.outcomes_by_team.keys()))))
-
-    # if options.firebase:
-    #     if player_cache.new_keys:
-    #         db.reference('/playerpositions').update(player_cache.new_keys)
-
-    #     if scrape_status:
-    #         scrape_status_ref.update(scrape_status)
-
-    #     if options.publish_events:
-    #         events_ref = db.reference('/events/{0}/{1}'.format(season, week))
-    #         if plays.events.fumbles:
-    #             events_ref.child('fumbles').update(plays.events.fumbles)
-    #         if plays.events.safeties:
-    #             events_ref.child('safeties').update(plays.events.safeties)
-    #         if plays.events.interceptions:
-    #             events_ref.child('interceptions').update(
-    #                 plays.events.interceptions)
-    #         if plays.events.passers:
-    #             events_ref.child('passers').update(plays.events.passers)
-
-    #     if plays.outcomes_by_team:
-    #         db.reference('/stats/%s/%s' % (season, week)).update(
-    #             plays.outcomes_by_team)
-    # else:
-    #     print('-- scrape status--')
-    #     statuses = sorted(scrape_status.items(),
-    #                       key=lambda it: it[1]['lastScrape'])
-    #     for id, status in statuses:
-    #         print('{0}: {1}'.format(id, status['lastScrape']))
-    #     print('-- events --')
-    #     all_events = itertools.chain(
-    #         plays.events.fumbles.items(),
-    #         plays.events.safeties.items(),
-    #         plays.events.interceptions.items(),
-    #         plays.events.passers.items())
-    #     for id, ev in all_events:
-    #         print('{0}: {1}'.format(id, ev))
-    #     print('-- scraped stats --')
-    #     print(json.dumps(plays.outcomes_by_team))
 
 
 # TODO: What's up with 311121017, 310911025, 400554375, 330922016, 321118017,330922029,330922033 331208018, 330922010, 

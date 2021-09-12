@@ -32,10 +32,11 @@ def mickey_ids(yearId, weekId, dst):
 
 if __name__ == "__main__":
   dst = {}
-  years = [str(y) for y in range(2009, 2021)]
+  # ANNUAL
+  years = [str(y) for y in range(2009, 2022)]
   try:
     for year in years:
-      for week in range(1, 18):
+      for week in range(1, 19):
         mickey_ids(year, str(week), dst)
   except: pass
   print(dst)
