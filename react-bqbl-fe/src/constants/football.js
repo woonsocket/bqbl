@@ -49,7 +49,8 @@ export function footballWeek() {
   }
   const day = dayOfYear();
   // ANNUAL UPDATE
-  let week = Math.ceil((day - 257) / 7);
+  // Day 252 is Thursday, September 9, 2021
+  let week = Math.ceil((day - 252) / 7);
   if (week < 1) {
     week = 1;
   }
