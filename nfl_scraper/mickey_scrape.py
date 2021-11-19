@@ -54,13 +54,11 @@ def init_firebase(cred_file, firebase_project):
 def consolidate_passers(data):
     passers = {}
     for id, item in data.items():
-        # If there's more than one, insert an event that lets us manually
-        # flag one of them as having been benched.
+        # If there's more than one, insert events for each passer. The events
+        # can be used to manually flag a passer as having been benched.
         if len(item['PASSERS']) > 1:
-            # TODO: Not really the second...
-            second_key = list(item['PASSERS'])[1]
-            second_passer = item['PASSERS'][second_key]
-            passers[second_key] = {"name": second_passer['NAME'], "team": id}
+            for passer_key, passer in item['PASSERS'].items():
+                passers[passer_key] = {"name": passer['NAME'], "team": id}
     return passers
 
 def main():
