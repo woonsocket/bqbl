@@ -81,11 +81,13 @@ def main():
             sys.exit(1)
         init_firebase(options.firebase_cred_file, options.firebase_project)
 
-    if options.all or not options.firebase:
-        scrape_status = collections.defaultdict(dict)
-    else:
+    scrape_status_ref = None
+    if options.firebase:
         scrape_status_ref = db.reference(
             '/scrapestatus/{0}/{1}'.format(season, week))
+    if options.all:
+        scrape_status = collections.defaultdict(dict)
+    else:
         scrape_status = collections.defaultdict(dict,
                                                 scrape_status_ref.get() or {})
     now = datetime.datetime.now(tz=datetime.timezone.utc)
