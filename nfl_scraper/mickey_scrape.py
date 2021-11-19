@@ -74,18 +74,18 @@ def main():
         game_ids = options.ids.split(',')
     else:
         game_ids = mickey_parse.all_games(season, week)
-    if not options.firebase_cred_file:
-        sys.stderr.write('must supply --firebase_creds\n')
-        parser.print_help(file=sys.stderr)
-        sys.exit(1)
+    if options.firebase:
+        if not options.firebase_cred_file:
+            sys.stderr.write('must supply --firebase_creds if --firebase is set\n')
+            parser.print_help(file=sys.stderr)
+            sys.exit(1)
+        init_firebase(options.firebase_cred_file, options.firebase_project)
 
-    init_firebase(options.firebase_cred_file, options.firebase_project)
-
-    scrape_status_ref = db.reference(
-        '/scrapestatus/{0}/{1}'.format(season, week))
-    if options.all:
+    if options.all or not options.firebase:
         scrape_status = collections.defaultdict(dict)
     else:
+        scrape_status_ref = db.reference(
+            '/scrapestatus/{0}/{1}'.format(season, week))
         scrape_status = collections.defaultdict(dict,
                                                 scrape_status_ref.get() or {})
     now = datetime.datetime.now(tz=datetime.timezone.utc)
@@ -123,6 +123,12 @@ def main():
             events_ref = db.reference('/events/{0}/{1}'.format(season, week))
             if passers:
                 events_ref.child('passers').update(passers)
+    else:
+        for team_name, value in data.items():
+            print('%s => %s', team_name, value)
+        if passers:
+            print('passers list:')
+            print(passers)
 
 
 # TODO: What's up with 311121017, 310911025, 400554375, 330922016, 321118017,330922029,330922033 331208018, 330922010, 
