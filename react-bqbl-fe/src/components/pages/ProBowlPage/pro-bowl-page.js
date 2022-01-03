@@ -1,17 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import * as FOOTBALL from '../../../constants/football';
 import { LeagueSpecDataProxy } from '../../../middle/response';
-import { withFirebase } from '../../Firebase';
 import TeamIcon from '../../reusable/TeamIcon/team-icon'
 import classNames from 'classnames/bind';
 import RequireLeague from '../../reusable/RequireLeague';
+import { FirebaseContext } from '../../Firebase';
 
-import { compose } from 'recompose';
 import { makeStyles } from '@material-ui/styles';
 import { useUser } from '../../Firebase/firebase';
 import { useLeague, useYear } from '../../AppState';
-import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Snackbar from '@material-ui/core/Snackbar';
 
@@ -37,11 +35,7 @@ const useStyles = makeStyles({
   }
 });
 
-ProBowlPageUI.propTypes = {
-  firebase: PropTypes.object.isRequired,
-}
-
-function ProBowlPageUI(props) {
+function ProBowlPageBase() {
   let [isInLeague, setIsInLeague] = useState(true);
   let [selectedTeams, setSelectedTeams] = useState([]);
   let [snackbarMessage, setSnackbarMessage] = useState('');
@@ -49,26 +43,27 @@ function ProBowlPageUI(props) {
   let user = useUser();
   let year = useYear();
   let league = useLeague();
+  const firebase = useContext(FirebaseContext);
 
   useEffect(() => {
     if (!user) {
       return;
     }
-    const unsubLeagueSpec = props.firebase.getLeagueSpecThen(league, data => {
+    const unsubLeagueSpec = firebase.getLeagueSpecThen(league, data => {
       let lsdp = new LeagueSpecDataProxy(data, year);
       let uid = user ? user.uid : null;
       setIsInLeague(lsdp.isInLeague(uid));
     });
-    const unsubStarts = props.firebase.getProBowlYearThen(
+    const unsubStarts = firebase.getProBowlYearThen(
         user.uid, league, year, setSelectedTeams);
     return () => {
       unsubLeagueSpec();
       unsubStarts();
     };
-  }, [props.firebase, year, user, league]);
+  }, [firebase, year, user, league]);
 
   function selectCallback(teams) {
-    props.firebase.updateProBowlStarts(league, year, teams)
+    firebase.updateProBowlStarts(league, year, teams)
         .then(() => setSelectedTeams(teams))
         .catch((err) => {
           setSnackbarOpen(true);
@@ -101,8 +96,8 @@ function ProBowlPageUI(props) {
   </React.Fragment>
 }
 
-function ProBowlPageBase() {
-  return <RequireLeague><ProBowlPageUI/></RequireLeague>;
+function ProBowlPage() {
+  return <RequireLeague><ProBowlPageBase/></RequireLeague>;
 }
 
 TeamSelectionGrid.propTypes = {
@@ -163,10 +158,5 @@ function ErrorSnackbar({ open, onClose, message }) {
     />
   );
 }
-
-const ProBowlPage = compose(
-  withRouter,
-  withFirebase,
-)(ProBowlPageBase);
 
 export default ProBowlPage;
