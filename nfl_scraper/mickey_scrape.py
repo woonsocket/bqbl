@@ -54,13 +54,11 @@ def init_firebase(cred_file, firebase_project):
 def consolidate_passers(data):
     passers = {}
     for id, item in data.items():
-        # If there's more than one, insert an event that lets us manually
-        # flag one of them as having been benched.
+        # If there's more than one, insert events for each passer. The events
+        # can be used to manually flag a passer as having been benched.
         if len(item['PASSERS']) > 1:
-            # TODO: Not really the second...
-            second_key = list(item['PASSERS'])[1]
-            second_passer = item['PASSERS'][second_key]
-            passers[second_key] = {"name": second_passer['NAME'], "team": id}
+            for passer_key, passer in item['PASSERS'].items():
+                passers[passer_key] = {"name": passer['NAME'], "team": id}
     return passers
 
 def main():
@@ -76,15 +74,17 @@ def main():
         game_ids = options.ids.split(',')
     else:
         game_ids = mickey_parse.all_games(season, week)
-    if not options.firebase_cred_file:
-        sys.stderr.write('must supply --firebase_creds\n')
-        parser.print_help(file=sys.stderr)
-        sys.exit(1)
+    if options.firebase:
+        if not options.firebase_cred_file:
+            sys.stderr.write('must supply --firebase_creds if --firebase is set\n')
+            parser.print_help(file=sys.stderr)
+            sys.exit(1)
+        init_firebase(options.firebase_cred_file, options.firebase_project)
 
-    init_firebase(options.firebase_cred_file, options.firebase_project)
-
-    scrape_status_ref = db.reference(
-        '/scrapestatus/{0}/{1}'.format(season, week))
+    scrape_status_ref = None
+    if options.firebase:
+        scrape_status_ref = db.reference(
+            '/scrapestatus/{0}/{1}'.format(season, week))
     if options.all:
         scrape_status = collections.defaultdict(dict)
     else:
@@ -125,6 +125,12 @@ def main():
             events_ref = db.reference('/events/{0}/{1}'.format(season, week))
             if passers:
                 events_ref.child('passers').update(passers)
+    else:
+        for team_name, value in data.items():
+            print('%s => %s', team_name, value)
+        if passers:
+            print('passers list:')
+            print(passers)
 
 
 # TODO: What's up with 311121017, 310911025, 400554375, 330922016, 321118017,330922029,330922033 331208018, 330922010, 
