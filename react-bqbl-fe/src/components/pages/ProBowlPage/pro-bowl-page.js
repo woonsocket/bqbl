@@ -5,6 +5,7 @@ import { LeagueSpecDataProxy } from '../../../middle/response';
 import { withFirebase } from '../../Firebase';
 import TeamIcon from '../../reusable/TeamIcon/team-icon'
 import classNames from 'classnames/bind';
+import RequireLeague from '../../reusable/RequireLeague';
 
 import { compose } from 'recompose';
 import { makeStyles } from '@material-ui/styles';
@@ -36,11 +37,11 @@ const useStyles = makeStyles({
   }
 });
 
-ProBowlPageBase.propTypes = {
+ProBowlPageUI.propTypes = {
   firebase: PropTypes.object.isRequired,
 }
 
-function ProBowlPageBase(props) {
+function ProBowlPageUI(props) {
   let [isInLeague, setIsInLeague] = useState(true);
   let [selectedTeams, setSelectedTeams] = useState([]);
   let [snackbarMessage, setSnackbarMessage] = useState('');
@@ -98,6 +99,10 @@ function ProBowlPageBase(props) {
         onClose={handleSnackbarClose}
         message={snackbarMessage} />
   </React.Fragment>
+}
+
+function ProBowlPageBase() {
+  return <RequireLeague><ProBowlPageUI/></RequireLeague>;
 }
 
 TeamSelectionGrid.propTypes = {
