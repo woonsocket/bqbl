@@ -61,7 +61,7 @@ function ProBowlPageBase() {
       unsubLeagueSpec();
       unsubStarts();
     };
-  }, [firebase, year, user, league]);
+  }, [firebase, year, user, league, override]);
 
   function selectCallback(teams) {
     firebase.updateProBowlStarts(league, override ? "2021-2" : year, teams)

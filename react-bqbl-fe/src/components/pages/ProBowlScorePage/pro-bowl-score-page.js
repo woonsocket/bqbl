@@ -119,7 +119,7 @@ function ProBowlScoresCard(props) {
           }
           setLeagueScore(leagueScore);
         });
-  }, [props.firebase, props.league, props.nflScores, year]);
+  }, [props.firebase, props.league, props.nflScores, year, override]);
 
   function playerClass(index) {
     const c = {};
