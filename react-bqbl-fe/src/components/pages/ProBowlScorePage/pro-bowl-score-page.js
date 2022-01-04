@@ -13,8 +13,9 @@ import indigo from '@material-ui/core/colors/indigo';
 import { withFirebase } from '../../Firebase';
 import PlayerScoreList from '../../reusable/PlayerScoreList/player-score-list';
 import { joinProBowlScores } from '../../../middle/response';
-import { useLeague, useYear } from '../../AppState';
+import { useLeague, useYear, useProBowlOverride } from '../../AppState';
 
+// lol yeah right whatever you say
 const PRO_BOWL_WEEK = '17';
 // The league score is the sum of the top 3 player scores.
 const LEAGUE_SCORE_PLAYER_COUNT = 3;
@@ -101,11 +102,12 @@ function ProBowlScoresCard(props) {
   let [leagueScore, setLeagueScore] = useState(0);
   let [playerScores, setPlayerScores] = useState([]);
   let year = useYear();
-
+  let override = useProBowlOverride();
   useEffect(() => {
     return props.firebase.getProBowlStartsForLeague(
         props.league,
-        year,
+        // TODO(harveyj): remove this i'm sorry
+        override ? "2021-2" : year,
         (starts) => {
           const playerScores =
               joinProBowlScores(props.nflScores, starts, PRO_BOWL_WEEK);
