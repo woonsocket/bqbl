@@ -9,7 +9,7 @@ import { FirebaseContext } from '../../Firebase';
 
 import { makeStyles } from '@material-ui/styles';
 import { useUser } from '../../Firebase/firebase';
-import { useLeague, useYear } from '../../AppState';
+import { useLeague, useYear, useProBowlOverride } from '../../AppState';
 import PropTypes from 'prop-types';
 import Snackbar from '@material-ui/core/Snackbar';
 
@@ -43,6 +43,7 @@ function ProBowlPageBase() {
   let user = useUser();
   let year = useYear();
   let league = useLeague();
+  let override = useProBowlOverride();
   const firebase = useContext(FirebaseContext);
 
   useEffect(() => {
@@ -55,7 +56,7 @@ function ProBowlPageBase() {
       setIsInLeague(lsdp.isInLeague(uid));
     });
     const unsubStarts = firebase.getProBowlYearThen(
-        user.uid, league, year, setSelectedTeams);
+        user.uid, league, override ? "2021-2" : year, setSelectedTeams);
     return () => {
       unsubLeagueSpec();
       unsubStarts();
@@ -63,7 +64,7 @@ function ProBowlPageBase() {
   }, [firebase, year, user, league]);
 
   function selectCallback(teams) {
-    firebase.updateProBowlStarts(league, year, teams)
+    firebase.updateProBowlStarts(league, override ? "2021-2" : year, teams)
         .then(() => setSelectedTeams(teams))
         .catch((err) => {
           setSnackbarOpen(true);
