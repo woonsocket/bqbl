@@ -62,8 +62,9 @@ class Firebase {
     };
   }
 
-  getScoresWeekThen(year, week, cb) {
+  getScoresWeek(year, week) {
     const ref = this.db.ref(`scores/${year}/${week}`);
+    const promise = new Promise((resolve, reject) => {
     ref.on('value',
       snapshot => {
         const vals = snapshot.val() || [];
@@ -71,9 +72,9 @@ class Firebase {
           ...vals[key],
           teamName: key,
         }));
-        cb(valsList);
-      });
-    return () => ref.off('value');
+        resolve(valsList);
+      })});
+    return [promise, () => ref.off('value')];
   }
 
   getEventsThen(year, week, cb) {

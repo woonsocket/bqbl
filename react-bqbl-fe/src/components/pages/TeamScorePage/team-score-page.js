@@ -24,8 +24,8 @@ function TeamScorePage(props) {
   }
 
   useEffect(() => {
-    return firebase.getScoresWeekThen(year, week,
-      scoresWeek => {
+    let [promise, cleanup] = firebase.getScoresWeek(year, week);
+    promise.then(scoresWeek => {
         if (sortScores) {
           if (useProjections) {
             scoresWeek = scoresWeek.sort((team, team2) => team2.projection.total - team.projection.total);
@@ -36,6 +36,7 @@ function TeamScorePage(props) {
         setScoresList(scoresWeek);
         setIsLoaded(true);
       });
+    return cleanup;
   }, [firebase, year, week, sortScores, useProjections]);
 
   return (
