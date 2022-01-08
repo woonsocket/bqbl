@@ -11,7 +11,7 @@ import IconScoreCell from '../../reusable/IconScoreCell/icon-score-cell';
 import RequireLeague from '../../reusable/RequireLeague';
 
 function PlayerScorePage() {
-  return <RequireLeague><PlayerScore/></RequireLeague>
+  return <RequireLeague><PlayerScore /></RequireLeague>
 }
 
 
@@ -23,10 +23,11 @@ function PlayerScore(props) {
   const league = useLeague();
 
   useEffect(() => {
-    return firebase.getScoresStartsUsersThen(league, year,
-      ({ dbScores, dbStarts, dbUsers }) => {
-        setPlayerList(joinScores(dbScores, dbStarts, dbUsers, week));
-      });
+    let [ssuPromise, unsubSsu] = firebase.getScoresStartsUsers(league, year);
+    ssuPromise.then(({ dbScores, dbStarts, dbUsers }) => {
+      setPlayerList(joinScores(dbScores, dbStarts, dbUsers, week));
+    });
+    return unsubSsu;
   }, [firebase, league, year, week]);
 
   return (

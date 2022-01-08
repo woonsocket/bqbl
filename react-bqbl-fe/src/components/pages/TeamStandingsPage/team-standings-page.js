@@ -12,15 +12,15 @@ import { FirebaseContext } from '../../Firebase';
 import IconAndName from '../../reusable/IconAndName/icon-and-name';
 import ScoreValue from '../../reusable/ScoreValue/score-value';
 
-function TeamStandingsPage(props) {
+function TeamStandingsPage() {
   const firebase = useContext(FirebaseContext);
   let [allScores, setAllScores] = useState([]);
   let year = useYear();
   let league = useLeague();
 
   useEffect(() => {
-    return firebase.getScoresYearThen(
-        year,
+    const [scoresYearPromise, unsubScoresYear] = firebase.getScoresYear(year);
+        scoresYearPromise.then(
         ({dbScores, dbScores247}) => {
           const scoreEntries = Object.entries(
               processYearScoresByNflTeam(dbScores, dbScores247));
@@ -29,6 +29,7 @@ function TeamStandingsPage(props) {
           });
           setAllScores(scoreEntries);
         });
+    return unsubScoresYear;
   }, [firebase, league, year]);
 
   return (

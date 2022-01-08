@@ -25,7 +25,7 @@ function PlayerStandingsPage() {
   return <RequireLeague><PlayerStandings/></RequireLeague>
 }
 
-function PlayerStandings(props) {
+function PlayerStandings() {
   let [playerTable, setPlayerTable] = useState([]);
   let [sortScores, setSortScores] = useState(true);
   const firebase = useContext(FirebaseContext);
@@ -38,8 +38,8 @@ function PlayerStandings(props) {
 
   useEffect(() => {
     if (!league) {return;}
-    return firebase.getScoresStartsUsersThen(league, year,
-      ({ dbScores, dbScores247, dbStarts, dbUsers }) => {
+    let [ssuPromise, unsubSsu] = firebase.getScoresStartsUsers(league, year);
+    ssuPromise.then(({ dbScores,dbScores247, dbStarts, dbUsers }) => {
         let val = processYearScores(
             dbScores, dbScores247, dbStarts, dbUsers, seasonWeeksReverse(year));
         let playerList = Object.keys(val).map(key => ({
@@ -51,6 +51,7 @@ function PlayerStandings(props) {
         }
         setPlayerTable(playerList);
       });
+    return unsubSsu;
   }, [firebase, league, year, sortScores]);
 
 

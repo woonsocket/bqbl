@@ -48,9 +48,11 @@ function ProBowlScoresPageBase(props) {
   let year = useYear();
 
   useEffect(() => {
-    return props.firebase.getScoresYearThen(year, (scores) => {
+    let [promise, unsub] = props.firebase.getScoresYear(year);
+    promise.then((scores) => {
       setNflScores(scores.dbScores);
     });
+    return unsub; 
   }, [props.firebase, year]);
 
   const leagues = ALL_LEAGUES.slice();

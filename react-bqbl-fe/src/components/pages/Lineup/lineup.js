@@ -12,7 +12,7 @@ import * as FOOTBALL from '../../../constants/football';
 import * as SCHEDULE from '../../../constants/schedule';
 import { LeagueSpecDataProxy } from '../../../middle/response';
 import { FirebaseContext } from '../../Firebase';
-import {useYear, useLeague, useUidOverride} from '../../AppState'
+import { useYear, useLeague, useUidOverride } from '../../AppState'
 import RequireLeague from '../../reusable/RequireLeague';
 import { useUser } from '../../Firebase/firebase';
 
@@ -26,13 +26,13 @@ const useStyles = makeStyles({
     minWidth: '4em',
     fontWeight: 'bold',
   },
-  lineupWeek: {maxWidth: '20px'},
-  selected: {background: 'lightblue'},
-  
+  lineupWeek: { maxWidth: '20px' },
+  selected: { background: 'lightblue' },
+
 })
 
 function LineupPage() {
-  return <RequireLeague><Lineup/></RequireLeague>
+  return <RequireLeague><Lineup /></RequireLeague>
 }
 
 function Lineup(props) {
@@ -53,13 +53,14 @@ function Lineup(props) {
       return;
     }
     let uid = uidOverride || user.uid;
-    const unsubStarts = firebase.getStartsYearThen(
-        uid, league, year, setWeeks);
-    const unsubLeagueSpec = firebase.getLeagueSpecThen(
-        league, data => {
-          let lsdp = new LeagueSpecDataProxy(data, year);
-          setDh(lsdp.hasDh());
-        });
+    const [getStartsPromise, unsubStarts] = firebase.getStartsYear(uid, league, year);
+    getStartsPromise.then(setWeeks);
+    const [leagueSpecPromise, unsubLeagueSpec] = firebase.getLeagueSpec();
+    leagueSpecPromise.then(
+      league, data => {
+        let lsdp = new LeagueSpecDataProxy(data, year);
+        setDh(lsdp.hasDh());
+      });
     return () => {
       unsubStarts();
       unsubLeagueSpec();
@@ -67,7 +68,9 @@ function Lineup(props) {
   }, [firebase, league, year, user, uidOverride]);
 
   useEffect(() => {
-    return firebase.getLockedWeeksThen(Date.now(), setLockedWeeks);
+    const [lockedWeeksPromise, unsubLockedWeeks] = firebase.getLockedWeeks(Date.now());
+    lockedWeeksPromise.then(setLockedWeeks);
+    return unsubLockedWeeks;
   }, [firebase]);
 
   return (
@@ -75,8 +78,8 @@ function Lineup(props) {
       <TableBody>
         {Object.values(weeks).map((week, index) => (
           <LineupWeek week={week}
-              league={league} locked={lockedWeeks.has(week.id)}
-              year={year} index={index} dh={dh} key={index} />
+            league={league} locked={lockedWeeks.has(week.id)}
+            year={year} index={index} dh={dh} key={index} />
         ))}
       </TableBody>
     </Table>

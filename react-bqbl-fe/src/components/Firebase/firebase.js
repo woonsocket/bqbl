@@ -38,121 +38,134 @@ class Firebase {
 
   doSignOut = () => this.auth.signOut();
 
-  getScoresYearThen(year, cb) {
+  getScoresYear(year) {
     let scoresRef = this.db.ref(`scores/${year}`);
     let scores247Ref = this.db.ref(`scores247/${year}`);
+    const promise = new Promise((resolve, reject) => {
 
-    scoresRef.on('value', scoresSnap => {
-      scores247Ref.on('value', scores247Snap => {
-        const dbScores = scoresSnap.val();
-        const dbScores247 = scores247Snap.val() || [];
-        if (!dbScores) {
-          throw new Error("Can't read NFL team scores");
-        }
-        if (!dbScores247) {
-          console.log("Can't read 24/7 scores. Have the quarterbacks really been that good?");
-        }
-        cb({ dbScores, dbScores247 });
-      });
+      scoresRef.on('value', scoresSnap => {
+        scores247Ref.on('value', scores247Snap => {
+          const dbScores = scoresSnap.val();
+          const dbScores247 = scores247Snap.val() || [];
+          if (!dbScores) {
+            throw new Error("Can't read NFL team scores");
+          }
+          if (!dbScores247) {
+            console.log("Can't read 24/7 scores. Have the quarterbacks really been that good?");
+          }
+          resolve({ dbScores, dbScores247 });
+        });
+      })
     });
 
-    return () => {
+    return [promise, () => {
       scoresRef.off('value');
       scores247Ref.off('value');
-    };
+    }];
   }
 
   getScoresWeek(year, week) {
     const ref = this.db.ref(`scores/${year}/${week}`);
     const promise = new Promise((resolve, reject) => {
-    ref.on('value',
-      snapshot => {
-        const vals = snapshot.val() || [];
-        const valsList = Object.keys(vals).map(key => ({
-          ...vals[key],
-          teamName: key,
-        }));
-        resolve(valsList);
-      })});
+      ref.on('value',
+        snapshot => {
+          const vals = snapshot.val() || [];
+          const valsList = Object.keys(vals).map(key => ({
+            ...vals[key],
+            teamName: key,
+          }));
+          resolve(valsList);
+        })
+    });
     return [promise, () => ref.off('value')];
   }
 
-  getEventsThen(year, week, cb) {
+  getEvents(year, week) {
     const ref = this.db.ref(`events/${year}/${week}`);
-    ref.on('value',
-      snapshot => {
-        const vals = snapshot.val();
-        if (!vals) {
-          throw new Error('no passers')
-        }
+    const promise = new Promise((resolve, reject) => {
+      ref.on('value',
+        snapshot => {
+          const vals = snapshot.val();
+          if (!vals) {
+            throw new Error('no passers')
+          }
 
-        cb(vals);
-      });
-    return () => ref.off('value');
+          resolve(vals);
+        })
+    });
+    return [promise, () => ref.off('value')];
   }
 
   updateEventsOverrides(year, week, data) {
     this.db.ref(`events/${year}/${week}/overrides`).update(data);
   }
 
-  get247(year, cb) {
+  get247(year) {
     const ref = this.db.ref(`scores247/${year}`);
-    ref.on('value', snapshot => {
-      cb(snapshot.val() || {});
+    const promise = new Promise((resolve, reject) => {
+      ref.on('value', snapshot => {
+        resolve(snapshot.val() || {});
+      });
     });
-    return () => ref.off('value');
+    return [promise, () => ref.off('value')];
   }
 
   push247(year, data) {
     this.db.ref(`scores247/${year}`).push(data);
   }
 
-  getLeagueSpecThen(leagueId, cb) {
+  getLeagueSpec(leagueId) {
     const loc = `${PREFIX}leaguespec/${leagueId}`;
     const ref = this.db.ref(loc);
-    ref.on('value', snapshot => {
-      if (!snapshot.val()) {
-        throw new Error(`couldn't find league ${loc}`);
-      }
-      console.log(snapshot.val())
-      cb(snapshot.val());
+    const promise = new Promise((resolve, reject) => {
+      ref.on('value', snapshot => {
+        if (!snapshot.val()) {
+          throw new Error(`couldn't find league ${loc}`);
+        }
+        console.log(snapshot.val())
+        resolve(snapshot.val());
+      });
     });
-    return () => ref.off('value');
+    return [promise, () => ref.off('value')];
   }
 
-  getLockedWeeksThen(nowMs, cb) {
+  getLockedWeeks(nowMs) {
     // TODO(aerion): Namespace the unlock times by year.
     const ref = this.db.ref('/unlockedweeks');
-    ref.on('value',
-      snapshot => {
-        if (!snapshot.val()) {
-          throw new Error(`can't read unlockedweeks`);
-        }
-        const weeks = snapshot.val();
-        const lockedWeeks = new Set();
-        weeks.forEach((weekLockMs, idx) => {
-          if (weekLockMs === null) {
-            return;
+    const promise = new Promise((resolve, reject) => {
+      ref.on('value',
+        snapshot => {
+          if (!snapshot.val()) {
+            throw new Error(`can't read unlockedweeks`);
           }
-          if (weekLockMs < nowMs) {
-            lockedWeeks.add('' + idx);
-          }
+          const weeks = snapshot.val();
+          const lockedWeeks = new Set();
+          weeks.forEach((weekLockMs, idx) => {
+            if (weekLockMs === null) {
+              return;
+            }
+            if (weekLockMs < nowMs) {
+              lockedWeeks.add('' + idx);
+            }
+          });
+          resolve(lockedWeeks);
         });
-        cb(lockedWeeks);
-      });
-    return () => ref.off('value');
+    });
+    return [promise, () => ref.off('value')];
   }
 
-  getStartsYearThen(uid, league, year, cb) {
-    const ref = this.db.ref(
-      `${PREFIX}leaguespec/${league}/plays/${year}/${uid}`);
-    ref.on('value', snapshot => {
-      if (!snapshot.val()) {
-        throw new Error("can't find you in this league");
-      }
-      cb(snapshot.val());
+  getStartsYear(uid, league, year) {
+    const ref = this.db.ref(`${PREFIX}leaguespec/${league}/plays/${year}/${uid}`);
+    const promise = new Promise((resolve, reject) => {
+
+      ref.on('value', snapshot => {
+        if (!snapshot.val()) {
+          throw new Error("can't find you in this league");
+        }
+        resolve(snapshot.val());
+      });
     });
-    return () => ref.off('value');
+    return [promise, () => ref.off('value')];
   }
 
   updateStartsRow(league, year, weekIndex, row) {
@@ -161,12 +174,14 @@ class Firebase {
     return this.db.ref(uri).update(row);
   }
 
-  getProBowlYearThen(uid, league, year, cb) {
+  getProBowlYear(uid, league, year) {
     const ref = this.db.ref(`${PREFIX}leaguespec/${league}/probowl/${year}/${uid}`);
-    ref.on('value', snapshot => {
-      cb(snapshot.val() || []);
+    const promise = new Promise((resolve, reject) => {
+      ref.on('value', snapshot => {
+        resolve(snapshot.val() || []);
+      });
     });
-    return () => ref.off('value');
+    return [promise, () => ref.off('value')];
   }
 
   // Calls back with an array of objects, one per player. Each describes the
@@ -174,22 +189,24 @@ class Firebase {
   //   {name: 'Player name', starts: ['Team1', 'Team2', ...]}
   // Empty if the league does not exist. Players who have not chosen any teams
   // are included in the returned list, but with an empty `starts` array.
-  getProBowlStartsForLeague(league, year, cb) {
-    return this.getLeagueSpecThen(league, (spec) => {
-      if (!spec) {
-        return [];
-      }
-      const ldsp = new LeagueSpecDataProxy(spec, year);
-      const proBowlStarts = ldsp.getProBowlStarts();
-      const users = [];
-      for (const [uid, data] of Object.entries(ldsp.getUsers())) {
-        users.push({
-          name: data.name,
-          id: uid,
-          starts: proBowlStarts[uid] || [],
-        });
-      }
-      cb(users);
+  getProBowlStartsForLeague(league, year) {
+    return new Promise((resolve, reject) => {
+      this.getLeagueSpec(league).then((spec) => {
+        if (!spec) {
+          return [];
+        }
+        const ldsp = new LeagueSpecDataProxy(spec, year);
+        const proBowlStarts = ldsp.getProBowlStarts();
+        const users = [];
+        for (const [uid, data] of Object.entries(ldsp.getUsers())) {
+          users.push({
+            name: data.name,
+            id: uid,
+            starts: proBowlStarts[uid] || [],
+          });
+        }
+        resolve(users);
+      });
     });
   }
 
@@ -209,41 +226,42 @@ class Firebase {
     return ['nbqbl', 'abqbl'];
   }
 
-  getScoresStartsUsersThen(league, year, cb) {
+  getScoresStartsUsers(league, year) {
     let scoresRef = this.db.ref(`scores/${year}`);
     let scores247Ref = this.db.ref(`scores247/${year}`);
     let startsRef = this.db.ref(`${PREFIX}leaguespec/${league}/plays/${year}`);
     let usersRef = this.db.ref(`${PREFIX}leaguespec/${league}/users/${year}`);
+    const promise = new Promise((resolve, reject) => {
+      scoresRef.on('value',
+        scoresSnap => {
+          scores247Ref.on('value',
+            scores247Snap => {
+              startsRef.on('value',
+                startsSnap => {
+                  usersRef.on('value',
+                    usersSnap => {
+                      const dbScores = scoresSnap.val();
+                      const dbScores247 = scores247Snap.val() || {};
+                      const dbStarts = startsSnap.val();
+                      const dbUsers = usersSnap.val();
+                      if (!dbScores || !dbScores247 || !dbStarts || !dbUsers) {
+                        console.log(dbScores, dbScores247, dbStarts, dbUsers);
+                        throw new Error(
+                          "Can't find one of scores, scores247, starts, users");
+                      }
+                      resolve({ dbScores, dbScores247, dbStarts, dbUsers });
+                    });
+                });
+            });
+        });
+    });
 
-    scoresRef.on('value',
-      scoresSnap => {
-        scores247Ref.on('value',
-          scores247Snap => {
-            startsRef.on('value',
-              startsSnap => {
-                usersRef.on('value',
-                  usersSnap => {
-                    const dbScores = scoresSnap.val();
-                    const dbScores247 = scores247Snap.val() || {};
-                    const dbStarts = startsSnap.val();
-                    const dbUsers = usersSnap.val();
-                    if (!dbScores || !dbScores247 || !dbStarts || !dbUsers) {
-                      console.log(dbScores, dbScores247, dbStarts, dbUsers);
-                      throw new Error(
-                        "Can't find one of scores, scores247, starts, users");
-                    }
-                    cb({ dbScores, dbScores247, dbStarts, dbUsers });
-                  });
-              });
-          });
-      });
-
-    return () => {
+    return [promise, () => {
       scoresRef.off('value');
       scores247Ref.off('value');
       startsRef.off('value');
       usersRef.off('value');
-    };
+    }];
   }
 
   addFumbleSix(year, week, fumble) {
@@ -255,7 +273,6 @@ class Firebase {
     this.db.ref(`${PREFIX}events/${year}/${week}/safeties`).push(safety);
     this.db.ref(`${PREFIX}events/${year}/${week}/overrides/${safety.team}/safeties`).push(safety);
   }
-
 }
 
 export function useUser() {
