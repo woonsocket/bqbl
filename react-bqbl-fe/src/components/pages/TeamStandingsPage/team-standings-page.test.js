@@ -1,25 +1,13 @@
 import React from 'react';
 import { AppStateContext } from '../../AppState';
 import { FirebaseContext } from '../../Firebase';
-import SCORES from '../../../testing/scores2021';
-import SCORES_247 from '../../../testing/scores-247-2021';
+import {MockFirebase, MockAppState} from '../../../testing/mocks';
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { act } from "react-test-renderer"
 
 import TeamStandingsPage from './team-standings-page';
 
-class MockFirebase {
-  getScoresYear(year) {
-    return [new Promise((resolve, reject) =>
-      resolve({ dbScores: SCORES, dbScores247: SCORES_247 })
-    ), a => a];
-  }
-}
-
-function MockAppState() {
-
-}
 
 const wait = async () => new Promise((resolve) => setTimeout(resolve, 0))
 
