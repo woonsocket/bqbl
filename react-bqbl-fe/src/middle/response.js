@@ -112,6 +112,7 @@ export function processYearScoresByNflTeam(dbScores, dbScores247) {
 
   const teamTable = {};
   const allTeams = Object.keys(dbScores[Object.keys(dbScores)[0]]);
+  console.log({allTeams})
   for (const teamId of allTeams) {
     const points247 = scores247ByTeam[teamId] || 0;
     teamTable[teamId] = {
