@@ -39,7 +39,7 @@ function PlayerStandings() {
   useEffect(() => {
     if (!league) {return;}
     let [ssuPromise, unsubSsu] = firebase.getScoresStartsUsers(league, year);
-    ssuPromise.then(({ dbScores,dbScores247, dbStarts, dbUsers }) => {
+    ssuPromise.then(({dbScores, dbScores247, dbStarts, dbUsers}) => {
         let val = processYearScores(
             dbScores, dbScores247, dbStarts, dbUsers, seasonWeeksReverse(year));
         let playerList = Object.keys(val).map(key => ({
@@ -104,7 +104,7 @@ function PlayerYearCard(props) {
   }
 
   return (
-    <Card className="player-card">
+    <Card className="player-card" data-testid="player-card">
       <CardHeader
         avatar={
           <Avatar aria-label="">

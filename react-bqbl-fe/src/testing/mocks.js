@@ -1,5 +1,7 @@
 import { SCORES } from './scores2021';
-import SCORES_247 from './scores-247-2021';
+import { SCORES_247 } from './scores-247-2021';
+import { STARTS } from './plays2020';
+import { USERS } from './users2020';
 
 export class MockFirebase {
   getScoresYear(year) {
@@ -9,9 +11,7 @@ export class MockFirebase {
   }
 
   getScoresWeek(year, week) {
-    console.log(week)
     return [new Promise((resolve, reject) => {
-      console.log(week)
       let vals = SCORES[week];
       const valsList = Object.keys(vals).map(key => ({
         ...vals[key],
@@ -20,6 +20,15 @@ export class MockFirebase {
       resolve(valsList);
     }
     ), a => a];
+  }
+
+  getScoresStartsUsers(league, year) {
+    // console.log({SCORES, SCORES_247, STARTS, USERS})
+    const promise = new Promise((resolve, reject) => {
+      resolve({dbScores: SCORES, dbScores247: SCORES_247, dbStarts: STARTS, dbUsers: USERS});
+    });
+
+    return [promise, null];
   }
 }
 

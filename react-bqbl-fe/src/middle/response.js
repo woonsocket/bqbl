@@ -67,9 +67,7 @@ export class LeagueSpecDataProxy {
 export function processYearScores(
     dbScores, dbScores247, dbStarts, dbPlayers, legal_weeks) {
   const players = {};
-
   const scores247ByTeam = process247ByTeam(dbScores247);
-
   for (const playerKey of Object.keys(dbStarts)) {
     players[playerKey] = {
       name: dbPlayers[playerKey].name,
@@ -82,10 +80,13 @@ export function processYearScores(
     for (const weekId of Object.values(legal_weeks)) {
       const startedTeams = getStartedTeams(dbStarts, playerId, weekId)
       const scores = startedTeams.map(scoreForTeam.bind(null, dbScores, weekId)) || [0, 0]
+      // TODO: shenanigans like not having starts in week 17 are causing exceptions.
+      try {
       start_rows[weekId] = TEMPLATES.StartRow(
           dbStarts[playerId][weekId].name,
           TEMPLATES.Start(startedTeams[0], Number(scores[0])),
           TEMPLATES.Start(startedTeams[1], Number(scores[1])));
+      } catch(e) {}
     }
     const name = (player.name);
     const playerTeams = player.teams.map((team) => {
@@ -111,7 +112,6 @@ export function processYearScoresByNflTeam(dbScores, dbScores247) {
   const scores247ByTeam = process247ByTeam(dbScores247);
   const teamTable = {};
   const allTeams = Object.keys(dbScores[Object.keys(dbScores)[0]]);
-  console.log({allTeams})
   for (const teamId of allTeams) {
     const points247 = scores247ByTeam[teamId] || 0;
     teamTable[teamId] = {
@@ -190,7 +190,7 @@ function sanitizeScoresDataWeek(dbScoresWeek) {
 }
 
 function scoreForTeam(dbScores, week, team) {
-  if (!team) {
+  if (!team || !dbScores.hasOwnProperty(week)) {
     return 0;
   }
   // TODO: DEBT DEBT DEBT
@@ -199,6 +199,11 @@ function scoreForTeam(dbScores, week, team) {
 }
 
 function getStartedTeams(dbStarts, uid, week) {
+  if (!dbStarts[uid][week]) {
+    // console.log(uid, week)
+    // console.log(dbStarts[uid])
+    return [];
+  }
   let starts = dbStarts[uid][week].teams
       .filter(team => team.selected)
       .map(team => team.name);
@@ -234,6 +239,7 @@ function getAllFromWeek(startsDataValue, week) {
 /** Sums 24/7 scores for each team. */
 function process247ByTeam(dbScoresObj) {
   const byTeam = {};
+  console.log(dbScoresObj)
   for (const entry of Object.values(dbScoresObj)) {
     byTeam[entry.team] = (byTeam[entry.team] || 0) + entry.points;
   }

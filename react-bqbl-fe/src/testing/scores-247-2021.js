@@ -1,4 +1,4 @@
-let SCORES_247 = {
+export const SCORES_247 = {
   "-MIojnu5iF5qiQVm0B7y" : {
     "desc" : "Vote of Confidence",
     "points" : 10,
@@ -265,6 +265,4 @@ let SCORES_247 = {
     "url" : "",
     "week" : "17"
   }
-}
-
-export default SCORES_247;
+};

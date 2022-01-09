@@ -22,6 +22,7 @@ const REGULAR_SEASON_WEEK_IDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "1
 // ANNUAL UPDATE
 export const CURRENT_YEAR = '2021';
 
+// TODO this dependence on the system clock makes tests hard.
 export function seasonWeeksReverse(year) {
   if (year === CURRENT_YEAR) {
     return REGULAR_SEASON_WEEK_IDS.slice(0, footballWeek()).reverse();
