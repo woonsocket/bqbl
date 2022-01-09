@@ -5,14 +5,18 @@ import App from './components/App';
 import { AppStateContextProvider } from './components/AppState';
 import Firebase, { FirebaseContext } from './components/Firebase';
 import './index.css';
+import { ThemeProvider, createMuiTheme, makeStyles } from '@material-ui/core/styles';
+const theme = createMuiTheme();
 
 
 ReactDOM.render(
   <FirebaseContext.Provider value={new Firebase()}>
     <Router>
       <AppStateContextProvider>
-        <App />
-        </AppStateContextProvider>
+        <ThemeProvider theme={theme}>
+          <App />
+        </ThemeProvider>
+      </AppStateContextProvider>
     </Router>
   </FirebaseContext.Provider>,
   document.getElementById('root'),
