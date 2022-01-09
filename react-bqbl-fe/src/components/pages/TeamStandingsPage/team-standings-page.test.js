@@ -1,8 +1,8 @@
 import React from 'react';
 import { AppStateContext } from '../../AppState';
 import { FirebaseContext } from '../../Firebase';
-import SCORES from '../../../testdata/scores2021';
-import SCORES_247 from '../../../testdata/scores-247-2021';
+import SCORES from '../../../testing/scores2021';
+import SCORES_247 from '../../../testing/scores-247-2021';
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { act } from "react-test-renderer"
