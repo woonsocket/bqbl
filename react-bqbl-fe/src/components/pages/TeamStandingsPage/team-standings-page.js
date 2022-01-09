@@ -15,7 +15,6 @@ import ScoreValue from '../../reusable/ScoreValue/score-value';
 function TeamStandingsPage() {
   const firebase = useContext(FirebaseContext);
   let [allScores, setAllScores] = useState([]);
-  console.log(allScores)
   let year = useYear();
   let league = useLeague();
  
@@ -30,7 +29,7 @@ function TeamStandingsPage() {
           });
           setAllScores(scoreEntries);
         }).catch(function (err){
-          console.log(err);  // Prints "Error: something went terribly wrong"
+          console.log(err);
       });;
     return unsubScoresYear;
   }, [firebase, league, year]);

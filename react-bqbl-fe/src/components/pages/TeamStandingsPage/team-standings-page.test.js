@@ -1,15 +1,11 @@
 import React from 'react';
 import { AppStateContext } from '../../AppState';
 import { FirebaseContext } from '../../Firebase';
-import ScoreValue from '../../reusable/ScoreValue/score-value';
-import Adapter from 'enzyme-adapter-react-16';
-import { configure } from 'enzyme';
 import SCORES from '../../../testdata/scores2021';
 import SCORES_247 from '../../../testdata/scores-247-2021';
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
-
-configure({ adapter: new Adapter() });
+import { act } from "react-test-renderer"
 
 import TeamStandingsPage from './team-standings-page';
 
@@ -25,6 +21,8 @@ function MockAppState() {
 
 }
 
+const wait = async () => new Promise((resolve) => setTimeout(resolve, 0))
+
 describe('TeamStandingsPage', () => {
   it('renders mocked data', async () => {
         render(
@@ -34,7 +32,9 @@ describe('TeamStandingsPage', () => {
         </FirebaseContext.Provider>
       </AppStateContext.Provider>
     );
-    expect(screen.getByText('Learn React')).toBeInTheDocument();
-    // expect(wrapper.find(ScoreValue).length).toEqual(1);
+    await act(async() => {
+      await wait()
+    })
+    expect(screen.getByText('ARI')).toBeInTheDocument();
   });
 });
