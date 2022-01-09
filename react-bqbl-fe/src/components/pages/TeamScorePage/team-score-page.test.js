@@ -13,7 +13,7 @@ const wait = async () => new Promise((resolve) => setTimeout(resolve, 0))
 describe('TeamScorePage', () => {
   it('renders mocked data', async () => {
       const {container} = render(
-      <AppStateContext.Provider value={[ MOCK_APP_STATE]}>
+      <AppStateContext.Provider value={[MOCK_APP_STATE]}>
         <FirebaseContext.Provider value={new MockFirebase()}>
           <TeamScorePage />
         </FirebaseContext.Provider>
@@ -26,5 +26,6 @@ describe('TeamScorePage', () => {
     // screen.logTestingPlaygroundURL();
     // Test that NYJ is in there, as they should be!
     expect(screen.getByRole('heading', { name: /nyj/i })).toBeInTheDocument();
+    expect(screen.getByText(/17\/29, 151 yd, 1 td, 3 int final/i)).toBeInTheDocument();
   });
 });
