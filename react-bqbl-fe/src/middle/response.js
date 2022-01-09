@@ -13,7 +13,9 @@ export class LeagueSpecDataProxy {
 
   // Returns a copy of the user data for this league spec.
   getUsers() {
-    const users = this.leagueData.users[this.year];
+    // TODO: undo this
+    let year = this.year == "2021-2" ? "2021" : this.year;
+    const users = this.leagueData.users[year];
     if (!users) {
       return {};
     }
@@ -239,7 +241,6 @@ function getAllFromWeek(startsDataValue, week) {
 /** Sums 24/7 scores for each team. */
 function process247ByTeam(dbScoresObj) {
   const byTeam = {};
-  console.log(dbScoresObj)
   for (const entry of Object.values(dbScoresObj)) {
     byTeam[entry.team] = (byTeam[entry.team] || 0) + entry.points;
   }

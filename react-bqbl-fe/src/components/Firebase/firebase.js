@@ -122,7 +122,6 @@ class Firebase {
         if (!snapshot.val()) {
           throw new Error(`couldn't find league ${loc}`);
         }
-        console.log(snapshot.val())
         resolve(snapshot.val());
       });
     });
@@ -191,20 +190,25 @@ class Firebase {
   // are included in the returned list, but with an empty `starts` array.
   getProBowlStartsForLeague(league, year) {
     return new Promise((resolve, reject) => {
-      this.getLeagueSpec(league).then((spec) => {
+      let [leagueSpecPromise, unsubLeagueSpec] = this.getLeagueSpec(league);
+      leagueSpecPromise.then((spec) => {
+        console.log({league, year, spec})
         if (!spec) {
           return [];
         }
         const ldsp = new LeagueSpecDataProxy(spec, year);
         const proBowlStarts = ldsp.getProBowlStarts();
+        const leagueUsers = ldsp.getUsers();
+        console.log({proBowlStarts, leagueUsers});
         const users = [];
-        for (const [uid, data] of Object.entries(ldsp.getUsers())) {
+        for (const [uid, data] of Object.entries(leagueUsers)) {
           users.push({
             name: data.name,
             id: uid,
             starts: proBowlStarts[uid] || [],
           });
         }
+        console.log(users)
         resolve(users);
       });
     });

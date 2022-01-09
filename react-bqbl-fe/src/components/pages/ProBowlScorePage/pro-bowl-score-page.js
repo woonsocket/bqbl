@@ -52,7 +52,7 @@ function ProBowlScoresPageBase(props) {
     promise.then((scores) => {
       setNflScores(scores.dbScores);
     });
-    return unsub; 
+    return unsub;
   }, [props.firebase, year]);
 
   const leagues = ALL_LEAGUES.slice();
@@ -71,7 +71,7 @@ function ProBowlScoresPageBase(props) {
       {leagues.map((league) => (
         <div key={league} className={classes.leagueCard}>
           <ProBowlScoresCard league={league} nflScores={nflScores}
-              firebase={props.firebase} year={year} />
+            firebase={props.firebase} year={year} />
         </div>
       ))}
     </div>
@@ -106,21 +106,21 @@ function ProBowlScoresCard(props) {
   let year = useYear();
   let override = useProBowlOverride();
   useEffect(() => {
-    return props.firebase.getProBowlStartsForLeague(
-        props.league,
-        // TODO(harveyj): remove this i'm sorry
-        override ? "2021-2" : year,
-        (starts) => {
-          const playerScores =
-              joinProBowlScores(props.nflScores, starts, PRO_BOWL_WEEK);
-          playerScores.sort((a, b) => b.totalScore - a.totalScore);
-          setPlayerScores(playerScores);
-          let leagueScore = 0;
-          for (const p of playerScores.slice(0, LEAGUE_SCORE_PLAYER_COUNT)) {
-            leagueScore += p.totalScore;
-          }
-          setLeagueScore(leagueScore);
-        });
+    let pbPromise = props.firebase.getProBowlStartsForLeague(
+      props.league,
+      // TODO(harveyj): remove this i'm sorry
+      override ? "2021-2" : year);
+    pbPromise.then((starts) => {
+      const playerScores =
+        joinProBowlScores(props.nflScores, starts, PRO_BOWL_WEEK);
+      playerScores.sort((a, b) => b.totalScore - a.totalScore);
+      setPlayerScores(playerScores);
+      let leagueScore = 0;
+      for (const p of playerScores.slice(0, LEAGUE_SCORE_PLAYER_COUNT)) {
+        leagueScore += p.totalScore;
+      }
+      setLeagueScore(leagueScore);
+    });
   }, [props.firebase, props.league, props.nflScores, year, override]);
 
   function playerClass(index) {
@@ -137,7 +137,7 @@ function ProBowlScoresCard(props) {
         subheader={`Total: ${leagueScore}`}
       />
       <CardContent>
-        {playerScores.map(({name, id, teams, totalScore}, index) => (
+        {playerScores.map(({ name, id, teams, totalScore }, index) => (
           <div key={id} className={playerClass(index)}>
             <PlayerScoreList label={name} entries={teams} total={totalScore} />
           </div>

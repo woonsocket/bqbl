@@ -50,7 +50,7 @@ function ProBowlPageBase() {
     if (!user) {
       return;
     }
-    const [leagueSpecPromise, unsubLeagueSpec] = firebase.getLeagueSpec(league)
+    const [leagueSpecPromise, unsubLeagueSpec] = firebase.getLeagueSpec(league);
     leagueSpecPromise.then(data => {
       let lsdp = new LeagueSpecDataProxy(data, year);
       let uid = user ? user.uid : null;
