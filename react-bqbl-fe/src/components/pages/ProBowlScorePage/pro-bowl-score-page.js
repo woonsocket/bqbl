@@ -112,7 +112,7 @@ function ProBowlScoresCard(props) {
       override ? "2021-2" : year);
     pbPromise.then((starts) => {
       const playerScores =
-        joinProBowlScores(props.nflScores, starts, PRO_BOWL_WEEK);
+        joinProBowlScores(props.nflScores, starts, override ? "18" : "17");
       playerScores.sort((a, b) => b.totalScore - a.totalScore);
       setPlayerScores(playerScores);
       let leagueScore = 0;

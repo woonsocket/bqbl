@@ -208,7 +208,6 @@ class Firebase {
             starts: proBowlStarts[uid] || [],
           });
         }
-        console.log(users)
         resolve(users);
       });
     });
