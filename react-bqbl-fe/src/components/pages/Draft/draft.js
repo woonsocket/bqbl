@@ -1,15 +1,15 @@
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import Snackbar from '@material-ui/core/Snackbar';
-import Tab from '@material-ui/core/Tab';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Tabs from '@material-ui/core/Tabs';
-import CloseIcon from '@material-ui/icons/Close';
-import { makeStyles } from '@material-ui/styles';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Snackbar from '@mui/material/Snackbar';
+import Tab from '@mui/material/Tab';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Tabs from '@mui/material/Tabs';
+import CloseIcon from '@mui/icons-material/Close';
+import { makeStyles } from '@mui/styles';
 import classNames from 'classnames/bind';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
@@ -181,7 +181,12 @@ function DraftSnackbar({ selectedTeam, selectCallback, setSelectedTeamCallback }
           <Button key="undo" color="secondary" size="small" onClick={handleConfirm}>
             DRAFT {selectedTeam}
           </Button>,
-          <IconButton key="close" aria-label="close" color="inherit" onClick={handleClose}>
+          <IconButton
+            key="close"
+            aria-label="close"
+            color="inherit"
+            onClick={handleClose}
+            size="large">
             <CloseIcon />
           </IconButton>,
         ]}

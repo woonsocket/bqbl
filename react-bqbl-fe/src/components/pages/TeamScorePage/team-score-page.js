@@ -1,4 +1,4 @@
-import Switch from '@material-ui/core/Switch';
+import Switch from '@mui/material/Switch';
 import React, { useContext, useEffect, useState } from 'react';
 import { useWeek, useYear } from '../../AppState';
 import { FirebaseContext } from '../../Firebase';

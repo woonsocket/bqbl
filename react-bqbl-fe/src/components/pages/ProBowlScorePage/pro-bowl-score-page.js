@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react';
 
 import { compose } from 'recompose';
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@mui/styles';
 import { withRouter } from 'react-router-dom';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardHeader from '@mui/material/CardHeader';
 import PropTypes from 'prop-types';
 import classNames from 'classnames/bind';
-import indigo from '@material-ui/core/colors/indigo';
-
 import { withFirebase } from '../../Firebase';
+
 import PlayerScoreList from '../../reusable/PlayerScoreList/player-score-list';
 import { joinProBowlScores } from '../../../middle/response';
 import { useLeague, useYear, useProBowlOverride } from '../../AppState';
+import { indigo } from '@mui/material/colors';
 
 // lol yeah right whatever you say
 const PRO_BOWL_WEEK = '17';

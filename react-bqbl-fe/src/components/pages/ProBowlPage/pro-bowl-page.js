@@ -7,11 +7,11 @@ import classNames from 'classnames/bind';
 import RequireLeague from '../../reusable/RequireLeague';
 import { FirebaseContext } from '../../Firebase';
 
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@mui/styles';
 import { useUser } from '../../Firebase/firebase';
 import { useLeague, useYear, useProBowlOverride } from '../../AppState';
 import PropTypes from 'prop-types';
-import Snackbar from '@material-ui/core/Snackbar';
+import Snackbar from '@mui/material/Snackbar';
 
 const MAX_SELECTED_TEAMS = 6;
 const TEAM_ICON_WIDTH = '80px';

@@ -1,9 +1,9 @@
 import React from 'react';
 
 import { Link } from 'react-router-dom';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
 import { useWeek, useYear, useLeague } from '../../AppState';
 
 const HOME = '/home';

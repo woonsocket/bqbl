@@ -1,6 +1,6 @@
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import Paper from '@material-ui/core/Paper';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Paper from '@mui/material/Paper';
 import React, { useContext, useState } from 'react';
 import { useWeek, useYear } from '../../AppState';
 import { FirebaseContext } from '../../Firebase';

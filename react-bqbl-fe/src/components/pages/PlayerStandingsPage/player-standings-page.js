@@ -1,12 +1,12 @@
-import Avatar from '@material-ui/core/Avatar';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
-import Collapse from '@material-ui/core/Collapse';
-import IconButton from '@material-ui/core/IconButton';
-import Switch from '@material-ui/core/Switch';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Avatar from '@mui/material/Avatar';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import CardHeader from '@mui/material/CardHeader';
+import Collapse from '@mui/material/Collapse';
+import IconButton from '@mui/material/IconButton';
+import Switch from '@mui/material/Switch';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import classNames from 'classnames/bind';
 import PropTypes from 'prop-types';
 import React, { useContext, useEffect, useState } from 'react';
@@ -123,10 +123,12 @@ function PlayerYearCard(props) {
       </CardContent>
       <CardActions disableSpacing>
         {weeks.length > FOLD &&
-         <IconButton className={classNames({ expanded: expanded })}
-                     onClick={handleExpandClick}
-                     aria-expanded={expanded}
-                     aria-label="Show more" >
+         <IconButton
+           className={classNames({ expanded: expanded })}
+           onClick={handleExpandClick}
+           aria-expanded={expanded}
+           aria-label="Show more"
+           size="large">
            <ExpandMoreIcon />
          </IconButton>}
       </CardActions>

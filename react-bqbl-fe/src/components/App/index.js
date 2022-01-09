@@ -1,14 +1,14 @@
-import AppBar from '@material-ui/core/AppBar';
-import Divider from '@material-ui/core/Divider';
-import Drawer from '@material-ui/core/Drawer';
-import IconButton from '@material-ui/core/IconButton';
-import Input from '@material-ui/core/Input';
-import NativeSelect from '@material-ui/core/NativeSelect';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import MenuIcon from '@material-ui/icons/Menu';
-import { makeStyles } from '@material-ui/styles';
+import AppBar from '@mui/material/AppBar';
+import Divider from '@mui/material/Divider';
+import Drawer from '@mui/material/Drawer';
+import IconButton from '@mui/material/IconButton';
+import Input from '@mui/material/Input';
+import NativeSelect from '@mui/material/NativeSelect';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import MenuIcon from '@mui/icons-material/Menu';
+import { makeStyles } from '@mui/styles';
 import React from 'react';
 import { Route } from 'react-router-dom';
 import { WEEK_IDS } from '../../constants/football';
@@ -65,8 +65,12 @@ function App() {
     <div>
       <AppBar position="static">
         <Toolbar>
-          <IconButton edge="start" color="inherit" aria-label="Menu"
-            onClick={handleDrawerOpen}>
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="Menu"
+            onClick={handleDrawerOpen}
+            size="large">
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
@@ -106,7 +110,7 @@ function App() {
         <Drawer className="drawer" anchor="left"
           open={drawerOpen}>
           <div className="drawerHeader">
-            <IconButton onClick={handleDrawerClose}>
+            <IconButton onClick={handleDrawerClose} size="large">
               <ChevronLeftIcon />
             </IconButton>
           </div>
