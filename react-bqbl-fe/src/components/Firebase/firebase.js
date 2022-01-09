@@ -1,7 +1,7 @@
-import 'firebase/auth';
-import 'firebase/database';
-import 'firebase/functions';
-import app from 'firebase/app';
+import 'firebase/compat/auth';
+import 'firebase/compat/database';
+import 'firebase/compat/functions';
+import app from 'firebase/compat/app';
 
 import { LeagueSpecDataProxy } from '../../middle/response';
 import { useContext, useState, useEffect } from 'react';
