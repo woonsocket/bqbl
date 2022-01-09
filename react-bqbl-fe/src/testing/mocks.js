@@ -1,4 +1,4 @@
-import SCORES from './scores2021';
+import {SCORES} from './scores2021';
 import SCORES_247 from './scores-247-2021';
 
 export class MockFirebase {

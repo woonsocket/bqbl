@@ -24,6 +24,7 @@ function TeamStandingsPage() {
         ({dbScores, dbScores247}) => {
           const scoreEntries = Object.entries(
               processYearScoresByNflTeam(dbScores, dbScores247));
+          console.log(scoreEntries)
           scoreEntries.sort(([_id1, scores1], [_id2, scores2]) => {
             return scores2.total - scores1.total;
           });
@@ -47,12 +48,13 @@ function TeamStandingsPage() {
             )}
           </TableRow>
         </TableHead>
-        <TableBody>
+        <TableBody data-testid="team-rows">
           {allScores.map(([teamId, teamScores], index) => (
-            <TableRow key={"team" + index}>
+            <TableRow key={"team" + index}
+            data-testid="team-row">
               <TableCell><IconAndName team={teamId} /></TableCell>
               <TableCell align="right">
-                <ScoreValue score={teamScores.total} />
+                <ScoreValue data-testid="score-value" score={teamScores.total} />
               </TableCell>
               <TableCell align="right">
                 <ScoreValue score={teamScores.points247} />

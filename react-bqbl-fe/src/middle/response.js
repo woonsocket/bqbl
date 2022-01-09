@@ -109,7 +109,6 @@ export function processYearScores(
 
 export function processYearScoresByNflTeam(dbScores, dbScores247) {
   const scores247ByTeam = process247ByTeam(dbScores247);
-
   const teamTable = {};
   const allTeams = Object.keys(dbScores[Object.keys(dbScores)[0]]);
   console.log({allTeams})
@@ -125,7 +124,7 @@ export function processYearScoresByNflTeam(dbScores, dbScores247) {
     let dbWeekScores = sanitizeScoresDataWeek(weekScoresByTeam) || {};
     for (const [teamId, weekScores] of Object.entries(dbWeekScores)) {
       if (!(teamId in teamTable)) {
-        console.warn(`unknown team ${teamId}`);
+        // console.warn(`unknown team ${teamId}`);
         continue;
       }
       teamTable[teamId].weeks[weekId] = weekScores.total;
