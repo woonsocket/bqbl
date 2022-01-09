@@ -5,12 +5,10 @@ import { indigo } from '@mui/material/colors';
 import { makeStyles } from '@mui/styles';
 import classNames from 'classnames/bind';
 import PropTypes from 'prop-types';
-import React, { useEffect, useState } from 'react';
-import { withRouter } from 'react-router-dom';
-import { compose } from 'recompose';
+import React, { useContext, useEffect, useState } from 'react';
 import { joinProBowlScores } from '../../../middle/response';
-import { useLeague, useProBowlOverride, useYear } from '../../AppState';
-import { withFirebase } from '../../Firebase';
+import { useLeague, useProBowlOverride, useWeek, useYear } from '../../AppState';
+import { FirebaseContext } from '../../Firebase';
 import PlayerScoreList from '../../reusable/PlayerScoreList/player-score-list';
 
 // The league score is the sum of the top 3 player scores.
@@ -19,10 +17,6 @@ const LEAGUE_SCORE_PLAYER_COUNT = 3;
 // enough for now. Seems silly to generalize to reading every league from the
 // database at this moment.
 const ALL_LEAGUES = ['abqbl', 'nbqbl'];
-
-ProBowlScoresPageBase.propTypes = {
-  firebase: PropTypes.object.isRequired,
-};
 
 const pageStyles = makeStyles({
   leagueContainer: {
@@ -36,20 +30,21 @@ const pageStyles = makeStyles({
   },
 });
 
-function ProBowlScoresPageBase(props) {
+function ProBowlScoresPage(props) {
   const classes = pageStyles();
 
   const [nflScores, setNflScores] = useState({});
   let league = useLeague();
   let year = useYear();
+  let firebase = useContext(FirebaseContext);
 
   useEffect(() => {
-    let [promise, unsub] = props.firebase.getScoresYear(year);
+    let [promise, unsub] = firebase.getScoresYear(year);
     promise.then((scores) => {
       setNflScores(scores.dbScores);
     });
     return unsub;
-  }, [props.firebase, year]);
+  });
 
   const leagues = ALL_LEAGUES.slice();
   // Place the viewing player's league first.
@@ -75,7 +70,6 @@ function ProBowlScoresPageBase(props) {
 }
 
 ProBowlScoresCard.propTypes = {
-  firebase: PropTypes.object.isRequired,
   league: PropTypes.string.isRequired,
   // BQBL scores for NFL teams for the given year.
   nflScores: PropTypes.object.isRequired,
@@ -100,15 +94,17 @@ function ProBowlScoresCard(props) {
   let [leagueScore, setLeagueScore] = useState(0);
   let [playerScores, setPlayerScores] = useState([]);
   let year = useYear();
+  let week = useWeek();
   let override = useProBowlOverride();
+  let firebase = useContext(FirebaseContext);
   useEffect(() => {
-    let pbPromise = props.firebase.getProBowlStartsForLeague(
+    let pbPromise = firebase.getProBowlStartsForLeague(
       props.league,
       // TODO(harveyj): remove this i'm sorry
       override ? "2021-2" : year);
     pbPromise.then((starts) => {
       const playerScores =
-        joinProBowlScores(props.nflScores, starts, override ? "18" : "17");
+        joinProBowlScores(props.nflScores, starts, week);
       playerScores.sort((a, b) => b.totalScore - a.totalScore);
       setPlayerScores(playerScores);
       let leagueScore = 0;
@@ -117,7 +113,7 @@ function ProBowlScoresCard(props) {
       }
       setLeagueScore(leagueScore);
     });
-  }, [props.firebase, props.league, props.nflScores, year, override]);
+  }, [props.league, props.nflScores, year, override]);
 
   function playerClass(index) {
     const c = {};
@@ -142,10 +138,5 @@ function ProBowlScoresCard(props) {
     </Card>
   );
 }
-
-const ProBowlScoresPage = compose(
-  withRouter,
-  withFirebase,
-)(ProBowlScoresPageBase);
 
 export default ProBowlScoresPage;

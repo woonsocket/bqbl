@@ -199,7 +199,6 @@ class Firebase {
         const ldsp = new LeagueSpecDataProxy(spec, year);
         const proBowlStarts = ldsp.getProBowlStarts();
         const leagueUsers = ldsp.getUsers();
-        console.log({proBowlStarts, leagueUsers});
         const users = [];
         for (const [uid, data] of Object.entries(leagueUsers)) {
           users.push({
