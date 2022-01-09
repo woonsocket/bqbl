@@ -1,22 +1,18 @@
-import React, { useEffect, useState } from 'react';
-
-import { compose } from 'recompose';
-import { makeStyles } from '@mui/styles';
-import { withRouter } from 'react-router-dom';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
-import PropTypes from 'prop-types';
-import classNames from 'classnames/bind';
-import { withFirebase } from '../../Firebase';
-
-import PlayerScoreList from '../../reusable/PlayerScoreList/player-score-list';
-import { joinProBowlScores } from '../../../middle/response';
-import { useLeague, useYear, useProBowlOverride } from '../../AppState';
 import { indigo } from '@mui/material/colors';
+import { makeStyles } from '@mui/styles';
+import classNames from 'classnames/bind';
+import PropTypes from 'prop-types';
+import React, { useEffect, useState } from 'react';
+import { withRouter } from 'react-router-dom';
+import { compose } from 'recompose';
+import { joinProBowlScores } from '../../../middle/response';
+import { useLeague, useProBowlOverride, useYear } from '../../AppState';
+import { withFirebase } from '../../Firebase';
+import PlayerScoreList from '../../reusable/PlayerScoreList/player-score-list';
 
-// lol yeah right whatever you say
-const PRO_BOWL_WEEK = '17';
 // The league score is the sum of the top 3 player scores.
 const LEAGUE_SCORE_PLAYER_COUNT = 3;
 // TODO(aerion): This is hard-coded to the two existing leagues. That's good
