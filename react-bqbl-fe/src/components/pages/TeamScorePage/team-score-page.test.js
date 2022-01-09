@@ -3,32 +3,28 @@ import { AppStateContext } from '../../AppState';
 import { FirebaseContext } from '../../Firebase';
 import {MockFirebase, MOCK_APP_STATE} from '../../../testing/mocks';
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
+import { render, screen, getByRole } from '@testing-library/react';
 import { act } from "react-test-renderer"
 
-import TeamStandingsPage from './team-standings-page';
+import TeamScorePage from './team-score-page';
 
 const wait = async () => new Promise((resolve) => setTimeout(resolve, 0))
 
-describe('TeamStandingsPage', () => {
+describe('TeamScorePage', () => {
   it('renders mocked data', async () => {
       const {container} = render(
-      <AppStateContext.Provider value={[MOCK_APP_STATE]}>
+      <AppStateContext.Provider value={[ MOCK_APP_STATE]}>
         <FirebaseContext.Provider value={new MockFirebase()}>
-          <TeamStandingsPage />
+          <TeamScorePage />
         </FirebaseContext.Provider>
       </AppStateContext.Provider>
     );
     await act(async() => {
       await wait()
     })
-    // Test that a team header is there
-    expect(screen.getByText('ARI')).toBeInTheDocument();
     // SUPER USEFUL
-    // screen.logTestingPlaygroundURL(screen.getAllByTestId('team-row')[0]);
-    // Test that DEN's 24/7 points (lol) are there
-    expect(screen.getByText(/118/i)).toBeInTheDocument();
-    // Test that DEN's (fictional) week 1 score is there
-    expect(screen.getByText(/1021/i)).toBeInTheDocument();
+    // screen.logTestingPlaygroundURL();
+    // Test that NYJ is in there, as they should be!
+    expect(screen.getByRole('heading', { name: /nyj/i })).toBeInTheDocument();
   });
 });

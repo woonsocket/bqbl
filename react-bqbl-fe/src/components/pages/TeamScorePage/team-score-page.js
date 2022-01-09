@@ -48,6 +48,7 @@ function TeamScorePage(props) {
           onChange={sortClickedCallback}
           value="sort"
           color="primary"
+          data-testid="sort-toggle"
         />
         Use Projections
         <Switch
@@ -60,7 +61,8 @@ function TeamScorePage(props) {
 
       </div>
       {scoresList.map(score => (
-        <TeamScoreCard score={score} key={score.teamName} boxScoreLink={boxScoreLink(year, props.week, score.gameInfo.id)} />
+        <TeamScoreCard data-testid="team-score-card"
+        score={score} key={score.teamName} boxScoreLink={boxScoreLink(year, props.week, score.gameInfo.id)} />
       ))}
       {isLoaded && !scoresList.length &&
         <div>No scores found for week {props.week}</div>
