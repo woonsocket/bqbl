@@ -31,7 +31,7 @@ function TeamStandingsPage() {
           setAllScores(scoreEntries);
         }).catch(function (err){
           console.log(err);
-      });;
+      });
     return unsubScoresYear;
   }, [firebase, league, year]);
 
