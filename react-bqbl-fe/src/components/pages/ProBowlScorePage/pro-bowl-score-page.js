@@ -130,7 +130,7 @@ function ProBowlScoresCard(props) {
       />
       <CardContent>
         {playerScores.map(({ name, id, teams, totalScore }, index) => (
-          <div key={id} className={playerClass(index)}>
+          <div key={props.league+id} className={playerClass(index)}>
             <PlayerScoreList label={name} entries={teams} total={totalScore} />
           </div>
         ))}

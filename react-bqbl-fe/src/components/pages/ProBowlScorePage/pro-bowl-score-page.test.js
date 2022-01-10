@@ -1,25 +1,39 @@
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import React from 'react';
-import { act } from "react-test-renderer";
 import { MockFirebase, MOCK_APP_STATE } from '../../../testing/mocks';
 import { AppStateContext } from '../../AppState';
 import { FirebaseContext } from '../../Firebase';
 import ProBowlScoresPage from './pro-bowl-score-page';
+import ReactDOM from 'react-dom';
+import { act } from 'react-dom/test-utils';
 
 
 const wait = async () => new Promise((resolve) => setTimeout(resolve, 0))
 
+let container;
+
+beforeEach(() => {
+  container = document.createElement('div');
+  document.body.appendChild(container);
+});
+
+afterEach(() => {
+  document.body.removeChild(container);
+  container = null;
+});
+
 describe('ProBowlScoresPage', () => {
   it('renders mocked data', async () => {
-      const {container} = render(
-      <AppStateContext.Provider value={[MOCK_APP_STATE]}>
+    act(() => {
+      ReactDOM.render(      <AppStateContext.Provider value={[MOCK_APP_STATE]}>
         <FirebaseContext.Provider value={new MockFirebase()}>
           <ProBowlScoresPage />
         </FirebaseContext.Provider>
       </AppStateContext.Provider>
-    );
-    await act(async() => {
+, container);
+    });
+      await act(async() => {
       await wait()
     })
     // SUPER USEFUL
