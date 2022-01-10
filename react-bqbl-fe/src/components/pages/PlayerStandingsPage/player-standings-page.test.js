@@ -3,7 +3,7 @@ import { AppStateContext } from '../../AppState';
 import { FirebaseContext } from '../../Firebase';
 import {MockFirebase, MOCK_APP_STATE} from '../../../testing/mocks';
 import '@testing-library/jest-dom';
-import { screen, getByRole } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import ReactDOM from 'react-dom';
 import { act } from 'react-dom/test-utils';
 
