@@ -1,25 +1,40 @@
 import React from 'react';
 import { AppStateContext } from '../../AppState';
 import { FirebaseContext } from '../../Firebase';
-import {MockFirebase, MOCK_APP_STATE} from '../../../testing/mocks';
+import { MockFirebase, MOCK_APP_STATE } from '../../../testing/mocks';
 import '@testing-library/jest-dom';
 import { render, screen, getByRole } from '@testing-library/react';
-import { act } from "react-test-renderer"
+import ReactDOM from 'react-dom';
+import { act } from 'react-dom/test-utils';
 
 import TeamScorePage from './team-score-page';
 
 const wait = async () => new Promise((resolve) => setTimeout(resolve, 0))
 
+let container;
+
+beforeEach(() => {
+  container = document.createElement('div');
+  document.body.appendChild(container);
+});
+
+afterEach(() => {
+  document.body.removeChild(container);
+  container = null;
+});
+
 describe('TeamScorePage', () => {
   it('renders mocked data', async () => {
-      const {container} = render(
-      <AppStateContext.Provider value={[MOCK_APP_STATE]}>
-        <FirebaseContext.Provider value={new MockFirebase()}>
-          <TeamScorePage />
-        </FirebaseContext.Provider>
-      </AppStateContext.Provider>
-    );
-    await act(async() => {
+    act(() => {
+      ReactDOM.render(
+        <AppStateContext.Provider value={[MOCK_APP_STATE]}>
+          <FirebaseContext.Provider value={new MockFirebase()}>
+            <TeamScorePage />
+          </FirebaseContext.Provider>
+        </AppStateContext.Provider>
+        , container);
+    });
+    await act(async () => {
       await wait()
     })
     // SUPER USEFUL
