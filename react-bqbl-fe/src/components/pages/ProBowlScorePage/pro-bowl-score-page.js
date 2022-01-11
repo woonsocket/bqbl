@@ -44,7 +44,7 @@ function ProBowlScoresPage() {
       setNflScores(scores.dbScores);
     });
     return unsub;
-  });
+  }, [firebase, year]);
 
   const leagues = ALL_LEAGUES.slice();
   // Place the viewing player's league first.
@@ -114,7 +114,7 @@ function ProBowlScoresCard(props) {
       setLeagueScore(leagueScore);
     });
     return unsubPb;
-  }, [props.league, props.nflScores, year, override]);
+  }, [firebase, props.league, props.nflScores, year, override]);
 
   function playerClass(index) {
     const c = {};

@@ -208,7 +208,7 @@ class Firebase {
         resolve(users);
       });
     });
-    return [proBowlPromise, () => leagueSpecPromise.off('value')]
+    return [proBowlPromise, unsubscribeLeagueSpec]
   }
 
   updateProBowlStarts(league, year, teams) {
