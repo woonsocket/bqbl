@@ -1,12 +1,11 @@
-import React from 'react';
-import { AppStateContext } from '../../AppState';
-import { FirebaseContext } from '../../Firebase';
-import { MockFirebase, MOCK_APP_STATE } from '../../../testing/mocks';
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 import { act } from 'react-dom/test-utils';
-
+import { MockFirebase, MOCK_APP_STATE } from '../../../testing/mocks';
+import { AppStateContext } from '../../AppState';
+import { FirebaseContext } from '../../Firebase';
 import TeamStandingsPage from './team-standings-page';
 
 const wait = async () => new Promise((resolve) => setTimeout(resolve, 0))

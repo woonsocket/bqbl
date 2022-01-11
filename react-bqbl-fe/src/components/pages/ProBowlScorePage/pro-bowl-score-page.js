@@ -30,7 +30,7 @@ const pageStyles = makeStyles({
   },
 });
 
-function ProBowlScoresPage(props) {
+function ProBowlScoresPage() {
   const classes = pageStyles();
 
   const [nflScores, setNflScores] = useState({});
@@ -62,7 +62,7 @@ function ProBowlScoresPage(props) {
       {leagues.map((league) => (
         <div key={league} className={classes.leagueCard}>
           <ProBowlScoresCard league={league} nflScores={nflScores}
-            firebase={props.firebase} year={year} />
+            firebase={firebase} year={year} />
         </div>
       ))}
     </div>

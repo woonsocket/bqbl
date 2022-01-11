@@ -48,7 +48,7 @@ class Firebase {
           const dbScores = scoresSnap.val();
           const dbScores247 = scores247Snap.val() || [];
           if (!dbScores) {
-            throw new Error("Can't read NFL team scores");
+            reject("Can't read NFL team scores");
           }
           if (!dbScores247) {
             console.log("Can't read 24/7 scores. Have the quarterbacks really been that good?");
@@ -66,7 +66,7 @@ class Firebase {
 
   getScoresWeek(year, week) {
     const ref = this.db.ref(`scores/${year}/${week}`);
-    const promise = new Promise((resolve, reject) => {
+    const promise = new Promise((resolve, _reject) => {
       ref.on('value',
         snapshot => {
           const vals = snapshot.val() || [];
@@ -87,9 +87,8 @@ class Firebase {
         snapshot => {
           const vals = snapshot.val();
           if (!vals) {
-            throw new Error('no passers')
+            reject('no passers');
           }
-
           resolve(vals);
         })
     });
@@ -102,7 +101,7 @@ class Firebase {
 
   get247(year) {
     const ref = this.db.ref(`scores247/${year}`);
-    const promise = new Promise((resolve, reject) => {
+    const promise = new Promise((resolve) => {
       ref.on('value', snapshot => {
         resolve(snapshot.val() || {});
       });
@@ -120,7 +119,7 @@ class Firebase {
     const promise = new Promise((resolve, reject) => {
       ref.on('value', snapshot => {
         if (!snapshot.val()) {
-          throw new Error(`couldn't find league ${loc}`);
+          reject(`couldn't find league ${loc}`);
         }
         resolve(snapshot.val());
       });
@@ -135,7 +134,7 @@ class Firebase {
       ref.on('value',
         snapshot => {
           if (!snapshot.val()) {
-            throw new Error(`can't read unlockedweeks`);
+            reject(`can't read unlockedweeks`);
           }
           const weeks = snapshot.val();
           const lockedWeeks = new Set();
@@ -159,7 +158,7 @@ class Firebase {
 
       ref.on('value', snapshot => {
         if (!snapshot.val()) {
-          throw new Error("can't find you in this league");
+          reject("can't find you in this league");
         }
         resolve(snapshot.val());
       });
@@ -175,7 +174,7 @@ class Firebase {
 
   getProBowlYear(uid, league, year) {
     const ref = this.db.ref(`${PREFIX}leaguespec/${league}/probowl/${year}/${uid}`);
-    const promise = new Promise((resolve, reject) => {
+    const promise = new Promise((resolve) => {
       ref.on('value', snapshot => {
         resolve(snapshot.val() || []);
       });
@@ -190,11 +189,10 @@ class Firebase {
   // are included in the returned list, but with an empty `starts` array.
   getProBowlStartsForLeague(league, year) {
     return new Promise((resolve, reject) => {
-      let [leagueSpecPromise, unsubLeagueSpec] = this.getLeagueSpec(league);
+      let [leagueSpecPromise] = this.getLeagueSpec(league);
       leagueSpecPromise.then((spec) => {
-        console.log({league, year, spec})
         if (!spec) {
-          return [];
+          reject("");
         }
         const ldsp = new LeagueSpecDataProxy(spec, year);
         const proBowlStarts = ldsp.getProBowlStarts();
@@ -248,7 +246,7 @@ class Firebase {
                       const dbUsers = usersSnap.val();
                       if (!dbScores || !dbScores247 || !dbStarts || !dbUsers) {
                         console.log(dbScores, dbScores247, dbStarts, dbUsers);
-                        throw new Error(
+                        reject(
                           "Can't find one of scores, scores247, starts, users");
                       }
                       resolve({ dbScores, dbScores247, dbStarts, dbUsers });
