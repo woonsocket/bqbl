@@ -98,7 +98,7 @@ function ProBowlScoresCard(props) {
   let override = useProBowlOverride();
   let firebase = useContext(FirebaseContext);
   useEffect(() => {
-    let pbPromise = firebase.getProBowlStartsForLeague(
+    let [pbPromise, unsubPb] = firebase.getProBowlStartsForLeague(
       props.league,
       // TODO(harveyj): remove this i'm sorry
       override ? "2021-2" : year);
@@ -113,6 +113,7 @@ function ProBowlScoresCard(props) {
       }
       setLeagueScore(leagueScore);
     });
+    return unsubPb;
   }, [props.league, props.nflScores, year, override]);
 
   function playerClass(index) {

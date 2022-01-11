@@ -188,8 +188,8 @@ class Firebase {
   // Empty if the league does not exist. Players who have not chosen any teams
   // are included in the returned list, but with an empty `starts` array.
   getProBowlStartsForLeague(league, year) {
-    return new Promise((resolve, reject) => {
-      let [leagueSpecPromise] = this.getLeagueSpec(league);
+    let [leagueSpecPromise, unsubscribeLeagueSpec] = this.getLeagueSpec(league);
+    let proBowlPromise = new Promise((resolve, reject) => {
       leagueSpecPromise.then((spec) => {
         if (!spec) {
           reject("");
@@ -208,6 +208,7 @@ class Firebase {
         resolve(users);
       });
     });
+    return [proBowlPromise, () => leagueSpecPromise.off('value')]
   }
 
   updateProBowlStarts(league, year, teams) {
@@ -245,7 +246,6 @@ class Firebase {
                       const dbStarts = startsSnap.val();
                       const dbUsers = usersSnap.val();
                       if (!dbScores || !dbScores247 || !dbStarts || !dbUsers) {
-                        console.log(dbScores, dbScores247, dbStarts, dbUsers);
                         reject(
                           "Can't find one of scores, scores247, starts, users");
                       }
