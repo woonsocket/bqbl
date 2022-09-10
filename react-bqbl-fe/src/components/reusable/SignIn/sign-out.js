@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import { withFirebase } from '../../Firebase';
 
-import { compose } from 'recompose';
+import { compose } from 'react-recompose';
 import { withRouter } from 'react-router-dom';
 import Button from '@mui/material/Button';
 

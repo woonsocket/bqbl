@@ -14,7 +14,7 @@ import classNames from 'classnames/bind';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { withRouter } from 'react-router-dom';
-import { compose } from 'recompose';
+import { compose } from 'react-recompose';
 import * as FOOTBALL from '../../../constants/football';
 import { LeagueSpecDataProxy } from '../../../middle/response';
 import { useYear } from '../../AppState';

@@ -10,7 +10,7 @@ import TextField from '@mui/material/TextField';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { withRouter } from 'react-router-dom';
-import { compose } from 'recompose';
+import { compose } from 'react-recompose';
 import * as FOOTBALL from '../../../constants/football';
 import { useWeek, useYear } from '../../AppState';
 import { withFirebase } from '../../Firebase';
