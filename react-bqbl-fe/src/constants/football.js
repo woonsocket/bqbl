@@ -1,4 +1,7 @@
 // TODO: good lord...
+export const ALL_TEAMS_2022 = ["ARI", "ATL", "BAL", "BUF", "CAR", "CHI", "CIN", "CLE", "DAL", "DEN", "DET",
+  "GB", "HOU", "IND", "JAX", "KC", "LA", "LAC", "LV", "MIA", "MIN", "NE", "NO", "NYG", "NYJ", "PHI", "PIT", "SEA", "SF", "TB", "TEN", "WAS"];
+
 export const ALL_TEAMS_2021 = ["ARI", "ATL", "BAL", "BUF", "CAR", "CHI", "CIN", "CLE", "DAL", "DEN", "DET",
   "GB", "HOU", "IND", "JAX", "KC", "LA", "LAC", "LV", "MIA", "MIN", "NE", "NO", "NYG", "NYJ", "PHI", "PIT", "SEA", "SF", "TB", "TEN", "WAS"];
 
@@ -11,7 +14,7 @@ export const ALL_TEAMS_2019 = ["ARI", "ATL", "BAL", "BUF", "CAR", "CHI", "CIN", 
   "GB", "HOU", "IND", "JAX", "KC", "LA", "LAC", "MIA", "MIN", "NE", "NO", "NYG", "NYJ",
   "OAK", "PHI", "PIT", "SEA", "SF", "TB", "TEN", "WAS"];
 
-export const ALL_TEAMS = ALL_TEAMS_2021;
+export const ALL_TEAMS = ALL_TEAMS_2022;
 
 // Weeks that are part of the NFL season.
 export const WEEK_IDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18"];
@@ -20,7 +23,7 @@ export const WEEK_IDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"
 const REGULAR_SEASON_WEEK_IDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17"];
 
 // ANNUAL UPDATE
-export const CURRENT_YEAR = '2021';
+export const CURRENT_YEAR = '2022';
 
 // TODO this dependence on the system clock makes tests hard.
 export function seasonWeeksReverse(year) {
@@ -49,15 +52,17 @@ function dayOfYear() {
 }
 
 export function footballWeek() {
-  if (new Date().getFullYear() > CURRENT_YEAR) {
-    return 17;
-  }
-  const day = dayOfYear();
+  const yearOffset = new Date().getFullYear() - CURRENT_YEAR;
+  // This ignores leap years, but the NFL season always ends before Feb. 28.
+  const day = dayOfYear() + 365 * yearOffset;
   // ANNUAL UPDATE
-  // Day 252 is Thursday, September 9, 2021
-  let week = Math.ceil((day - 252) / 7);
+  // Day 251 is Thursday, September 8, 2022
+  let week = Math.ceil((day - 251) / 7);
   if (week < 1) {
     week = 1;
+  }
+  if (week > 18) {
+    week = 18;  // TODO: Reference the maximum week number better.
   }
   return week;
 }
