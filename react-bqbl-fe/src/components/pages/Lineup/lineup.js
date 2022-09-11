@@ -39,6 +39,7 @@ function Lineup(props) {
   const firebase = useContext(FirebaseContext);
   let [weeks, setWeeks] = useState({});
   let [dh, setDh] = useState(false);
+  let [errorMessage, setErrorMessage] = useState('');
   let user = useUser();
   // TODO(aerion): Update lockedWeeks if the lock time passes while the
   // component is visible.
@@ -54,7 +55,14 @@ function Lineup(props) {
     }
     let uid = uidOverride || user.uid;
     const [getStartsPromise, unsubStarts] = firebase.getStartsYear(uid, league, year);
-    getStartsPromise.then(setWeeks);
+    getStartsPromise
+        .then(setWeeks)
+        .catch((err) => {
+          setErrorMessage(`Could not load your lineup page. You might not be ` +
+              `registered in the league "${league}". Contact an admin with ` +
+              `your user ID (${uid}) if you think this is incorrect. (Error ` +
+              `details: ${err})`);
+        });
     const [leagueSpecPromise, unsubLeagueSpec] = firebase.getLeagueSpec(league);
     leagueSpecPromise.then(
       data => {
@@ -73,6 +81,11 @@ function Lineup(props) {
     return unsubLockedWeeks;
   }, [firebase]);
 
+  if (errorMessage) {
+    return (
+      <div>{errorMessage}</div>
+    )
+  }
   return (
     <Table size="small">
       <TableBody>
