@@ -55,9 +55,9 @@ function Lineup(props) {
     let uid = uidOverride || user.uid;
     const [getStartsPromise, unsubStarts] = firebase.getStartsYear(uid, league, year);
     getStartsPromise.then(setWeeks);
-    const [leagueSpecPromise, unsubLeagueSpec] = firebase.getLeagueSpec();
+    const [leagueSpecPromise, unsubLeagueSpec] = firebase.getLeagueSpec(league);
     leagueSpecPromise.then(
-      league, data => {
+      data => {
         let lsdp = new LeagueSpecDataProxy(data, year);
         setDh(lsdp.hasDh());
       });
