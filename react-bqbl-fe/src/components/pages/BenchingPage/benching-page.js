@@ -7,18 +7,16 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useWeek, useYear } from '../../AppState';
 import { FirebaseContext } from '../../Firebase';
 
-function BenchingPage() {
+function BenchingPage(props) {
   let [events, setEvents] = useState({ passers: {} });
   let firebase = useContext(FirebaseContext)
   let year = useYear();
   let week = useWeek();
 
   useEffect(() => {
-    let [eventsPromise, unsubEvents] =  firebase.getEvents(year, week)
-    eventsPromise.then(newEvents => {
+    return firebase.getEventsThen(year, week, newEvents => {
       setEvents(newEvents);
     });
-    return unsubEvents;
   }, [firebase, year, week]);
 
   const handleChange = passerId => event => {

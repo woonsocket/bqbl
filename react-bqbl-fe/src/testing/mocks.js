@@ -4,31 +4,26 @@ import { STARTS } from './plays2020';
 import { USERS } from './users2020';
 
 export class MockFirebase {
-  getScoresYear(year) {
-    return [new Promise((resolve, reject) =>
-      resolve({ dbScores: SCORES, dbScores247: SCORES_247 })
-    ), a => a];
+  getScoresYearThen(year, cb) {
+    cb({ dbScores: SCORES, dbScores247: SCORES_247 })
+    return () => {};
   }
 
-  getScoresWeek(year, week) {
-    return [new Promise((resolve, reject) => {
-      let vals = SCORES[week];
-      const valsList = Object.keys(vals).map(key => ({
-        ...vals[key],
-        teamName: key,
-      }));
-      resolve(valsList);
-    }
-    ), a => a];
+  getScoresWeekThen(year, week, cb) {
+    let vals = SCORES[week];
+    const valsList = Object.keys(vals).map(key => ({
+      ...vals[key],
+      teamName: key,
+    }));
+    cb(valsList);
+    return () => {};
   }
 
-  getScoresStartsUsers(league, year) {
+  getScoresStartsUsersThen(league, year, cb) {
     // console.log({SCORES, SCORES_247, STARTS, USERS})
-    const promise = new Promise((resolve, reject) => {
-      resolve({ dbScores: SCORES, dbScores247: SCORES_247, dbStarts: STARTS, dbUsers: USERS });
-    });
+    cb({ dbScores: SCORES, dbScores247: SCORES_247, dbStarts: STARTS, dbUsers: USERS });
 
-    return [promise, null];
+    return () => {};
   }
 
   // Calls back with an array of objects, one per player. Each describes the

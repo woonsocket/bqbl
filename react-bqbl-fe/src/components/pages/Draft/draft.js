@@ -57,21 +57,18 @@ function DraftPageBase(props) {
   let year = useYear();
   
   useEffect(() => {
-    let [lsPromise, unsub] = props.firebase.getLeagueSpec(props.league);
-    lsPromise.then(data => {
+    return props.firebase.getLeagueSpecThen(props.league, data => {
       let lsdp = new LeagueSpecDataProxy(data, year);
       let uid = user ? user.uid : null;
       setIsInLeague(lsdp.isInLeague(uid));
       setTakenTeams(lsdp.getTakenTeams());
       setDraftList(lsdp.getDraftList());
     });
-    return unsub
   }, [props.firebase, props.league, year, user]);
 
   function addUser() {
-    // TODO(harveyj): Race conditions, not handling unsub
-    let [lsPromise, unsub] = props.firebase.getLeagueSpec(props.league);
-    lsPromise.then(data => {
+    // TODO: Race conditions ahoy!
+    props.firebase.getLeagueSpecThen(props.league, data => {
       let lsdp = new LeagueSpecDataProxy(data, year);
       let uid = user ? user.uid : null;
       let newData = lsdp.addUser(uid);

@@ -50,16 +50,13 @@ function ProBowlPageBase() {
     if (!user) {
       return;
     }
-    const [leagueSpecPromise, unsubLeagueSpec] = firebase.getLeagueSpec(league);
-    leagueSpecPromise.then(data => {
+    const unsubLeagueSpec = firebase.getLeagueSpecThen(league, data => {
       let lsdp = new LeagueSpecDataProxy(data, year);
       let uid = user ? user.uid : null;
       setIsInLeague(lsdp.isInLeague(uid));
     });
-
-    const [startsPromise, unsubStarts] = firebase.getProBowlYear(
-        user.uid, league, override ? "2021-2" : year);
-    startsPromise.then(setSelectedTeams);
+    const unsubStarts = firebase.getProBowlYearThen(
+        user.uid, league, override ? "2021-2" : year, setSelectedTeams);
     return () => {
       unsubLeagueSpec();
       unsubStarts();

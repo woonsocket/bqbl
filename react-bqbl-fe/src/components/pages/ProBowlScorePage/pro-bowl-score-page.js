@@ -39,11 +39,9 @@ function ProBowlScoresPage() {
   let firebase = useContext(FirebaseContext);
 
   useEffect(() => {
-    let [promise, unsub] = firebase.getScoresYear(year);
-    promise.then((scores) => {
+    return firebase.getScoresYearThen(year, (scores) => {
       setNflScores(scores.dbScores);
     });
-    return unsub;
   }, [firebase, year]);
 
   const leagues = ALL_LEAGUES.slice();
