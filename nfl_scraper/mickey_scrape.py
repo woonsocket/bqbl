@@ -89,7 +89,7 @@ def main():
         scrape_status = collections.defaultdict(dict)
     else:
         initial_status = scrape_status_ref.get() if scrape_status_ref else {}
-        scrape_status = collections.defaultdict(dict, initial_status)
+        scrape_status = collections.defaultdict(dict, initial_status or {})
     now = datetime.datetime.now(tz=datetime.timezone.utc)
     data = {}
     for id in game_ids:
