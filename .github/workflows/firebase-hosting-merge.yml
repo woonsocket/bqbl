@@ -2,6 +2,9 @@
 # https://github.com/firebase/firebase-tools
 
 name: Deploy to Firebase Hosting on merge
+defaults:
+  run:
+    working-directory: react-bqbl-fe
 'on':
   push:
     branches:
