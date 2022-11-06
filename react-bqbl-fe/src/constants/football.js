@@ -37,7 +37,7 @@ export function seasonWeeksReverse(year) {
 export function teamLogoImage(team) {
   if (team === 'WSH') team = 'WAS';
   if (team === 'LAR') team = 'LA';
-  return `https://static.nfl.com/static/content/public/static/wildcat/assets/img/logos/teams/${team}.svg`;
+  return `https://static.www.nfl.com/t_q-best/league/api/clubs/logos/${team}`;
 }
 
 
