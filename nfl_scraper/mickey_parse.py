@@ -1,31 +1,20 @@
-import requests
-from lxml import etree
+import requests_html
 
-PASSING = './/*[@id="gamepackage-passing"]'
-ONE= '//div[@class="col column-one gamepackage-away-wrap"]'
-TWO= '//div[@class="col column-two gamepackage-home-wrap"]'
-TOTAL= '//tr[@class="highlight"]'
-C_ATT= './/td[@class="c-att"]'
-YDS = './/td[@class="yds"]'
-TD = './/td[@class="td"]'
-INT = './/td[@class="int"]'
-SACKS = './/td[@class="sacks"]'
-FUM = './/td[@class="fum"]'
-LOST = './/td[@class="lost"]'
-REC = './/td[@class="rec"]'
-LONG = './/td[@class="long"]'
-TEAM_NAME = '//div[@class="team-name"]'
-RUSHING = './/*[@id="gamepackage-rushing"]'
-FUMBLING = './/*[@id="gamepackage-fumbles"]'
-RECEIVING = './/*[@id="gamepackage-receiving"]'
-INTERCEPTIONS = './/*[@id="gamepackage-interceptions"]'
-PLAYER = './/td[@class="name"]'
-ONE_NAME = '//div[contains(@class, "away")]//span[@class="abbrev"]'
-ONE_SCORE = '//div[contains(@class, "away")]//div[@class="score-container"]'
-TWO_NAME = '//div[contains(@class, "home")]//span[@class="abbrev"]'
-TWO_SCORE = '//div[contains(@class, "home")]//div[@class="score-container"]'
-CLOCK = '//span[contains(@class,"status-detail")]'
-GAMES = "//a[@name='&lpos=nfl:scoreboard:boxscore']"
+# CSS selectors for the game overview strip at the top.
+ONE_NAME = '//div[contains(@class, "Gamestrip__Team--away")]//div[contains(@class, "ScoreCell__TeamName")]'
+ONE_SCORE = '//div[contains(@class, "Gamestrip__Team--away")]//div[contains(@class, "Gamestrip__ScoreContainer")]'
+TWO_NAME = '//div[contains(@class, "Gamestrip__Team--home")]//div[contains(@class, "ScoreCell__TeamName")]'
+TWO_SCORE = '//div[contains(@class, "Gamestrip__Team--home")]//div[contains(@class, "Gamestrip__ScoreContainer")]'
+CLOCK = '//div[contains(@class, "Gamestrip__Overview")]//div[contains(@class, "ScoreCell__Time")]'
+
+# CSS selectors for the box score.
+BOXSCORE_CATEGORY = '.Boxscore__Category'
+BOXSCORE_CATEGORY_TITLE = '.TeamTitle__Name'
+BOXSCORE_TABLE = '.Boxscore__Team'
+BOXSCORE_TOTAL_ROW = '.Table__Scroller .Boxscore__Totals'
+BOXSCORE_CELL = 'TD'
+BOXSCORE_PLAYER_NAME = '.Boxscore__Athlete'
+BOXSCORE_STAT_ROW = '.Table__Scroller tbody tr:not(.Boxscore__Totals)'
 
 gameIds = eval("""{
   '2009': {'1': ['290910023', '290913001', '290913004', '290913005', '290913011', '290913018', '290913027', '290913029', '290913033', '290913034', '290913019', '290913022', '290913026', '290913009', '290914017', '290914013'], '2': ['290920001', '290920008', '290920009', '290920010', '290920012', '290920020', '290920021', '290920028', '290920030', '290920002', '290920025', '290920003', '290920007', '290920024', '290920006', '290921015'], '3': ['290927008', '290927014', '290927016', '290927017', '290927020', '290927021', '290927027', '290927033', '290927034', '290927002', '290927026', '290927004', '290927013', '290927024', '290927022', '290928006'], '4': ['291004003', '291004005', '291004011', '291004012', '291004017', '291004028', '291004030', '291004034', '291004015', '291004018', '291004007', '291004025', '291004023', '291005016'], '5': ['291011002', '291011008', '291011012', '291011014', '291011019', '291011021', '291011029', '291011033', '291011025', '291011007', '291011022', '291011026', '291011010', '291012015'], '6': ['291018004', '291018009', '291018016', '291018018', '291018023', '291018027', '291018028', '291018030', '291018013', '291018026', '291018017', '291018020', '291018001', '291019024'], '7': ['291025005', '291025012', '291025014', '291025023', '291025027', '291025034', '291025013', '291025029', '291025004', '291025006', '291025015', '291025019', '291026028'], '8': ['291101002', '291101003', '291101006', '291101008', '291101011', '291101020', '291101021', '291101033', '291101010', '291101024', '291101009', '291101022', '291102018'], '9': ['291108001', '291108003', '291108004', '291108011', '291108017', '291108027', '291108030', '291108018', '291108026', '291108019', '291108025', '291108021', '291109007'], '10': ['291112025', '291115010', '291115014', '291115015', '291115016', '291115020', '291115023', '291115028', '291115029', '291115013', '291115009', '291115022', '291115024', '291115011', '291116005'], '11': ['291119029', '291122006', '291122008', '291122009', '291122012', '291122016', '291122019', '291122027', '291122030', '291122033', '291122014', '291122007', '291122013', '291122017', '291122003', '291123034'], '12': ['291126008', '291126006', '291126007', '291129001', '291129002', '291129004', '291129014', '291129020', '291129021', '291129034', '291129024', '291129025', '291129010', '291129016', '291129033', '291130018'], '13': ['291203002', '291206001', '291206003', '291206004', '291206011', '291206012', '291206015', '291206023', '291206028', '291206029', '291206030', '291206005', '291206019', '291206026', '291206022', '291207009'], '14': ['291210005', '291213001', '291213003', '291213011', '291213012', '291213016', '291213017', '291213027', '291213030', '291213033', '291213034', '291213010', '291213013', '291213006', '291213019', '291214025'], '15': ['291217030', '291219018', '291220002', '291220008', '291220010', '291220012', '291220014', '291220020', '291220007', '291220024', '291220021', '291220023', '291220026', '291220033', '291220029', '291221028'], '16': ['291225010', '291227001', '291227004', '291227005', '291227009', '291227015', '291227017', '291227018', '291227019', '291227023', '291227022', '291227025', '291227011', '291227021', '291227028', '291228003'], '17': ['300103002', '300103005', '300103008', '300103014', '300103015', '300103016', '300103027', '300103029', '300103034', '300103006', '300103007', '300103013', '300103022', '300103024', '300103026', '300103020'], '18': []},
@@ -49,104 +38,103 @@ def all_games(year, week):
   return gameIds[year][week]
 
 
-def all_passers(tree):
-  if not tree: return []
-  assert len(tree) == 1
-  tree = tree[0]
+def all_passers(table):
+  if not table:
+    return []
 
-  # Omit last element, which is the total
-  passer_paths = tree.xpath(PLAYER)[:-1]
+  passer_names = table.find(BOXSCORE_PLAYER_NAME)
+  stat_rows = table.find(BOXSCORE_STAT_ROW)
+  assert(len(passer_names) == len(stat_rows))
   passers = {}
-  for path in passer_paths:
-    root = path.getparent()
-    link = path.xpath(".//a")[0]
-    name = path.xpath(".//a//span")[0].text
-    uid = link.get('data-player-uid').split(":")[-1]
-    passer = {'NAME': name}
-    extract_pass_attrs([root], passer)
+  for name_cell, row in zip(passer_names, stat_rows):
+    link = name_cell.find('a', first=True)
+    uid = link.attrs['data-player-uid'].split(":")[-1]
+    passer = {'NAME': name_cell.text}
+    extract_pass_attrs(row, passer)
     passers[uid] = passer
   return passers
 
-def extract_pass_attrs(tree, dst):
-  if not tree: return
-  assert len(tree) == 1
-  tree = tree[0]
-  dst["CMP"], dst["ATT"] = map(int, tree.xpath(C_ATT)[0].text.split('/'))
-  sacks, sack_yards = map(int, tree.xpath(SACKS)[0].text.split('-'))
+def extract_pass_attrs(row, dst):
+  if not row:
+    return
+  cells = row.find(BOXSCORE_CELL)
+  # Columns are C/ATT YDS TD INT SACKS
+  c_att_cell, yds_cell, td_cell, int_cell, sacks_cell = cells[:5]
+  dst["CMP"], dst["ATT"] = map(int, c_att_cell.text.split('/'))
+  sacks, sack_yards = map(int, sacks_cell.text.split('-'))
   # ESPN's passing yard total already deducts sack yardage. Our score
   # calculator expects PASSYD to *not* deduct it, so we need to add it
   # back in here.
-  dst["PASSYD"] = int(tree.xpath(YDS)[0].text) + sack_yards
+  dst["PASSYD"] = int(yds_cell.text) + sack_yards
   dst["SACK"] = sacks
   dst["SACKYD"] = -1 * sack_yards
-  dst["PASSTD"] = int(tree.xpath(TD)[0].text)
-  dst["INT"] = int(tree.xpath(INT)[0].text)
+  dst["PASSTD"] = int(td_cell.text)
+  dst["INT"] = int(int_cell.text)
 
-def extract_rush_attrs(tree, dst):
-  if not tree: return
-  assert len(tree) == 1
-  tree = tree[0]
-  dst["RUSHYD"] = int(tree.xpath(YDS)[0].text)
-  dst["RUSHTD"] = int(tree.xpath(TD)[0].text)
-  
-def extract_fumble_attrs(tree, dst):
-  if not tree: return
-  assert len(tree) == 1
-  tree = tree[0]
-  dst["FUM"] = int(tree.xpath(FUM)[0].text)
-  dst["FUMLOST"] = int(tree.xpath(LOST)[0].text)
-  dst["REC"] = int(tree.xpath(REC)[0].text)
+def extract_rush_attrs(row, dst):
+  if not row:
+    return
+  cells = row.find(BOXSCORE_CELL)
+  # Columns are CAR YDS TD LONG
+  dst["RUSHYD"] = int(cells[1].text)
+  dst["RUSHTD"] = int(cells[2].text)
 
-def extract_receiving_attrs(tree, dst):
-  if not tree: return
-  assert len(tree) == 1
-  tree = tree[0]
-  dst["LONG"] = int(tree.xpath(LONG)[0].text)
+def extract_fumble_attrs(row, dst):
+  if not row:
+    return
+  cells = row.find(BOXSCORE_CELL)
+  # Columns are FUM LOST REC
+  dst["FUM"] = int(cells[0].text)
+  dst["FUMLOST"] = int(cells[1].text)
+  dst["REC"] = int(cells[2].text)
 
-def extract_interception_attrs(tree, dst):
-  if not tree: return
-  assert len(tree) == 1
-  tree = tree[0]
-  dst["INT6"] = int(tree.xpath(TD)[0].text)
+def extract_receiving_attrs(row, dst):
+  if not row:
+    return
+  cells = row.find(BOXSCORE_CELL)
+  # Columns are REC YDS TD LONG TGTS
+  dst["LONG"] = int(cells[3].text)
 
-def extract_passer_rushing(tree, name, dst):
-  assert len(tree) == 1
-  tree = tree[0]
+def extract_interception_attrs(row, dst):
+  if not row:
+    return
+  cells = row.find(BOXSCORE_CELL)
+  # Columns are INT YDS TD
+  dst["INT6"] = int(cells[2].text)
 
-  # Omit last element, which is the total
-  rusher_paths = tree.xpath(PLAYER)[:-1]
-  for path in rusher_paths:
-    # TODO pull out name into function
-    root = path.getparent()
-    rusher_name = path.xpath(".//a//span")[0].text
-    if rusher_name != name: continue
-    extract_rush_attrs([root], dst)
+def extract_passer_rushing(table, name, dst):
+  if not table:
+    return
 
-def extract_passer_fumbling(tree, name, dst):
-  assert len(tree) == 1
-  tree = tree[0]
+  rusher_names = table.find(BOXSCORE_PLAYER_NAME)
+  stat_rows = table.find(BOXSCORE_STAT_ROW)
+  assert(len(rusher_names) == len(stat_rows))
+  for name_cell, row in zip(rusher_names, stat_rows):
+    if name_cell.text != name:
+      continue
+    extract_rush_attrs(row, dst)
 
-  # Omit last element, which is the total
-  fumbler_paths = tree.xpath(PLAYER)[:-1]
-  for path in fumbler_paths:
-    # TODO pull out name into function
-    root = path.getparent()
-    fumbler_name = path.xpath(".//a//span")[0].text
-    if fumbler_name != name: continue
-    extract_fumble_attrs([root], dst)
+def extract_passer_fumbling(table, name, dst):
+  if not table:
+    return
+
+  fumbler_names = table.find(BOXSCORE_PLAYER_NAME)
+  stat_rows = table.find(BOXSCORE_STAT_ROW)
+  assert(len(fumbler_names) == len(stat_rows))
+  for name_cell, row in zip(fumbler_names, stat_rows):
+    if name_cell.text != name:
+      continue
+    extract_fumble_attrs(row, dst)
 
 
 def extract_game(tree, home=True, game_id=None):
-  column = TWO if home else ONE
-  other_column = ONE if home else TWO
-
-  away_score = ''.join(t for t in tree.xpath(ONE_SCORE)[0].itertext())
-  home_score = ''.join(t for t in tree.xpath(TWO_SCORE)[0].itertext())
+  away_score = ''.join(t for t in tree.xpath(ONE_SCORE)[0].text)
+  home_score = ''.join(t for t in tree.xpath(TWO_SCORE)[0].text)
   away_team = tree.xpath(ONE_NAME)[0].text
   home_team = tree.xpath(TWO_NAME)[0].text
   team_name = home_team if home else away_team
   opp_name = away_team if home else home_team
-  
+
   team = {'ATT': 0, 'CLOCK': 0, 'CMP': 0, 'FIELDPOS': 100, 'ID': game_id or '', 'INT': 0, 'LONG': 0, 'FUM': 0, 'FUML': 0,
    'OPP': opp_name, 'PASSERS': [], 'PASSTD': 0, 'PASSYD': 0, 'RUSHYD': 0, 'RUSHTD': 0, 'SACK': 0, 'SACKYD': 0, 'SCORE': [], 'TD': 0
   }
@@ -161,30 +149,58 @@ def extract_game(tree, home=True, game_id=None):
     'HSCORE': home_score,
   }
 
-  extract_pass_attrs(tree.xpath(PASSING + column + TOTAL), team)
-  extract_receiving_attrs(tree.xpath(RECEIVING + column + TOTAL), team)
-  extract_interception_attrs(tree.xpath(INTERCEPTIONS + other_column + TOTAL), team)
-  team['PASSERS'] = all_passers(tree.xpath(PASSING + column))
+  categories = tree.find(BOXSCORE_CATEGORY)
+  passing = find_table(categories, 'Passing', home)
+  extract_pass_attrs(boxscore_table_total(passing), team)
+  receiving = find_table(categories, 'Receiving', home)
+  extract_receiving_attrs(boxscore_table_total(receiving), team)
+  interceptions = find_table(categories, 'Interceptions', not home)
+  extract_interception_attrs(boxscore_table_total(interceptions), team)
+  team['PASSERS'] = all_passers(passing)
 
   for passer_id in team['PASSERS']:
-    extract_passer_rushing(tree.xpath(RUSHING + column), team['PASSERS'][passer_id]['NAME'], team['PASSERS'][passer_id])
-    extract_passer_fumbling(tree.xpath(FUMBLING + column), team['PASSERS'][passer_id]['NAME'], team['PASSERS'][passer_id])
-    team['FUM'] += team['PASSERS'][passer_id].get('FUM', 0)
-    team['FUML'] += team['PASSERS'][passer_id].get('FUMLOST', 0)
-    team['RUSHTD'] += team['PASSERS'][passer_id].get('RUSHTD', 0)
+    passer_data = team['PASSERS'][passer_id]
+    passer_name = passer_data['NAME']
+    rushing = find_table(categories, 'Rushing', home)
+    extract_passer_rushing(rushing, passer_name, passer_data)
+    fumbling = find_table(categories, 'Fumbles', home)
+    extract_passer_fumbling(fumbling, passer_name, passer_data)
+    team['FUM'] += passer_data.get('FUM', 0)
+    team['FUML'] += passer_data.get('FUMLOST', 0)
+    team['RUSHTD'] += passer_data.get('RUSHTD', 0)
 
   team['TD'] = team['RUSHTD'] + team["PASSTD"]
   return team, team_name
 
+# Find a box score stat table for one team.
+# Params:
+#   categories: A list of Elements. Each is a box score category, including
+#       stat tables for both teams.
+#   title: The name of the category to search for, e.g., 'Passing'.
+#   home: Whether to find the home team's table.
+# Returns:
+#   The table for the specified stat category and team. None if there were
+#   no matches.
+def find_table(categories, title, home):
+  for cat in categories:
+    if title in cat.find(BOXSCORE_CATEGORY_TITLE, first=True).text:
+      tables = cat.find(BOXSCORE_TABLE)
+      return tables[1 if home else 0]
+  return None
+
+def boxscore_table_total(table):
+  return table.find(BOXSCORE_TOTAL_ROW, first=True)
+
 def mickey_parse(url, dst, game_id=None):
+  session = requests_html.HTMLSession()
   headers = {'Content-Type': 'text/html',}
-  response = requests.get(url, headers=headers)
-  html = response.text
-  tree = etree.HTML(html)
-  team, team_key = extract_game(tree, home=False, game_id=game_id)
+  response = session.get(url, headers=headers)
+  html = response.html
+  html.render()
+  team, team_key = extract_game(html, home=False, game_id=game_id)
   if team:
     dst[team_key] = team
-  team_2, team_key_2 = extract_game(tree, home=True, game_id=game_id)
+  team_2, team_key_2 = extract_game(html, home=True, game_id=game_id)
   if team_2:
     dst[team_key_2] = team_2
   return team_key, team_key_2
