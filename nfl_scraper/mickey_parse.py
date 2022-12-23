@@ -1,11 +1,11 @@
 import requests_html
 
 # CSS selectors for the game overview strip at the top.
-ONE_NAME = '//div[contains(@class, "Gamestrip__Team--away")]//div[contains(@class, "ScoreCell__TeamName")]'
-ONE_SCORE = '//div[contains(@class, "Gamestrip__Team--away")]//div[contains(@class, "Gamestrip__ScoreContainer")]'
-TWO_NAME = '//div[contains(@class, "Gamestrip__Team--home")]//div[contains(@class, "ScoreCell__TeamName")]'
-TWO_SCORE = '//div[contains(@class, "Gamestrip__Team--home")]//div[contains(@class, "Gamestrip__ScoreContainer")]'
-CLOCK = '//div[contains(@class, "Gamestrip__Overview")]//div[contains(@class, "ScoreCell__Time")]'
+ONE_NAME = '.Gamestrip__Team--away .ScoreCell__TeamName'
+ONE_SCORE = '.Gamestrip__Team--away .Gamestrip__Score'
+TWO_NAME = '.Gamestrip__Team--home .ScoreCell__TeamName'
+TWO_SCORE = '.Gamestrip__Team--home .Gamestrip__Score'
+CLOCK = '.Gamestrip__Overview .ScoreCell__Time'
 
 # CSS selectors for the box score.
 BOXSCORE_CATEGORY = '.Boxscore__Category'
@@ -128,20 +128,22 @@ def extract_passer_fumbling(table, name, dst):
 
 
 def extract_game(tree, home=True, game_id=None):
-  away_score = ''.join(t for t in tree.xpath(ONE_SCORE)[0].text)
-  home_score = ''.join(t for t in tree.xpath(TWO_SCORE)[0].text)
-  away_team = tree.xpath(ONE_NAME)[0].text
-  home_team = tree.xpath(TWO_NAME)[0].text
+  away_team = tree.find(ONE_NAME, first=True).text
+  home_team = tree.find(TWO_NAME, first=True).text
   team_name = home_team if home else away_team
   opp_name = away_team if home else home_team
+
+  away_score_el = tree.find(ONE_SCORE, first=True)
+  if not away_score_el:
+    # Game hasn't started yet
+    return None, team_name
+  away_score = away_score_el.text
+  home_score = tree.find(TWO_SCORE, first=True).text
 
   team = {'ATT': 0, 'CLOCK': 0, 'CMP': 0, 'FIELDPOS': 100, 'ID': game_id or '', 'INT': 0, 'LONG': 0, 'FUM': 0, 'FUML': 0,
    'OPP': opp_name, 'PASSERS': [], 'PASSTD': 0, 'PASSYD': 0, 'RUSHYD': 0, 'RUSHTD': 0, 'SACK': 0, 'SACKYD': 0, 'SCORE': [], 'TD': 0
   }
-  team["CLOCK"] = tree.xpath(CLOCK)[0].text
-  if not team["CLOCK"]:
-    # Game hasn't started yet
-    return None, team_name
+  team["CLOCK"] = tree.find(CLOCK, first=True).text
   team['SCORE'] = {
     'AWAY': away_team,
     'ASCORE': away_score,
