@@ -43,7 +43,6 @@ function ProBowlPageBase() {
   let user = useUser();
   let year = useYear();
   let league = useLeague();
-  let override = useProBowlOverride();
   const firebase = useContext(FirebaseContext);
 
   useEffect(() => {
@@ -56,15 +55,15 @@ function ProBowlPageBase() {
       setIsInLeague(lsdp.isInLeague(uid));
     });
     const unsubStarts = firebase.getProBowlYearThen(
-        user.uid, league, override ? "2021-2" : year, setSelectedTeams);
+        user.uid, league, year, setSelectedTeams);
     return () => {
       unsubLeagueSpec();
       unsubStarts();
     };
-  }, [firebase, year, user, league, override]);
+  }, [firebase, year, user, league]);
 
   function selectCallback(teams) {
-    firebase.updateProBowlStarts(league, override ? "2021-2" : year, teams)
+    firebase.updateProBowlStarts(league, year, teams)
         .then(() => setSelectedTeams(teams))
         .catch((err) => {
           setSnackbarOpen(true);

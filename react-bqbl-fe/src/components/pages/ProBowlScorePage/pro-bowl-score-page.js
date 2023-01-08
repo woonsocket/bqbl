@@ -7,7 +7,7 @@ import classNames from 'classnames/bind';
 import PropTypes from 'prop-types';
 import React, { useContext, useEffect, useState } from 'react';
 import { joinProBowlScores } from '../../../middle/response';
-import { useLeague, useProBowlOverride, useWeek, useYear } from '../../AppState';
+import { useLeague, useWeek, useYear } from '../../AppState';
 import { FirebaseContext } from '../../Firebase';
 import PlayerScoreList from '../../reusable/PlayerScoreList/player-score-list';
 
@@ -93,14 +93,10 @@ function ProBowlScoresCard(props) {
   let [playerScores, setPlayerScores] = useState([]);
   let year = useYear();
   let week = useWeek();
-  let override = useProBowlOverride();
   let firebase = useContext(FirebaseContext);
   useEffect(() => {
-    let [pbPromise, unsubPb] = firebase.getProBowlStartsForLeague(
-      props.league,
-      // TODO(harveyj): remove this i'm sorry
-      override ? "2021-2" : year);
-    pbPromise.then((starts) => {
+    firebase.getProBowlStartsForLeagueThen(
+      props.league, year, (starts) => {
       const playerScores =
         joinProBowlScores(props.nflScores, starts, week);
       playerScores.sort((a, b) => b.totalScore - a.totalScore);
@@ -111,8 +107,7 @@ function ProBowlScoresCard(props) {
       }
       setLeagueScore(leagueScore);
     });
-    return unsubPb;
-  }, [firebase, props.league, props.nflScores, year, override]);
+  }, [firebase, props.league, props.nflScores, year]);
 
   function playerClass(index) {
     const c = {};
