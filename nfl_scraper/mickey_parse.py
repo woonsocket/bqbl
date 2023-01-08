@@ -198,7 +198,7 @@ def mickey_parse(url, dst, game_id=None):
   headers = {'Content-Type': 'text/html',}
   response = session.get(url, headers=headers)
   html = response.html
-  html.render()
+  html.render(timeout=20)
   team, team_key = extract_game(html, home=False, game_id=game_id)
   if team:
     dst[team_key] = team
