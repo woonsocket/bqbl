@@ -5,6 +5,7 @@ ONE_NAME = '.Gamestrip__Team--away .ScoreCell__TeamName'
 ONE_SCORE = '.Gamestrip__Team--away .Gamestrip__Score'
 TWO_NAME = '.Gamestrip__Team--home .ScoreCell__TeamName'
 TWO_SCORE = '.Gamestrip__Team--home .Gamestrip__Score'
+TEAM_ABBRS = '.Gamestrip__Table TR TD:first-child'
 CLOCK = '.Gamestrip__Overview .ScoreCell__Time'
 
 # CSS selectors for the box score.
@@ -128,8 +129,12 @@ def extract_passer_fumbling(table, name, dst):
 
 
 def extract_game(tree, home=True, game_id=None):
-  away_team = tree.find(ONE_NAME, first=True).text
-  home_team = tree.find(TWO_NAME, first=True).text
+  team_abbrs = tree.find(TEAM_ABBRS)
+  if len(team_abbrs) != 2:
+    raise Exception(
+      'expected 2 teams in line score, but found {0}'.format(len(team_abbrs)))
+  away_team = team_abbrs[0].text
+  home_team = team_abbrs[1].text
   team_name = home_team if home else away_team
   opp_name = away_team if home else home_team
 
