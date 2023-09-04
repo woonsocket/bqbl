@@ -58,8 +58,8 @@ def extract_pass_attrs(row, dst):
   if not row:
     return
   cells = row.find(BOXSCORE_CELL)
-  # Columns are C/ATT YDS TD INT SACKS
-  c_att_cell, yds_cell, td_cell, int_cell, sacks_cell = cells[:5]
+  # Columns are C/ATT YDS AVG TD INT SACKS
+  c_att_cell, yds_cell, _, td_cell, int_cell, sacks_cell = cells[:6]
   dst["CMP"], dst["ATT"] = map(int, c_att_cell.text.split('/'))
   sacks, sack_yards = map(int, sacks_cell.text.split('-'))
   # ESPN's passing yard total already deducts sack yardage. Our score
@@ -75,9 +75,9 @@ def extract_rush_attrs(row, dst):
   if not row:
     return
   cells = row.find(BOXSCORE_CELL)
-  # Columns are CAR YDS TD LONG
+  # Columns are CAR YDS AVG TD LONG
   dst["RUSHYD"] = int(cells[1].text)
-  dst["RUSHTD"] = int(cells[2].text)
+  dst["RUSHTD"] = int(cells[3].text)
 
 def extract_fumble_attrs(row, dst):
   if not row:
@@ -92,8 +92,8 @@ def extract_receiving_attrs(row, dst):
   if not row:
     return
   cells = row.find(BOXSCORE_CELL)
-  # Columns are REC YDS TD LONG TGTS
-  dst["LONG"] = int(cells[3].text)
+  # Columns are REC YDS AVG TD LONG TGTS
+  dst["LONG"] = int(cells[4].text)
 
 def extract_interception_attrs(row, dst):
   if not row:
