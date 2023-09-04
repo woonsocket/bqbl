@@ -1,11 +1,8 @@
 import requests_html
 
 # CSS selectors for the game overview strip at the top.
-ONE_NAME = '.Gamestrip__Team--away .ScoreCell__TeamName'
-ONE_SCORE = '.Gamestrip__Team--away .Gamestrip__Score'
-TWO_NAME = '.Gamestrip__Team--home .ScoreCell__TeamName'
-TWO_SCORE = '.Gamestrip__Team--home .Gamestrip__Score'
 TEAM_ABBRS = '.Gamestrip__Table TR TD:first-child'
+TEAM_SCORES = '.Gamestrip__Table TR TD:last-child'
 CLOCK = '.Gamestrip__Overview .ScoreCell__Time'
 
 # CSS selectors for the box score.
@@ -138,12 +135,16 @@ def extract_game(tree, home=True, game_id=None):
   team_name = home_team if home else away_team
   opp_name = away_team if home else home_team
 
-  away_score_el = tree.find(ONE_SCORE, first=True)
-  if not away_score_el:
+  team_scores = tree.find(TEAM_SCORES)
+  if not team_scores:
     # Game hasn't started yet
     return None, team_name
-  away_score = away_score_el.text
-  home_score = tree.find(TWO_SCORE, first=True).text
+  elif len(team_scores) != 2:
+    raise Exception(
+      'expected 2 point totals in line score, but found {0}'
+        .format(len(team_scores)))
+  away_score = team_scores[0].text
+  home_score = team_scores[1].text
 
   team = {'ATT': 0, 'CLOCK': 0, 'CMP': 0, 'FIELDPOS': 100, 'ID': game_id or '', 'INT': 0, 'LONG': 0, 'FUM': 0, 'FUML': 0,
    'OPP': opp_name, 'PASSERS': [], 'PASSTD': 0, 'PASSYD': 0, 'RUSHYD': 0, 'RUSHTD': 0, 'SACK': 0, 'SACKYD': 0, 'SCORE': [], 'TD': 0
