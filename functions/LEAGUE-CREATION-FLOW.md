@@ -1,4 +1,5 @@
 NOTE Do this from the shell:
+
 League creation flow from spreadsheet:
 use spreadsheet to generate draft json
 upload it to leaguespec/$LEAGUE/draft/$YEAR
@@ -14,7 +15,3 @@ Admin: call setDraftOrder({league: $LEAGUE_ID})
 Users: draft at bqbl.futbol/draft/$LEAGUE_ID
 Admin: call finalizeDraft
 Admin: call createNewYear to finalize league, create the starts table.
-
-Either way:
-... reset the locked weeks... 
-... update the score grid...
