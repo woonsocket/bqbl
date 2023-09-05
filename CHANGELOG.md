@@ -10,6 +10,7 @@ releases alliteratively.
 
 ### Added
 - Pro Bowl mode!
+- Port from CRA to Vite
 
 ### Fixed
 - Don't crash the scraper when parsing a safety that no QB took part in (e.g., a
