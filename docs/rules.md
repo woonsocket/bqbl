@@ -199,7 +199,7 @@ separate competition.
 
     * Generally: Nth vote of confidence for Kth distinct QB: K × (5 + 5N) points
 
-* QB publicly bitches about his linemen, coaches, or fans: **10 points**
+* QB publicly whines about his linemen, coaches, or fans: **10 points**
 
 * Appears on SportsCenter's "Not Top 10" (worst plays of the week):
 
