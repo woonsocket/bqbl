@@ -9,7 +9,7 @@ import { FirebaseContext } from '../../Firebase';
 
 import { makeStyles } from '@mui/styles';
 import { useUser } from '../../Firebase/firebase';
-import { useLeague, useYear, useProBowlOverride } from '../../AppState';
+import { useLeague, useYear } from '../../AppState';
 import PropTypes from 'prop-types';
 import Snackbar from '@mui/material/Snackbar';
 
