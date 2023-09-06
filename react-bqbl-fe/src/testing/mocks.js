@@ -29,17 +29,14 @@ export class MockFirebase {
   // Calls back with an array of objects, one per player. Each describes the
   // player and their starts:
   //   {name: 'Player name', starts: ['Team1', 'Team2', ...]}
-  // Empty if the league does not exist. Players who have not chosen any teams
-  // are included in the returned list, but with an empty `starts` array.
-  getProBowlStartsForLeague(league, year) {
-    return new Promise((resolve, reject) => {
-      if (league == 'abqbl') {
-        resolve([{ name: "Trevor", starts: ['NO', "DEN"] }]);
-      } else {
-        resolve([{ name: "Ryan", starts: ['MIA', "WAS", "BUF", "NYJ", "TB", "TEN"] }]);
-      }
-    });
-  }
+
+  getProBowlStartsForLeagueThen(league, year, cb) {
+    if (league == 'abqbl') {
+      cb([{ name: "Trevor", starts: ['NO', "DEN"] }]);
+    } else {
+      cb([{ name: "Ryan", starts: ['MIA', "WAS", "BUF", "NYJ", "TB", "TEN"] }]);
+    }
+  };
 }
 
 export const MOCK_APP_STATE = {

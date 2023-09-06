@@ -26,7 +26,8 @@ afterEach(() => {
 describe('ProBowlScoresPage', () => {
   it('renders mocked data', async () => {
     act(() => {
-      ReactDOM.render(      <AppStateContext.Provider value={[MOCK_APP_STATE]}>
+      ReactDOM.render(
+      <AppStateContext.Provider value={[MOCK_APP_STATE]}>
         <FirebaseContext.Provider value={new MockFirebase()}>
           <ProBowlScoresPage />
         </FirebaseContext.Provider>
