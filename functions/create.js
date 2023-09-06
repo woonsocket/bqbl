@@ -113,7 +113,7 @@ exports.createNewYear = functions.https.onCall((data, context) => {
     .once('value').then(data => {
       const users = data.val();
       // TODO: Pull this into constants.
-      const weeks = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"];
+      const weeks = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17"];
       for (let [userKey, user] of Object.entries(users)) {
         let allWeeks = {};
         let teams = user.teams || [];
