@@ -8,7 +8,6 @@
     "@mui/icons-material": "^5.2.5",
     "@mui/material": "^5.2.7",
     "@mui/styles": "^5.2.3",
-    "@testing-library/jest-dom": "^5.16.1",
     "classnames": "^2.2.6",
     "eslint": "^8.6.0",
     "firebase": "^9.6.2",
@@ -19,18 +18,15 @@
     "lodash.merge": "^4.6.2",
     "react": "~17.0.2",
     "react-dom": "~17.0.0",
-    "react-router-dom": "^5.2.0",
-    "react-scripts": "^5.0.0",
-    "react-test-renderer": "~17.0.2",
     "react-recompose": "~0.31.2",
+    "react-router-dom": "^5.2.0",
+    "react-test-renderer": "~17.0.2",
     "typescript": "^3.9.7"
   },
   "scripts": {
     "start": "DISABLE_ESLINT_PLUGIN=true vite",
     "build": "DISABLE_ESLINT_PLUGIN=true vite build",
-    "test": "react-scripts test",
-    "test:debug": "react-scripts --inspect-brk test --runInBand --no-cache",
-    "eject": "react-scripts eject",
+    "test": "vitest",
     "dev": "vite"
   },
   "eslintConfig": {
@@ -57,11 +53,14 @@
     ]
   },
   "devDependencies": {
-    "@testing-library/react": "^12.1.2",
+    "@testing-library/jest-dom": "^6.1.3",
+    "@testing-library/react": "^12.1.5",
+    "@vitejs/plugin-react": "^4.0.4",
     "dotenv": "^8.2.0",
     "eslint-plugin-react": "^7.20.6",
     "eslint-plugin-sort-imports-es6-autofix": "^0.6.0",
-    "@vitejs/plugin-react": "^3.1.0",
-    "vite": "^4.2.1"
+    "jsdom": "^22.1.0",
+    "vite": "^4.2.1",
+    "vitest": "^0.34.3"
   }
 }

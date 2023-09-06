@@ -16,8 +16,15 @@ export default defineConfig(({ mode }) => {
             importPrefixPlugin(),
             htmlPlugin(mode),
         ],
-    };
+        test: {
+            globals: true,
+            environment: 'jsdom',
+            setupFiles: './src/testing/setup.js',
+          },
+            };
 });
+
+
 function setEnv(mode) {
     Object.assign(process.env, loadEnv(mode, ".", ["REACT_APP_", "NODE_ENV", "PUBLIC_URL"]));
     process.env.NODE_ENV ||= mode;
@@ -151,3 +158,4 @@ function htmlPlugin(mode) {
         },
     };
 }
+

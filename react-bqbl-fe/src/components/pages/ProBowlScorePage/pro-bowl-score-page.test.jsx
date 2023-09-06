@@ -1,11 +1,10 @@
 import '@testing-library/jest-dom';
-import { screen } from '@testing-library/react';
+import { screen, render } from '@testing-library/react';
 import React from 'react';
 import { MockFirebase, MOCK_APP_STATE } from '../../../testing/mocks';
 import { AppStateContext } from '../../AppState';
 import { FirebaseContext } from '../../Firebase';
 import ProBowlScoresPage from './pro-bowl-score-page';
-import ReactDOM from 'react-dom';
 import { act } from 'react-dom/test-utils';
 
 
@@ -18,15 +17,10 @@ beforeEach(() => {
   document.body.appendChild(container);
 });
 
-afterEach(() => {
-  document.body.removeChild(container);
-  container = null;
-});
-
 describe('ProBowlScoresPage', () => {
   it('renders mocked data', async () => {
     act(() => {
-      ReactDOM.render(
+      render(
       <AppStateContext.Provider value={[MOCK_APP_STATE]}>
         <FirebaseContext.Provider value={new MockFirebase()}>
           <ProBowlScoresPage />
@@ -38,8 +32,7 @@ describe('ProBowlScoresPage', () => {
       await wait()
     })
     // SUPER USEFUL
-    screen.logTestingPlaygroundURL();
-    // screen.logTestingPlaygroundURL(screen.getAllByTestId('player-card')[0]);
+//    screen.logTestingPlaygroundURL();
     expect(screen.getByText(/Ryan/i)).toBeInTheDocument();
     expect(screen.getByText(/Trevor/i)).toBeInTheDocument();
     expect(screen.getAllByText(/total: 161/i)[0]).toBeInTheDocument();
