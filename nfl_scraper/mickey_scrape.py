@@ -95,6 +95,7 @@ def main():
     for id in game_ids:
         # if scrape_status[id].get('isFinal'):
         #     continue
+        print(id)
         last_scrape = datetime.datetime.fromtimestamp(
             scrape_status[id].get('lastScrape', 0), tz=datetime.timezone.utc)
         if last_scrape + SCRAPE_INTERVAL > now and id not in games_with_alerts:

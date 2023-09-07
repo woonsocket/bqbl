@@ -1,4 +1,5 @@
 import * as TEMPLATES from './templates';
+import REGULAR_SEASON_WEEK_IDS from '../constants/football'
 
 export class LeagueSpecDataProxy {
   constructor(leagueData, year) {
@@ -125,8 +126,7 @@ export function processYearScoresByNflTeam(dbScores, dbScores247) {
   for (const [weekId, weekScoresByTeam] of Object.entries(dbScores)) {
     let dbWeekScores = sanitizeScoresDataWeek(weekScoresByTeam) || {};
     for (const [teamId, weekScores] of Object.entries(dbWeekScores)) {
-      if (!(teamId in teamTable)) {
-        // console.warn(`unknown team ${teamId}`);
+      if (!(teamId in teamTable) || !(weekId in REGULAR_SEASON_WEEK_IDS)) {
         continue;
       }
       teamTable[teamId].weeks[weekId] = weekScores.total;
