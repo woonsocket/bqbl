@@ -24,7 +24,7 @@ export const ALL_TEAMS = ALL_TEAMS_2023;
 export const WEEK_IDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18"];
 
 // Weeks that are part of the BQBL regular season.
-const REGULAR_SEASON_WEEK_IDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17"];
+export const REGULAR_SEASON_WEEK_IDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17"];
 
 // ANNUAL UPDATE
 export const CURRENT_YEAR = '2023';
