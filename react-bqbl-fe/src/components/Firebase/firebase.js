@@ -178,9 +178,9 @@ class Firebase {
         if (!spec) {
           return [];
         }
-        const ldsp = new LeagueSpecDataProxy(spec, year);
-        const proBowlStarts = ldsp.getProBowlStarts();
-        const leagueUsers = ldsp.getUsers();
+        const lsdp = new LeagueSpecDataProxy(spec, year);
+        const proBowlStarts = lsdp.getProBowlStarts();
+        const leagueUsers = lsdp.getUsers();
         const users = [];
         for (const [uid, data] of Object.entries(leagueUsers)) {
           users.push({
@@ -192,6 +192,18 @@ class Firebase {
         cb(users);
       });
   }
+
+
+  getUsersThen(league, year, cb) {
+    this.getLeagueSpecThen(league, (spec) => {
+      console.log({league, year, spec})
+      if (!spec) {
+        return [];
+      }
+      const lsdp = new LeagueSpecDataProxy(spec, year);
+      cb(lsdp.getUsers());
+    })
+  };
 
   updateProBowlStarts(league, year, teams) {
     // TODO(aerion): Be consistent about whether uid is a param or not.

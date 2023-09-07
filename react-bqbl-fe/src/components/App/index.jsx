@@ -17,6 +17,7 @@ import BenchingPage from '../pages/BenchingPage/benching-page';
 import DraftPage from '../pages/Draft/draft';
 import HomePage from '../pages/Home/home';
 import LineupPage from '../pages/Lineup/lineup';
+import StartsAdminPage from '../pages/StartsAdminPage/starts-admin-page';
 import PlayerScorePage from '../pages/PlayerScorePage/player-score-page';
 import PlayerStandingsPage from '../pages/PlayerStandingsPage/player-standings-page';
 import ProBowlPage from '../pages/ProBowlPage/pro-bowl-page';
@@ -86,8 +87,9 @@ function App() {
               }}
               input={<Input name="year" id="year-native-helper" />}
             >
-              {/* ANNUAL */}
-              {["2017", "2018", "2019", "2020", "2021", "2022"].map(id => <option value={id} key={id}>{id}</option>)}
+              
+              {/* ANNUAL - TODO add to constants*/}
+              {["2017", "2018", "2019", "2020", "2021", "2022", "2023"].map(id => <option value={id} key={id}>{id}</option>)}
             </NativeSelect>
           }
 
@@ -133,6 +135,8 @@ function App() {
         <Route path={LINKS.TWENTYFOUR.path} component={TwentyFourPage} />
         <Route path={LINKS.FUMBLESIX.path} component={FumbleSixPage} />
         <Route path="/safety" component={SafetyPage} />
+        <Route path={LINKS.STARTS_ADMIN.path} component={StartsAdminPage} />
+
       </div>
     </div>
   );

@@ -8,6 +8,7 @@ import { useWeek, useYear, useLeague } from '../../AppState';
 
 const HOME = '/home';
 const LINEUP = '/lineup';
+const STARTS_ADMIN = '/starts-admin';
 const PROBOWL = '/probowl';
 const PROBOWL_SCORES = '/probowl-scores';
 const PLAYER_SCORES = '/player-scores';
@@ -32,6 +33,7 @@ export const LINKS = {
   BENCHING: { path: BENCHING, text: 'Benching' },
   TWENTYFOUR: { path: TWENTYFOUR, text: '24/7 Points' },
   FUMBLESIX: { path: FUMBLESIX, text: 'Fumble Sixes' },
+  STARTS_ADMIN: { path: STARTS_ADMIN, text: 'Administer Starts' },
 };
 
 function Navigation(props) {
