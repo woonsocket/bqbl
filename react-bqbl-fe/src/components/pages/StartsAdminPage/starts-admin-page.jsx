@@ -1,74 +1,53 @@
 import Input from '@mui/material/Input';
+import MenuItem from '@mui/material/MenuItem';
 import NativeSelect from '@mui/material/NativeSelect';
+import Select from '@mui/material/Select';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
-import { Lock } from '@mui/icons-material';
-import { makeStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 import React, { useContext, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import * as FOOTBALL from '../../../constants/football';
-import * as SCHEDULE from '../../../constants/schedule';
-import { LeagueSpecDataProxy } from '../../../middle/response';
 import { FirebaseContext } from '../../Firebase';
-import {useYear, useLeague, useUidOverride} from '../../AppState'
 import RequireLeague from '../../reusable/RequireLeague';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
+
 
 function StartsAdminPage() {
   return <RequireLeague><StartsAdmin/></RequireLeague>
 }
 
 function StartsAdmin(props) {
-  const firebase = useContext(FirebaseContext);
-  let [weeks, setWeeks] = useState({});
+  const year = useSelector((state) => state.year.value);
+  const league = useSelector((state) => state.league.id);
+  const leagueSpec = useSelector((state) => state.league.spec);
   let [uid, setUid] = useState('')
-  let [users, setUsers] = useState([])
-  
-  let year = useYear();
-  let league = useLeague();
-  
+  let weeks = uid && leagueSpec.plays  && leagueSpec.plays[year][uid] || [];
+
   const handleChange = (event) => {
     setUid(event.target.value);
   };
   
-  useEffect(() => {
-    firebase.getUsersThen(league, year, setUsers);
-  }, [firebase, league, year]);
-  
-  useEffect(() => {
-    if (!uid) {
-      return;
-    }
-    const unsubStarts = firebase.getStartsYearThen(uid, league, year, setWeeks);
-    return () => {
-      unsubStarts();
-    };
-  }, [firebase, league, year, uid]);
-  
   return (
-    <div><div>
-    <Select
-    id="user-select"
-    label="User"
-    onChange={handleChange}
-    value=""
-    >
+    <div>
+    <div>
+    <Select id="user-select" label="User" onChange={handleChange} value={uid}>
     <MenuItem value={""} key={100}>None</MenuItem>
-    
-    {Object.entries(users).map((entry, index) => (
-      <MenuItem value={entry[0]} key={index}>{entry[1].name}</MenuItem>
-      ))}
+    {
+      leagueSpec.users && Object.entries(leagueSpec.users[year]).map((entry, index) => (
+        <MenuItem value={entry[0]} key={index}>{entry[1].name}</MenuItem>
+        ))
+    }
       </Select></div>
       <Table size="small">
-      <TableBody>
-      {Object.values(weeks).map((week, index) => (
-        <StartsWeek week={week}
+      <TableBody>{
+      Object.values(weeks).map((weekData, weekKey) => (
+        <StartsWeek week={weekData}
         league={league} 
-        year={year} index={index} key={index} />
-        ))}
+        year={year} index={weekKey} key={weekKey} />
+        ))
+        }
         </TableBody>
         </Table>
         </div>

@@ -1,3 +1,5 @@
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import MenuIcon from '@mui/icons-material/Menu';
 import AppBar from '@mui/material/AppBar';
 import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
@@ -6,29 +8,30 @@ import Input from '@mui/material/Input';
 import NativeSelect from '@mui/material/NativeSelect';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import MenuIcon from '@mui/icons-material/Menu';
 import { makeStyles } from '@mui/styles';
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Route } from 'react-router-dom';
 import { WEEK_IDS } from '../../constants/football';
-import { useWeek, useYear } from '../AppState';
+import { useLeague, useWeek, useYear } from '../AppState';
+import { FirebaseContext } from '../Firebase';
 import BenchingPage from '../pages/BenchingPage/benching-page';
 import DraftPage from '../pages/Draft/draft';
+import FumbleSixPage from '../pages/FumbleSixPage';
 import HomePage from '../pages/Home/home';
 import LineupPage from '../pages/Lineup/lineup';
-import StartsAdminPage from '../pages/StartsAdminPage/starts-admin-page';
 import PlayerScorePage from '../pages/PlayerScorePage/player-score-page';
 import PlayerStandingsPage from '../pages/PlayerStandingsPage/player-standings-page';
 import ProBowlPage from '../pages/ProBowlPage/pro-bowl-page';
 import ProBowlScorePage from '../pages/ProBowlScorePage/pro-bowl-score-page';
+import SafetyPage from '../pages/SafetyPage';
+import StartsAdminPage from '../pages/StartsAdminPage/starts-admin-page';
 import TeamScorePage from '../pages/TeamScorePage/team-score-page';
 import TeamStandingsPage from '../pages/TeamStandingsPage/team-standings-page';
 import TwentyFourPage from '../pages/TwentyFourPage/twentyfour-page';
 import Navigation, { LINKS } from '../reusable/Navigation/navigation';
 import SignInToggle from '../reusable/SignIn/sign-in-toggle';
-import SafetyPage from '../pages/SafetyPage';
-import FumbleSixPage from '../pages/FumbleSixPage';
+
+import store from '../../redux/store';
 
 
 
@@ -50,9 +53,17 @@ function App() {
 
   let year = useYear()
   let week = useWeek()
+  let league = useLeague()
+  const firebase = useContext(FirebaseContext);
+
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const weekSelector = WEEK_SELECTOR_PATHS.indexOf(window.location.pathname) !== -1;
   const yearSelector = YEAR_SELECTOR_PATHS.indexOf(window.location.pathname) !== -1;
+
+  useEffect(() => {
+    store.dispatch({type: 'league/set', leagueId: league, firebase: firebase})
+  }, [firebase]);
+
 
   function handleDrawerOpen() {
     setDrawerOpen(true);
@@ -136,6 +147,7 @@ function App() {
         <Route path={LINKS.FUMBLESIX.path} component={FumbleSixPage} />
         <Route path="/safety" component={SafetyPage} />
         <Route path={LINKS.STARTS_ADMIN.path} component={StartsAdminPage} />
+        <Route path={"/redux"} component={ReduxPlaygroundPage} />
 
       </div>
     </div>
