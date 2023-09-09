@@ -47,6 +47,7 @@ function Lineup(props) {
   let year = useYear();
   let league = useLeague();
   let uidOverride = useUidOverride();
+  let uid = uidOverride || user && user.uid || null;
 
   useEffect(() => {
     if (!user) {
@@ -74,7 +75,7 @@ function Lineup(props) {
     <Table size="small">
       <TableBody>
         {Object.values(weeks).map((week, index) => (
-          <LineupWeek week={week}
+          <LineupWeek week={week} uid={uid}
               league={league} locked={lockedWeeks.has(week.id)}
               year={year} index={index} dh={dh} key={index} />
         ))}
@@ -88,6 +89,7 @@ LineupWeek.propTypes = {
   locked: PropTypes.bool.isRequired,
   week: PropTypes.object.isRequired,
   league: PropTypes.string.isRequired,
+  uid: PropTypes.string.isRequired,
   year: PropTypes.string.isRequired,
 }
 
@@ -118,7 +120,7 @@ function LineupWeek(props) {
     }
     let newWeek = JSON.parse(JSON.stringify(week));
     newWeek.teams[cellId].selected = !week.teams[cellId].selected;
-    firebase.updateStartsRow(props.league, props.year, week.id, newWeek).then(
+    firebase.updateStartsRow(props.league, props.year, week.id, props.uid, newWeek).then(
       () => setWeek(newWeek)
     )
   }
