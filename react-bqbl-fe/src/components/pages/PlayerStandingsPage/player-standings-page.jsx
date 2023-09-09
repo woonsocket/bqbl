@@ -1,28 +1,32 @@
-import Avatar from '@mui/material/Avatar';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import CardHeader from '@mui/material/CardHeader';
-import Collapse from '@mui/material/Collapse';
-import IconButton from '@mui/material/IconButton';
-import Switch from '@mui/material/Switch';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import classNames from 'classnames/bind';
-import PropTypes from 'prop-types';
-import React, { useContext, useEffect, useState } from 'react';
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import Avatar from "@mui/material/Avatar";
+import Card from "@mui/material/Card";
+import CardActions from "@mui/material/CardActions";
+import CardContent from "@mui/material/CardContent";
+import CardHeader from "@mui/material/CardHeader";
+import Collapse from "@mui/material/Collapse";
+import IconButton from "@mui/material/IconButton";
+import Switch from "@mui/material/Switch";
+import classNames from "classnames/bind";
+import PropTypes from "prop-types";
+import React, { useContext, useEffect, useState } from "react";
 import { seasonWeeksReverse } from "../../../constants/football";
-import { processYearScores } from '../../../middle/response';
-import { useLeague, useYear } from '../../AppState';
-import { FirebaseContext } from '../../Firebase';
-import IconScoreCell from '../../reusable/IconScoreCell/icon-score-cell';
-import PlayerScoreList from '../../reusable/PlayerScoreList/player-score-list';
-import './player-standings-page.css';
-import RequireLeague from '../../reusable/RequireLeague';
+import { processYearScores } from "../../../middle/response";
+import { useLeague, useYear } from "../../AppState";
+import { FirebaseContext } from "../../Firebase";
+import IconScoreCell from "../../reusable/IconScoreCell/icon-score-cell";
+import PlayerScoreList from "../../reusable/PlayerScoreList/player-score-list";
+import RequireLeague from "../../reusable/RequireLeague";
+import "./player-standings-page.css";
 
 const FOLD = 4;
 
 function PlayerStandingsPage() {
-  return <RequireLeague><PlayerStandings/></RequireLeague>
+  return (
+    <RequireLeague>
+      <PlayerStandings />
+    </RequireLeague>
+  );
 }
 
 function PlayerStandings(props) {
@@ -37,22 +41,33 @@ function PlayerStandings(props) {
   }
 
   useEffect(() => {
-    if (!league) {return;}
-    return firebase.getScoresStartsUsersThen(league, year,
+    if (!league) {
+      return;
+    }
+    return firebase.getScoresStartsUsersThen(
+      league,
+      year,
       ({ dbScores, dbScores247, dbStarts, dbUsers }) => {
         let val = processYearScores(
-            dbScores, dbScores247, dbStarts, dbUsers, seasonWeeksReverse(year));
-        let playerList = Object.keys(val).map(key => ({
+          dbScores,
+          dbScores247,
+          dbStarts,
+          dbUsers,
+          seasonWeeksReverse(year)
+        );
+        let playerList = Object.keys(val).map((key) => ({
           ...val[key],
           uid: key,
         }));
         if (sortScores) {
-          playerList = playerList.sort((team, team2) => team2.total - team.total);
+          playerList = playerList.sort(
+            (team, team2) => team2.total - team.total
+          );
         }
         setPlayerTable(playerList);
-      });
+      }
+    );
   }, [firebase, league, year, sortScores]);
-
 
   return (
     <React.Fragment>
@@ -67,7 +82,12 @@ function PlayerStandings(props) {
       </div>
 
       {Object.entries(playerTable).map(([playerId, player]) => (
-        <PlayerYearCard player={player} name={playerId} key={playerId} year={year} />
+        <PlayerYearCard
+          player={player}
+          name={playerId}
+          key={playerId}
+          year={year}
+        />
       ))}
     </React.Fragment>
   );
@@ -81,22 +101,26 @@ function PlayerYearCard(props) {
   const [expanded, setExpanded] = React.useState(false);
 
   const scoreEntries247 = props.player.teams.map((team) => {
-    return {team: team.name, score: team.score247};
+    return { team: team.name, score: team.score247 };
   });
 
   const startedWeeks = new Map(Object.entries(props.player.start_rows));
   const weeks = seasonWeeksReverse(props.year)
-      .filter((weekId) => startedWeeks.has(weekId))
-      .map((weekId) => {
-        const startRow = startedWeeks.get(weekId);
-        const entries = [
-          {team: startRow.team_1.team_name, score: startRow.team_1.score},
-          {team: startRow.team_2.team_name, score: startRow.team_2.score},
-        ];
-        return (
-          <PlayerScoreList key={weekId} label={'Week ' + weekId} entries={entries} />
-        );
-      });
+    .filter((weekId) => startedWeeks.has(weekId))
+    .map((weekId) => {
+      const startRow = startedWeeks.get(weekId);
+      const entries = [
+        { team: startRow.team_1.team_name, score: startRow.team_1.score },
+        { team: startRow.team_2.team_name, score: startRow.team_2.score },
+      ];
+      return (
+        <PlayerScoreList
+          key={weekId}
+          label={"Week " + weekId}
+          entries={entries}
+        />
+      );
+    });
 
   function handleExpandClick() {
     setExpanded(!expanded);
@@ -105,11 +129,7 @@ function PlayerYearCard(props) {
   return (
     <Card className="player-card" data-testid="player-card">
       <CardHeader
-        avatar={
-          <Avatar aria-label="">
-            {props.player.name[0]}
-          </Avatar>
-        }
+        avatar={<Avatar aria-label="">{props.player.name[0]}</Avatar>}
         title={props.player.name}
         subheader={"Total: " + props.player.total}
       />
@@ -121,15 +141,17 @@ function PlayerYearCard(props) {
         </Collapse>
       </CardContent>
       <CardActions disableSpacing>
-        {weeks.length > FOLD &&
-         <IconButton
-           className={classNames({ expanded: expanded })}
-           onClick={handleExpandClick}
-           aria-expanded={expanded}
-           aria-label="Show more"
-           size="large">
-           <ExpandMoreIcon />
-         </IconButton>}
+        {weeks.length > FOLD && (
+          <IconButton
+            className={classNames({ expanded: expanded })}
+            onClick={handleExpandClick}
+            aria-expanded={expanded}
+            aria-label="Show more"
+            size="large"
+          >
+            <ExpandMoreIcon />
+          </IconButton>
+        )}
       </CardActions>
     </Card>
   );
