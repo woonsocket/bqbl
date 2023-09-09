@@ -10,12 +10,12 @@ import PropTypes from 'prop-types';
 import React, { useContext, useEffect, useState } from 'react';
 import * as FOOTBALL from '../../../constants/football';
 import * as SCHEDULE from '../../../constants/schedule';
-import { LeagueSpecDataProxy } from '../../../middle/response';
 import { FirebaseContext } from '../../Firebase';
 import {useYear, useLeague, useUidOverride} from '../../AppState'
 import RequireLeague from '../../reusable/RequireLeague';
 import { useUser } from '../../Firebase/firebase';
-
+import { hasDh } from '../../../redux/util';
+import { useSelector } from "react-redux";
 
 const useStyles = makeStyles({
   team: {
@@ -37,34 +37,18 @@ function LineupPage() {
 
 function Lineup(props) {
   const firebase = useContext(FirebaseContext);
-  let [weeks, setWeeks] = useState({});
-  let [dh, setDh] = useState(false);
-  let user = useUser();
   // TODO(aerion): Update lockedWeeks if the lock time passes while the
   // component is visible.
   let [lockedWeeks, setLockedWeeks] = useState(new Set());
+  const leagueSpec = useSelector((state) => state.league.spec);
 
   let year = useYear();
   let league = useLeague();
+  let user = useUser();
   let uidOverride = useUidOverride();
-
-  useEffect(() => {
-    if (!user) {
-      return;
-    }
-    let uid = uidOverride || user.uid;
-    const unsubStarts = firebase.getStartsYearThen(
-        uid, league, year, setWeeks);
-    const unsubLeagueSpec = firebase.getLeagueSpecThen(
-        league, data => {
-          let lsdp = new LeagueSpecDataProxy(data, year);
-          setDh(lsdp.hasDh());
-        });
-    return () => {
-      unsubStarts();
-      unsubLeagueSpec();
-    };
-  }, [firebase, league, year, user, uidOverride]);
+  let dh = hasDh(leagueSpec, year);
+  let uid = uidOverride || user && user.uid || null;
+  let weeks = (uid && leagueSpec.plays && leagueSpec.plays[year][uid]) || [];
 
   useEffect(() => {
     return firebase.getLockedWeeksThen(Date.now(), setLockedWeeks);
