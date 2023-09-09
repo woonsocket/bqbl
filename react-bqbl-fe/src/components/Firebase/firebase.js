@@ -3,9 +3,10 @@ import 'firebase/compat/database';
 import 'firebase/compat/functions';
 import app from 'firebase/compat/app';
 
-import { LeagueSpecDataProxy } from '../../middle/response';
 import { useContext, useState, useEffect } from 'react';
 import FirebaseContext from './context';
+import * as R from 'ramda';
+
 
 const config = {
   apiKey: process.env.REACT_APP_API_KEY,
@@ -174,13 +175,12 @@ class Firebase {
   // are included in the returned list, but with an empty `starts` array.
   getProBowlStartsForLeagueThen(league, year, cb) {
       this.getLeagueSpecThen(league, (spec) => {
-        console.log({league, year, spec})
         if (!spec) {
           return [];
         }
-        const lsdp = new LeagueSpecDataProxy(spec, year);
-        const proBowlStarts = lsdp.getProBowlStarts();
-        const leagueUsers = lsdp.getUsers();
+        const proBowlStarts = R.path(['probowl', year], spec) || {};
+
+        const leagueUsers = R.path(['users', year], spec) || {};
         const users = [];
         for (const [uid, data] of Object.entries(leagueUsers)) {
           users.push({

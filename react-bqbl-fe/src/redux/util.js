@@ -1,13 +1,10 @@
-import store from './store'
+import * as R from 'ramda';
 
-export function isInLeague(uid, year) {
-  const uids = Object.keys(store.league.spec.users[year]);
-  return uids.indexOf(uid) !== -1;
+export function isInLeague(leagueSpec, uid, year) {
+  let users = R.path([ 'users', year], leagueSpec) || {}
+  return uid in users;
 }
 
 export function hasDh(leagueSpec, year) {
-  if (leagueSpec && leagueSpec['settings'] && leagueSpec['settings'][year]) {
-    return leagueSpec['settings'][year].dh;
-  }
-  return false;
+  return R.path(['settings', year], leagueSpec) || false;
 }

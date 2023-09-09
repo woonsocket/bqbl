@@ -1,38 +1,5 @@
 import * as TEMPLATES from "./templates";
 import * as FOOTBALL from "../constants/football";
-import * as R from 'ramda';
-
-export class LeagueSpecDataProxy {
-  constructor(leagueData, year) {
-    this.leagueData = leagueData;
-    this.year = year;
-  }
-
-  isInLeague(uid) {
-    const uids = Object.keys(this.leagueData.users[this.year]);
-    return uids.indexOf(uid) !== -1;
-  }
-
-  getProBowlStarts() {
-    return R.path(['probowl', this.year], this.leagueData) || {};
-  }
-
-  getTakenTeams() {
-    if (
-      !this.leagueData ||
-      !this.leagueData.draft ||
-      !this.leagueData.draft[this.year]
-    ) {
-      return;
-    }
-    return this.leagueData.draft[this.year].map((draftItem) => draftItem.team);
-  }
-
-  getDraftList() {
-    return (this.leagueData.draft && this.leagueData.draft[this.year]) || [];
-  }
-
-}
 
 export function processYearScores(
   dbScores,

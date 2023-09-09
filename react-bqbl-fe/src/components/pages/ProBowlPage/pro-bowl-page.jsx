@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 
 import * as FOOTBALL from '../../../constants/football';
-import { LeagueSpecDataProxy } from '../../../middle/response';
 import TeamIcon from '../../reusable/TeamIcon/team-icon'
 import classNames from 'classnames/bind';
 import RequireLeague from '../../reusable/RequireLeague';
@@ -12,6 +11,9 @@ import { useUser } from '../../Firebase/firebase';
 import { useLeague, useYear } from '../../AppState';
 import PropTypes from 'prop-types';
 import Snackbar from '@mui/material/Snackbar';
+import { isInLeague } from '../../../redux/util';
+import { useSelector } from "react-redux";
+
 
 const MAX_SELECTED_TEAMS = 6;
 const TEAM_ICON_WIDTH = '80px';
@@ -36,7 +38,6 @@ const useStyles = makeStyles({
 });
 
 function ProBowlPageBase() {
-  let [isInLeague, setIsInLeague] = useState(true);
   let [selectedTeams, setSelectedTeams] = useState([]);
   let [snackbarMessage, setSnackbarMessage] = useState('');
   let [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -44,20 +45,17 @@ function ProBowlPageBase() {
   let year = useYear();
   let league = useLeague();
   const firebase = useContext(FirebaseContext);
+  const leagueSpec = useSelector((state) => state.league.spec);
+
+  let inLeague = user && isInLeague(leagueSpec, user.uid, year);
 
   useEffect(() => {
     if (!user) {
       return;
     }
-    const unsubLeagueSpec = firebase.getLeagueSpecThen(league, data => {
-      let lsdp = new LeagueSpecDataProxy(data, year);
-      let uid = user ? user.uid : null;
-      setIsInLeague(lsdp.isInLeague(uid));
-    });
     const unsubStarts = firebase.getProBowlYearThen(
         user.uid, league, year, setSelectedTeams);
     return () => {
-      unsubLeagueSpec();
       unsubStarts();
     };
   }, [firebase, year, user, league]);
@@ -82,7 +80,7 @@ function ProBowlPageBase() {
 
   return <React.Fragment>
     <h2>Select {MAX_SELECTED_TEAMS} teams</h2>
-    {isInLeague
+    {inLeague
         ? <TeamSelectionGrid
               selectCallback={selectCallback}
               errorCallback={errorCallback}
