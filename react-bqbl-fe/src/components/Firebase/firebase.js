@@ -193,18 +193,6 @@ class Firebase {
       });
   }
 
-
-  getUsersThen(league, year, cb) {
-    this.getLeagueSpecThen(league, (spec) => {
-      console.log({league, year, spec})
-      if (!spec) {
-        return [];
-      }
-      const lsdp = new LeagueSpecDataProxy(spec, year);
-      cb(lsdp.getUsers());
-    })
-  };
-
   updateProBowlStarts(league, year, teams) {
     // TODO(aerion): Be consistent about whether uid is a param or not.
     const uid = this.auth.currentUser.uid;

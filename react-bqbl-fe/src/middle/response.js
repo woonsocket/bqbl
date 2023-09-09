@@ -11,37 +11,7 @@ export class LeagueSpecDataProxy {
     const uids = Object.keys(this.leagueData.users[this.year]);
     return uids.indexOf(uid) !== -1;
   }
-
-  // Returns a copy of the user data for this league spec.
-  getUsers() {
-    // TODO: undo this
-    let year = this.year == "2021-2" ? "2021" : this.year;
-    const users = this.leagueData.users[year];
-    if (!users) {
-      return {};
-    }
-    const copy = {};
-    for (const [uid, value] of Object.entries(users)) {
-      const teams = value['teams'] || [];
-      copy[uid] = {
-        name: value['name'],
-        teams: teams.slice(),
-      };
-    }
-    return copy;
-  }
-
-  addUser(uid) {
-    if (!this.leagueData.users) {
-      this.leagueData.users = {};
-      this.leagueData.users[this.year] = [];
-    }
-
-    let users = this.leagueData.users[this.year];
-    users.push({ name: "Foo", uid: uid, teams: [] });
-    return this.leagueData;
-  }
-
+  
   getProBowlStarts() {
     const probowl = this.leagueData.probowl;
     if (!probowl) {

@@ -15,7 +15,6 @@ import { WEEK_IDS } from '../../constants/football';
 import { useLeague, useWeek, useYear } from '../AppState';
 import { FirebaseContext } from '../Firebase';
 import BenchingPage from '../pages/BenchingPage/benching-page';
-import DraftPage from '../pages/Draft/draft';
 import FumbleSixPage from '../pages/FumbleSixPage';
 import HomePage from '../pages/Home/home';
 import LineupPage from '../pages/Lineup/lineup';
@@ -141,14 +140,11 @@ function App() {
         <Route path={LINKS.PLAYER_STANDINGS.path} component={PlayerStandingsPage} />
         <Route path={LINKS.TEAM_SCORES.path}><TeamScorePage /></Route>
         <Route path={LINKS.TEAM_STANDINGS.path} component={TeamStandingsPage} />
-        <Route path={LINKS.DRAFT.path} component={DraftPage} />
         <Route path={LINKS.BENCHING.path} component={BenchingPage} />
         <Route path={LINKS.TWENTYFOUR.path} component={TwentyFourPage} />
         <Route path={LINKS.FUMBLESIX.path} component={FumbleSixPage} />
         <Route path="/safety" component={SafetyPage} />
         <Route path={LINKS.STARTS_ADMIN.path} component={StartsAdminPage} />
-        <Route path={"/redux"} component={ReduxPlaygroundPage} />
-
       </div>
     </div>
   );
