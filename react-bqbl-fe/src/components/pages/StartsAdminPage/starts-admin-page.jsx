@@ -106,7 +106,7 @@ function StartsAdmin(props) {
             }
             if (!teamOneSeen) newWeek.teams.push({name: teamOne, selected: true})
             if (!teamTwoSeen) newWeek.teams.push({name: teamTwo, selected: true})
-            firebase.updateStartsRow(props.league, props.year, props.week.id, newWeek)
+            firebase.updateStartsRow(props.league, props.year, props.week.id, uid, newWeek)
           }
         }, [teamOne, teamTwo]); 
         
