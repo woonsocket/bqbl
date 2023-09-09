@@ -1,5 +1,6 @@
 import * as TEMPLATES from "./templates";
 import * as FOOTBALL from "../constants/football";
+import * as R from 'ramda';
 
 export class LeagueSpecDataProxy {
   constructor(leagueData, year) {
@@ -13,11 +14,7 @@ export class LeagueSpecDataProxy {
   }
 
   getProBowlStarts() {
-    const probowl = this.leagueData.probowl;
-    if (!probowl) {
-      return {};
-    }
-    return probowl[this.year] || {};
+    return R.path(['probowl', this.year], this.leagueData) || {};
   }
 
   getTakenTeams() {
@@ -35,9 +32,6 @@ export class LeagueSpecDataProxy {
     return (this.leagueData.draft && this.leagueData.draft[this.year]) || [];
   }
 
-  hasDh() {
-    return this.leagueData["settings"][this.year].dh;
-  }
 }
 
 export function processYearScores(
