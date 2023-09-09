@@ -10,6 +10,16 @@ const leagueFetchMiddleware = storeAPI => next => action => {
   return next(action)
 }
 
+const scoresMiddleware = storeAPI => next => action => {
+  if (action.firebase && action.type === 'scores/load') {
+    action.firebase.getScoresYearThen(action.year, resp => {
+      storeAPI.dispatch({ type: 'scores/loaded', payload: resp })
+    })
+  }
+  
+  return next(action)
+}
+
 export const leagueSlice = createSlice({
   name: 'league',
   initialState: {
@@ -25,6 +35,22 @@ export const leagueSlice = createSlice({
     }
   }
 })
+
+export const scores = createSlice({
+  name: 'scores',
+  initialState: {
+    spec: []
+  },
+  reducers: {
+    set:(state, action) => {
+      state.id = action.leagueId
+    },
+    loaded: (state, action) => {
+      state.spec = action.payload
+    }
+  }
+})
+
 
 export const yearSlice = createSlice({
   name: 'year',
