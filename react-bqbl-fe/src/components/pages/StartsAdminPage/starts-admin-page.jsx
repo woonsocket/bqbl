@@ -1,21 +1,17 @@
 import Input from '@mui/material/Input';
+import MenuItem from '@mui/material/MenuItem';
 import NativeSelect from '@mui/material/NativeSelect';
+import Select from '@mui/material/Select';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
-import { Lock } from '@mui/icons-material';
-import { makeStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 import React, { useContext, useEffect, useState } from 'react';
 import * as FOOTBALL from '../../../constants/football';
-import * as SCHEDULE from '../../../constants/schedule';
-import { LeagueSpecDataProxy } from '../../../middle/response';
+import { useLeague, useYear } from '../../AppState';
 import { FirebaseContext } from '../../Firebase';
-import {useYear, useLeague, useUidOverride} from '../../AppState'
 import RequireLeague from '../../reusable/RequireLeague';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
 
 function StartsAdminPage() {
   return <RequireLeague><StartsAdmin/></RequireLeague>
