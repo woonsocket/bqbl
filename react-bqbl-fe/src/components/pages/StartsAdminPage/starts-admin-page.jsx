@@ -67,7 +67,7 @@ function StartsAdmin(props) {
       {Object.values(weeks).map((week, index) => (
         <StartsWeek week={week}
         league={league} 
-        year={year} index={index} key={index} />
+        year={year} index={index} key={index} uid={uid} />
         ))}
         </TableBody>
         </Table>
@@ -79,6 +79,7 @@ function StartsAdmin(props) {
         week: PropTypes.object.isRequired,
         league: PropTypes.string.isRequired,
         year: PropTypes.string.isRequired,
+        uid: PropTypes.string.isRequired,
       }
       
       function StartsWeek(props) {
@@ -106,7 +107,7 @@ function StartsAdmin(props) {
             }
             if (!teamOneSeen) newWeek.teams.push({name: teamOne, selected: true})
             if (!teamTwoSeen) newWeek.teams.push({name: teamTwo, selected: true})
-            firebase.updateStartsRow(props.league, props.year, props.week.id, uid, newWeek)
+            firebase.updateStartsRow(props.league, props.year, props.week.id, props.uid, newWeek)
           }
         }, [teamOne, teamTwo]); 
         
