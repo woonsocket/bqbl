@@ -231,7 +231,7 @@ def mickey_parse_extended(url, dst, team_key, team2_key):
     if s_r == 60: 
       m_r += 1
       s_r = 0
-    time = "({:0}:{:0>2}) - {:0}".format(m_r, s_r, qtr)
+    time = "{:0}:{:0>2} - {:0}".format(m_r, s_r, qtr)
     if min_elapsed == 60:
       time = 'Final'
   dst[team_key]['FRAC'] = min_elapsed / 60
