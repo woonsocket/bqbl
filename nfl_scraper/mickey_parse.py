@@ -227,8 +227,13 @@ def mickey_parse_extended(url, dst, team_key, team2_key):
     top_1 = list(map(int, cells[1].text.split(':')))
     top_2 = list(map(int, cells[2].text.split(':')))
     min_elapsed = (top_1[0] + top_2[0] + (top_1[1] + top_2[1])/60)
-    qtr, m_r, s_r = min_elapsed // 15 + 1, 14 - int(min_elapsed % 15), 60 - ((min_elapsed %15) - int(min_elapsed % 15)) * 60
-    time = "(%i:%i) - %i"  % (m_r, s_r, qtr)
+    qtr, m_r, s_r = int(min_elapsed // 15 + 1), 14 - int(min_elapsed % 15), round(60 - ((min_elapsed %15) - int(min_elapsed % 15)) * 60)
+    if s_r == 60: 
+      m_r += 1
+      s_r = 0
+    time = "({:0}:{:0>2}) - {:0}".format(m_r, s_r, qtr)
+    if min_elapsed == 60:
+      time = 'Final'
   dst[team_key]['CLOCK'] = time
   dst[team2_key]['CLOCK'] = time
 
