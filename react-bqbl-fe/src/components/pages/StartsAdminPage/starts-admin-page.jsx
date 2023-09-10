@@ -51,7 +51,7 @@ function StartsAdmin() {
   return (
     <div>
       <div>
-        <Select id="user-select" label="User" onChange={handleChange} value="">
+        <Select id="user-select" label="User" onChange={handleChange} value={uid}>
           <MenuItem value={""} key={100}>
             None
           </MenuItem>
