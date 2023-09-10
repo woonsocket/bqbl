@@ -3,6 +3,7 @@ import { configureStore, createSlice } from '@reduxjs/toolkit'
 const leagueFetchMiddleware = storeAPI => next => action => {
   if (action.firebase && action.type === 'league/set' && action.leagueId) {
     action.firebase.getLeagueSpecThen(action.leagueId, resp => {
+      console.log({resp});
       storeAPI.dispatch({ type: 'league/loaded', payload: resp })
     })
   }
@@ -13,7 +14,20 @@ const leagueFetchMiddleware = storeAPI => next => action => {
 const scoresMiddleware = storeAPI => next => action => {
   if (action.firebase && action.type === 'scores/load') {
     action.firebase.getScoresYearThen(action.year, resp => {
-      storeAPI.dispatch({ type: 'scores/loaded', payload: resp })
+      console.log({resp});
+      storeAPI.dispatch({ type: 'scores/loaded', payload: resp.dbScores })
+    })
+  }
+  
+  return next(action)
+}
+
+// TODO: separate fetch for scores and 24/7 scores.
+const scores247Middleware = storeAPI => next => action => {
+  if (action.firebase && action.type === 'scores247/load') {
+    action.firebase.getScoresYearThen(action.year, resp => {
+      console.log({resp});
+      storeAPI.dispatch({ type: 'scores247/loaded', payload: resp.dbScores247 })
     })
   }
   
@@ -36,30 +50,34 @@ export const leagueSlice = createSlice({
   }
 })
 
-export const scores = createSlice({
+export const scoresSlice = createSlice({
   name: 'scores',
   initialState: {
-    spec: []
   },
   reducers: {
-    set:(state, action) => {
-      state.id = action.leagueId
-    },
+    load:(state, action) => {},
     loaded: (state, action) => {
-      state.spec = action.payload
+      return action.payload;
     }
+  }
+})
+
+export const scores247Slice = createSlice({
+  name: 'scores247',
+  initialState: {
+  },
+  reducers: {
+    load:(state, action) => {},
+    loaded: (state, action) => action.payload
   }
 })
 
 
 export const yearSlice = createSlice({
   name: 'year',
-  initialState: {
-    value: '2023'
-  },
+  initialState: '2023',
   reducers: {
-    set: state => {
-    },
+    set: (state, action) => action.payload,
   }
 })
 
@@ -91,7 +109,9 @@ export default configureStore({
     league: leagueSlice.reducer,
     year: yearSlice.reducer,
     week: weekSlice.reducer,
-    users: userSlice.reducer
+    users: userSlice.reducer,
+    scores: scoresSlice.reducer,
+    scores247: scores247Slice.reducer
   },
-  middleware: [leagueFetchMiddleware],
+  middleware: [leagueFetchMiddleware, scoresMiddleware, scores247Middleware],
 })

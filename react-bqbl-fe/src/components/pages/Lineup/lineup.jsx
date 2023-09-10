@@ -16,6 +16,7 @@ import RequireLeague from '../../reusable/RequireLeague';
 import { useUser } from '../../Firebase/firebase';
 import { hasDh } from '../../../redux/util';
 import { useSelector } from "react-redux";
+import { joinScoresToStarts } from '../../../redux/join';
 
 const useStyles = makeStyles({
   team: {
@@ -49,7 +50,8 @@ function Lineup(props) {
   let dh = hasDh(leagueSpec, year);
   let uid = uidOverride || user && user.uid || null;
   let weeks = (uid && leagueSpec.plays && leagueSpec.plays[year][uid]) || [];
-
+  const joined = useSelector(joinScoresToStarts);
+  console.log({joined})
   useEffect(() => {
     return firebase.getLockedWeeksThen(Date.now(), setLockedWeeks);
   }, [firebase]);

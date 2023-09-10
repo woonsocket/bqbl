@@ -4,6 +4,17 @@ import { STARTS } from './plays2020';
 import { USERS } from './users2020';
 
 export class MockFirebase {
+  auth = {
+    onAuthStateChanged: function() {},
+    currentUser: {
+      uid: "One"
+    }
+  }
+
+  getLockedWeeksThen(time, cb) {
+    cb([])
+  }
+
   getScoresYearThen(year, cb) {
     cb({ dbScores: SCORES, dbScores247: SCORES_247 })
     return () => {};
@@ -20,7 +31,7 @@ export class MockFirebase {
   }
 
   getScoresStartsUsersThen(league, year, cb) {
-    // console.log({SCORES, SCORES_247, STARTS, USERS})
+    console.log({SCORES, SCORES_247, STARTS, USERS})
     cb({ dbScores: SCORES, dbScores247: SCORES_247, dbStarts: STARTS, dbUsers: USERS });
 
     return () => {};

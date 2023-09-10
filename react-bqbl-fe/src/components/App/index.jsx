@@ -58,8 +58,11 @@ function App() {
   const yearSelector = YEAR_SELECTOR_PATHS.indexOf(window.location.pathname) !== -1;
 
   useEffect(() => {
+    console.log('foo')
     store.dispatch({type: 'league/set', leagueId: league, firebase: firebase})
-  }, [firebase]);
+    store.dispatch({type: 'scores/load', leagueId: league, year: year, firebase: firebase})
+    store.dispatch({type: 'scores247/load', leagueId: league, year: year, firebase: firebase})
+  }, [firebase, league, year]);
 
 
   function handleDrawerOpen() {
