@@ -98,9 +98,9 @@ def parse_box(qbs):
         # We need to know the number of passing TDs in order to compute the
         # passer rating.
         outcomes[pid]['PASSTD'] += passerStats.get('passingTouchdowns', 0)
-        outcomes[pid]['INT'] += passerStats.get('passingInterceptions', 0)
-        outcomes[pid]['FUM'] += passerStats.get('fumblesLost', 0)
-        outcomes[pid]['FUML'] += passerStats.get('fumblesTotal', 0)
+        # outcomes[pid]['INT'] += passerStats.get('passingInterceptions', 0)
+        # outcomes[pid]['FUM'] += passerStats.get('fumblesLost', 0)
+        # outcomes[pid]['FUML'] += passerStats.get('fumblesTotal', 0)
         outcomes[pid]['RUSHYD'] += passerStats.get('rushingYards', 0)
         outcomes[pid]['TD'] += passerStats.get('rushingTouchdowns', 0)
 
@@ -283,8 +283,6 @@ class Plays(object):
         def is_qb(pid):
             return pid in passers
 
-        # Read box score stats.
-
         for pid, qb_outcomes in parse_box(home_passers).items(): ##
             for k, v in qb_outcomes.items():
                 outcomes_by_player[home_abbr][pid][k] += v
@@ -335,6 +333,8 @@ class Plays(object):
             #                 new = max(new, yard_line)
             #     self.outcomes_by_team[drive_team]['FIELDPOS'] = max(old, new)
 
+        self.outcomes_by_team[home_abbr]['FIELDPOS'] = 100
+        self.outcomes_by_team[away_abbr]['FIELDPOS'] = 100
         self.outcomes_by_team[home_abbr]['passers'] = (
             outcomes_by_player[home_abbr])
         self.outcomes_by_team[away_abbr]['passers'] = (
