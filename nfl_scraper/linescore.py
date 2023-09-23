@@ -8,11 +8,12 @@ import collections
 import datetime
 import json
 import sys
-import urllib.request
+import requests
 
 
-_SCORES_URL = 'https://feeds.nfl.com/feeds-rs/scores.json'
-
+_SCORES_URL_TPL = 'https://api.nfl.com/experience/v1/games?season=%s&seasonType=REG'
+_WEEK_TPL = '&week=%s'
+_TEAM_URL_TPL = "https://api.nfl.com/experience/v1/stats/%s/teams/%s"
 
 Game = collections.namedtuple(
     'Game',
@@ -43,18 +44,20 @@ Attributes:
 
 
 def parse_game_json(json_obj):
-    sched = json_obj.get('gameSchedule')
-    score = json_obj.get('score')
-    game_id = str(sched['gameId'])
-    home_team = sched['homeTeamAbbr']
-    away_team = sched['visitorTeamAbbr']
-    if score:
-        home_score = score['homeTeamScore']['pointTotal']
-        away_score = score['visitorTeamScore']['pointTotal']
-        poss = score['possessionTeamAbbr'] or ''
-        clock = parse_game_clock(score['phase'], score['time'])
-        alert = score['alertPlayType'] or ''
-        is_over = score['phase'].upper() == 'FINAL'
+    # sched = json_obj.get('gameSchedule')
+    # score = json_obj.get('score')
+    detail = json_obj.get('detail')
+    game_id = json_obj.get('id')
+    home_team = json_obj.get('homeTeam').get('abbreviation')
+    away_team = json_obj.get('awayTeam').get('abbreviation')
+    if detail:
+        home_score = detail['homePointsTotal']
+        away_score = detail['visitorPointsTotal']
+        poss = ''
+        clock = parse_game_clock(detail['phase'], detail['gameClock'])
+        # alert = score['alertPlayType'] or ''
+        alert = ''
+        is_over = detail['phase'].upper() == 'FINAL'
     else:
         home_score = None
         away_score = None
@@ -62,7 +65,7 @@ def parse_game_json(json_obj):
         clock = 0
         alert = ''
         is_over = False
-    start_time = datetime.datetime.fromtimestamp(sched['isoTime'] / 1000)
+    start_time = datetime.datetime.fromisoformat(json_obj.get('time')[:-1])
     return Game(id=game_id,
                 home=home_team,
                 away=away_team,
@@ -116,7 +119,8 @@ def parse_game_clock(phase, clock):
     return qnum * 900 - clock_secs
 
 
-def fetch(url=_SCORES_URL):
+# TODO fix override
+def fetch(season='2023', week=2):
     """Get line scores for whatever the current week is.
 
     Returns:
@@ -125,16 +129,22 @@ def fetch(url=_SCORES_URL):
         is constant between fetches, so you can compare Games fetched at
         different times.
     """
-    raw = urllib.request.urlopen(url).read()
-    data = json.loads(str(raw, 'utf-8'))
-    scores = data.get('gameScores')
+    week_section = _WEEK_TPL % week if week else ''
+    url = _SCORES_URL_TPL % season + week_section
+    payload = {"clientKey":"4cFUW6DmwJpzT9L7LrG3qRAcABG5s04g","clientSecret":"CZuvCL49d9OwfGsR","deviceId":"9c716807-a922-4f27-9d1a-3ea8a3a4259e","deviceInfo":"eyJtb2RlbCI6ImRlc2t0b3AiLCJ2ZXJzaW9uIjoiQ2hyb21lIiwib3NOYW1lIjoiV2luZG93cyIsIm9zVmVyc2lvbiI6IjEwIn0=","networkType":"other"}
+    r = requests.post("https://api.nfl.com/identity/v3/token", data=payload)
+    access_token = json.loads(r.text)['accessToken']
+    headers_2 = {'Authorization': 'Bearer ' + access_token}
+    resp = requests.get(url, headers=headers_2)
+    data = json.loads(resp.text)
+    scores = data.get('games')
     if not scores:
         return {}
     games = {}
-    for obj in scores:
+    for obj in scores[:1]:
         game = parse_game_json(obj)
         games[game.id] = game
-    week = data['week']
-    if data['seasonType'] == 'PRE':
+    week = scores[0]['week']
+    if scores[0]['seasonType'] == 'PRE':
         week = 'P{0}'.format(week)
-    return data['season'], week, games
+    return scores[0]['season'], week, games
