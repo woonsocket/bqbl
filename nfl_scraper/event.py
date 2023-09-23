@@ -33,10 +33,10 @@ class Events(object):
     def _summary(player_name, play):
         return {
             'name': player_name,
-            'desc': play['desc'],
-            'team': play['posteam'],
-            'quarter': play['qtr'],
-            'time': play['time'],
+            'desc': play['playDescription'],
+            'team': play['possessionTeam']['abbreviation'],
+            'quarter': play['quarter'],
+            'time': play['clockTime'],
         }
 
     def add_fumble(self, game_id, play_id, player_name, play, is_opponent_td):
@@ -51,6 +51,7 @@ class Events(object):
             play: A play dict, decoded from JSON.
             is_opponent_td: Whether the fumble was returned for a touchdown.
         """
+        print('af')
         summary = Events._summary(player_name, play)
         summary['td'] = is_opponent_td
         self.fumbles[Events._id(game_id, play_id)] = summary

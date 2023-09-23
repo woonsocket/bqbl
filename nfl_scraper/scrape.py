@@ -91,7 +91,6 @@ def parse_box(qbs):
     outcomes = collections.defaultdict(lambda: collections.defaultdict(int))
     for pid, passer in qbs.items():
         passerStats = passer['gameStats']
-        print(passerStats)
         outcomes[pid]['ATT'] += passerStats.get('passingAttempts', 0)
         outcomes[pid]['CMP'] += passerStats.get('passingCompletions', 0)
         outcomes[pid]['PASSYD'] += passerStats.get('passingYards', 0)
@@ -127,18 +126,18 @@ def parse_play(game_id, play_id, play, is_qb, events):
         is_qb: Predicate that returns whether a player ID is a QB.
         events: An Events object in which to record turnovers.
     """
-    offense_team = play['posteam']
+    offense_team = play['possessionTeam']['abbreviation']
     # {player_id: [plays]}
     qb_stats = collections.defaultdict(list)
     def_stats = []
     # {player_id: {stat_name: value}}
     outcomes = collections.defaultdict(lambda: collections.defaultdict(int))
-    for pid, player_stats in play['players'].items():
-        for stat in player_stats:
-            if stat['clubcode'] == offense_team and is_qb(pid):
-                qb_stats[pid].append(stat)
-            else:
-                def_stats.append(stat)
+    for stat in play['playStats']:
+        pid = stat['gsisPlayer']['id']
+        if stat['team']['abbreviation'] == offense_team and is_qb(pid):
+            qb_stats[pid].append(stat)
+        else:
+            def_stats.append(stat)
 
     # http://www.nflgsis.com/gsis/documentation/Partners/StatIDs.html
     for pid, stats in qb_stats.items():
@@ -148,8 +147,6 @@ def parse_play(game_id, play_id, play, is_qb, events):
         for stat in stats:
             sid = stat.get('statId')
             player = stat.get('playerName')
-            team = stat.get('clubcode')
-            desc = play['desc']
 
             # The `stats` list represents all events that occurred on a single
             # play. We're assigning values to the outcomes dict instead of
@@ -172,7 +169,7 @@ def parse_play(game_id, play_id, play, is_qb, events):
                     filter(lambda s: s.get('statId') in (26, 28), def_stats))
                 if opp_td:
                     outcomes[pid]['INT6'] = 1
-                    if play['qtr'] > 4:
+                    if play['quarter'] > 4:
                         outcomes[pid]['INT6OT'] = 1
                 events.add_interception(game_id, play_id, player, play, opp_td)
             elif sid in (52, 53):
@@ -218,8 +215,6 @@ class Plays(object):
              p['player']['currentPlayer']['position'] == 'QB' and p['team']['abbreviation'] == team_abbr}
 
     def process(self, season, week, game_id, data, players, home_box, away_box):
-        print(list(data['data']['viewer']['gameDetail'].keys()))
-        print(list(players.keys()))
         data = data['data']['viewer']['gameDetail']
         home_box = home_box['data']['viewer']['live']['teamGameStats'][0]['teamGameStats']
         away_box = away_box['data']['viewer']['live']['teamGameStats'][0]['teamGameStats']
@@ -234,15 +229,10 @@ class Plays(object):
             # Empty data file. Maybe the game hasn't started yet.
             return
 
-        drives = data['drives']
-
         home_team = data['homeTeam']
         away_team = data['visitorTeam']
         home_abbr = home_team['abbreviation']
         away_abbr = away_team['abbreviation']
-
-
-        print(self.filter_qbs(players, home_abbr))
 
         self.outcomes_by_team[home_abbr]['ID'] = game_id
         self.outcomes_by_team[away_abbr]['ID'] = game_id
@@ -254,8 +244,8 @@ class Plays(object):
         if phase == 'FINAL':
             clock = 'Final'
         else:
-            clock = '{time} - {period}'.format(
-                time=data['clock'], quarter=ordinal(period)) ##
+            clock = '{time} - {quarter}'.format(
+                time=data['gameClock'], quarter=ordinal(period)) ##
         self.outcomes_by_team[home_abbr]['CLOCK'] = clock
         self.outcomes_by_team[away_abbr]['CLOCK'] = clock
 
@@ -272,7 +262,6 @@ class Plays(object):
 
         passers = set()
 
-
         # players
         home_passers = self.filter_qbs(players, home_abbr)
         passers |= home_passers.keys()
@@ -286,16 +275,13 @@ class Plays(object):
         away_passers = self.filter_qbs(players, away_abbr)
         passers |= away_passers.keys()
         for id, p in away_passers.items():
-            print(p)
             name = p['player'].get('displayName', 'UNKNOWN')
             outcomes_by_player[away_abbr][id]['NAME'] = name
             if len(away_passers) > 1:
                 self.events.add_passer(away_abbr, id, name)
 
-        print(home_passers, away_passers, outcomes_by_player)
         def is_qb(pid):
-            return (pid in passers and
-                    self.player_cache.lookup_position(pid) == 'QB')
+            return pid in passers
 
         # Read box score stats.
 
@@ -310,32 +296,26 @@ class Plays(object):
 
         # Read play-by-play info for slightly more complex stats like turnovers
         # and sack yardage.
-        print(drives)
-        for play_num, play in enumerate(p.get('plays', [])):
-            pass
-
-
-            # # TODO skip junk in there about current drive
-            # for play_id, play in drive['plays'].items():
-            #     outcomes = parse_play(
-            #         game_id, play_id, play, is_qb, self.events)
-            #     for pid, qb_outcomes in outcomes.items():
-            #         for k, v in qb_outcomes.items():
-            #             team = play['posteam']
-            #             if k == 'LONG':
-            #                 pold = outcomes_by_player[team][pid][k]
-            #                 outcomes_by_player[team][pid][k] = max(pold, v)
-            #                 old = self.outcomes_by_team[team][k]
-            #                 self.outcomes_by_team[team][k] = max(old, v)
-            #             else:
-            #                 outcomes_by_player[team][pid][k] += v
-            #                 self.outcomes_by_team[team][k] += v
-            # # Compute best field position from drive-wide stats. Field position
-            # # is recorded as the number of yards from the team's own goal line.
-            # # We ignore field position on drives where the team never gained a
-            # # first down (or received one via penalty) so that offenses aren't
-            # # rewarded for going 3-and-out after their defense gives them good
-            # # position.
+        for play_num, play in enumerate(data.get('plays', [])):
+            outcomes = parse_play(
+                     game_id, play_num, play, is_qb, self.events)
+            for pid, qb_outcomes in outcomes.items():
+                for k, v in qb_outcomes.items():
+                    team = play['possessionTeam']['abbreviation']
+                    if k == 'LONG':
+                        pold = outcomes_by_player[team][pid][k]
+                        outcomes_by_player[team][pid][k] = max(pold, v)
+                        old = self.outcomes_by_team[team][k]
+                        self.outcomes_by_team[team][k] = max(old, v)
+                    else:
+                        outcomes_by_player[team][pid][k] += v
+                        self.outcomes_by_team[team][k] += v
+            # Compute best field position from drive-wide stats. Field position
+            # is recorded as the number of yards from the team's own goal line.
+            # We ignore field position on drives where the team never gained a
+            # first down (or received one via penalty) so that offenses aren't
+            # rewarded for going 3-and-out after their defense gives them good
+            # position.
             # drive_team = drive['posteam']
             # if drive['fds'] > 0 and drive_team:
             #     old = self.outcomes_by_team[drive_team]['FIELDPOS']
@@ -435,8 +415,6 @@ def main():
     r = requests.post("https://api.nfl.com/identity/v3/token", data=payload)
     access_token = json.loads(r.text)['accessToken']
     headers_2 = {'Authorization': 'Bearer ' + access_token}
-
-    _TEAM_URL_TPL = "https://api.nfl.com/experience/v1/stats/%s/teams/%s"
 
 
     for id in game_ids:
