@@ -472,11 +472,7 @@ def main():
             print('err', resp)
             continue
         away_team = resp.json()
-
-
         plays.process(season, week, id, data, players, home_team, away_team)
-
-        print(plays)
         scrape_status[id]['lastScrape'] = now.timestamp()
         # TODO: We shouldn't be parsing data here.
         try:
