@@ -7,13 +7,10 @@ decide which box scores to refresh next.
 import collections
 import datetime
 import json
-import sys
 import requests
-
 
 _SCORES_URL_TPL = 'https://api.nfl.com/experience/v1/games?season=%s&seasonType=REG'
 _WEEK_TPL = '&week=%s'
-_TEAM_URL_TPL = "https://api.nfl.com/experience/v1/stats/%s/teams/%s"
 
 Game = collections.namedtuple(
     'Game',
@@ -141,7 +138,7 @@ def fetch(season='2023', week=2):
     if not scores:
         return {}
     games = {}
-    for obj in scores[:1]:
+    for obj in scores:
         game = parse_game_json(obj)
         games[game.id] = game
     week = scores[0]['week']
