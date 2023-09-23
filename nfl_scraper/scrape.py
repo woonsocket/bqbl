@@ -33,8 +33,6 @@ parser.add_option("-w", "--week", dest="week",
                   help="Week")
 parser.add_option("-y", "--year", dest="year",
                   help="Year")
-parser.add_option("-d", "--dump", dest="dump", action="store_true",
-                  help="Dump data?")
 parser.add_option("--all", dest="all", action="store_true",
                   help="Scrape all games, not just those that are 'due'")
 parser.add_option("--firebase_creds", dest="firebase_cred_file",
