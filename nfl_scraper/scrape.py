@@ -209,8 +209,13 @@ class Plays(object):
         return str(self.events) + str(self.outcomes_by_team)
 
     def filter_qbs(self, players, team_abbr):
-        return {p['gameStats']['playerId']: p for p in players if
-             p['player']['currentPlayer']['position'] == 'QB' and p['team']['abbreviation'] == team_abbr}
+        return {p['gameStats']['playerId']: p for p in players if self.is_qb_for(p, team_abbr)}
+
+    def is_qb_for(self, player_info, team_abbr):
+        if not player_info or not player_info['player'] or not player_info['player']['currentPlayer']:
+            return False
+        return (player_info['player']['currentPlayer']['position'] == 'QB'
+            and player_info['team']['abbreviation'] == team_abbr)
 
     def process(self, season, week, game_id, data, players, home_box, away_box):
         data = data['data']['viewer']['gameDetail']
