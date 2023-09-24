@@ -62,7 +62,12 @@ def parse_game_json(json_obj):
         clock = 0
         alert = ''
         is_over = False
-    start_time = datetime.datetime.fromisoformat(json_obj.get('time')[:-1])
+    # The timestamp has a "Z" at the end, but fromisoformat doesn't recognize
+    # this until Python 3.11. We strip it off and manually add the time zone.
+    start_time = (
+        datetime.datetime.fromisoformat(json_obj.get('time')[:-1])
+            .replace(tzinfo=datetime.timezone.utc))
+    print(start_time.tzinfo)
     return Game(id=game_id,
                 home=home_team,
                 away=away_team,

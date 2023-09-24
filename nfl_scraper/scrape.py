@@ -376,6 +376,8 @@ class PlayerCache(object):
 def main():
     options, args = parser.parse_args()
 
+    now = datetime.datetime.now(datetime.timezone.utc)
+
     if args:
         season, week = options.year, options.week
         if not (season and week):
@@ -386,8 +388,7 @@ def main():
         games_with_alerts = set()
     else:
         season, week, games = linescore.fetch(options.year, options.week)
-        game_ids = [g.id for g in games.values()
-                    if g.start_time < datetime.datetime.now()]
+        game_ids = [g.id for g in games.values() if g.start_time < now]
         games_with_alerts = {g.id for g in games.values() if g.alert}
 
     if not options.firebase_cred_file:
@@ -407,7 +408,6 @@ def main():
     else:
         scrape_status = collections.defaultdict(dict,
                                                 scrape_status_ref.get() or {})
-    now = datetime.datetime.now(tz=datetime.timezone.utc)
 
     payload = {"clientKey":"4cFUW6DmwJpzT9L7LrG3qRAcABG5s04g","clientSecret":"CZuvCL49d9OwfGsR","deviceId":"9c716807-a922-4f27-9d1a-3ea8a3a4259e","deviceInfo":"eyJtb2RlbCI6ImRlc2t0b3AiLCJ2ZXJzaW9uIjoiQ2hyb21lIiwib3NOYW1lIjoiV2luZG93cyIsIm9zVmVyc2lvbiI6IjEwIn0=","networkType":"other"}
     r = requests.post("https://api.nfl.com/identity/v3/token", data=payload)
