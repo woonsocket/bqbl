@@ -51,7 +51,6 @@ class Events(object):
             play: A play dict, decoded from JSON.
             is_opponent_td: Whether the fumble was returned for a touchdown.
         """
-        print('af')
         summary = Events._summary(player_name, play)
         summary['td'] = is_opponent_td
         self.fumbles[Events._id(game_id, play_id)] = summary
