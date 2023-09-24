@@ -67,7 +67,6 @@ def parse_game_json(json_obj):
     start_time = (
         datetime.datetime.fromisoformat(json_obj.get('time')[:-1])
             .replace(tzinfo=datetime.timezone.utc))
-    print(start_time.tzinfo)
     return Game(id=game_id,
                 home=home_team,
                 away=away_team,
