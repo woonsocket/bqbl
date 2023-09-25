@@ -14,12 +14,13 @@ _WEEK_TPL = '&week=%s'
 
 Game = collections.namedtuple(
     'Game',
-    ('id', 'home', 'hscore', 'away', 'ascore', 'poss', 'start_time', 'clock',
-     'alert', 'is_over'))
+    ('id', 'url_id', 'home', 'hscore', 'away', 'ascore', 'poss', 'start_time',
+        'clock', 'alert', 'is_over'))
 Game.__doc__ = """The score and schedule for a game.
 
 Attributes:
     id: The game ID.
+    url_id: The game ID used in nfl.com URLs.
     home: The home team abbreviation, e.g., 'ATL'.
     away: The away team abbreviation, e.g., 'NE'.
     hscore: The home team's score. None if the game hasn't started.
@@ -45,6 +46,7 @@ def parse_game_json(json_obj):
     # score = json_obj.get('score')
     detail = json_obj.get('detail')
     game_id = json_obj.get('id')
+    url_id = find_url_slug(json_obj)
     home_team = json_obj.get('homeTeam').get('abbreviation')
     away_team = json_obj.get('awayTeam').get('abbreviation')
     if detail:
@@ -68,6 +70,7 @@ def parse_game_json(json_obj):
         datetime.datetime.fromisoformat(json_obj.get('time')[:-1])
             .replace(tzinfo=datetime.timezone.utc))
     return Game(id=game_id,
+                url_id=url_id,
                 home=home_team,
                 away=away_team,
                 hscore=home_score,
@@ -77,6 +80,14 @@ def parse_game_json(json_obj):
                 clock=clock,
                 alert=alert,
                 is_over=is_over)
+
+
+def find_url_slug(game_json):
+    """Finds the human-readable game ID used in nfl.com URLs."""
+    for xid in game_json.get('externalIds', []):
+        if xid['source'] == 'slug':
+            return xid['id']
+    return ''
 
 
 def parse_game_clock(phase, clock):

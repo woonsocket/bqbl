@@ -217,7 +217,7 @@ class Plays(object):
         return (player_info['player']['currentPlayer']['position'] == 'QB'
             and player_info['team']['abbreviation'] == team_abbr)
 
-    def process(self, season, week, game_id, data, players, home_box, away_box):
+    def process(self, season, week, game_id, url_id, data, players, home_box, away_box):
         data = data['data']['viewer']['gameDetail']
         home_box = home_box['data']['viewer']['live']['teamGameStats'][0]['teamGameStats']
         away_box = away_box['data']['viewer']['live']['teamGameStats'][0]['teamGameStats']
@@ -237,8 +237,10 @@ class Plays(object):
         home_abbr = home_team['abbreviation']
         away_abbr = away_team['abbreviation']
 
-        self.outcomes_by_team[home_abbr]['ID'] = game_id
-        self.outcomes_by_team[away_abbr]['ID'] = game_id
+        self.outcomes_by_team[home_abbr]['ID'] = url_id
+        self.outcomes_by_team[away_abbr]['ID'] = url_id
+        self.outcomes_by_team[home_abbr]['IDTYPE'] = 'nfl'
+        self.outcomes_by_team[away_abbr]['IDTYPE'] = 'nfl'
         self.outcomes_by_team[home_abbr]['OPP'] = away_abbr
         self.outcomes_by_team[away_abbr]['OPP'] = home_abbr
 
@@ -390,10 +392,12 @@ def main():
                   file=sys.stderr)
             sys.exit(1)
         game_ids = [gid.strip() for gid in open(args[0])]
+        game_ids_to_url_slugs = {}
         games_with_alerts = set()
     else:
         season, week, games = linescore.fetch(options.year, options.week)
         game_ids = [g.id for g in games.values() if g.start_time < now]
+        game_ids_to_url_slugs = {g.id: g.url_id for g in games.values()}
         games_with_alerts = {g.id for g in games.values() if g.alert}
 
     if not options.firebase_cred_file:
@@ -475,7 +479,9 @@ def main():
             print('err', resp)
             continue
         away_team = resp.json()
-        plays.process(season, week, id, data, players, home_team, away_team)
+        plays.process(
+            season, week, id, game_ids_to_url_slugs.get(id, ''), data,
+            players, home_team, away_team)
         scrape_status[id]['lastScrape'] = now.timestamp()
         # TODO: We shouldn't be parsing data here.
         try:
