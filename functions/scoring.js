@@ -79,10 +79,9 @@ exports.computeScore = function(stats, overrides) {
  *     modified.
  */
 function computeStupidProjection(stats) {
-  const elapsedFrac = parseElapsedFraction('' + stats['CLOCK']);
-  if (stats['FRAC']) {
-    elapsedFrac = 1* stats['FRAC'];
-  }
+  const elapsedFrac = stats['FRAC'] ?
+    1 * stats['FRAC'] :
+    parseElapsedFraction('' + stats['CLOCK']);
 
   const projected = {};
   entries(stats).forEach(([stat, val]) => {
