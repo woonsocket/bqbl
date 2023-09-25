@@ -48,6 +48,7 @@ exports.computeScore = function(stats, overrides) {
   let gameInfo = {
     'clock': stats['CLOCK'],
     'id': stats['ID'],
+    'idType': stats['IDTYPE'] || '',
   };
   let gameScore = stats['SCORE'];
   if (gameScore) {
