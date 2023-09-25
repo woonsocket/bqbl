@@ -79,8 +79,7 @@ function sendToSlack(eventType, playerName, team, desc) {
     what = 'gave up a safety';
   }
 
-  const iconUrl = `https://nflcdns.nfl.com/static/site/img/logos/png-500x500/` +
-      `teams/${team}.png`;
+  const iconUrl = `https://static.www.nfl.com/f_png,q_85/league/api/clubs/logos/${team}`
 
   const payload = {
     'text': (`*${playerName} (${team})* ${what}\n` +
