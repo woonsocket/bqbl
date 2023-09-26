@@ -299,9 +299,9 @@ class Plays(object):
 
         # Read play-by-play info for slightly more complex stats like turnovers
         # and sack yardage.
-        for play_num, play in enumerate(data.get('plays', [])):
+        for play in data.get('plays', []):
             outcomes = parse_play(
-                     game_id, play_num, play, is_qb, self.events)
+                     game_id, play['playId'], play, is_qb, self.events)
             for pid, qb_outcomes in outcomes.items():
                 for k, v in qb_outcomes.items():
                     team = play['possessionTeam']['abbreviation']
