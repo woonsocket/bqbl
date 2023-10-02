@@ -137,7 +137,7 @@ function LineupWeek(props) {
     }
     newWeek.teams[cellId] = { name: val, selected: val !== "" };
     setWeek(newWeek);
-    firebase.updateStartsRow(props.league, props.year, week.id, newWeek);
+    firebase.updateStartsRow(props.league, props.year, week.id, props.uid, newWeek);
   }
 
   return (
