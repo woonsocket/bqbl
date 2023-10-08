@@ -3,10 +3,12 @@ import { screen } from '@testing-library/react';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { act } from 'react-dom/test-utils';
-import { MockFirebase, MOCK_APP_STATE } from '../../../testing/mocks';
+import { MockFirebase, MOCK_APP_STATE, MockApp } from '../../../testing/mocks';
 import { AppStateContext } from '../../AppState';
 import { FirebaseContext } from '../../Firebase';
 import TeamStandingsPage from './team-standings-page';
+import { Provider } from 'react-redux';
+import store from '../../../redux/store';
 
 const wait = async () => new Promise((resolve) => setTimeout(resolve, 0))
 
@@ -28,7 +30,11 @@ describe('TeamStandingsPage', () => {
       ReactDOM.render(
         <AppStateContext.Provider value={[MOCK_APP_STATE]}>
           <FirebaseContext.Provider value={new MockFirebase()}>
-            <TeamStandingsPage />
+            <MockApp year={"2023"} league={"nbqbl"}>
+              <Provider store={store}>
+              <TeamStandingsPage />
+              </Provider>
+            </MockApp>
           </FirebaseContext.Provider>
         </AppStateContext.Provider>
         , container)

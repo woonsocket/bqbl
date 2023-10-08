@@ -1,9 +1,9 @@
-import { makeStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 import React from 'react';
 
 import ScoreValue from '../ScoreValue/score-value';
 import TeamIcon from '../TeamIcon/team-icon';
+import styles from './IconScoreCell.module.css'
 
 IconScoreCell.propTypes = {
   team: PropTypes.string.isRequired,
@@ -15,27 +15,11 @@ IconScoreCell.defaultProps = {
   score: 0
 };
 
-const useStyles = makeStyles({
-  outer: {
-    alignItems: 'center',
-    display: 'flex',
-    marginLeft: '5px',
-    minWidth: '50px',
-  },
-  cell: {
-    fontSize: '14px',
-    minWidth: '35px',
-    textAlign: 'right',
-  },
-});
-
 function IconScoreCell(props) {
-  const classes = useStyles();
-
   return (
-    <div className={classes.outer}>
+    <div className={styles.outer}>
       <TeamIcon team={props.team} width='30px' />
-      <span className={classes.cell}>
+      <span className={styles.cell}>
         <ScoreValue score={props.score} />
       </span>
     </div>

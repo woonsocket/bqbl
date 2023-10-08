@@ -1,16 +1,16 @@
-import Switch from '@mui/material/Switch';
-import React, { useContext, useEffect, useState } from 'react';
-import { useWeek, useYear } from '../../AppState';
-import { FirebaseContext } from '../../Firebase';
-import TeamScoreCard from '../../reusable/TeamScoreCard/team-score-card';
+import Switch from "@mui/material/Switch";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { useWeek, useYear } from "../../AppState";
+import TeamScoreCard from "../../reusable/TeamScoreCard/team-score-card";
 
 function TeamScorePage(props) {
-  const firebase = useContext(FirebaseContext);
-
   let [isLoaded, setIsLoaded] = useState(false);
   let [scoresList, setScoresList] = useState([]);
   let [sortScores, setSortScores] = useState(true);
   let [useProjections, setUseProjections] = useState(true);
+
+  const scores = useSelector((state) => state.scores);
 
   let year = useYear();
   let week = useWeek();
@@ -24,22 +24,25 @@ function TeamScorePage(props) {
   }
 
   useEffect(() => {
-    return firebase.getScoresWeekThen(year, week,
-      scoresWeek => {
-        if (sortScores) {
-          if (useProjections) {
-            scoresWeek = scoresWeek.sort((team, team2) => team2.projection.total - team.projection.total);
-          } else {
-            scoresWeek = scoresWeek.sort((team, team2) => team2.total - team.total);
-          }
-        }
-        setScoresList(scoresWeek);
-        setIsLoaded(true);
-      });
-  }, [firebase, year, week, sortScores, useProjections]);
+    if (!scores[week]) return;
+    let scoresWeek = Object.entries(scores[week]).map(
+      (entry, idx) => { return {...entry[1], teamName: entry[0]}}
+    )
+    if (sortScores) {
+      if (useProjections) {
+        scoresWeek = scoresWeek.sort(
+          (team, team2) => team2.projection.total - team.projection.total
+        );
+      } else {
+        scoresWeek = scoresWeek.sort((team, team2) => team2.total - team.total);
+      }
+    }
+    setScoresList(scoresWeek);
+    setIsLoaded(true);
+  }, [scores, week]);
 
   return (
-    <div style={{ textAlign: 'center' }}>
+    <div style={{ textAlign: "center" }}>
       <div>
         Sort Scores
         <Switch
@@ -57,15 +60,18 @@ function TeamScorePage(props) {
           color="primary"
           disabled={!sortScores}
         />
-
       </div>
-      {scoresList.map(score => (
-        <TeamScoreCard data-testid="team-score-card"
-        score={score} key={score.teamName} boxScoreLink={boxScoreLink(year, props.week, score.gameInfo.id)} />
+      {scoresList.map((score) => (
+        <TeamScoreCard
+          data-testid="team-score-card"
+          score={score}
+          key={score.teamName}
+          boxScoreLink={boxScoreLink(year, props.week, score.gameInfo.id)}
+        />
       ))}
-      {isLoaded && !scoresList.length &&
+      {isLoaded && !scoresList.length && (
         <div>No scores found for week {props.week}</div>
-      }
+      )}
     </div>
   );
 }

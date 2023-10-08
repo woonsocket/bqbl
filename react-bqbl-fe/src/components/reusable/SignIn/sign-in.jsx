@@ -4,7 +4,6 @@ import * as ROUTES from '../../../constants/routes';
 import { withFirebase } from '../../Firebase';
 
 import { compose } from 'react-recompose';
-import { withRouter } from 'react-router-dom';
 import Button from '@mui/material/Button';
 
 class SignInBase extends Component {
@@ -44,7 +43,6 @@ class SignInBase extends Component {
 }
 
 const SignIn = compose(
-  withRouter,
   withFirebase,
 )(SignInBase);
 

@@ -1,28 +1,38 @@
-import { SCORES } from './scores2021';
-import { SCORES_247 } from './scores-247-2021';
-import { STARTS } from './plays2020';
-import { USERS } from './users2020';
+import { SCORES } from "./scores2021";
+import { SCORES_247 } from "./scores-247-2021";
+import { STARTS } from "./plays2020";
+import { USERS } from "./users2020";
+import { useContext, useEffect } from "react";
+import { FirebaseContext } from "../components/Firebase";
+import store from "../redux/store";
 
 export class MockFirebase {
   auth = {
-    onAuthStateChanged: function() {},
+    onAuthStateChanged: function () {},
     currentUser: {
-      uid: "One"
-    }
+      uid: "One",
+    },
+  };
+
+  scores = SCORES;
+
+  getLeagueSpecThen(leagueId, cb) {
+    cb({ users: { 2023: USERS }, plays: { 2023: STARTS } });
   }
 
   getLockedWeeksThen(time, cb) {
-    cb([])
+    cb([]);
   }
 
   getScoresYearThen(year, cb) {
-    cb({ dbScores: SCORES, dbScores247: SCORES_247 })
+    // console.log(this.scores['3']);
+    cb({ dbScores: this.scores, dbScores247: SCORES_247 });
     return () => {};
   }
 
   getScoresWeekThen(year, week, cb) {
     let vals = SCORES[week];
-    const valsList = Object.keys(vals).map(key => ({
+    const valsList = Object.keys(vals).map((key) => ({
       ...vals[key],
       teamName: key,
     }));
@@ -31,8 +41,12 @@ export class MockFirebase {
   }
 
   getScoresStartsUsersThen(league, year, cb) {
-    console.log({SCORES, SCORES_247, STARTS, USERS})
-    cb({ dbScores: SCORES, dbScores247: SCORES_247, dbStarts: STARTS, dbUsers: USERS });
+    cb({
+      dbScores: SCORES,
+      dbScores247: SCORES_247,
+      dbStarts: STARTS,
+      dbUsers: USERS,
+    });
 
     return () => {};
   }
@@ -42,17 +56,43 @@ export class MockFirebase {
   //   {name: 'Player name', starts: ['Team1', 'Team2', ...]}
 
   getProBowlStartsForLeagueThen(league, year, cb) {
-    if (league == 'abqbl') {
-      cb([{ name: "Trevor", starts: ['NO', "DEN"] }]);
+    if (league == "abqbl") {
+      cb([{ name: "Trevor", starts: ["NO", "DEN"] }]);
     } else {
-      cb([{ name: "Ryan", starts: ['MIA', "WAS", "BUF", "NYJ", "TB", "TEN"] }]);
+      cb([{ name: "Ryan", starts: ["MIA", "WAS", "BUF", "NYJ", "TB", "TEN"] }]);
     }
-  };
+  }
 }
 
 export const MOCK_APP_STATE = {
-  'league': 'nbqbl',
-  'year': '2020',
-  'week': '3',
+  league: "nbqbl",
+  year: "2020",
+  week: "3",
 };
 
+export function MockApp(props) {
+  const firebase = useContext(FirebaseContext);
+
+  useEffect(() => {
+    //    store.dispatch({type: 'year/set', year: year, firebase: firebase});
+    store.dispatch({
+      type: "league/set",
+      leagueId: props.league,
+      firebase: firebase,
+    });
+    store.dispatch({
+      type: "scores/load",
+      leagueId: props.league,
+      year: props.year,
+      firebase: firebase,
+    });
+    store.dispatch({
+      type: "scores247/load",
+      leagueId: props.league,
+      year: props.year,
+      firebase: firebase,
+    });
+  }, [firebase, props.league, props.year]);
+
+  return props.children;
+}

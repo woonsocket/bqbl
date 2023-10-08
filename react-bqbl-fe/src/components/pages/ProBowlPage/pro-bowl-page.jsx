@@ -1,45 +1,26 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from "react";
 
-import * as FOOTBALL from '../../../constants/football';
-import TeamIcon from '../../reusable/TeamIcon/team-icon'
-import classNames from 'classnames/bind';
-import RequireLeague from '../../reusable/RequireLeague';
-import { FirebaseContext } from '../../Firebase';
+import * as FOOTBALL from "../../../constants/football";
+import { FirebaseContext } from "../../Firebase";
+import RequireLeague from "../../reusable/RequireLeague";
+import TeamIcon from "../../reusable/TeamIcon/team-icon";
 
-import { makeStyles } from '@mui/styles';
-import { useUser } from '../../Firebase/firebase';
-import { useLeague, useYear } from '../../AppState';
-import PropTypes from 'prop-types';
-import Snackbar from '@mui/material/Snackbar';
-import { isInLeague } from '../../../redux/util';
+import Snackbar from "@mui/material/Snackbar";
+import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
+import { isInLeague } from "../../../redux/util";
+import { useLeague, useYear } from "../../AppState";
+import { useUser } from "../../Firebase/firebase";
 
+import styles from './ProBowlPage.module.css'
 
 const MAX_SELECTED_TEAMS = 6;
 const TEAM_ICON_WIDTH = '80px';
 
-const useStyles = makeStyles({
-  gridContainer: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-  },
-  team: {
-    padding: '1em',
-    minWidth: TEAM_ICON_WIDTH,
-    textAlign: 'center',
-  },
-  cell: {
-    textAlign: 'center',
-  },
-  teamSelected: {
-    background: 'lightblue',
-  }
-});
 
 function ProBowlPageBase() {
   let [selectedTeams, setSelectedTeams] = useState([]);
-  let [snackbarMessage, setSnackbarMessage] = useState('');
+  let [snackbarMessage, setSnackbarMessage] = useState("");
   let [snackbarOpen, setSnackbarOpen] = useState(false);
   let user = useUser();
   let year = useYear();
@@ -54,19 +35,24 @@ function ProBowlPageBase() {
       return;
     }
     const unsubStarts = firebase.getProBowlYearThen(
-        user.uid, league, year, setSelectedTeams);
+      user.uid,
+      league,
+      year,
+      setSelectedTeams
+    );
     return () => {
       unsubStarts();
     };
   }, [firebase, year, user, league]);
 
   function selectCallback(teams) {
-    firebase.updateProBowlStarts(league, year, teams)
-        .then(() => setSelectedTeams(teams))
-        .catch((err) => {
-          setSnackbarOpen(true);
-          console.error(err);
-        });
+    firebase
+      .updateProBowlStarts(league, year, teams)
+      .then(() => setSelectedTeams(teams))
+      .catch((err) => {
+        setSnackbarOpen(true);
+        console.error(err);
+      });
   }
 
   function errorCallback(err) {
@@ -78,39 +64,50 @@ function ProBowlPageBase() {
     setSnackbarOpen(false);
   }
 
-  return <React.Fragment>
-    <h2>Select {MAX_SELECTED_TEAMS} teams</h2>
-    {inLeague
-        ? <TeamSelectionGrid
-              selectCallback={selectCallback}
-              errorCallback={errorCallback}
-              selectedTeams={selectedTeams} />
-        : <div>You're not in this league.</div>
-    }
-    <ErrorSnackbar
+  return (
+    <React.Fragment>
+      <h2>Select {MAX_SELECTED_TEAMS} teams</h2>
+      {inLeague ? (
+        <TeamSelectionGrid
+          selectCallback={selectCallback}
+          errorCallback={errorCallback}
+          selectedTeams={selectedTeams}
+        />
+      ) : (
+        <div>You're not in this league.</div>
+      )}
+      <ErrorSnackbar
         open={snackbarOpen}
         onClose={handleSnackbarClose}
-        message={snackbarMessage} />
-  </React.Fragment>
+        message={snackbarMessage}
+      />
+    </React.Fragment>
+  );
 }
 
 function ProBowlPage() {
-  return <RequireLeague><ProBowlPageBase/></RequireLeague>;
+  return (
+    <RequireLeague>
+      <ProBowlPageBase />
+    </RequireLeague>
+  );
 }
 
 TeamSelectionGrid.propTypes = {
   selectedTeams: PropTypes.array.isRequired,
   selectCallback: PropTypes.func.isRequired,
   errorCallback: PropTypes.func.isRequired,
-}
+};
 
-function TeamSelectionGrid({ selectedTeams = [], selectCallback, errorCallback }) {
-  const styles = useStyles();
-
+function TeamSelectionGrid({
+  selectedTeams = [],
+  selectCallback,
+  errorCallback,
+}) {
   function updateSelection(team) {
     if (selectedTeams.includes(team)) {
       // Deselect the team.
-      selectCallback(selectedTeams.filter(t => t !== team));
+      selectCallback(selectedTeams.filter((t) => t !== team));
     } else {
       if (selectedTeams.length >= MAX_SELECTED_TEAMS) {
         errorCallback(`You can select at most ${MAX_SELECTED_TEAMS} teams.`);
@@ -123,7 +120,7 @@ function TeamSelectionGrid({ selectedTeams = [], selectCallback, errorCallback }
   return (
     <div className={styles.gridContainer}>
       {FOOTBALL.ALL_TEAMS.map(team =>
-        <div className={classNames(styles.team, selectedTeams.includes(team) ? styles.teamSelected : "")}
+        <div className={styles.team + ' ' +  (selectedTeams.includes(team) ? styles.teamSelected : "")}
             key={team}
             onClick={() => updateSelection(team)}>
           <TeamIcon team={team} width={TEAM_ICON_WIDTH} />
@@ -140,14 +137,14 @@ ErrorSnackbar.propTypes = {
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   message: PropTypes.string.isRequired,
-}
+};
 
 function ErrorSnackbar({ open, onClose, message }) {
   return (
     <Snackbar
       anchorOrigin={{
-        vertical: 'bottom',
-        horizontal: 'left',
+        vertical: "bottom",
+        horizontal: "left",
       }}
       message={message}
       open={open}

@@ -1,0 +1,11 @@
+.outer {
+  align-items: center;
+  display: flex;
+  margin-left: 5px;
+  min-width: 50px;
+}
+.cell {
+  font-size: 14px;
+  min-width: 35px;
+  text-align: right;
+}

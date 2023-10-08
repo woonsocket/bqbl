@@ -1,15 +1,13 @@
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
-import { indigo } from '@mui/material/colors';
-import { makeStyles } from '@mui/styles';
-import classNames from 'classnames/bind';
 import PropTypes from 'prop-types';
 import React, { useContext, useEffect, useState } from 'react';
 import { joinProBowlScores } from '../../../middle/response';
 import { useLeague, useWeek, useYear } from '../../AppState';
 import { FirebaseContext } from '../../Firebase';
 import PlayerScoreList from '../../reusable/PlayerScoreList/player-score-list';
+import styles from './ProBowlScorePage.module.css'
 
 // The league score is the sum of the top 3 player scores.
 const LEAGUE_SCORE_PLAYER_COUNT = 3;
@@ -18,21 +16,8 @@ const LEAGUE_SCORE_PLAYER_COUNT = 3;
 // database at this moment.
 const ALL_LEAGUES = ['abqbl', 'nbqbl'];
 
-const pageStyles = makeStyles({
-  leagueContainer: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    justifyContent: 'space-around',
-  },
-  leagueCard: {
-    margin: '12px',
-    maxWidth: '350px',
-  },
-});
 
 function ProBowlScoresPage() {
-  const classes = pageStyles();
-
   const [nflScores, setNflScores] = useState({});
   let league = useLeague();
   let year = useYear();
@@ -55,10 +40,11 @@ function ProBowlScoresPage() {
     return a.localeCompare(b);
   });
 
+  // console.log(nflScores);
   return (
-    <div className={classes.leagueContainer}>
+    <div className={styles.leagueContainer}>
       {leagues.map((league) => (
-        <div key={league} className={classes.leagueCard}>
+        <div key={league} className={styles.leagueCard}>
           <ProBowlScoresCard league={league} nflScores={nflScores}
             firebase={firebase} year={year} />
         </div>
@@ -74,27 +60,16 @@ ProBowlScoresCard.propTypes = {
   year: PropTypes.string.isRequired,
 };
 
-const cardStyles = makeStyles({
-  player: {
-    margin: 0,
-    padding: '4px',
-  },
-  inTheMoney: {
-    // This should probably reference some sort of app-wide Material UI theme.
-    background: indigo[100],
-  },
-});
-
 function ProBowlScoresCard(props) {
-  const classes = cardStyles();
-  const cx = classNames.bind(classes);
-
   let [leagueScore, setLeagueScore] = useState(0);
   let [playerScores, setPlayerScores] = useState([]);
   let year = useYear();
   let week = useWeek();
   let firebase = useContext(FirebaseContext);
+  console.log(props.nflScores);
   useEffect(() => {
+    if (!props.nflScores[week]) return;
+    console.log(props.nflScores);
     firebase.getProBowlStartsForLeagueThen(
       props.league, year, (starts) => {
       const playerScores =
@@ -110,10 +85,12 @@ function ProBowlScoresCard(props) {
   }, [firebase, props.league, props.nflScores, year]);
 
   function playerClass(index) {
-    const c = {};
-    c[classes.player] = true;
-    c[classes.inTheMoney] = index < LEAGUE_SCORE_PLAYER_COUNT;
-    return cx(c);
+
+    let s = styles.player;
+    if (index < LEAGUE_SCORE_PLAYER_COUNT) {
+      s +=  " " + styles.inTheMoney;
+    }
+    return s;
   }
 
   return (

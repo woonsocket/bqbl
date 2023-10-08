@@ -1,25 +1,25 @@
-import React from 'react';
+import React from "react";
 
-import './team-score-card.css';
+import styles from "./TeamScoreCard.module.css";
 
-import Button from '@mui/material/Button';
-import CardActions from '@mui/material/CardActions';
+import Button from "@mui/material/Button";
+import CardActions from "@mui/material/CardActions";
 
-import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import CardActionArea from '@mui/material/CardActionArea';
-import CardContent from '@mui/material/CardContent';
-import List from '@mui/material/List';
-import PropTypes from 'prop-types';
-import Typography from '@mui/material/Typography';
+import Box from "@mui/material/Box";
+import Card from "@mui/material/Card";
+import CardActionArea from "@mui/material/CardActionArea";
+import CardContent from "@mui/material/CardContent";
+import List from "@mui/material/List";
+import Typography from "@mui/material/Typography";
+import PropTypes from "prop-types";
 
-import { teamLogoImage } from '../../../constants/football';
-import ScoreValue from '../ScoreValue/score-value';
+import { teamLogoImage } from "../../../constants/football";
+import ScoreValue from "../ScoreValue/score-value";
 
 TeamScoreCard.propTypes = {
   score: PropTypes.object.isRequired,
   boxScoreLink: PropTypes.string.isRequired,
-}
+};
 
 function TeamScoreCard(props) {
   function makeUrl() {
@@ -27,16 +27,16 @@ function TeamScoreCard(props) {
   }
 
   return (
-    <Card className="team-score-card">
+    <Card className={styles.teamScoreCard}>
       <div>
         <div
           style={{
-            'backgroundImage': `url(${makeUrl()})`
+            backgroundImage: `url(${makeUrl()})`,
           }}
-          className="bg">
-        </div>
+          className={styles.bg}
+        ></div>
 
-        <Box className="header-text">
+        <Box className={styles.headerText}>
           <Typography variant="h5" component="h2">
             {props.score.teamName}
           </Typography>
@@ -48,25 +48,28 @@ function TeamScoreCard(props) {
       </div>
       <CardActionArea>
         <CardContent>
-          <List>{
-            breakdownToComponents(props.score.breakdown).map(
-              (line, index) => <LineItem line={line} key={"lineitem" + index} />
-            )
-          }
-            <div className="comp"><b>
-              <div className="comp-desc">Total</div>
-              <div className="comp-score">
-                <ScoreValue score={props.score.total} />
+          <List>
+            {breakdownToComponents(props.score.breakdown).map((line, index) => (
+              <LineItem line={line} key={"lineitem" + index} />
+            ))}
+            <div className={styles.comp}>
+              <b>
+                <div className={styles.compDesc}>Total</div>
+                <div className={styles.compScore}>
+                  <ScoreValue score={props.score.total} />
+                </div>
+              </b>
+            </div>
+            {props.score.total !== props.score.projection.total && (
+              <div className={styles.comp}>
+                <b>
+                  <div className={styles.compDesc}>Projection</div>
+                  <div className={styles.compScore}>
+                    <ScoreValue score={props.score.projection.total} />
+                  </div>
+                </b>
               </div>
-            </b></div>
-            {props.score.total !== props.score.projection.total &&
-            <div className="comp"><b>
-              <div className="comp-desc">Projection</div>
-              <div className="comp-score">
-                <ScoreValue score={props.score.projection.total} />
-              </div>
-            </b></div>
-            }
+            )}
           </List>
         </CardContent>
       </CardActionArea>
@@ -76,18 +79,18 @@ function TeamScoreCard(props) {
         </Button>
       </CardActions>
     </Card>
-  )
+  );
 }
 
 LineItem.propTypes = {
   line: PropTypes.object.isRequired,
-}
+};
 
 function LineItem(props) {
   return (
-    <div className="comp">
-      <div className="comp-desc">{props.line.desc}</div>
-      <div className="comp-score">
+    <div className={styles.comp}>
+      <div className={styles.compDesc}>{props.line.desc}</div>
+      <div className={styles.compScore}>
         <ScoreValue score={props.line.value} />
       </div>
     </div>
@@ -98,22 +101,33 @@ function breakdownToComponents(breakdown) {
   const components = [];
   // TODO(aerion): Individual turnover values aren't stored in the breakdown so
   // we have to recompute them here. Re-think this schema.
-  components.push(simpleMultiple(
-    25, breakdown.turnover.types.int6, 'INT returned for TD'));
-  components.push(simpleMultiple(
-    5, breakdown.turnover.types.int - breakdown.turnover.types.int6, 'INT'));
-  components.push(simpleMultiple(
-    25, breakdown.turnover.types.fum6, 'fumble lost for TD'));
-  components.push(simpleMultiple(
-    5, breakdown.turnover.types.fuml - breakdown.turnover.types.fum6,
-    'fumble lost'));
+  components.push(
+    simpleMultiple(25, breakdown.turnover.types.int6, "INT returned for TD")
+  );
+  components.push(
+    simpleMultiple(
+      5,
+      breakdown.turnover.types.int - breakdown.turnover.types.int6,
+      "INT"
+    )
+  );
+  components.push(
+    simpleMultiple(25, breakdown.turnover.types.fum6, "fumble lost for TD")
+  );
+  components.push(
+    simpleMultiple(
+      5,
+      breakdown.turnover.types.fuml - breakdown.turnover.types.fum6,
+      "fumble lost"
+    )
+  );
   // An OT turnover-6 is worth 50 points total: 25 for the turnover itself, plus
   // 25 bonus points for being in OT. (But again, ideally this code wouldn't
   // have to make that distinction.)
-  components.push(simpleMultiple(
-    25, breakdown.turnover.types.ot6, 'turnover-TD in OT'));
-  components.push(simpleMultiple(
-    2, breakdown.fumbleKept.count, 'fumble kept'));
+  components.push(
+    simpleMultiple(25, breakdown.turnover.types.ot6, "turnover-TD in OT")
+  );
+  components.push(simpleMultiple(2, breakdown.fumbleKept.count, "fumble kept"));
   components.push({
     desc: `${breakdown.turnover.count}-turnover bonus`,
     value: breakdown.turnover.bonusValue,
@@ -125,24 +139,25 @@ function breakdownToComponents(breakdown) {
   });
 
   components.push({
-    desc: rangeString(breakdown.passingYardage.range) + ' passing yards',
+    desc: rangeString(breakdown.passingYardage.range) + " passing yards",
     value: breakdown.passingYardage.value,
   });
   components.push({
-    desc: rangeString(breakdown.completion.range) + '% completion rate',
+    desc: rangeString(breakdown.completion.range) + "% completion rate",
     value: breakdown.completion.value,
   });
   components.push({
-    desc: 'longest pass ' + rangeString(breakdown.longPass.range) + ' yards',
+    desc: "longest pass " + rangeString(breakdown.longPass.range) + " yards",
     value: breakdown.longPass.value,
   });
   components.push({
-    desc: rangeString(breakdown.rushingYardage.range) + ' rushing yards',
+    desc: rangeString(breakdown.rushingYardage.range) + " rushing yards",
     value: breakdown.rushingYardage.value,
   });
 
   components.push({
-    desc: breakdown.sack.count === 1 ? '1 sack' : `${breakdown.sack.count} sacks`,
+    desc:
+      breakdown.sack.count === 1 ? "1 sack" : `${breakdown.sack.count} sacks`,
     value: breakdown.sack.value,
   });
 
@@ -171,7 +186,7 @@ function breakdownToComponents(breakdown) {
     });
   }
 
-  return components.filter(c => c.value !== 0);
+  return components.filter((c) => c.value !== 0);
 }
 
 /**
@@ -185,7 +200,7 @@ function breakdownToComponents(breakdown) {
 function simpleMultiple(pointsPer, quantity, description) {
   quantity = quantity || 0;
   if (quantity !== 1) {
-    description = quantity + 'x ' + description;
+    description = quantity + "x " + description;
   }
   return { desc: description, value: quantity * pointsPer };
 }
@@ -221,7 +236,7 @@ function describeYardLine(yardLine) {
 
 function lineScore(breakdown) {
   if (!breakdown) {
-    return 'No stats yet';
+    return "No stats yet";
   }
 
   const cmp = breakdown.completion.completions;
@@ -236,10 +251,10 @@ function lineScore(breakdown) {
 
 function boxScoreLinkText(score) {
   if (score.gameInfo && score.gameInfo.aName) {
-    const {aName, aScore, hName, hScore} = score.gameInfo;
+    const { aName, aScore, hName, hScore } = score.gameInfo;
     return `${aName} ${aScore} @ ${hName} ${hScore}`;
   }
-  return 'Box Score Link';
+  return "Box Score Link";
 }
 
 export default TeamScoreCard;

@@ -3,8 +3,7 @@ import * as R from "ramda";
 import * as TEMPLATES from "../middle/templates";
 import * as FOOTBALL from "../constants/football";
 
-const getYear = (state) => state.year.value;
-const getWeek = (state) => state.week;
+const getYear = (state) => state.year;
 const getLeague = (state) => state.league;
 const getScores = (state) => state.scores;
 const getScores247 = (state) => state.scores247;
@@ -17,12 +16,12 @@ const getScores247 = (state) => state.scores247;
 }}
 */
 
+// TODO: pro bowl scores
+
 // TODO: memoize this
 export const joinScoresToStarts = createSelector(
-  [getYear, getWeek, getLeague, getScores, getScores247],
-  (year, week, league, scores, scores247) => {
-    // TODO
-    year = "2022";
+  [getYear, getLeague, getScores, getScores247],
+  (year, league, scores, scores247) => {
     // Perform the join logic here, combining posts with authors
     const plays = R.path(["plays", year], league.spec);
     const users = R.path(["users", year], league.spec);
@@ -62,7 +61,6 @@ export function processYearScores(
       const scores = startedTeams.map(
         scoreForTeam.bind(null, dbScores, weekId)
       ) || [0, 0];
-      console.log(scores);
       start_rows[weekId] = {
         team_1: { team_name: startedTeams[0], score: Number(scores[0]) },
         team_2: { team_name: startedTeams[1], score: Number(scores[1]) },
@@ -99,8 +97,6 @@ function scoreForTeam(dbScores, week, team) {
 
 function getStartedTeams(dbStarts, uid, week) {
   if (!dbStarts[uid][week]) {
-    // console.log(uid, week)
-    // console.log(dbStarts[uid])
     return ["none", "none"];
   }
   let starts = dbStarts[uid][week].teams

@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import { withFirebase } from '../../Firebase';
 
 import { compose } from 'react-recompose';
-import { withRouter } from 'react-router-dom';
 import Button from '@mui/material/Button';
 
 class SignOutBase extends Component {
@@ -34,7 +33,6 @@ class SignOutBase extends Component {
 }
 
 const SignOut = compose(
-  withRouter,
   withFirebase,
 )(SignOutBase);
 

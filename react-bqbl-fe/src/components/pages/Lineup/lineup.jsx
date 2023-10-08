@@ -5,7 +5,6 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import { Lock } from '@mui/icons-material';
-import { makeStyles } from '@mui/styles';
 import PropTypes from 'prop-types';
 import React, { useContext, useEffect, useState } from 'react';
 import * as FOOTBALL from '../../../constants/football';
@@ -16,21 +15,8 @@ import RequireLeague from '../../reusable/RequireLeague';
 import { useUser } from '../../Firebase/firebase';
 import { hasDh } from '../../../redux/util';
 import { useSelector } from "react-redux";
-import { joinScoresToStarts } from '../../../redux/join';
 
-const useStyles = makeStyles({
-  team: {
-    display: 'inline-block',
-  },
-  id: {
-    display: 'inline-block',
-    minWidth: '4em',
-    fontWeight: 'bold',
-  },
-  lineupWeek: {maxWidth: '20px'},
-  selected: {background: 'lightblue'},
-
-})
+import styles from './Lineup.module.css';
 
 function LineupPage() {
   return <RequireLeague><Lineup/></RequireLeague>
@@ -50,8 +36,6 @@ function Lineup(props) {
   let dh = hasDh(leagueSpec, year);
   let uid = uidOverride || user && user.uid || null;
   let weeks = (uid && leagueSpec.plays && leagueSpec.plays[year][uid]) || [];
-  const joined = useSelector(joinScoresToStarts);
-  console.log({joined})
   useEffect(() => {
     return firebase.getLockedWeeksThen(Date.now(), setLockedWeeks);
   }, [firebase]);
@@ -79,7 +63,6 @@ LineupWeek.propTypes = {
 
 function LineupWeek(props) {
   const firebase = useContext(FirebaseContext);
-  const classes = useStyles();
 
   let [week, setWeek] = useState(props.week);
 
@@ -126,14 +109,14 @@ function LineupWeek(props) {
 
   return (
     <TableRow key={week.id}>
-      <TableCell scope="row" className={classes.lineupWeek}>
+      <TableCell scope="row" className={styles.lineupWeek}>
         {week.id}
         {props.locked && <Lock titleAccess="week is locked" fontSize="small" />}
       </TableCell>
 
       {week.teams.slice(0, 4).map((team, idx) =>
         <TableCell align="center" key={'' + week.id + idx}
-          className={team.selected ? "team " + classes.selected : "team"}
+          className={team.selected ? `${styles.team} ${styles.selected}` : styles.team}
           onClick={clickCallback.bind(null, idx)}>
           {team.name}<br />
           {SCHEDULE.getOpponent(team.name, props.year, week.id)}

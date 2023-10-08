@@ -1,0 +1,9 @@
+.weekSelect {
+  background: white;
+  padding-right: 30px;
+  padding-left: 10px;
+  margin-right: 5px;
+}
+.title {
+  flex-grow: 1;
+}

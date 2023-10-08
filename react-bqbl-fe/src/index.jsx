@@ -1,6 +1,5 @@
-import { StyledEngineProvider, ThemeProvider, createTheme } from '@mui/material/styles';
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import App from './components/App';
@@ -8,21 +7,17 @@ import { AppStateContextProvider } from './components/AppState';
 import Firebase, { FirebaseContext } from './components/Firebase';
 import './index.css';
 import store from './redux/store';
-const theme = createTheme();
 
-ReactDOM.render(
+const container = document.getElementById('root');
+
+createRoot(container).render(
   <FirebaseContext.Provider value={new Firebase()}>
     <Router>
       <Provider store={store}>
         <AppStateContextProvider>
-          <StyledEngineProvider injectFirst>
-            <ThemeProvider theme={theme}>
-              <App />
-            </ThemeProvider>
-          </StyledEngineProvider>
+          <App />
         </AppStateContextProvider>
       </Provider>
     </Router>
-  </FirebaseContext.Provider>,
-  document.getElementById('root'),
-);
+  </FirebaseContext.Provider>
+  );

@@ -1,0 +1,24 @@
+.gridContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.team {
+  padding: 1em;
+  min-width: 80px;
+  text-align: center;
+}
+.cell {
+  text-align: center;
+}
+.teamSelected {
+  background-color: lightblue;
+}
+
+.player {
+  margin: 0;
+  padding: 4px;
+}
+.inTheMoney {
+  background-color: indigo;
+}

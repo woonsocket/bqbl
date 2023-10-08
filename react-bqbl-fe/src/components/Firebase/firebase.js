@@ -225,7 +225,6 @@ class Firebase {
             const dbStarts = startsSnap.val();
             const dbUsers = usersSnap.val();
             if (!dbScores || !dbScores247 || !dbStarts || !dbUsers) {
-              console.log(dbScores, dbScores247, dbStarts, dbUsers);
               throw new Error(
                 "Can't find one of scores, scores247, starts, users"
               );

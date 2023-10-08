@@ -1,0 +1,9 @@
+.leagueContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+.leagueCard {
+  margin: 12px;
+  max-width: 350px;
+}

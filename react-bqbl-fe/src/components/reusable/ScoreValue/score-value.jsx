@@ -1,4 +1,4 @@
-import { makeStyles } from '@mui/styles';
+import { css } from '@emotion/react';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -6,11 +6,10 @@ ScoreValue.propTypes = {
   score: PropTypes.number,
 };
 
-const useStyles = makeStyles({
-  negative: {
-    color: '#D32F2F',  // Material Red 700
-  },
-});
+const negativeClass = css`
+color: '#D32F2F',  // Material Red 700
+`;
+
 
 function toString(num) {
   if (num === undefined || num === null) {
@@ -21,9 +20,8 @@ function toString(num) {
 }
 
 function ScoreValue(props) {
-  const classes = useStyles();
   return (
-    <span className={props.score < 0 ? classes.negative : ''}>
+    <span css={props.score < 0 ? negativeClass : ''}>
       {toString(props.score)}
     </span>
   );

@@ -1,26 +1,21 @@
-import Button from '@mui/material/Button';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import TextField from '@mui/material/TextField';
-import PropTypes from 'prop-types';
-import React from 'react';
-import { withRouter } from 'react-router-dom';
-import { compose } from 'react-recompose';
-import * as FOOTBALL from '../../../constants/football';
-import { useWeek, useYear } from '../../AppState';
-import { withFirebase } from '../../Firebase';
-import IconAndName from '../../reusable/IconAndName/icon-and-name';
-
-
-
+import Button from "@mui/material/Button";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import TextField from "@mui/material/TextField";
+import PropTypes from "prop-types";
+import React from "react";
+import { compose } from "react-recompose";
+import * as FOOTBALL from "../../../constants/football";
+import { useWeek, useYear } from "../../AppState";
+import { withFirebase } from "../../Firebase";
+import IconAndName from "../../reusable/IconAndName/icon-and-name";
 
 function TwentyFourPageBase(props) {
-
   let [scores247, setScores247] = React.useState({});
   let year = useYear();
   let week = useWeek();
@@ -47,22 +42,19 @@ ScoreForm.propTypes = {
 
 function ScoreForm(props) {
   const [values, setValues] = React.useState({
-    desc: '',
+    desc: "",
     points: 0,
-    team: 'NYJ',
-    url: '',
-    week: props.week || '1',
+    team: "NYJ",
+    url: "",
+    week: props.week || "1",
   });
 
-  const handleChange = name => event => {
+  const handleChange = (name) => (event) => {
     // Coerce the numeric field to be a number. There's probably a better way to
     // deal with this.
-    const newValue = (name === 'points') ?
-        Number(event.target.value) :
-        event.target.value;
-    setValues({...values,
-      [name]: newValue,
-    });
+    const newValue =
+      name === "points" ? Number(event.target.value) : event.target.value;
+    setValues({ ...values, [name]: newValue });
   };
 
   const onClick = () => {
@@ -75,36 +67,56 @@ function ScoreForm(props) {
         label="Desc"
         margin="normal"
         value={values.desc}
-        onChange={handleChange('desc')}
-        variant="outlined" /><br />
+        onChange={handleChange("desc")}
+        variant="outlined"
+      />
+      <br />
       <TextField
         label="Points"
         margin="normal"
         type="number"
         value={values.points}
-        onChange={handleChange('points')}
-        variant="outlined" /><br />
-      <div> Team: <Select
-        label="Team"
-        value={values.team}
-        onChange={handleChange('team')}
-      >
-        {FOOTBALL.ALL_TEAMS.map(team =>
-          <MenuItem value={team} key={team}>{team}</MenuItem>)}
-      </Select></div>
+        onChange={handleChange("points")}
+        variant="outlined"
+      />
+      <br />
+      <div>
+        {" "}
+        Team:{" "}
+        <Select
+          label="Team"
+          value={values.team}
+          onChange={handleChange("team")}
+        >
+          {FOOTBALL.ALL_TEAMS.map((team) => (
+            <MenuItem value={team} key={team}>
+              {team}
+            </MenuItem>
+          ))}
+        </Select>
+      </div>
       <TextField
         label="Url"
         margin="normal"
         value={values.url}
-        onChange={handleChange('url')}
-        variant="outlined" /><br />
+        onChange={handleChange("url")}
+        variant="outlined"
+      />
+      <br />
       <TextField
         label="Week"
         margin="normal"
         value={values.week}
-        onChange={handleChange('week')}
-        variant="outlined" /><br />
-      <Button value="Submit" color="primary" variant="contained" onClick={onClick}>
+        onChange={handleChange("week")}
+        variant="outlined"
+      />
+      <br />
+      <Button
+        value="Submit"
+        color="primary"
+        variant="contained"
+        onClick={onClick}
+      >
         Add
       </Button>
     </>
@@ -150,9 +162,6 @@ function ScoreTable(props) {
   );
 }
 
-const TwentyFourPage = compose(
-  withRouter,
-  withFirebase,
-)(TwentyFourPageBase);
+const TwentyFourPage = compose(withFirebase)(TwentyFourPageBase);
 
 export default TwentyFourPage;

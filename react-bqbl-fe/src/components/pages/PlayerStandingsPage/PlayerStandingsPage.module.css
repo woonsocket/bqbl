@@ -1,12 +1,12 @@
-.player-card {
+.playerCard {
   margin: 10px;
   max-width: 300px;
   min-height: 100px;
   position: relative;
-  margin-right:auto;
-  margin-left:auto;
+  margin-right: auto;
+  margin-left: auto;
 }
 
 .expanded {
-  transform: rotate(180deg); 
+  transform: rotate(180deg);
 }

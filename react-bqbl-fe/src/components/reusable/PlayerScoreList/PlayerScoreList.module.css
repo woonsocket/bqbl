@@ -1,0 +1,27 @@
+.scoreRow {
+  display: flex;
+  margin: 4px 0px;
+}
+.labelCell {
+  min-width: 70px;
+  font-size: 1rem;
+  text-align: left;
+  font-family: "Roboto" "Helvetica" "Arial" sans-serif;
+  font-weight: 400;
+  vertical-align: top;
+}
+.scoreCells {
+  display: flex;
+  flex-direction: column;
+}
+.teamScoreCells {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+.scoreCell {
+  min-width: 50px;
+}
+.totalLabel {
+  font-weight: bold;
+}

@@ -3,10 +3,11 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import React, { useContext, useEffect, useState } from 'react';
-import { joinScores } from '../../../middle/response';
-import { useLeague, useWeek, useYear } from '../../AppState';
-import { FirebaseContext } from '../../Firebase';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from "react-redux";
+import * as TEMPLATES from "../../../middle/templates";
+import { joinScoresToStarts } from "../../../redux/join";
+import { useWeek } from '../../AppState';
 import IconScoreCell from '../../reusable/IconScoreCell/icon-score-cell';
 import RequireLeague from '../../reusable/RequireLeague';
 
@@ -17,18 +18,21 @@ function PlayerScorePage() {
 
 function PlayerScore(props) {
   let [playerList, setPlayerList] = useState([]);
-  const firebase = useContext(FirebaseContext);
   const week = useWeek();
-  const year = useYear();
-  const league = useLeague();
+  const joined = useSelector(joinScoresToStarts);
 
   useEffect(() => {
-    return firebase.getScoresStartsUsersThen(league, year,
-      ({ dbScores, dbStarts, dbUsers }) => {
-        setPlayerList(joinScores(dbScores, dbStarts, dbUsers, week));
-      });
-  }, [firebase, league, year, week]);
+    setPlayerList(extractWeek(joined, week));
+  }, [joined, week]);
 
+  function extractWeek(joined, week) {
+    const playerList = [];
+    for (let [_, playerVal] of Object.entries(joined)) {
+      playerList.push(TEMPLATES.StartRow(playerVal.name, playerVal.start_rows[week].team_1, playerVal.start_rows[week].team_2));
+    }
+    return playerList;
+  }
+  
   return (
     <Table>
       <TableHead>

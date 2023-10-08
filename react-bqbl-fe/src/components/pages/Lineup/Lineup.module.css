@@ -1,0 +1,14 @@
+.team {
+  display: inline-block;
+}
+.id {
+  display: inline-block;
+  min-width: 4em;
+  font-weight: bold;
+}
+.lineupWeek {
+  max-width: 20px;
+}
+.selected {
+  background-color: lightblue;
+}

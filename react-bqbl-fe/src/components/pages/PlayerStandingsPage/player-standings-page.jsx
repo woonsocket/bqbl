@@ -9,15 +9,15 @@ import IconButton from "@mui/material/IconButton";
 import Switch from "@mui/material/Switch";
 import classNames from "classnames/bind";
 import PropTypes from "prop-types";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { seasonWeeksReverse } from "../../../constants/football";
-import { processYearScores } from "../../../middle/response";
-import { useLeague, useYear } from "../../AppState";
-import { FirebaseContext } from "../../Firebase";
+import { joinScoresToStarts } from "../../../redux/join";
+import { useYear } from "../../AppState";
 import IconScoreCell from "../../reusable/IconScoreCell/icon-score-cell";
 import PlayerScoreList from "../../reusable/PlayerScoreList/player-score-list";
 import RequireLeague from "../../reusable/RequireLeague";
-import "./player-standings-page.css";
+import styles from "./PlayerStandingsPage.module.css";
 
 const FOLD = 4;
 
@@ -32,42 +32,19 @@ function PlayerStandingsPage() {
 function PlayerStandings(props) {
   let [playerTable, setPlayerTable] = useState([]);
   let [sortScores, setSortScores] = useState(true);
-  const firebase = useContext(FirebaseContext);
   let year = useYear();
-  let league = useLeague();
+  const joined = useSelector(joinScoresToStarts);
 
   function sortClickedCallback() {
     setSortScores(!sortScores);
   }
-
+ 
   useEffect(() => {
-    if (!league) {
-      return;
-    }
-    return firebase.getScoresStartsUsersThen(
-      league,
-      year,
-      ({ dbScores, dbScores247, dbStarts, dbUsers }) => {
-        let val = processYearScores(
-          dbScores,
-          dbScores247,
-          dbStarts,
-          dbUsers,
-          seasonWeeksReverse(year)
-        );
-        let playerList = Object.keys(val).map((key) => ({
-          ...val[key],
-          uid: key,
-        }));
-        if (sortScores) {
-          playerList = playerList.sort(
-            (team, team2) => team2.total - team.total
-          );
-        }
-        setPlayerTable(playerList);
-      }
-    );
-  }, [firebase, league, year, sortScores]);
+    let newJoined = sortScores
+      ? Object.values(joined).sort((team, team2) => team2.total - team.total)
+      : joined;
+    setPlayerTable(newJoined);
+  }, [joined]);
 
   return (
     <React.Fragment>
@@ -127,7 +104,7 @@ function PlayerYearCard(props) {
   }
 
   return (
-    <Card className="player-card" data-testid="player-card">
+    <Card className={styles.playerCard} data-testid="player-card">
       <CardHeader
         avatar={<Avatar aria-label="">{props.player.name[0]}</Avatar>}
         title={props.player.name}
@@ -143,7 +120,7 @@ function PlayerYearCard(props) {
       <CardActions disableSpacing>
         {weeks.length > FOLD && (
           <IconButton
-            className={classNames({ expanded: expanded })}
+            className={classNames({ expanded: styles.expanded })}
             onClick={handleExpandClick}
             aria-expanded={expanded}
             aria-label="Show more"

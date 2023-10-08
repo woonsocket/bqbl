@@ -3,7 +3,6 @@ import { configureStore, createSlice } from '@reduxjs/toolkit'
 const leagueFetchMiddleware = storeAPI => next => action => {
   if (action.firebase && action.type === 'league/set' && action.leagueId) {
     action.firebase.getLeagueSpecThen(action.leagueId, resp => {
-      console.log({resp});
       storeAPI.dispatch({ type: 'league/loaded', payload: resp })
     })
   }
@@ -14,7 +13,6 @@ const leagueFetchMiddleware = storeAPI => next => action => {
 const scoresMiddleware = storeAPI => next => action => {
   if (action.firebase && action.type === 'scores/load') {
     action.firebase.getScoresYearThen(action.year, resp => {
-      console.log({resp});
       storeAPI.dispatch({ type: 'scores/loaded', payload: resp.dbScores })
     })
   }
@@ -26,7 +24,6 @@ const scoresMiddleware = storeAPI => next => action => {
 const scores247Middleware = storeAPI => next => action => {
   if (action.firebase && action.type === 'scores247/load') {
     action.firebase.getScoresYearThen(action.year, resp => {
-      console.log({resp});
       storeAPI.dispatch({ type: 'scores247/loaded', payload: resp.dbScores247 })
     })
   }
@@ -77,7 +74,9 @@ export const yearSlice = createSlice({
   name: 'year',
   initialState: '2023',
   reducers: {
-    set: (state, action) => action.payload,
+    set:(state, action) => {
+      state = action.year
+    },
   }
 })
 

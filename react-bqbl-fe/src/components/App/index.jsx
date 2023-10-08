@@ -8,9 +8,8 @@ import Input from '@mui/material/Input';
 import NativeSelect from '@mui/material/NativeSelect';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { makeStyles } from '@mui/styles';
 import React, { useContext, useEffect } from 'react';
-import { Route } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import { WEEK_IDS } from '../../constants/football';
 import { useLeague, useWeek, useYear } from '../AppState';
 import { FirebaseContext } from '../Firebase';
@@ -29,24 +28,14 @@ import TeamStandingsPage from '../pages/TeamStandingsPage/team-standings-page';
 import TwentyFourPage from '../pages/TwentyFourPage/twentyfour-page';
 import Navigation, { LINKS } from '../reusable/Navigation/navigation';
 import SignInToggle from '../reusable/SignIn/sign-in-toggle';
+import styles from './App.module.css'
 
 import store from '../../redux/store';
 
 const WEEK_SELECTOR_PATHS = [LINKS.PLAYER_SCORES.path, LINKS.TEAM_SCORES.path, LINKS.BENCHING.path];
 const YEAR_SELECTOR_PATHS = [LINKS.PLAYER_SCORES.path, LINKS.TEAM_SCORES.path, LINKS.PLAYER_STANDINGS.path, LINKS.TEAM_STANDINGS.path, LINKS.DRAFT.path];
 
-const useStyles = makeStyles({
-  weekSelect: {
-    background: 'white',
-    paddingRight: '30px',
-    paddingLeft: '10px',
-    marginRight: '5px',
-  },
-  title: { flexGrow: 1 }
-});
-
 function App() {
-  const classes = useStyles();
 
   let year = useYear()
   let week = useWeek()
@@ -58,7 +47,7 @@ function App() {
   const yearSelector = YEAR_SELECTOR_PATHS.indexOf(window.location.pathname) !== -1;
 
   useEffect(() => {
-    console.log('foo')
+//    store.dispatch({type: 'year/set', year: year, firebase: firebase})
     store.dispatch({type: 'league/set', leagueId: league, firebase: firebase})
     store.dispatch({type: 'scores/load', leagueId: league, year: year, firebase: firebase})
     store.dispatch({type: 'scores247/load', leagueId: league, year: year, firebase: firebase})
@@ -85,12 +74,12 @@ function App() {
             size="large">
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" className={classes.title}>
+          <Typography variant="h6" className={styles.title}>
             BQBL
           </Typography>
           {yearSelector &&
             <NativeSelect
-              value={year} className={classes.weekSelect}
+              value={year} className={styles.weekSelect}
               onChange={event => {
                 let usp = new URLSearchParams(window.location.search);
                 usp.set("year", event.target.value)
@@ -106,7 +95,7 @@ function App() {
 
           {weekSelector &&
             <NativeSelect
-              value={week} className={classes.weekSelect}
+              value={week} className={styles.weekSelect}
               onChange={event => {
                 let usp = new URLSearchParams(window.location.search);
                 usp.set("week", event.target.value)
@@ -120,9 +109,9 @@ function App() {
           <SignInToggle />
         </Toolbar>
 
-        <Drawer className="drawer" anchor="left"
+        <Drawer className={styles.drawer} anchor="left"
           open={drawerOpen}>
-          <div className="drawerHeader">
+          <div className={styles.drawerHeader}>
             <IconButton onClick={handleDrawerClose} size="large">
               <ChevronLeftIcon />
             </IconButton>
@@ -131,22 +120,22 @@ function App() {
           <Navigation close={handleDrawerClose} />
         </Drawer>
       </AppBar>
-      <div>
-        <Route exact path="/" component={HomePage} />
-        <Route path={LINKS.HOME.path} component={HomePage} />
-        <Route path={LINKS.LINEUP.path} component={LineupPage} />
-        <Route path={LINKS.PROBOWL.path} component={ProBowlPage} />
-        <Route path={LINKS.PROBOWL_SCORES.path} component={ProBowlScorePage} />
-        <Route path={LINKS.PLAYER_SCORES.path} component={PlayerScorePage} />
-        <Route path={LINKS.PLAYER_STANDINGS.path} component={PlayerStandingsPage} />
-        <Route path={LINKS.TEAM_SCORES.path}><TeamScorePage /></Route>
-        <Route path={LINKS.TEAM_STANDINGS.path} component={TeamStandingsPage} />
-        <Route path={LINKS.BENCHING.path} component={BenchingPage} />
-        <Route path={LINKS.TWENTYFOUR.path} component={TwentyFourPage} />
-        <Route path={LINKS.FUMBLESIX.path} component={FumbleSixPage} />
-        <Route path="/safety" component={SafetyPage} />
-        <Route path={LINKS.STARTS_ADMIN.path} component={StartsAdminPage} />
-      </div>
+      <Routes>
+        <Route exact path="/" element={<HomePage/>} />
+        <Route path={LINKS.HOME.path} element={<HomePage/>} />
+        <Route path={LINKS.LINEUP.path} element={<LineupPage/>} />
+        <Route path={LINKS.PROBOWL.path} element={<ProBowlPage/>} />
+        <Route path={LINKS.PROBOWL_SCORES.path} element={<ProBowlScorePage/>} />
+        <Route path={LINKS.PLAYER_SCORES.path} element={<PlayerScorePage/>} />
+        <Route path={LINKS.PLAYER_STANDINGS.path} element={<PlayerStandingsPage/>} />
+        <Route path={LINKS.TEAM_SCORES.path} element={<TeamScorePage/>} />
+        <Route path={LINKS.TEAM_STANDINGS.path} element={<TeamStandingsPage/>} />
+        <Route path={LINKS.BENCHING.path} element={<BenchingPage/>} />
+        <Route path={LINKS.TWENTYFOUR.path} element={<TwentyFourPage/>} />
+        <Route path={LINKS.FUMBLESIX.path} element={<FumbleSixPage/>} />
+        <Route path="/safety" element={<SafetyPage/>} />
+        <Route path={LINKS.STARTS_ADMIN.path} element={<StartsAdminPage/>} />
+      </Routes>
     </div>
   );
 }
