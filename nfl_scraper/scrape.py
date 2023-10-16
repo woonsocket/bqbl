@@ -313,33 +313,32 @@ class Plays(object):
                     else:
                         outcomes_by_player[team][pid][k] += v
                         self.outcomes_by_team[team][k] += v
-            # Compute best field position from drive-wide stats. Field position
-            # is recorded as the number of yards from the team's own goal line.
-            # We ignore field position on drives where the team never gained a
-            # first down (or received one via penalty) so that offenses aren't
-            # rewarded for going 3-and-out after their defense gives them good
-            # position.
-            # drive_team = drive['posteam']
-            # if drive['fds'] > 0 and drive_team:
-            #     old = self.outcomes_by_team[drive_team]['FIELDPOS']
-            #     new = 0
-            #     if drive['result'] == 'Touchdown':
-            #         new = 100
-            #     else:
-            #         for _, play in drive['plays'].items():
-            #             team = play['posteam']
-            #             if drive_team != team:
-            #                 continue
-            #             if not play['down']:
-            #                 # Exclude tries (extra points) and free kicks.
-            #                 continue
-            #             yard_line = parse_yard_line(play['yrdln'], team)
-            #             if yard_line:
-            #                 new = max(new, yard_line)
-            #     self.outcomes_by_team[drive_team]['FIELDPOS'] = max(old, new)
 
-        self.outcomes_by_team[home_abbr]['FIELDPOS'] = 100
-        self.outcomes_by_team[away_abbr]['FIELDPOS'] = 100
+        # Check the ending yard line of each offensive drive to determine the
+        # team's best field position. Field position is recorded as the
+        # number of yards from the team's own goal line. We ignore field
+        # position on drives where the team never gained a first down
+        # (or received one via penalty) so that offenses aren't rewarded for
+        # going 3-and-out after their defense gives them good position.
+        #
+        # We could go farther, and actually inspect the play-by-play data for
+        # each play in the drive, to find cases where a team ran a play in
+        # the red zone, but lost yardage because of a sack or penalty and
+        # ended outside the red zone. But drive end position is a lot easier,
+        # and it's close enough for our purposes, at least for now.
+        for drive in data.get('drives', []):
+            drive_team = drive['possessionTeam']['abbreviation']
+            if drive['firstDowns'] > 0 and drive_team:
+                old = self.outcomes_by_team[drive_team]['FIELDPOS']
+                new = 0
+                if drive.get('endTransition', '').upper() == 'TOUCHDOWN':
+                    new = 100
+                else:
+                    drive_end = parse_yard_line(drive.get('endYardLine', ''), drive_team)
+                    if drive_end:
+                        new = drive_end
+                self.outcomes_by_team[drive_team]['FIELDPOS'] = max(old, new)
+
         self.outcomes_by_team[home_abbr]['passers'] = (
             outcomes_by_player[home_abbr])
         self.outcomes_by_team[away_abbr]['passers'] = (
