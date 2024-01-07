@@ -331,7 +331,7 @@ class Plays(object):
             if drive['firstDowns'] > 0 and drive_team:
                 old = self.outcomes_by_team[drive_team]['FIELDPOS']
                 new = 0
-                if drive.get('endTransition', '').upper() == 'TOUCHDOWN':
+                if drive.get('endTransition') and drive.get('endTransition', '').upper() == 'TOUCHDOWN':
                     new = 100
                 else:
                     drive_end = parse_yard_line(drive.get('endYardLine', ''), drive_team)
