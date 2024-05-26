@@ -33,8 +33,8 @@ parser.add_option("-w", "--week", dest="week",
                   help="Week")
 parser.add_option("-y", "--year", dest="year",
                   help="Year")
-parser.add_option("-d", "--dump", dest="dump", action="store_true",
-                  help="Dump data?")
+parser.add_option("-p", "--post", dest="post",
+                  help="Postseason?")
 parser.add_option("--all", dest="all", action="store_true",
                   help="Scrape all games, not just those that are 'due'")
 parser.add_option("--firebase_creds", dest="firebase_cred_file",
@@ -86,31 +86,26 @@ def parse_yard_line(yard_line_str, offense_abbr):
     return line_num if team == offense_abbr else 100 - line_num
 
 
-def parse_box(box, is_qb):
+def parse_box(qbs):
     # {player_id: {stat_name: value}}
     outcomes = collections.defaultdict(lambda: collections.defaultdict(int))
-    for pid, passer in box.get('passing', {}).items():
-        if not is_qb(pid):
-            continue
-        outcomes[pid]['ATT'] += passer.get('att', 0)
-        outcomes[pid]['CMP'] += passer.get('cmp', 0)
-        outcomes[pid]['PASSYD'] += passer.get('yds', 0)
-        outcomes[pid]['TD'] += passer.get('tds', 0)
+    for pid, passer in qbs.items():
+        passerStats = passer['gameStats']
+        outcomes[pid]['ATT'] += passerStats.get('passingAttempts', 0)
+        outcomes[pid]['CMP'] += passerStats.get('passingCompletions', 0)
+        outcomes[pid]['PASSYD'] += passerStats.get('passingYards', 0)
+        outcomes[pid]['TD'] += passerStats.get('passingTouchdowns', 0)
         # We need to know the number of passing TDs in order to compute the
         # passer rating.
-        outcomes[pid]['PASSTD'] += passer.get('tds', 0)
-        # Interceptions are present here, but we'll read those from the
-        # play-by-play instead, because we can tell if it was a pick-6.
-    for pid, rusher in box.get('rushing', {}).items():
-        if not is_qb(pid):
-            continue
-        outcomes[pid]['RUSHYD'] += rusher.get('yds', 0)
-        outcomes[pid]['TD'] += rusher.get('tds', 0)
-    for pid, receiver in box.get('receiving', {}).items():
-        if not is_qb(pid):
-            continue
-        # This is a *receiving* TD for the QB. It's been known to happen!
-        outcomes[pid]['TD'] += receiver.get('tds', 0)
+        outcomes[pid]['PASSTD'] += passerStats.get('passingTouchdowns', 0)
+        # outcomes[pid]['INT'] += passerStats.get('passingInterceptions', 0)
+        # outcomes[pid]['FUM'] += passerStats.get('fumblesLost', 0)
+        # outcomes[pid]['FUML'] += passerStats.get('fumblesTotal', 0)
+        outcomes[pid]['RUSHYD'] += passerStats.get('rushingYards', 0)
+        outcomes[pid]['TD'] += passerStats.get('rushingTouchdowns', 0)
+
+        # The Philly special
+        outcomes[pid]['TD'] += passerStats.get('receivingTouchdowns', 0)
     return outcomes
 
 
@@ -131,18 +126,18 @@ def parse_play(game_id, play_id, play, is_qb, events):
         is_qb: Predicate that returns whether a player ID is a QB.
         events: An Events object in which to record turnovers.
     """
-    offense_team = play['posteam']
+    offense_team = play['possessionTeam']['abbreviation']
     # {player_id: [plays]}
     qb_stats = collections.defaultdict(list)
     def_stats = []
     # {player_id: {stat_name: value}}
     outcomes = collections.defaultdict(lambda: collections.defaultdict(int))
-    for pid, player_stats in play['players'].items():
-        for stat in player_stats:
-            if stat['clubcode'] == offense_team and is_qb(pid):
-                qb_stats[pid].append(stat)
-            else:
-                def_stats.append(stat)
+    for stat in play['playStats']:
+        pid = stat['gsisPlayer']['id']
+        if stat['team']['abbreviation'] == offense_team and is_qb(pid):
+            qb_stats[pid].append(stat)
+        else:
+            def_stats.append(stat)
 
     # http://www.nflgsis.com/gsis/documentation/Partners/StatIDs.html
     for pid, stats in qb_stats.items():
@@ -152,8 +147,6 @@ def parse_play(game_id, play_id, play, is_qb, events):
         for stat in stats:
             sid = stat.get('statId')
             player = stat.get('playerName')
-            team = stat.get('clubcode')
-            desc = play['desc']
 
             # The `stats` list represents all events that occurred on a single
             # play. We're assigning values to the outcomes dict instead of
@@ -176,7 +169,7 @@ def parse_play(game_id, play_id, play, is_qb, events):
                     filter(lambda s: s.get('statId') in (26, 28), def_stats))
                 if opp_td:
                     outcomes[pid]['INT6'] = 1
-                    if play['qtr'] > 4:
+                    if play['quarter'] > 4:
                         outcomes[pid]['INT6OT'] = 1
                 events.add_interception(game_id, play_id, player, play, opp_td)
             elif sid in (52, 53):
@@ -214,40 +207,57 @@ class Plays(object):
             lambda: collections.defaultdict(int))
         self.player_cache = player_cache
 
-    def process(self, season, week, game_id, data):
+    def __str__(self):
+        return str(self.events) + str(self.outcomes_by_team)
+
+    def filter_qbs(self, players, team_abbr):
+        return {p['gameStats']['playerId']: p for p in players if self.is_qb_for(p, team_abbr)}
+
+    def is_qb_for(self, player_info, team_abbr):
+        if not player_info or not player_info['player'] or not player_info['player']['currentPlayer']:
+            return False
+        return (player_info['player']['currentPlayer']['position'] == 'QB'
+            and player_info['team']['abbreviation'] == team_abbr)
+
+    def process(self, season, week, game_id, url_id, data, players, home_box, away_box):
+        data = data['data']['viewer']['gameDetail']
+        home_box = home_box['data']['viewer']['live']['teamGameStats'][0]['teamGameStats']
+        away_box = away_box['data']['viewer']['live']['teamGameStats'][0]['teamGameStats']
+        players = players['data']['viewer']['live']['playerGameStats']
+
         # {team_id: {player_id: {stat_name: value}}}
         outcomes_by_player = collections.defaultdict(
             lambda: collections.defaultdict(
                 lambda: collections.defaultdict(int)))
 
-        data = data.get(game_id)
         if not data:
             # Empty data file. Maybe the game hasn't started yet.
             return
 
-        drives = data['drives']
+        home_team = data['homeTeam']
+        away_team = data['visitorTeam']
+        home_abbr = home_team['abbreviation']
+        away_abbr = away_team['abbreviation']
 
-        home_box = data['home']
-        away_box = data['away']
-        home_abbr = home_box['abbr']
-        away_abbr = away_box['abbr']
-
-        self.outcomes_by_team[home_abbr]['ID'] = game_id
-        self.outcomes_by_team[away_abbr]['ID'] = game_id
+        self.outcomes_by_team[home_abbr]['ID'] = url_id
+        self.outcomes_by_team[away_abbr]['ID'] = url_id
+        self.outcomes_by_team[home_abbr]['IDTYPE'] = 'nfl'
+        self.outcomes_by_team[away_abbr]['IDTYPE'] = 'nfl'
         self.outcomes_by_team[home_abbr]['OPP'] = away_abbr
         self.outcomes_by_team[away_abbr]['OPP'] = home_abbr
 
-        quarter = data['qtr']
-        if quarter == 'Final':
+        phase = data['phase']
+        period = data['period']
+        if phase == 'FINAL':
             clock = 'Final'
         else:
             clock = '{time} - {quarter}'.format(
-                time=data['clock'], quarter=ordinal(quarter))
+                time=data['gameClock'], quarter=ordinal(period)) ##
         self.outcomes_by_team[home_abbr]['CLOCK'] = clock
         self.outcomes_by_team[away_abbr]['CLOCK'] = clock
 
-        home_score = home_box['score']['T']
-        away_score = away_box['score']['T']
+        home_score = data['homePointsTotal']
+        away_score = data['visitorPointsTotal']
         score_obj = {
             'HOME': home_abbr,
             'AWAY': away_abbr,
@@ -259,80 +269,76 @@ class Plays(object):
 
         passers = set()
 
-        home_passers = home_box['stats'].get('passing', {})
+        # players
+        home_passers = self.filter_qbs(players, home_abbr)
         passers |= home_passers.keys()
         for id, p in home_passers.items():
-            name = p.get('name', 'UNKNOWN')
+            name = p['player'].get('displayName', 'UNKNOWN')
             outcomes_by_player[home_abbr][id]['NAME'] = name
             # If there's more than one, insert an event that lets us manually
             # flag one of them as having been benched.
             if len(home_passers) > 1:
                 self.events.add_passer(home_abbr, id, name)
-        away_passers = away_box['stats'].get('passing', {})
+        away_passers = self.filter_qbs(players, away_abbr)
         passers |= away_passers.keys()
         for id, p in away_passers.items():
-            name = p.get('name', 'UNKNOWN')
+            name = p['player'].get('displayName', 'UNKNOWN')
             outcomes_by_player[away_abbr][id]['NAME'] = name
             if len(away_passers) > 1:
                 self.events.add_passer(away_abbr, id, name)
 
         def is_qb(pid):
-            return (pid in passers and
-                    self.player_cache.lookup_position(pid) == 'QB')
+            return pid in passers
 
-        # Read box score stats.
-        for pid, qb_outcomes in parse_box(home_box['stats'], is_qb).items():
+        for pid, qb_outcomes in parse_box(home_passers).items(): ##
             for k, v in qb_outcomes.items():
                 outcomes_by_player[home_abbr][pid][k] += v
                 self.outcomes_by_team[home_abbr][k] += v
-        for pid, qb_outcomes in parse_box(away_box['stats'], is_qb).items():
+        for pid, qb_outcomes in parse_box(away_passers).items():
             for k, v in qb_outcomes.items():
                 outcomes_by_player[away_abbr][pid][k] += v
                 self.outcomes_by_team[away_abbr][k] += v
 
         # Read play-by-play info for slightly more complex stats like turnovers
         # and sack yardage.
-        for drive_num, drive in drives.items():
-            # skip junk in there about current drive
-            if drive_num == 'crntdrv':
-                continue
-            for play_id, play in drive['plays'].items():
-                outcomes = parse_play(
-                    game_id, play_id, play, is_qb, self.events)
-                for pid, qb_outcomes in outcomes.items():
-                    for k, v in qb_outcomes.items():
-                        team = play['posteam']
-                        if k == 'LONG':
-                            pold = outcomes_by_player[team][pid][k]
-                            outcomes_by_player[team][pid][k] = max(pold, v)
-                            old = self.outcomes_by_team[team][k]
-                            self.outcomes_by_team[team][k] = max(old, v)
-                        else:
-                            outcomes_by_player[team][pid][k] += v
-                            self.outcomes_by_team[team][k] += v
-            # Compute best field position from drive-wide stats. Field position
-            # is recorded as the number of yards from the team's own goal line.
-            # We ignore field position on drives where the team never gained a
-            # first down (or received one via penalty) so that offenses aren't
-            # rewarded for going 3-and-out after their defense gives them good
-            # position.
-            drive_team = drive['posteam']
-            if drive['fds'] > 0 and drive_team:
+        for play in data.get('plays', []):
+            outcomes = parse_play(
+                     game_id, play['playId'], play, is_qb, self.events)
+            for pid, qb_outcomes in outcomes.items():
+                for k, v in qb_outcomes.items():
+                    team = play['possessionTeam']['abbreviation']
+                    if k == 'LONG':
+                        pold = outcomes_by_player[team][pid][k]
+                        outcomes_by_player[team][pid][k] = max(pold, v)
+                        old = self.outcomes_by_team[team][k]
+                        self.outcomes_by_team[team][k] = max(old, v)
+                    else:
+                        outcomes_by_player[team][pid][k] += v
+                        self.outcomes_by_team[team][k] += v
+
+        # Check the ending yard line of each offensive drive to determine the
+        # team's best field position. Field position is recorded as the
+        # number of yards from the team's own goal line. We ignore field
+        # position on drives where the team never gained a first down
+        # (or received one via penalty) so that offenses aren't rewarded for
+        # going 3-and-out after their defense gives them good position.
+        #
+        # We could go farther, and actually inspect the play-by-play data for
+        # each play in the drive, to find cases where a team ran a play in
+        # the red zone, but lost yardage because of a sack or penalty and
+        # ended outside the red zone. But drive end position is a lot easier,
+        # and it's close enough for our purposes, at least for now.
+        for drive in data.get('drives', []):
+            drive_team = drive['possessionTeam']['abbreviation']
+            if drive['firstDowns'] > 0 and drive_team:
                 old = self.outcomes_by_team[drive_team]['FIELDPOS']
                 new = 0
-                if drive['result'] == 'Touchdown':
+                if drive.get('endTransition') and drive.get('endTransition', '').upper() == 'TOUCHDOWN':
                     new = 100
                 else:
-                    for _, play in drive['plays'].items():
-                        team = play['posteam']
-                        if drive_team != team:
-                            continue
-                        if not play['down']:
-                            # Exclude tries (extra points) and free kicks.
-                            continue
-                        yard_line = parse_yard_line(play['yrdln'], team)
-                        if yard_line:
-                            new = max(new, yard_line)
+                    drive_end = parse_yard_line(drive.get('endYardLine', ''), drive_team)
+                    if drive_end:
+                        new = drive_end
                 self.outcomes_by_team[drive_team]['FIELDPOS'] = max(old, new)
 
         self.outcomes_by_team[home_abbr]['passers'] = (
@@ -378,6 +384,8 @@ class PlayerCache(object):
 def main():
     options, args = parser.parse_args()
 
+    now = datetime.datetime.now(datetime.timezone.utc)
+
     if args:
         season, week = options.year, options.week
         if not (season and week):
@@ -385,15 +393,12 @@ def main():
                   file=sys.stderr)
             sys.exit(1)
         game_ids = [gid.strip() for gid in open(args[0])]
+        game_ids_to_url_slugs = {}
         games_with_alerts = set()
     else:
-        if options.year or options.week:
-            print('must not set --year and --week without game ID file',
-                  file=sys.stderr)
-            sys.exit(1)
-        season, week, games = linescore.fetch()
-        game_ids = [g.id for g in games.values()
-                    if g.start_time < datetime.datetime.now()]
+        season, week, games = linescore.fetch(options.year, options.week, post=options.post)
+        game_ids = [g.id for g in games.values() if g.start_time < now]
+        game_ids_to_url_slugs = {g.id: g.url_id for g in games.values()}
         games_with_alerts = {g.id for g in games.values() if g.alert}
 
     if not options.firebase_cred_file:
@@ -413,7 +418,13 @@ def main():
     else:
         scrape_status = collections.defaultdict(dict,
                                                 scrape_status_ref.get() or {})
-    now = datetime.datetime.now(tz=datetime.timezone.utc)
+
+    payload = {"clientKey":"4cFUW6DmwJpzT9L7LrG3qRAcABG5s04g","clientSecret":"CZuvCL49d9OwfGsR","deviceId":"9c716807-a922-4f27-9d1a-3ea8a3a4259e","deviceInfo":"eyJtb2RlbCI6ImRlc2t0b3AiLCJ2ZXJzaW9uIjoiQ2hyb21lIiwib3NOYW1lIjoiV2luZG93cyIsIm9zVmVyc2lvbiI6IjEwIn0=","networkType":"other"}
+    r = requests.post("https://api.nfl.com/identity/v3/token", data=payload)
+    access_token = json.loads(r.text)['accessToken']
+    headers_2 = {'Authorization': 'Bearer ' + access_token}
+
+
     for id in game_ids:
         # IDs might be integers if we read them out of JSON, but we always use
         # string keys in the database.
@@ -424,19 +435,60 @@ def main():
             scrape_status[id].get('lastScrape', 0), tz=datetime.timezone.utc)
         if last_scrape + SCRAPE_INTERVAL > now and id not in games_with_alerts:
             continue
-        url = ('http://www.nfl.com/liveupdate/game-center/{0}/{0}_gtd.json'
+
+        url = ('https://api.nfl.com/experience/v1/gamedetails/{0}'
                .format(id))
-        resp = requests.get(url)
+        resp = requests.get(url, headers=headers_2)
         if resp.status_code >= 400:
             if resp.status_code != 404:
                 print('error fetching {url}: {err}'.format(url=url, err=e),
                       file=sys.stderr)
             continue
         data = resp.json()
-        plays.process(season, week, id, data)
+
+        home_id = data['data']['viewer']['gameDetail']['homeTeam']['id']
+        away_id = data['data']['viewer']['gameDetail']['visitorTeam']['id']
+
+        url = ('https://api.nfl.com/experience/v1/stats/{0}/players'
+               .format(id))
+        resp = requests.get(url, headers=headers_2)
+        if resp.status_code >= 400:
+            if resp.status_code != 404:
+                print('error fetching {url}: {err}'.format(url=url, err=e),
+                      file=sys.stderr)
+            continue
+        players = resp.json()
+
+        url = ('https://api.nfl.com/experience/v1/stats/{0}/teams/{1}'
+               .format(id, home_id))
+        resp = requests.get(url, headers=headers_2)
+        if resp.status_code >= 400:
+            if resp.status_code != 404:
+                print('error fetching {url}: {err}'.format(url=url, err=e),
+                      file=sys.stderr)
+            print('err', resp)
+            continue
+        home_team = resp.json()
+
+        url = ('https://api.nfl.com/experience/v1/stats/{0}/teams/{1}'
+               .format(id, away_id))
+        resp = requests.get(url, headers=headers_2)
+        if resp.status_code >= 400:
+            if resp.status_code != 404:
+                print('error fetching {url}: {err}'.format(url=url, err=e),
+                      file=sys.stderr)
+            print('err', resp)
+            continue
+        away_team = resp.json()
+        plays.process(
+            season, week, id, game_ids_to_url_slugs.get(id, ''), data,
+            players, home_team, away_team)
         scrape_status[id]['lastScrape'] = now.timestamp()
         # TODO: We shouldn't be parsing data here.
-        scrape_status[id]['isFinal'] = data[id]['qtr'] == 'Final'
+        try:
+            scrape_status[id]['isFinal'] = data['viewer']['phase'] == 'FINAL'
+        except:
+            scrape_status[id]['isFinal'] = False
 
     # Log which teams were updated. In prod, we'll write this to disk for later
     # inspection.
@@ -444,6 +496,7 @@ def main():
                            ' '.join(sorted(plays.outcomes_by_team.keys()))))
 
     if options.firebase:
+        if options.post: week = "post"+str(week)
         if player_cache.new_keys:
             db.reference('/playerpositions').update(player_cache.new_keys)
 

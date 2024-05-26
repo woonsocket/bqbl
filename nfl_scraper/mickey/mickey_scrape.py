@@ -103,11 +103,13 @@ def main():
 
         url = ('https://www.espn.com/nfl/boxscore?gameId={0}'
                .format(id))
+        extended_url = 'https://www.espn.com/nfl/matchup/_/gameId/{0}'.format(id)
         try:
             team_key_1, team_key_2 = mickey_parse.mickey_parse(url, data, game_id=id)
             if not team_key_1 in data:
                 print('skipping', id)
                 continue
+            mickey_parse.mickey_parse_extended(extended_url, data, team_key_1, team_key_2)
             scrape_status[id]['lastScrape'] = now.timestamp()
             # TODO: We shouldn't be parsing data here.
             scrape_status[id]['isFinal'] = data[team_key_1]['CLOCK'] == 'Final'

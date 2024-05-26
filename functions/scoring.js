@@ -48,6 +48,7 @@ exports.computeScore = function(stats, overrides) {
   let gameInfo = {
     'clock': stats['CLOCK'],
     'id': stats['ID'],
+    'idType': stats['IDTYPE'] || '',
   };
   let gameScore = stats['SCORE'];
   if (gameScore) {
@@ -78,7 +79,10 @@ exports.computeScore = function(stats, overrides) {
  *     modified.
  */
 function computeStupidProjection(stats) {
-  const elapsedFrac = parseElapsedFraction('' + stats['CLOCK']);
+  const elapsedFrac = stats['FRAC'] ?
+    1 * stats['FRAC'] :
+    parseElapsedFraction('' + stats['CLOCK']);
+
   const projected = {};
   entries(stats).forEach(([stat, val]) => {
     projected[stat] = val;

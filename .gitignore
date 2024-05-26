@@ -27,3 +27,4 @@ functions/node_modules/*
 functions/firebase-debug.log
 functions/database-debug.log
 functions/ui-debug.log
+.DS_Store

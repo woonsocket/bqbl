@@ -50,7 +50,8 @@
           "$year": {
             "$user_id": {
               "$week_id": {
-                ".write": "$user_id === auth.uid && root.child('unlockedweeks/' +$week_id).val() > now"
+                // Allow admins to write so the score override tool works on locked weeks.
+                ".write": "$user_id === auth.uid && root.child('unlockedweeks/' +$week_id).val() > now || root.child('roles/admins/' + auth.uid).exists()"
               },
             },
           },

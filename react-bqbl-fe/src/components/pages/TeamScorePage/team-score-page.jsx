@@ -76,10 +76,9 @@ function TeamScorePage(props) {
   );
 }
 
-function boxScoreLink(year, week, gameId) {
-  if (!gameId) {
-    // TODO: Fix this. ANNUAL
-    return `https://www.espn.com/nfl/scoreboard/_/${year}/2020/seasontype/2/week/${week}`;
+function boxScoreLink(year, week, gameId, gameIdType = '') {
+  if (gameIdType == 'nfl') {
+    return `https://www.nfl.com/games/${gameId}?active-tab=stats`;
   }
   return `https://www.espn.com/nfl/game/_/gameId/${gameId}`;
 }
