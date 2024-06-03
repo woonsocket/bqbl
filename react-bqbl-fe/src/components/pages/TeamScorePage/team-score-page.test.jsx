@@ -1,7 +1,7 @@
 import "@testing-library/jest-dom";
 import { screen } from "@testing-library/react";
 import React from "react";
-import { act } from "react-dom/test-utils";
+import { act } from "react";
 import { MOCK_APP_STATE, MockApp, MockFirebase } from "../../../testing/mocks";
 import { AppStateContext } from "../../AppState";
 import { FirebaseContext } from "../../Firebase";
@@ -36,8 +36,7 @@ describe("TeamScorePage", () => {
               </Provider>
             </MockApp>
           </FirebaseContext.Provider>
-        </AppStateContext.Provider>,
-        container
+        </AppStateContext.Provider>
       );
     });
     await act(async () => {

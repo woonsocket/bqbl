@@ -42,6 +42,7 @@ export const leagueSlice = createSlice({
       state.id = action.leagueId
     },
     loaded: (state, action) => {
+      // TODO ughhhh this is terrible. it should be /leagueSpec, not league.spec.
       state.spec = action.payload
     }
   }
@@ -103,14 +104,16 @@ export const userSlice = createSlice({
   }
 })
 
+export const DEFAULT_REDUCERS = {
+  league: leagueSlice.reducer,
+  year: yearSlice.reducer,
+  week: weekSlice.reducer,
+  users: userSlice.reducer,
+  scores: scoresSlice.reducer,
+  scores247: scores247Slice.reducer
+}
+
 export default configureStore({
-  reducer: {
-    league: leagueSlice.reducer,
-    year: yearSlice.reducer,
-    week: weekSlice.reducer,
-    users: userSlice.reducer,
-    scores: scoresSlice.reducer,
-    scores247: scores247Slice.reducer
-  },
+  reducer: DEFAULT_REDUCERS,
   middleware: [leagueFetchMiddleware, scoresMiddleware, scores247Middleware],
 })

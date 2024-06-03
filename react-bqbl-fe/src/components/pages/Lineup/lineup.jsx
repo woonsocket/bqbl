@@ -22,7 +22,7 @@ function LineupPage() {
   return <RequireLeague><Lineup/></RequireLeague>
 }
 
-function Lineup(props) {
+function Lineup() {
   const firebase = useContext(FirebaseContext);
   // TODO(aerion): Update lockedWeeks if the lock time passes while the
   // component is visible.
@@ -63,6 +63,7 @@ LineupWeek.propTypes = {
 }
 
 function LineupWeek(props) {
+  console.log(props)
   const firebase = useContext(FirebaseContext);
 
   let [week, setWeek] = useState(props.week);

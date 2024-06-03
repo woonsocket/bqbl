@@ -3,11 +3,9 @@ import { AppStateContext } from "../../AppState";
 import { FirebaseContext } from "../../Firebase";
 import { MockFirebase, MOCK_APP_STATE, MockApp } from "../../../testing/mocks";
 import "@testing-library/jest-dom";
-import { act } from "react-dom/test-utils";
-import { render, screen } from "@testing-library/react";
-import { afterEach } from "vitest";
-import { cleanup } from "@testing-library/react";
-import "@testing-library/jest-dom/vitest";
+import { act } from "react";
+import { screen } from "@testing-library/react";
+import { createRoot } from 'react-dom/client';
 
 import PlayerStandingsPage from "./player-standings-page";
 import { Provider } from "react-redux";
@@ -22,15 +20,16 @@ beforeEach(() => {
   document.body.appendChild(container);
 });
 
-// runs a cleanup after each test case (e.g. clearing jsdom)
 afterEach(() => {
-  cleanup();
+  document.body.removeChild(container);
+  container = null;
 });
+
 
 describe("PlayerStandingsPage", () => {
   it("renders mocked data", async () => {
     act(() => {
-      render(
+      createRoot(container).render(
         <AppStateContext.Provider value={[MOCK_APP_STATE]}>
           <FirebaseContext.Provider value={new MockFirebase()}>
             <MockApp year={"2023"} league={"nbqbl"}>
@@ -39,9 +38,8 @@ describe("PlayerStandingsPage", () => {
               </Provider>
             </MockApp>
           </FirebaseContext.Provider>
-        </AppStateContext.Provider>,
-        container
-      );
+        </AppStateContext.Provider>
+      )
     });
     await act(async () => {
       await wait();

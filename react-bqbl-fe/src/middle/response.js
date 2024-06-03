@@ -28,7 +28,7 @@ export function processYearScoresByNflTeam(dbScores, dbScores247) {
 // the database schemas for regular season and pro bowl are different.
 export function joinProBowlScores(dbScores, proBowlStarts, week) {
   let dbWeekScores = dbScores[week];
-  console.log({dbScores, proBowlStarts, week})
+  // console.log({dbScores, proBowlStarts, week})
   const players = [];
   for (const { name, id, starts } of proBowlStarts) {
     const teams = [];

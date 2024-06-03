@@ -1,14 +1,14 @@
 import '@testing-library/jest-dom';
 import { screen } from '@testing-library/react';
 import React from 'react';
-import ReactDOM from 'react-dom';
-import { act } from 'react-dom/test-utils';
+import { act } from 'react';
 import { MockFirebase, MOCK_APP_STATE, MockApp } from '../../../testing/mocks';
 import { AppStateContext } from '../../AppState';
 import { FirebaseContext } from '../../Firebase';
 import TeamStandingsPage from './team-standings-page';
 import { Provider } from 'react-redux';
 import store from '../../../redux/store';
+import { createRoot } from 'react-dom/client';
 
 const wait = async () => new Promise((resolve) => setTimeout(resolve, 0))
 
@@ -27,7 +27,7 @@ afterEach(() => {
 describe('TeamStandingsPage', () => {
   it('renders mocked data', async () => {
     act(() => {
-      ReactDOM.render(
+      createRoot(container).render(
         <AppStateContext.Provider value={[MOCK_APP_STATE]}>
           <FirebaseContext.Provider value={new MockFirebase()}>
             <MockApp year={"2023"} league={"nbqbl"}>
@@ -37,7 +37,7 @@ describe('TeamStandingsPage', () => {
             </MockApp>
           </FirebaseContext.Provider>
         </AppStateContext.Provider>
-        , container)
+        )
     });
 
     await act(async () => {

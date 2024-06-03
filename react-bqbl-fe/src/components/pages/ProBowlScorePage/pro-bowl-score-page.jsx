@@ -66,10 +66,10 @@ function ProBowlScoresCard(props) {
   let year = useYear();
   let week = useWeek();
   let firebase = useContext(FirebaseContext);
-  console.log(props.nflScores);
+  // console.log(props.nflScores);
   useEffect(() => {
     if (!props.nflScores[week]) return;
-    console.log(props.nflScores);
+    // console.log(props.nflScores);
     firebase.getProBowlStartsForLeagueThen(
       props.league, year, (starts) => {
       const playerScores =

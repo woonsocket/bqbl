@@ -1,52 +1,90 @@
-import React from 'react';
-import { AppStateContext } from '../../AppState';
-import { FirebaseContext } from '../../Firebase';
-import {MockFirebase, MOCK_APP_STATE} from '../../../testing/mocks';
-import '@testing-library/jest-dom';
-import { act } from 'react-dom/test-utils';
-import { render, screen } from '@testing-library/react';
-import { afterEach } from 'vitest';
-import { cleanup } from '@testing-library/react';
-import '@testing-library/jest-dom/vitest';
-import { Provider } from 'react-redux';
+import { render as origRender, screen } from "@testing-library/react";
+import React from "react";
+import { Provider } from "react-redux";
+import { MOCK_APP_STATE, MockFirebase } from "../../../testing/mocks";
+import { MOCK_REDUX_STATE } from "../../../testing/mocks";
+import { AppStateContext } from "../../AppState";
+import { FirebaseContext } from "../../Firebase";
+import Lineup from "./lineup";
+import configureMockStore from "redux-mock-store";
+import { act } from "react";
 
-import LineupPage from './lineup';
-import store from '../../../redux/store';
+import { createRoot } from "react-dom/client";
 
-const wait = async () => new Promise((resolve) => setTimeout(resolve, 0))
+const wait = async () => new Promise((resolve) => setTimeout(resolve, 0));
 
 let container;
 
 beforeEach(() => {
-  container = document.createElement('div');
+  container = document.createElement("div");
   document.body.appendChild(container);
 });
 
-
-// runs a cleanup after each test case (e.g. clearing jsdom)
 afterEach(() => {
-  cleanup();
+  document.body.removeChild(container);
+  container = null;
 });
 
-describe('LineupPage', () => {
-  it('renders mocked data', async () => {
-    act(() => {
-      render(
+function render(ui) {
+  function Wrapper({ children }) {
+    const mockStore = configureMockStore();
+    const store = mockStore(MOCK_REDUX_STATE);
+    // console.log(store.getState())
+    return (
       <AppStateContext.Provider value={[MOCK_APP_STATE]}>
         <FirebaseContext.Provider value={new MockFirebase()}>
-        <Provider store={store}>
-          <LineupPage />
-        </Provider>
+          <Provider store={store}>{children}</Provider>;
         </FirebaseContext.Provider>
       </AppStateContext.Provider>
-    , container)});
-    await act(async() => {
-      await wait()
-    })
-    // SUPER USEFUL
-    // screen.logTestingPlaygroundURL();
-    // screen.logTestingPlaygroundURL(screen.getAllByTestId('player-card')[0]);
-    // TODO: Make this a real test by doing a mock App component that kicks off hte right data fetches.
-    // expect(screen.getByText(/cade/i)).toBeInTheDocument();
+    );
+  }
+  return origRender(ui, { wrapper: Wrapper });
+}
+
+describe("Lineup", () => {
+  it("renders without crashing", async () => {
+    // console.log(MOCK_REDUX_STATE)
+    act(() => {
+      render(<Lineup />);
+    });
+
+    await act(async () => {
+      await wait();
+    });
+
+    screen.logTestingPlaygroundURL();
+    // expect(screen.getByText('cade')).toBeInTheDocument();
+
+    // Add more test cases here...
   });
 });
+// describe('LineupWeek', () => {
+//   const mockWeek = {
+//     id: '1',
+//     teams: [
+//       { name: 'Team A', selected: true },
+//       { name: 'Team B', selected: false },
+//       { name: 'Team C', selected: true },
+//       { name: 'Team D', selected: false },
+//     ],
+//   };
+
+//   test('renders week id', () => {
+//     render(<LineupWeek week={mockWeek} uid="uid" league="league" year="2022" dh={true} locked={false} />);
+//     expect(screen.getByText('1')).toBeInTheDocument();
+//   });
+
+//   test('renders team names and opponents', () => {
+//     render(<LineupWeek week={mockWeek} uid="uid" league="league" year="2022" dh={true} locked={false} />);
+//     expect(screen.getByText('Team A')).toBeInTheDocument();
+//     expect(screen.getByText('Team B')).toBeInTheDocument();
+//     expect(screen.getByText('Team C')).toBeInTheDocument();
+//     expect(screen.getByText('Team D')).toBeInTheDocument();
+//     expect(screen.getByText('Opponent A')).toBeInTheDocument();
+//     expect(screen.getByText('Opponent B')).toBeInTheDocument();
+//     expect(screen.getByText('Opponent C')).toBeInTheDocument();
+//     expect(screen.getByText('Opponent D')).toBeInTheDocument();
+//   });
+
+// Add more test cases here...
+// });

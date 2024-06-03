@@ -21,7 +21,7 @@ export class MockFirebase {
   }
 
   getLockedWeeksThen(time, cb) {
-    cb([]);
+    cb(new Set());
   }
 
   getScoresYearThen(year, cb) {
@@ -66,8 +66,14 @@ export class MockFirebase {
 
 export const MOCK_APP_STATE = {
   league: "nbqbl",
-  year: "2020",
+  year: "2023",
   week: "3",
+};
+
+export const MOCK_REDUX_STATE = {
+  // this naming is terrible and should match the db
+  league: {spec: { users: { 2023: USERS }, plays: { 2023: STARTS }}},
+  testVal: 5
 };
 
 export function MockApp(props) {
@@ -75,6 +81,7 @@ export function MockApp(props) {
 
   useEffect(() => {
     //    store.dispatch({type: 'year/set', year: year, firebase: firebase});
+    // console.log('mockapp')
     store.dispatch({
       type: "league/set",
       leagueId: props.league,
