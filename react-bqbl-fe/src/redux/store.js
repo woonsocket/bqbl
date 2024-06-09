@@ -10,9 +10,37 @@ const leagueFetchMiddleware = storeAPI => next => action => {
   return next(action)
 }
 
+
+function getScoresYearThen(db, year, cb) {
+  let scoresRef = db.ref(`scores/${year}`);
+  let scores247Ref = db.ref(`scores247/${year}`);
+
+  scoresRef.on("value", (scoresSnap) => {
+    scores247Ref.on("value", (scores247Snap) => {
+      const dbScores = scoresSnap.val();
+      const dbScores247 = scores247Snap.val() || [];
+      if (!dbScores) {
+        throw new Error("Can't read NFL team scores");
+      }
+      if (!dbScores247) {
+        console.log(
+          "Can't read 24/7 scores. Have the quarterbacks really been that good?"
+        );
+      }
+      cb({ dbScores, dbScores247 });
+    });
+  });
+
+  return () => {
+    scoresRef.off("value");
+    scores247Ref.off("value");
+  };
+};
+
+
 const scoresMiddleware = storeAPI => next => action => {
   if (action.firebase && action.type === 'scores/load') {
-    action.firebase.getScoresYearThen(action.year, resp => {
+    getScoresYearThen(action.firebase.getDb(), action.year, resp => {
       storeAPI.dispatch({ type: 'scores/loaded', payload: resp.dbScores })
     })
   }
@@ -23,7 +51,7 @@ const scoresMiddleware = storeAPI => next => action => {
 // TODO: separate fetch for scores and 24/7 scores.
 const scores247Middleware = storeAPI => next => action => {
   if (action.firebase && action.type === 'scores247/load') {
-    action.firebase.getScoresYearThen(action.year, resp => {
+    getScoresYearThen(action.firebase.getDb(), action.year, resp => {
       storeAPI.dispatch({ type: 'scores247/loaded', payload: resp.dbScores247 })
     })
   }

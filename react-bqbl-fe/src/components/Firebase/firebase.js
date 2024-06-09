@@ -38,44 +38,8 @@ class Firebase {
 
   doSignOut = () => this.auth.signOut();
 
-  getScoresYearThen(year, cb) {
-    let scoresRef = this.db.ref(`scores/${year}`);
-    let scores247Ref = this.db.ref(`scores247/${year}`);
+  getDb = () => this.db;
 
-    scoresRef.on("value", (scoresSnap) => {
-      scores247Ref.on("value", (scores247Snap) => {
-        const dbScores = scoresSnap.val();
-        const dbScores247 = scores247Snap.val() || [];
-        if (!dbScores) {
-          throw new Error("Can't read NFL team scores");
-        }
-        if (!dbScores247) {
-          console.log(
-            "Can't read 24/7 scores. Have the quarterbacks really been that good?"
-          );
-        }
-        cb({ dbScores, dbScores247 });
-      });
-    });
-
-    return () => {
-      scoresRef.off("value");
-      scores247Ref.off("value");
-    };
-  }
-
-  getScoresWeekThen(year, week, cb) {
-    const ref = this.db.ref(`scores/${year}/${week}`);
-    ref.on("value", (snapshot) => {
-      const vals = snapshot.val() || [];
-      const valsList = Object.keys(vals).map((key) => ({
-        ...vals[key],
-        teamName: key,
-      }));
-      cb(valsList);
-    });
-    return () => ref.off("value");
-  }
 
   getEventsThen(year, week, cb) {
     const ref = this.db.ref(`events/${year}/${week}`);
@@ -195,7 +159,6 @@ class Firebase {
     // TODO: Pull all the leagues this user is in from the db
     return ["nbqbl", "abqbl"];
   }
-
 
   addFumbleSix(year, week, fumble) {
     this.db.ref(`${PREFIX}events/${year}/${week}/fumbles`).push(fumble);

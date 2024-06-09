@@ -8,6 +8,7 @@ import { useLeague, useWeek, useYear } from '../../AppState';
 import { FirebaseContext } from '../../Firebase';
 import PlayerScoreList from '../../reusable/PlayerScoreList/player-score-list';
 import styles from './ProBowlScorePage.module.css'
+import { useSelector } from 'react-redux';
 
 // The league score is the sum of the top 3 player scores.
 const LEAGUE_SCORE_PLAYER_COUNT = 3;
@@ -18,16 +19,10 @@ const ALL_LEAGUES = ['abqbl', 'nbqbl'];
 
 
 function ProBowlScoresPage() {
-  const [nflScores, setNflScores] = useState({});
   let league = useLeague();
   let year = useYear();
   let firebase = useContext(FirebaseContext);
-
-  useEffect(() => {
-    return firebase.getScoresYearThen(year, (scores) => {
-      setNflScores(scores.dbScores);
-    });
-  }, [firebase, year]);
+  const nflScores = useSelector((state) => state.scores);
 
   const leagues = ALL_LEAGUES.slice();
   // Place the viewing player's league first.
@@ -40,7 +35,6 @@ function ProBowlScoresPage() {
     return a.localeCompare(b);
   });
 
-  // console.log(nflScores);
   return (
     <div className={styles.leagueContainer}>
       {leagues.map((league) => (
