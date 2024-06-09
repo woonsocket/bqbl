@@ -63,7 +63,6 @@ LineupWeek.propTypes = {
 }
 
 function LineupWeek(props) {
-  console.log(props)
   const firebase = useContext(FirebaseContext);
 
   let [week, setWeek] = useState(props.week);

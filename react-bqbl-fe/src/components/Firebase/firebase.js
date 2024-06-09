@@ -140,19 +140,6 @@ class Firebase {
     return () => ref.off("value");
   }
 
-  getStartsYearThen(uid, league, year, cb) {
-    const ref = this.db.ref(
-      `${PREFIX}leaguespec/${league}/plays/${year}/${uid}`
-    );
-    ref.on("value", (snapshot) => {
-      if (!snapshot.val()) {
-        throw new Error("can't find you in this league");
-      }
-      cb(snapshot.val());
-    });
-    return () => ref.off("value");
-  }
-
   updateStartsRow(league, year, weekIndex, uid, row) {
     const uri = `${PREFIX}leaguespec/${league}/plays/${year}/${uid}/${weekIndex}`;
     return this.db.ref(uri).update(row);
@@ -209,38 +196,6 @@ class Firebase {
     return ["nbqbl", "abqbl"];
   }
 
-  getScoresStartsUsersThen(league, year, cb) {
-    let scoresRef = this.db.ref(`scores/${year}`);
-    let scores247Ref = this.db.ref(`scores247/${year}`);
-    let startsRef = this.db.ref(`${PREFIX}leaguespec/${league}/plays/${year}`);
-    let usersRef = this.db.ref(`${PREFIX}leaguespec/${league}/users/${year}`);
-
-    scoresRef.on("value", (scoresSnap) => {
-      scores247Ref.on("value", (scores247Snap) => {
-        startsRef.on("value", (startsSnap) => {
-          usersRef.on("value", (usersSnap) => {
-            const dbScores = scoresSnap.val();
-            const dbScores247 = scores247Snap.val() || {};
-            const dbStarts = startsSnap.val();
-            const dbUsers = usersSnap.val();
-            if (!dbScores || !dbScores247 || !dbStarts || !dbUsers) {
-              throw new Error(
-                "Can't find one of scores, scores247, starts, users"
-              );
-            }
-            cb({ dbScores, dbScores247, dbStarts, dbUsers });
-          });
-        });
-      });
-    });
-
-    return () => {
-      scoresRef.off("value");
-      scores247Ref.off("value");
-      startsRef.off("value");
-      usersRef.off("value");
-    };
-  }
 
   addFumbleSix(year, week, fumble) {
     this.db.ref(`${PREFIX}events/${year}/${week}/fumbles`).push(fumble);
