@@ -89,7 +89,7 @@ function App() {
             >
               
               {/* ANNUAL - TODO add to constants*/}
-              {["2017", "2018", "2019", "2020", "2021", "2022", "2023"].map(id => <option value={id} key={id}>{id}</option>)}
+              {["2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024"].map(id => <option value={id} key={id}>{id}</option>)}
             </NativeSelect>
           }
 

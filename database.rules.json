@@ -17,7 +17,7 @@
       ".read": true,
       "$season": {
         // ANNUAL
-        ".write": "auth.uid == 'score-scraper' && $season == '2023'"
+        ".write": "auth.uid == 'score-scraper' && $season == '2024'"
       }
     },
     "scrapestatus": {
@@ -27,7 +27,7 @@
       ".read": true,
       "$season": {
         // ANNUAL
-        ".write": "(auth.uid == 'score-scraper' || root.child('roles/admins/' + auth.uid).exists()) && $season == '2023'",
+        ".write": "(auth.uid == 'score-scraper' || root.child('roles/admins/' + auth.uid).exists()) && $season == '2024'",
         "$week": {
           "overrides": {
             ".write": "root.child('roles/admins/' + auth.uid).exists()"
