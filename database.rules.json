@@ -16,7 +16,7 @@
     "stats": {
       ".read": true,
       "$season": {
-        // ANNUAL
+        // ANNUAL UPDATE
         ".write": "auth.uid == 'score-scraper' && $season == '2024'"
       }
     },
@@ -26,7 +26,7 @@
     "events": {
       ".read": true,
       "$season": {
-        // ANNUAL
+        // ANNUAL UPDATE
         ".write": "(auth.uid == 'score-scraper' || root.child('roles/admins/' + auth.uid).exists()) && $season == '2024'",
         "$week": {
           "overrides": {
