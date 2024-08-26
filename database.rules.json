@@ -51,7 +51,7 @@
             "$user_id": {
               "$week_id": {
                 // Allow admins to write so the score override tool works on locked weeks.
-                ".write": "$user_id === auth.uid && root.child('unlockedweeks/' +$week_id).val() > now || root.child('roles/admins/' + auth.uid).exists()"
+                ".write": "$user_id === auth.uid && root.child('unlockedweeks/' + $year + '/' +$week_id).val() > now || root.child('roles/admins/' + auth.uid).exists()"
               },
             },
           },
@@ -62,7 +62,7 @@
             // week 17. It doesn't live alongside the regular season weeks,
             // because the data schema is different.
             "$user_id": {
-              ".write": "$user_id === auth.uid && root.child('unlockedweeks/17').val() > now"
+              ".write": "$user_id === auth.uid && root.child('unlockedweeks/' + $year + '/17').val() > now"
             },
           },
         },
@@ -71,8 +71,6 @@
     "users": {
       ".read": true,
       "$user_id": {
-        // TODO(harveyj): clean this up so there's just a week object
-        // and a userdata object.
         "leagueid": {
           ".write": "$user_id === auth.uid"
         },
@@ -82,14 +80,9 @@
         "name": {
           ".write": "$user_id === auth.uid"
         },
-        "weeks": {
-          "$week_id": {
-            ".write": "$user_id === auth.uid && root.child('unlockedweeks/' + newData.child('id').val()).val() > now"
-          }
-        },
         "probowl": {
           ".write": "$user_id === auth.uid && root.child('unlockedweeks/probowl').val() > now"
-        },
+        }
       }
     },
     "unlockedweeks": {
