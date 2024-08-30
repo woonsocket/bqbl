@@ -33,8 +33,8 @@ parser.add_option("-w", "--week", dest="week",
                   help="Week")
 parser.add_option("-y", "--year", dest="year",
                   help="Year")
-parser.add_option("-p", "--post", dest="post",
-                  help="Postseason?")
+parser.add_option("-t", "--seasontype", dest="seasontype",
+                  help="PRE, REG, or POST season")
 parser.add_option("--all", dest="all", action="store_true",
                   help="Scrape all games, not just those that are 'due'")
 parser.add_option("--firebase_creds", dest="firebase_cred_file",
@@ -396,7 +396,7 @@ def main():
         game_ids_to_url_slugs = {}
         games_with_alerts = set()
     else:
-        season, week, games = linescore.fetch(options.year, options.week, post=options.post)
+        season, week, games = linescore.fetch(options.year, options.week, seasontype=options.seasontype)
         game_ids = [g.id for g in games.values() if g.start_time < now]
         game_ids_to_url_slugs = {g.id: g.url_id for g in games.values()}
         games_with_alerts = {g.id for g in games.values() if g.alert}
@@ -496,7 +496,6 @@ def main():
                            ' '.join(sorted(plays.outcomes_by_team.keys()))))
 
     if options.firebase:
-        if options.post: week = "post"+str(week)
         if player_cache.new_keys:
             db.reference('/playerpositions').update(player_cache.new_keys)
 

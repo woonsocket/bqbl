@@ -19,7 +19,6 @@ import PlayerScoreList from "../../reusable/PlayerScoreList/player-score-list";
 import RequireLeague from "../../reusable/RequireLeague";
 import styles from "./PlayerStandingsPage.module.css";
 
-const FOLD = 4;
 
 function PlayerStandingsPage() {
   return (
@@ -29,7 +28,7 @@ function PlayerStandingsPage() {
   );
 }
 
-function PlayerStandings(props) {
+function PlayerStandings() {
   let [playerTable, setPlayerTable] = useState([]);
   let [sortScores, setSortScores] = useState(true);
   let year = useYear();
@@ -70,19 +69,15 @@ function PlayerStandings(props) {
   );
 }
 
-PlayerYearCard.propTypes = {
-  player: PropTypes.object.isRequired,
-};
-
-function PlayerYearCard(props) {
+function PlayerYearCard({player, year, teams, start_rows}) {
   const [expanded, setExpanded] = React.useState(false);
 
-  const scoreEntries247 = props.player.teams.map((team) => {
+  const scoreEntries247 = teams.map((team) => {
     return { team: team.name, score: team.score247 };
   });
 
-  const startedWeeks = new Map(Object.entries(props.player.start_rows));
-  const weeks = seasonWeeksReverse(props.year)
+  const startedWeeks = new Map(Object.entries(start_rows));
+  const weeks = seasonWeeksReverse(year)
     .filter((weekId) => startedWeeks.has(weekId))
     .map((weekId) => {
       const startRow = startedWeeks.get(weekId);
@@ -103,12 +98,13 @@ function PlayerYearCard(props) {
     setExpanded(!expanded);
   }
 
+  const FOLD = 4;
   return (
     <Card className={styles.playerCard} data-testid="player-card">
       <CardHeader
-        avatar={<Avatar aria-label="">{props.player.name[0]}</Avatar>}
-        title={props.player.name}
-        subheader={"Total: " + props.player.total}
+        avatar={<Avatar aria-label="">{player.name[0]}</Avatar>}
+        title={player.name}
+        subheader={`Total: ${player.total}`}
       />
       <CardContent>
         <PlayerScoreList label="24/7" entries={scoreEntries247} />
@@ -120,7 +116,7 @@ function PlayerYearCard(props) {
       <CardActions disableSpacing>
         {weeks.length > FOLD && (
           <IconButton
-            className={classNames({ expanded: styles.expanded })}
+            className={classNames({ [styles.expanded]: expanded })}
             onClick={handleExpandClick}
             aria-expanded={expanded}
             aria-label="Show more"

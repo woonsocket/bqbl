@@ -9,9 +9,9 @@ import datetime
 import json
 import requests
 
-_SCORES_URL_TPL = 'https://api.nfl.com/experience/v1/games?season=%s&seasonType=REG'
-_SCORES_POST_URL_TPL = 'https://api.nfl.com/experience/v1/games?season=%s&seasonType=POST'
+_SCORES_URL_TPL = 'https://api.nfl.com/experience/v1/games?season=%s'
 _WEEK_TPL = '&week=%s'
+_SEASONTYPE_TPL = '&seasonType=%s'
 
 Game = collections.namedtuple(
     'Game',
@@ -133,7 +133,7 @@ def parse_game_clock(phase, clock):
 
 
 # TODO fix override
-def fetch(season='2023', week=2, post=False):
+def fetch(season='2023', week=2, seasontype='REG'):
     """Get line scores for whatever the current week is.
 
     Returns:
@@ -143,9 +143,8 @@ def fetch(season='2023', week=2, post=False):
         different times.
     """
     week_section = _WEEK_TPL % week if week else ''
-    url = _SCORES_URL_TPL % season + week_section
-    if post:
-        url = _SCORES_POST_URL_TPL % season + week_section
+    seasontype_section = _SEASONTYPE_TPL % seasontype
+    url = (_SCORES_URL_TPL % season) + week_section + seasontype_section
     payload = {"clientKey":"4cFUW6DmwJpzT9L7LrG3qRAcABG5s04g","clientSecret":"CZuvCL49d9OwfGsR","deviceId":"9c716807-a922-4f27-9d1a-3ea8a3a4259e","deviceInfo":"eyJtb2RlbCI6ImRlc2t0b3AiLCJ2ZXJzaW9uIjoiQ2hyb21lIiwib3NOYW1lIjoiV2luZG93cyIsIm9zVmVyc2lvbiI6IjEwIn0=","networkType":"other"}
     r = requests.post("https://api.nfl.com/identity/v3/token", data=payload)
     access_token = json.loads(r.text)['accessToken']
@@ -154,6 +153,7 @@ def fetch(season='2023', week=2, post=False):
     data = json.loads(resp.text)
     scores = data.get('games')
     if not scores:
+        print('ERROR: no games found')
         return {}
     games = {}
     for obj in scores:
@@ -161,5 +161,7 @@ def fetch(season='2023', week=2, post=False):
         games[game.id] = game
     week = scores[0]['week']
     if scores[0]['seasonType'] == 'PRE':
-        week = 'P{0}'.format(week)
+        week = 'PRE{0}'.format(week)
+    elif scores[0]['seasonType'] == 'POST':
+        week = 'POST{0}'.format(week)
     return scores[0]['season'], week, games
