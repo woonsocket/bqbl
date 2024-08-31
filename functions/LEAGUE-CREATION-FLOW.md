@@ -5,8 +5,8 @@ use spreadsheet to generate draft json
 upload it to leaguespec/$LEAGUE/draft/$YEAR
 export GOOGLE_APPLICATION_CREDENTIALS=../private-keys/blah 
 firebase functions:shell
->> finalizeDraft({league:'nbqbl', year:"2021"})
->> createNewYear({league:'nbqbl', year:"2021"})
+>> finalizeDraft({league:'nbqbl', year:"2029"})
+>> createNewYear({league:'nbqbl', year:"2029"})
 
 League creation flow with draft:
 Admin: call createLeague({league: $LEAGUE_ID})
