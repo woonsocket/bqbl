@@ -6,5 +6,5 @@ export function isInLeague(leagueSpec, uid, year) {
 }
 
 export function hasDh(leagueSpec, year) {
-  return R.path(['settings', year], leagueSpec) || false;
+  return R.path(['settings', year, 'dh'], leagueSpec) || false;
 }
