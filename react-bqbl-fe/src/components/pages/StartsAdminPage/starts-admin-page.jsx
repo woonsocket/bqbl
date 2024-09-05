@@ -22,7 +22,7 @@ function StartsAdminPage() {
 }
 
 function StartsAdmin() {
-  const year = useSelector((state) => state.year.value);
+  const year = useSelector((state) => state.year);
   const league = useSelector((state) => state.league.id);
   const leagueSpec = useSelector((state) => state.league.spec);
   let [uid, setUid] = useState("");
@@ -59,6 +59,7 @@ function StartsAdmin() {
               week={weekData}
               league={league}
               year={year}
+              uid={uid}
               index={weekKey}
               key={weekKey}
             />
@@ -73,6 +74,7 @@ StartsWeek.propTypes = {
   week: PropTypes.object.isRequired,
   league: PropTypes.string.isRequired,
   year: PropTypes.string.isRequired,
+  uid: PropTypes.string.isRequired,
 };
 
 function StartsWeek(props) {
@@ -84,27 +86,31 @@ function StartsWeek(props) {
     const defaultTeamOne = getSelectedTeam(props.week, 1);
     const defaultTeamTwo = getSelectedTeam(props.week, 2);
     if (teamOne != defaultTeamOne || teamTwo != defaultTeamTwo) {
-      let newWeek = props.week;
+      let newWeek = {
+        id: props.week.id,
+        teams: [],
+      };
       let teamOneSeen = false;
       let teamTwoSeen = false;
-      for (let team of newWeek.teams) {
+      for (let team of props.week.teams) {
         if (team.name == teamOne) {
           teamOneSeen = true;
-          team.selected = true;
+          newWeek.teams.push({ name: team.name, selected: true })
         } else if (team.name == teamTwo) {
           teamTwoSeen = true;
-          team.selected = true;
+          newWeek.teams.push({ name: team.name, selected: true })
         } else {
-          team.selected = false;
+          newWeek.teams.push({ name: team.name, selected: false })
         }
       }
-      if (!teamOneSeen) newWeek.teams.push({ name: teamOne, selected: true });
-      if (!teamTwoSeen) newWeek.teams.push({ name: teamTwo, selected: true });
+      if (teamOne && !teamOneSeen) newWeek.teams.push({ name: teamOne, selected: true });
+      if (teamTwo && !teamTwoSeen) newWeek.teams.push({ name: teamTwo, selected: true });
       firebase.updateStartsRow(
         props.league,
         props.year,
         props.week.id,
-        newWeek
+        props.uid,
+        newWeek,
       );
     }
   }, [teamOne, teamTwo]);
