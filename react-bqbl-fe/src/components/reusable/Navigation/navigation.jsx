@@ -23,13 +23,13 @@ const FUMBLESIX = '/fumblesix';
 export const LINKS = {
   HOME: { path: HOME, text: 'Home' },
   LINEUP: { path: LINEUP, text: 'Lineup' },
-  PROBOWL: { path: PROBOWL, text: 'Pro Bowl Lineup' },
-  PROBOWL_SCORES: { path: PROBOWL_SCORES, text: 'Pro Bowl Scores' },
+  PROBOWL: { path: PROBOWL, text: 'Pro Bowl Lineup', hidden: true },
+  PROBOWL_SCORES: { path: PROBOWL_SCORES, text: 'Pro Bowl Scores', hidden: true },
   PLAYER_SCORES: { path: PLAYER_SCORES, text: 'Player Scores' },
   PLAYER_STANDINGS: { path: PLAYER_STANDINGS, text: 'Player Standings' },
   TEAM_SCORES: { path: TEAM_SCORES, text: 'Team Scores' },
   TEAM_STANDINGS: { path: TEAM_STANDINGS, text: 'Team Standings' },
-  DRAFT: { path: DRAFT, text: 'Draft' },
+  DRAFT: { path: DRAFT, text: 'Draft', hidden: true },
   BENCHING: { path: BENCHING, text: 'Benching' },
   TWENTYFOUR: { path: TWENTYFOUR, text: '24/7 Points' },
   FUMBLESIX: { path: FUMBLESIX, text: 'Fumble Sixes' },
@@ -51,7 +51,9 @@ function Navigation(props) {
 
   return (
     <List>
-      {Object.entries(LINKS).map(([_item_key, item_val], index) => (
+      {Object.entries(LINKS)
+        .filter(([key, value]) => !value.hidden)
+        .map(([_item_key, item_val], index) => (
           <Link to={{pathname: item_val.path, 
             search: makeParams(league, year, week)}}
                 onClick={props.close} key={"link" + index}
