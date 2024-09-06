@@ -1,3 +1,4 @@
+/** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -6,9 +7,7 @@ ScoreValue.propTypes = {
   score: PropTypes.number,
 };
 
-const negativeClass = css`
-color: '#D32F2F',  // Material Red 700
-`;
+const negativeClass = css`color: #D32F2F`;  // Material Red 700
 
 
 function toString(num) {
