@@ -56,10 +56,17 @@ def init_firebase(cred_file, firebase_project):
     })
 
 
-def ordinal(n):
-    """Ordinals for quarter numbers."""
-    return ({'1': '1st', '2': '2nd', '3': '3rd', '4': '4th', '5': 'OT'}.get(n)
-            or str(n))
+def display_quarter(phase, period):
+    """Display names for each quarter."""
+    if 'OVERTIME' in phase:
+        # The NFL data sometimes returns period=4 even in overtime. Ignore the
+        # period number if we have some other indication that it is OT.
+        return 'OT'
+    qstr = (
+        {'1': '1st', '2': '2nd', '3': '3rd', '4': '4th', '5': 'OT'}
+        .get(str(period))
+    )
+    return qstr or str(n)
 
 
 def parse_yard_line(yard_line_str, offense_abbr):
@@ -250,9 +257,11 @@ class Plays(object):
         period = data['period']
         if phase == 'FINAL':
             clock = 'Final'
+        elif phase == 'FINAL_OVERTIME':
+            clock = 'Final - OT'
         else:
             clock = '{time} - {quarter}'.format(
-                time=data['gameClock'], quarter=ordinal(period)) ##
+                time=data['gameClock'], quarter=display_quarter(phase, period))
         self.outcomes_by_team[home_abbr]['CLOCK'] = clock
         self.outcomes_by_team[away_abbr]['CLOCK'] = clock
 
