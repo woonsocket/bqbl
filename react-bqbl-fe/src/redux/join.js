@@ -59,7 +59,7 @@ export function processYearScores(
     for (const weekId of Object.values(legal_weeks)) {
       const startedTeams = getStartedTeams(dbStarts, playerId, weekId);
       const scores = startedTeams.map(
-        scoreForTeam.bind(null, dbScores, weekId)
+        (team) => scoreForTeam(dbScores, weekId, team)
       ) || [0, 0];
       start_rows[weekId] = {
         team_1: { team_name: startedTeams[0], score: Number(scores[0]) },
@@ -69,7 +69,7 @@ export function processYearScores(
     const playerTeams = player.teams.map((team) => {
       return TEMPLATES.PlayerTeam(
         team.name,
-        Number(scores247ByTeam[team.name]) || 0
+        Number(scores247ByTeam[toDbTeamName(team.name)]) || 0
       );
     });
 
@@ -92,7 +92,7 @@ export function processYearScores(
 }
 
 function scoreForTeam(dbScores, week, team) {
-  return R.path([week, team, "total"], dbScores) || 0;
+  return R.path([week, toDbTeamName(team), "total"], dbScores) || 0;
 }
 
 function getStartedTeams(dbStarts, uid, week) {
@@ -116,4 +116,13 @@ function process247ByTeam(dbScoresObj) {
     byTeam[entry.team] = (byTeam[entry.team] || 0) + entry.points;
   }
   return byTeam;
+}
+
+// Convert team name to the one used in the database (i.e., used by the
+// scraper). This is tragic. We should fix all this in a more sensible
+// place.
+function toDbTeamName(teamName) {
+  if (teamName == 'WSH') return 'WAS';
+  if (teamName == 'LAR') return 'LA';
+  return teamName;
 }
