@@ -68,7 +68,7 @@ function TeamScorePage(props) {
           data-testid="team-score-card"
           score={score}
           key={score.teamName}
-          boxScoreLink={boxScoreLink(year, props.week, score.gameInfo.id)}
+          boxScoreLink={boxScoreLink(year, props.week, score.gameInfo.id, score.gameInfo.idType)}
         />
       ))}
       {isLoaded && !scoresList.length && (
