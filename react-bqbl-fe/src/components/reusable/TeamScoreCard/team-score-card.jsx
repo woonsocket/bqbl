@@ -60,7 +60,7 @@ function TeamScoreCard(props) {
                 </div>
               </b>
             </div>
-            {props.score.total !== props.score.projection.total && (
+            {!props.score.gameInfo.clock.includes('Final') && (
               <div className={styles.comp}>
                 <b>
                   <div className={styles.compDesc}>Projection</div>
