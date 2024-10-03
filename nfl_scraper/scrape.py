@@ -284,17 +284,11 @@ class Plays(object):
         for id, p in home_passers.items():
             name = p['player'].get('displayName', 'UNKNOWN')
             outcomes_by_player[home_abbr][id]['NAME'] = name
-            # If there's more than one, insert an event that lets us manually
-            # flag one of them as having been benched.
-            if len(home_passers) > 1:
-                self.events.add_passer(home_abbr, id, name)
         away_passers = self.filter_qbs(players, away_abbr)
         passers |= away_passers.keys()
         for id, p in away_passers.items():
             name = p['player'].get('displayName', 'UNKNOWN')
             outcomes_by_player[away_abbr][id]['NAME'] = name
-            if len(away_passers) > 1:
-                self.events.add_passer(away_abbr, id, name)
 
         def is_qb(pid):
             return pid in passers
