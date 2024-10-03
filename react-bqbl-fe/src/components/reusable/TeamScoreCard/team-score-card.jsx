@@ -48,7 +48,7 @@ function TeamScoreCard(props) {
       </div>
       <CardActionArea>
         <CardContent>
-          <List>
+          <List className={styles.scoreComponentList}>
             {breakdownToComponents(props.score.breakdown).map((line, index) => (
               <LineItem line={line} key={"lineitem" + index} />
             ))}
