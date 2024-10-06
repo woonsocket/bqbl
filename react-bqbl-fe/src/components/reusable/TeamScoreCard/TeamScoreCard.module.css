@@ -2,6 +2,7 @@
   margin: 10px;
   width: 300px;
   position: relative;
+  color: rgba(0, 0, 0, .54);
   display: inline-block;
   vertical-align: top;
   text-align: left;
@@ -44,11 +45,9 @@
 }
 
 .comp {
-  color: rgba(0,0,0,.54);
   font-size: 1rem;
   line-height: 18px;
   overflow: hidden;
-  width: 90%;
 }
 
 .compDesc {
@@ -59,4 +58,8 @@
 .compScore {
   font-size: 1rem;
   float:right;
+}
+
+.passerStats {
+  font-size: 0.9rem;
 }

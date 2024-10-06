@@ -9,7 +9,7 @@ import { useSelector } from "react-redux";
 import { useWeek, useYear } from '../../AppState';
 import { FirebaseContext } from '../../Firebase';
 
-import badBadge from './bad.png';
+import PasserStats from "../../reusable/PasserStats/passer-stats";
 
 function BenchingPage(props) {
   let [events, setEvents] = useState({});
@@ -64,7 +64,7 @@ function BenchingPage(props) {
                 ([passerId, passer]) => (
                   <TableRow key={passerId}>
                     <TableCell align="left">
-                      <PasserDescription passer={passer} teamId={teamId} />
+                      <PasserStats passer={passer} teamId={teamId} />
                     </TableCell>
                     <TableCell align="right">
                       <Checkbox
@@ -84,29 +84,6 @@ function BenchingPage(props) {
         )}
       </TableBody>
     </Table>
-  );
-}
-
-PasserDescription.propTypes = {
-  passer: PropTypes.object.isRequired,
-  teamId: PropTypes.string.isRequired,
-};
-
-function PasserDescription(props) {
-  const turnovers = props.passer.stats.int + props.passer.stats.fuml;
-  return (
-    // Halp, how do you CSS in React
-    <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
-      <div>
-        {props.passer.name} ({props.teamId})<br />
-        {props.passer.stats.cmp}/{props.passer.stats.att},&nbsp;
-        {props.passer.stats.netyds} yd,&nbsp;
-        {turnovers} turnover{turnovers != 1 ? 's' : ''}
-      </div>
-      {props.passer.isBad && <div style={{padding: '6px'}}>
-        <img src={badBadge} height="24" alt="BAD" />
-      </div>}
-    </div>
   );
 }
 

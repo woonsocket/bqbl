@@ -1,0 +1,19 @@
+.passer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.badge {
+  height: 24px;
+}
+
+.passerName {
+  font-weight: bold;
+}
+
+.statLine {
+  display: flex;
+  flex-direction: row;
+}
