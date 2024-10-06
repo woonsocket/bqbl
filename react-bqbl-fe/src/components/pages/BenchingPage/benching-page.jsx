@@ -40,9 +40,9 @@ function BenchingPage(props) {
   const handleChange = (passerId, teamName) => event => {
     const passer = passers[teamName][passerId];
     let newOverrides = JSON.parse(JSON.stringify(events.overrides || {}));
-    newOverrides[passer.team] = newOverrides[passer.team] || {};
-    newOverrides[passer.team].benchings = newOverrides[passer.team].benchings || {};
-    newOverrides[passer.team].benchings[passerId] = event.target.checked;
+    newOverrides[teamName] = newOverrides[teamName] || {};
+    newOverrides[teamName].benchings = newOverrides[teamName].benchings || {};
+    newOverrides[teamName].benchings[passerId] = event.target.checked;
     firebase.updateEventsOverrides(year, week, newOverrides);
   };
 
