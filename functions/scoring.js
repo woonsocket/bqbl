@@ -272,14 +272,15 @@ function computeScoreComponents(qbScore) {
   };
 
   let fieldPositionValue = 0;
-  if (qbScore['FIELDPOS'] <= 50) {
+  const bestYardLine = qbScore['FIELDPOS'] || 0;
+  if (bestYardLine <= 50) {
     fieldPositionValue = 50;
-  } else if (qbScore['FIELDPOS'] <= 80) {
+  } else if (bestYardLine <= 80) {
     fieldPositionValue = 20;
   }
   breakdown['fieldPosition'] = {
     'value': fieldPositionValue,
-    'bestYardLine': qbScore['FIELDPOS'],
+    'bestYardLine': bestYardLine,
   };
 
   let total = 0;
