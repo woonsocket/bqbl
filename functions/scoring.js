@@ -395,7 +395,7 @@ function passerRatingPoints({cmp, att, yds, int, td}) {
 }
 
 function isBad(stats) {
-  const turnoverCount = stats['int'] + stats['fum'];
+  const turnoverCount = stats['int'] + stats['fuml'];
   const {rating, _} = passerRatingPoints(stats);
   // By rule, one of these criteria must be met to consider a passer to have
   // been benched.
