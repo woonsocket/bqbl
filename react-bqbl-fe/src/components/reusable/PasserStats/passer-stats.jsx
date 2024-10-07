@@ -19,8 +19,9 @@ PasserStats.propTypes = {
 };
 
 function PasserStats(props) {
-  const {cmp, att, netyds} = props.passer.stats;
-  const turnovers = props.passer.stats.int + props.passer.stats.fuml;
+  const {cmp, att, netyds, int, fuml} = props.passer.stats;
+  const {isBad, isBenched} = props.passer;
+  const turnovers = int + fuml;
   return (
     <div className={styles.passer}>
       <div>
@@ -38,7 +39,10 @@ function PasserStats(props) {
           }
         </div>
       </div>
-      {props.passer.isBad && <div>
+      {isBenched && <div className={styles.textBadge}>
+        BENCHED
+      </div>}
+      {(isBad && !isBenched) && <div>
         <img className={styles.badge} src={badBadge} alt="BAD" />
       </div>}
     </div>
