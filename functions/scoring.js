@@ -29,17 +29,18 @@ const STUPID_PROJECTION_TARGET = {
 exports.computeScore = function(stats, overrides) {
   stats = Object.assign({}, stats);  // Don't mutate the argument object.
   overrides = overrides || {};
+  const benchings = overrides.benchings || {};
   if (overrides.safeties) {
     const safeties = entries(overrides.safeties)
         .filter(([_, value]) => value)
         .length;
     stats['SAF'] = (stats['SAF'] || 0) + safeties;
   }
-  if (overrides.benchings) {
-    const benchings = entries(overrides.benchings)
+  if (benchings) {
+    const benchingCount = entries(benchings)
         .filter(([_, value]) => value)
         .length;
-    stats['BENCH'] = (stats['BENCH'] || 0) + benchings;
+    stats['BENCH'] = (stats['BENCH'] || 0) + benchingCount;
   }
   if (overrides.fumblesixes) {
     const fumblesixes = entries(overrides.fumblesixes)
@@ -48,8 +49,8 @@ exports.computeScore = function(stats, overrides) {
     stats['FUM6'] = (stats['FUM6'] || 0) + fumblesixes;
   }
 
-  let score = computeScoreComponents(stats);
-  let projScore = computeScoreComponents(computeStupidProjection(stats));
+  let score = computeScoreComponents(stats, benchings);
+  let projScore = computeScoreComponents(computeStupidProjection(stats), benchings);
   let gameInfo = {
     'clock': stats['CLOCK'],
     'id': stats['ID'],
@@ -154,7 +155,7 @@ function parseElapsedFraction(gameStatus) {
 /**
  * @return {{breakdown: !Object, total: number}}
  */
-function computeScoreComponents(qbScore) {
+function computeScoreComponents(qbScore, benchings = {}) {
   // Zero out any undefined keys
   SCORE_KEYS.forEach((k) => {
     qbScore[k] = qbScore[k] || 0;
@@ -244,6 +245,7 @@ function computeScoreComponents(qbScore) {
       'stats': stats,
       'rating': rating,
       'isBad': isBad(stats),
+      'isBenched': !!benchings[id],
     };
   }
   breakdown['passerRating'] = {
