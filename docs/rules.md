@@ -177,9 +177,8 @@ separate competition.
         * The QB was removed when their team was clearly winning the game.
 
     * In borderline situations where the intent of the coach is not clear, we
-      use the general guideline that the QB played it's necessary (but not
-      sufficient) to have a passer rating below 67.0, or at least 2
-      turnovers.
+      use the general guideline that the QB is Bad if their passer rating is
+      below 67.0, *or* if they had at least 2 turnovers.
 
 ## 24/7 points
 
