@@ -160,13 +160,26 @@ separate competition.
 
 * Benched during game (for non-injury reasons): **35 points**
 
-    * This only counts if the QB was clearly benched for being bad at
-      football. The guideline we use is that it's necessary (but not sufficient)
-      to have a passer rating below 67.0, *or* at least 2 turnovers.
+    * The QB must have been benched for being bad at football. These points
+      are awarded based on commissioner discretion, with some guidelines.
 
-    * These points are awarded based on commissioner discretion, but if the QB
-      is generally agreed to have played poorly, and is replaced without having
-      suffered an obvious injury, then the points will count.
+    * Examples of situations that are benchings:
+
+        * A major news outlet runs a headline stating that the QB was benched.
+        * The coach explains in a press conference that the change was made
+          because for football reasons, not injury reasons. For example, "he
+          gave us a better chance to win" or "the offense needed a spark."
+
+    * Examples of situations that are not benchings:
+
+        * The QB was removed from the game because of an injury, regardless of
+          severity.
+        * The QB was removed when their team was clearly winning the game.
+
+    * In borderline situations where the intent of the coach is not clear, we
+      use the general guideline that the QB played it's necessary (but not
+      sufficient) to have a passer rating below 67.0, or at least 2
+      turnovers.
 
 ## 24/7 points
 
