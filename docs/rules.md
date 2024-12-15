@@ -4,11 +4,10 @@ These rules are an adaptation of
 [the original Grantland rules](http://grantland.com/the-triangle/introducing-grantlands-bad-quarterback-league/)
 from 2011.
 
-Rule changes for 2021:
+Most recent changes:
 
-* Points for unvaccinated players missing games due to COVID protocol
-* Repealed no-longer-topical Kaepernick/Manziel rules
-* Repealed rules about Trump tweets because lol he can't tweet
+* October 2024: Relax the benching requirement, because some obvious benchings
+  weren't technically meeting the old rule.
 
 ## General rules
 
