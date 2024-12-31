@@ -59,10 +59,10 @@
         "probowl": {
           "$year": {
             // Wish this wasn't hard-coded. The Pro Bowl is traditionally
-            // week 17. It doesn't live alongside the regular season weeks,
-            // because the data schema is different.
+            // the last week of the season. It doesn't live alongside the
+            // regular season weeks, because the data schema is different.
             "$user_id": {
-              ".write": "$user_id === auth.uid && root.child('unlockedweeks/' + $year + '/17').val() > now"
+              ".write": "$user_id === auth.uid && root.child('unlockedweeks/' + $year + '/18').val() > now"
             },
           },
         },
