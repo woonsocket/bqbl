@@ -29,7 +29,7 @@ function TwentyFourPage(props) {
       <h2>{props.year} scores</h2>
       <ScoreTable scores={scores247} />
       <h2>Award points</h2>
-      <ScoreForm firebase={props.firebase} year={year} week={week} />
+      <ScoreForm firebase={firebase} year={year} week={week} />
     </>
   );
 }
