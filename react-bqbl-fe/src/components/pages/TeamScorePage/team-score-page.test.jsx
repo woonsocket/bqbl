@@ -26,8 +26,6 @@ describe('TeamScorePage', () => {
     useSelector.mockImplementation(selector => {
       const state = { scores: SCORES };
       const result = selector(state);
-      console.log('Mock state:', state);
-      console.log('Selector result:', result);
       return result;
     });
   });
@@ -39,21 +37,24 @@ describe('TeamScorePage', () => {
   it('renders scores', async () => {
     render(<TeamScorePage week="1" />);
 
-    // Test initial render (sorted by projections)
+    // Test that initial render
     expect(screen.getByText('NE')).toBeInTheDocument();
     expect(screen.getByText('NYJ')).toBeInTheDocument();
   });
 
   it('renders scores and allows sorting', async () => {
+    // The mocked scores are edited such that BUF is first with projections, and ATL is first
+    // without projections. Alphabetically, ARI is first.
+
     render(<TeamScorePage week="1" />);
 
-    screen.logTestingPlaygroundURL();
+    // screen.logTestingPlaygroundURL();
 
     // Test initial render (sorted by team and projections, BUF first)
     let firstRow = screen.getAllByRole('heading')[0];
     expect(firstRow).toHaveTextContent('BUF');
 
-    // Disable sort by projections
+    // Disable sort by projections, making ATL first
     const projectionsSwitch = screen.getByTestId('projections-toggle');
     const projectionsSwitchInput = within(projectionsSwitch).getByRole('checkbox');
     expect(projectionsSwitchInput).toBeChecked();
@@ -68,7 +69,6 @@ describe('TeamScorePage', () => {
     firstRow = screen.getAllByRole('heading')[0];
     expect(firstRow).toHaveTextContent('ATL');
 
-
     // Disable sort overall
     const sortSwitch = screen.getByTestId('sort-toggle');
     const switchInput = within(sortSwitch).getByRole('checkbox');
@@ -81,10 +81,8 @@ describe('TeamScorePage', () => {
     });
 
     expect(switchInput).not.toBeChecked();
-    screen.logTestingPlaygroundURL();
     // Verify sort changed
     firstRow = screen.getAllByRole('heading')[0];
     expect(firstRow).toHaveTextContent('ARI');
-
   });
 });

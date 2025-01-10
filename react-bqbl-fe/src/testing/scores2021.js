@@ -155,9 +155,9 @@ export const SCORES = {'1': {
           "value" : 5
         }
       },
-      "total" : 7
+      "total" : 0
     },
-    "total" : 7
+    "total" : 0
   },
   "ATL" : {
     "breakdown" : {
@@ -315,7 +315,7 @@ export const SCORES = {'1': {
       },
       "total" : -5
     },
-    "total" : -5
+    "total" : 300
   },
   "BAL" : {
     "breakdown" : {
@@ -475,7 +475,7 @@ export const SCORES = {'1': {
       },
       "total" : -1
     },
-    "total" : -1
+    "total" : 0
   },
   "BUF" : {
     "breakdown" : {
@@ -633,7 +633,7 @@ export const SCORES = {'1': {
           "value" : 10
         }
       },
-      "total" : 3
+      "total" : 10000
     },
     "total" : 3
   },
@@ -1595,7 +1595,7 @@ export const SCORES = {'1': {
       },
       "total" : 4
     },
-    "total" : 1021
+    "total" : 5
   },
   "DET" : {
     "breakdown" : {
