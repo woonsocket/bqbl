@@ -1595,7 +1595,7 @@ export const SCORES = {'1': {
       },
       "total" : 4
     },
-    "total" : 5
+    "total" : -500
   },
   "DET" : {
     "breakdown" : {
