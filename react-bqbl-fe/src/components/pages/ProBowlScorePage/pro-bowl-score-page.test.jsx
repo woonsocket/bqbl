@@ -1,49 +1,97 @@
-import "@testing-library/jest-dom";
-import { render, screen } from "@testing-library/react";
-import React from "react";
-import { act } from "react";
-import { MOCK_APP_STATE, MockApp, MockFirebase } from "../../../testing/mocks";
-import { AppStateContext } from "../../AppState";
-import { FirebaseContext } from "../../Firebase";
-import ProBowlScoresPage from "./pro-bowl-score-page";
-import { Provider } from "react-redux";
-import store from "../../../redux/store";
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import ProBowlScoresPage from './pro-bowl-score-page';
+import { MOCK_SCORES } from '../../../testing/scores2021';
 
-const wait = async () => new Promise((resolve) => setTimeout(resolve, 0));
+// Mock redux hooks
+jest.mock('react-redux', () => ({
+  ...jest.requireActual('react-redux'),
+  useSelector: jest.fn(),
+  useDispatch: jest.fn(),
+}));
 
-let container;
+// Mock AppState hooks
+jest.mock('../../AppState/app-state', () => ({
+  useYear: () => '2023',
+  useWeek: () => '1'
+}));
 
-beforeEach(() => {
-  container = document.createElement("div");
-  document.body.appendChild(container);
-});
+const mockDispatch = jest.fn();
 
-describe("ProBowlScoresPage", () => {
-  it("renders mocked data", async () => {
-    act(() => {
-      let mockFb = new MockFirebase();
-      mockFb.scores['3'] = mockFb.scores['1'];
-      render(
-        <AppStateContext.Provider value={[MOCK_APP_STATE]}>
-          <FirebaseContext.Provider value={mockFb}>
-            <MockApp year={"2023"} league={"nbqbl"}>
-              <Provider store={store}>
-                <ProBowlScoresPage />
-              </Provider>
-            </MockApp>
-          </FirebaseContext.Provider>
-        </AppStateContext.Provider>,
-        container
-      );
+describe('ProBowlScoresPage', () => {
+  beforeEach(() => {
+    const { useSelector, useDispatch } = require('react-redux');
+    
+    // Setup redux mock state
+    useSelector.mockImplementation(selector => {
+      const state = { 
+        scores: MOCK_SCORES,
+        proBowlStarts: {
+          nbqbl: [
+            {
+              name: 'Ryan',
+              id: 'QB1',
+              starts: ['DEN'],
+              totalScore: 1028
+            },
+            {
+              name: 'Trevor',
+              id: 'QB2',
+              starts: ['JAX'],
+              totalScore: 108
+            }
+          ],
+          abqbl: [
+            {
+              name: 'Aaron',
+              id: 'QB3',
+              starts: ['GB'],
+              totalScore: 500
+            }
+          ]
+        }
+      };
+      return selector(state);
     });
-    await act(async () => {
-      await wait();
+
+    // Setup dispatch mock
+    useDispatch.mockImplementation(() => mockDispatch);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('renders pro bowl scores for all leagues', () => {
+    render(<ProBowlScoresPage />);
+
+    // Test that league cards render
+    expect(screen.getByText('nbqbl')).toBeInTheDocument();
+    expect(screen.getByText('abqbl')).toBeInTheDocument();
+
+    // Test that QB names render for both leagues
+    expect(screen.getByText('Ryan')).toBeInTheDocument();
+    expect(screen.getByText('Trevor')).toBeInTheDocument();
+    expect(screen.getByText('Aaron')).toBeInTheDocument();
+
+    // Test that scores render
+    expect(screen.getByText('Total: 1136')).toBeInTheDocument(); // nbqbl league total (1028 + 108)
+    expect(screen.getByText('Total: 500')).toBeInTheDocument();  // abqbl league total
+
+    // Test that teams render
+    expect(screen.getByText('DEN')).toBeInTheDocument();
+    expect(screen.getByText('JAX')).toBeInTheDocument();
+    expect(screen.getByText('GB')).toBeInTheDocument();
+  });
+
+  it('dispatches load action on mount', () => {
+    render(<ProBowlScoresPage />);
+
+    expect(mockDispatch).toHaveBeenCalledWith({
+      type: 'proBowlStarts/load',
+      firebase: expect.any(Object),
+      year: '2023'
     });
-    // SUPER USEFUL
-       screen.logTestingPlaygroundURL();
-    expect(screen.getByText(/Ryan/i)).toBeInTheDocument();
-    expect(screen.getByText(/Trevor/i)).toBeInTheDocument();
-    expect(screen.getAllByText(/total: 1028/i)[0]).toBeInTheDocument();
-    expect(screen.getAllByText(/total: 108/i)[0]).toBeInTheDocument();
   });
 });

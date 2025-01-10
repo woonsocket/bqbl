@@ -59,6 +59,29 @@ const scores247Middleware = storeAPI => next => action => {
   return next(action)
 }
 
+// TODO Update pro bowl starts middleware to handle multiple leagues
+const proBowlStartsMiddleware = storeAPI => next => action => {
+  if (action.firebase && action.type === 'proBowlStarts/load') {
+    // Get starts for both leagues
+    ['abqbl', 'nbqbl'].forEach(leagueId => {
+      action.firebase.getProBowlStartsForLeagueThen(
+        leagueId,
+        action.year,
+        (starts) => {
+          storeAPI.dispatch({ 
+            type: 'proBowlStarts/loaded', 
+            payload: {
+              league: leagueId,
+              starts
+            }
+          });
+        }
+      );
+    });
+  }
+  return next(action);
+}
+
 export const leagueSlice = createSlice({
   name: 'league',
   initialState: {
@@ -130,16 +153,37 @@ export const userSlice = createSlice({
   }
 })
 
+// TODO Update pro bowl starts slice to use league-keyed object
+export const proBowlStartsSlice = createSlice({
+  name: 'proBowlStarts',
+  initialState: {
+    abqbl: [],
+    nbqbl: []
+  },
+  reducers: {
+    load: (state, action) => {},
+    loaded: (state, action) => {
+      state[action.payload.league] = action.payload.starts;
+    }
+  }
+})
+
 export const DEFAULT_REDUCERS = {
   league: leagueSlice.reducer,
   year: yearSlice.reducer,
   week: weekSlice.reducer,
   users: userSlice.reducer,
   scores: scoresSlice.reducer,
-  scores247: scores247Slice.reducer
+  scores247: scores247Slice.reducer,
+  proBowlStarts: proBowlStartsSlice.reducer
 }
 
 export default configureStore({
   reducer: DEFAULT_REDUCERS,
-  middleware: [leagueFetchMiddleware, scoresMiddleware, scores247Middleware],
+  middleware: [
+    leagueFetchMiddleware, 
+    scoresMiddleware, 
+    scores247Middleware,
+    proBowlStartsMiddleware
+  ],
 })

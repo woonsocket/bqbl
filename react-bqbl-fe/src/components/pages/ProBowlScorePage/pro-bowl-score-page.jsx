@@ -8,7 +8,7 @@ import { useLeague, useWeek, useYear } from '../../AppState/app-state';
 import { FirebaseContext } from '../../Firebase';
 import PlayerScoreList from '../../reusable/PlayerScoreList/player-score-list';
 import styles from './ProBowlScorePage.module.css'
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 // The league score is the sum of the top 3 player scores.
 const LEAGUE_SCORE_PLAYER_COUNT = 3;
@@ -19,28 +19,32 @@ const ALL_LEAGUES = ['abqbl', 'nbqbl'];
 
 
 function ProBowlScoresPage() {
-  let league = useLeague();
-  let year = useYear();
-  let firebase = useContext(FirebaseContext);
+  const year = useYear();
+  const dispatch = useDispatch();
+  const leagues = ALL_LEAGUES;
   const nflScores = useSelector((state) => state.scores);
+  const allProBowlStarts = useSelector((state) => state.proBowlStarts);
+  const firebase = useContext(FirebaseContext);
 
-  const leagues = ALL_LEAGUES.slice();
-  // Place the viewing player's league first.
-  leagues.sort((a, b) => {
-    if (a === league) {
-      return -1;
-    } else if (b === league) {
-      return 1;
-    }
-    return a.localeCompare(b);
-  });
+  useEffect(() => {
+    dispatch({ 
+      type: 'proBowlStarts/load', 
+      firebase,
+      year
+      // No need to pass league since middleware loads all leagues
+    });
+  }, [dispatch, firebase, year]);
 
   return (
     <div className={styles.leagueContainer}>
-      {leagues.map((league) => (
-        <div key={league} className={styles.leagueCard}>
-          <ProBowlScoresCard league={league} nflScores={nflScores}
-            firebase={firebase} year={year} />
+      {leagues.map((leagueId) => (
+        <div key={leagueId} className={styles.leagueCard}>
+          <ProBowlScoresCard 
+            league={leagueId} 
+            nflScores={nflScores}
+            starts={allProBowlStarts[leagueId] || []}
+            year={year} 
+          />
         </div>
       ))}
     </div>
@@ -57,16 +61,11 @@ ProBowlScoresCard.propTypes = {
 function ProBowlScoresCard(props) {
   let [leagueScore, setLeagueScore] = useState(0);
   let [playerScores, setPlayerScores] = useState([]);
-  let year = useYear();
-  let week = useWeek();
-  let firebase = useContext(FirebaseContext);
+  const week = useWeek();
   // console.log(props.nflScores);
   useEffect(() => {
-    // console.log(props.nflScores);
-    firebase.getProBowlStartsForLeagueThen(
-      props.league, year, (starts) => {
       const playerScores =
-        joinProBowlScores(props.nflScores, starts, week);
+        joinProBowlScores(props.nflScores, props.starts, week);
       playerScores.sort((a, b) => b.totalScore - a.totalScore);
       setPlayerScores(playerScores);
       let leagueScore = 0;
@@ -74,8 +73,7 @@ function ProBowlScoresCard(props) {
         leagueScore += p.totalScore;
       }
       setLeagueScore(leagueScore);
-    });
-  }, [firebase, props.league, props.nflScores, year]);
+  }, [props.starts, props.nflScores, week]);
 
   function playerClass(index) {
 
