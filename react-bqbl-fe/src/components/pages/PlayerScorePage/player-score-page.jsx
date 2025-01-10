@@ -7,7 +7,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from "react-redux";
 import * as TEMPLATES from "../../../middle/templates";
 import { joinScoresToStarts } from "../../../redux/join";
-import { useWeek } from '../../AppState';
+import { useWeek } from '../../AppState/app-state';
 import IconScoreCell from '../../reusable/IconScoreCell/icon-score-cell';
 import RequireLeague from '../../reusable/RequireLeague';
 

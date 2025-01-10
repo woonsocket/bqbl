@@ -3,7 +3,7 @@ import React from "react";
 import { Provider } from "react-redux";
 import { MOCK_APP_STATE, MockFirebase } from "../../../testing/mocks";
 import { MOCK_REDUX_STATE } from "../../../testing/mocks";
-import { AppStateContext } from "../../AppState";
+import { AppStateContext } from "../../AppState/app-state";
 import { FirebaseContext } from "../../Firebase";
 import Lineup from "./lineup";
 import configureMockStore from "redux-mock-store";

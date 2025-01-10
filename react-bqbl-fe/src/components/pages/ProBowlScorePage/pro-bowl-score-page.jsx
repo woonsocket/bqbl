@@ -4,7 +4,7 @@ import CardHeader from '@mui/material/CardHeader';
 import PropTypes from 'prop-types';
 import React, { useContext, useEffect, useState } from 'react';
 import { joinProBowlScores } from '../../../middle/response';
-import { useLeague, useWeek, useYear } from '../../AppState';
+import { useLeague, useWeek, useYear } from '../../AppState/app-state';
 import { FirebaseContext } from '../../Firebase';
 import PlayerScoreList from '../../reusable/PlayerScoreList/player-score-list';
 import styles from './ProBowlScorePage.module.css'

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
-import { useWeek, useYear, useLeague } from '../../AppState';
+import { useWeek, useYear, useLeague } from '../../AppState/app-state';
 
 const HOME = '/home';
 const LINEUP = '/lineup';

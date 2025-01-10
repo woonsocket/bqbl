@@ -1,7 +1,7 @@
 import Switch from "@mui/material/Switch";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { useWeek, useYear } from "../../AppState";
+import { useWeek, useYear } from "../../AppState/app-state";
 import TeamScoreCard from "../../reusable/TeamScoreCard/team-score-card";
 
 function TeamScorePage(props) {

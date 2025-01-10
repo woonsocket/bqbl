@@ -6,7 +6,7 @@ import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import React, { useContext, useEffect, useState } from 'react';
 import { useSelector } from "react-redux";
-import { useWeek, useYear } from '../../AppState';
+import { useWeek, useYear } from '../../AppState/app-state';
 import { FirebaseContext } from '../../Firebase';
 
 import PasserStats from "../../reusable/PasserStats/passer-stats";

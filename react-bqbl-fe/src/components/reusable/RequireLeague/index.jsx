@@ -3,7 +3,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import React, { useContext } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { useLeague, useWeek, useYear } from '../../AppState';
+import { useLeague, useWeek, useYear } from '../../AppState/app-state';
 import { FirebaseContext } from '../../Firebase';
 
 function RequireLeague(props) {

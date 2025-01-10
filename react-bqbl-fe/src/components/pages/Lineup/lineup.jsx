@@ -10,7 +10,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import * as FOOTBALL from '../../../constants/football';
 import * as SCHEDULE from '../../../constants/schedule';
 import { FirebaseContext } from '../../Firebase';
-import {useYear, useLeague, useUidOverride} from '../../AppState'
+import {useYear, useLeague, useUidOverride} from '../../AppState/app-state'
 import RequireLeague from '../../reusable/RequireLeague';
 import { useUser } from '../../Firebase/firebase';
 import { hasDh } from '../../../redux/util';

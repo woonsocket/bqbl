@@ -11,7 +11,7 @@ import Typography from '@mui/material/Typography';
 import React, { useContext, useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { WEEK_IDS } from '../../constants/football';
-import { useLeague, useWeek, useYear } from '../AppState';
+import { useLeague, useWeek, useYear } from '../AppState/app-state';
 import { FirebaseContext } from '../Firebase';
 import BenchingPage from '../pages/BenchingPage/benching-page';
 import FumbleSixPage from '../pages/FumbleSixPage';

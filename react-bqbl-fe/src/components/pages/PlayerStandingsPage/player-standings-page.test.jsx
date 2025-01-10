@@ -1,5 +1,5 @@
 import React from "react";
-import { AppStateContext } from "../../AppState";
+import { AppStateContext } from "../../AppState/app-state";
 import { FirebaseContext } from "../../Firebase";
 import { MockFirebase, MOCK_APP_STATE, MockApp } from "../../../testing/mocks";
 import "@testing-library/jest-dom";

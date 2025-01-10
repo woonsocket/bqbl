@@ -1,8 +1,8 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import App from './index';
+import App from './app';
 import { FirebaseContext } from '../Firebase';
-import { AppStateContextProvider } from '../AppState';
+import { AppStateContextProvider } from '../AppState/app-state';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
@@ -18,6 +18,14 @@ const mockFirebase = {
     })
   })
 };
+
+// jest.mock('../Firebase', () => ({
+//   useUser: () => ({
+//     uid: 'testUser123',
+//     displayName: 'Test User',
+//     email: 'test@example.com'
+//   })
+// }));
 
 const store = configureStore({
   reducer: {

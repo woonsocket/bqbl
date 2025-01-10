@@ -9,7 +9,7 @@ import Snackbar from "@mui/material/Snackbar";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 import { isInLeague } from "../../../redux/util";
-import { useLeague, useYear } from "../../AppState";
+import { useLeague, useYear } from "../../AppState/app-state";
 import { useUser } from "../../Firebase/firebase";
 
 import styles from './ProBowlPage.module.css'

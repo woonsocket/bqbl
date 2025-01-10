@@ -13,7 +13,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { seasonWeeksReverse } from "../../../constants/football";
 import { joinScoresToStarts } from "../../../redux/join";
-import { useYear } from "../../AppState";
+import { useYear } from "../../AppState/app-state";
 import IconScoreCell from "../../reusable/IconScoreCell/icon-score-cell";
 import PlayerScoreList from "../../reusable/PlayerScoreList/player-score-list";
 import RequireLeague from "../../reusable/RequireLeague";
