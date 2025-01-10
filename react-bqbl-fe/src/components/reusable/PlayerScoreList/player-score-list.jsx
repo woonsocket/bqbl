@@ -14,6 +14,8 @@ PlayerScoreList.propTypes = {
 };
 
 
+
+
 // A PlayerScoreList is a component representing a collection of scores for a
 // player. The player chose to play some teams. Each team has a score, and the
 // player's total score is the sum of those teams' scores.
@@ -30,8 +32,8 @@ function PlayerScoreList(props) {
           ))}
         </div>
         {props.total !== undefined && (
-          <div>
-            <span className={styles.totalLabel}>Total:</span>&nbsp;
+          <div className={styles.totalRow}>
+            <span className={styles.totalLabel}>Total:</span>
             <ScoreValue score={props.total} />
           </div>
         )}

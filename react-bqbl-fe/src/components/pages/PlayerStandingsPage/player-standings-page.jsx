@@ -108,15 +108,46 @@ function PlayerYearCard({player, year, teams, startRows}) {
         title={player.name}
         subheader={`Total: ${player.total}`}
         data-testid="player-card-header"
+        sx={{
+          backgroundColor: '#f5f5f5',
+          '& .MuiCardHeader-title': {
+            fontSize: '1.25rem',
+            fontWeight: 500
+          },
+          '& .MuiCardHeader-subheader': {
+            fontSize: '1rem',
+            color: 'primary.main'
+          }
+        }}
       />
-      <CardContent>
-        <PlayerScoreList label="24/7" entries={scoreEntries247} />
+      <CardContent
+        sx={{
+          padding: '16px 24px',
+          '&:last-child': {
+            paddingBottom: '16px'
+          }
+        }}
+      >
+        <PlayerScoreList 
+          label="24/7" 
+          entries={scoreEntries247}
+          sx={{
+            marginBottom: '16px'
+          }}
+        />
         {weeks.slice(0, FOLD)}
         <Collapse in={expanded} timeout="auto" unmountOnExit>
           {weeks.slice(FOLD)}
         </Collapse>
       </CardContent>
-      <CardActions disableSpacing>
+      <CardActions 
+        disableSpacing
+        sx={{
+          borderTop: '1px solid #e0e0e0',
+          justifyContent: 'center',
+          padding: '8px'
+        }}
+      >
         {weeks.length > FOLD && (
           <IconButton
             className={classNames({ [styles.expanded]: expanded })}
@@ -124,6 +155,10 @@ function PlayerYearCard({player, year, teams, startRows}) {
             aria-expanded={expanded}
             aria-label="Show more"
             size="large"
+            sx={{
+              transition: 'transform 0.3s',
+              transform: expanded ? 'rotate(180deg)' : 'none'
+            }}
           >
             <ExpandMoreIcon />
           </IconButton>

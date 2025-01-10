@@ -1,27 +1,38 @@
 .scoreRow {
   display: flex;
-  margin: 4px 0px;
+  align-items: flex-start;
+  margin: 8px 0;
+  gap: 16px;
 }
 .labelCell {
-  min-width: 70px;
+  min-width: 80px;
   font-size: 1rem;
-  text-align: left;
-  font-family: "Roboto" "Helvetica" "Arial" sans-serif;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
   font-weight: 400;
-  vertical-align: top;
+  padding: 4px 0;
 }
 .scoreCells {
   display: flex;
   flex-direction: column;
+  gap: 8px;
 }
 .teamScoreCells {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
 }
 .scoreCell {
-  min-width: 50px;
+  min-width: 60px;
+  text-align: center;
+}
+.totalRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
 }
 .totalLabel {
-  font-weight: bold;
+  font-weight: 500;
 }
