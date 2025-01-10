@@ -35,7 +35,7 @@ function ProBowlScoresPage() {
     });
   }, [dispatch, firebase, year]);
 
-  return (
+  return  (
     <div className={styles.leagueContainer}>
       {leagues.map((leagueId) => (
         <div key={leagueId} className={styles.leagueCard}>
@@ -56,14 +56,17 @@ ProBowlScoresCard.propTypes = {
   // BQBL scores for NFL teams for the given year.
   nflScores: PropTypes.object.isRequired,
   year: PropTypes.string.isRequired,
+  starts: PropTypes.array.isRequired,
 };
 
 function ProBowlScoresCard(props) {
   let [leagueScore, setLeagueScore] = useState(0);
   let [playerScores, setPlayerScores] = useState([]);
   const week = useWeek();
-  // console.log(props.nflScores);
   useEffect(() => {
+      if (!props.starts || !props.nflScores) return;
+      console.log('JOINING');
+      console.log({props})
       const playerScores =
         joinProBowlScores(props.nflScores, props.starts, week);
       playerScores.sort((a, b) => b.totalScore - a.totalScore);
