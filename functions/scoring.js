@@ -5,6 +5,11 @@ const SCORE_KEYS = [
   'TD', 'PASSTD', 'PASSYD', 'RUSHYD', 'SACKYD', 'SACK', 'SAF', 'BENCH', 'LONG',
 ];
 
+// Minimum 10 pass attempts to be eligible for passer rating bonuses. Even
+// though that means this legendary 8-attempt performance wouldn't count:
+// https://www.pro-football-reference.com/boxscores/201410260nyj.htm
+const MIN_ATTEMPTS = 10;
+
 /**
  * A score object containing keys from SCORE_KEYS. Represents "average" stats
  * for a QB. Fields that are absent are ignored by the projection.
@@ -24,17 +29,18 @@ const STUPID_PROJECTION_TARGET = {
 exports.computeScore = function(stats, overrides) {
   stats = Object.assign({}, stats);  // Don't mutate the argument object.
   overrides = overrides || {};
+  const benchings = overrides.benchings || {};
   if (overrides.safeties) {
     const safeties = entries(overrides.safeties)
         .filter(([_, value]) => value)
         .length;
     stats['SAF'] = (stats['SAF'] || 0) + safeties;
   }
-  if (overrides.benchings) {
-    const benchings = entries(overrides.benchings)
+  if (benchings) {
+    const benchingCount = entries(benchings)
         .filter(([_, value]) => value)
         .length;
-    stats['BENCH'] = (stats['BENCH'] || 0) + benchings;
+    stats['BENCH'] = (stats['BENCH'] || 0) + benchingCount;
   }
   if (overrides.fumblesixes) {
     const fumblesixes = entries(overrides.fumblesixes)
@@ -43,8 +49,8 @@ exports.computeScore = function(stats, overrides) {
     stats['FUM6'] = (stats['FUM6'] || 0) + fumblesixes;
   }
 
-  let score = computeScoreComponents(stats);
-  let projScore = computeScoreComponents(computeStupidProjection(stats));
+  let score = computeScoreComponents(stats, benchings);
+  let projScore = computeScoreComponents(computeStupidProjection(stats), benchings);
   let gameInfo = {
     'clock': stats['CLOCK'],
     'id': stats['ID'],
@@ -60,9 +66,10 @@ exports.computeScore = function(stats, overrides) {
 
   return {
     'total': score['total'],
-    // 'breakdown' is the new way of representing the various parts of the
-    // score.
+    // The components that add up to the total score.
     'breakdown': score['breakdown'],
+    // Stats for each passer.
+    'passers': score['passers'],
     'gameInfo': gameInfo,
     'projection': projScore,
   };
@@ -148,7 +155,7 @@ function parseElapsedFraction(gameStatus) {
 /**
  * @return {{breakdown: !Object, total: number}}
  */
-function computeScoreComponents(qbScore) {
+function computeScoreComponents(qbScore, benchings = {}) {
   // Zero out any undefined keys
   SCORE_KEYS.forEach((k) => {
     qbScore[k] = qbScore[k] || 0;
@@ -208,30 +215,41 @@ function computeScoreComponents(qbScore) {
   breakdown['safety'] = scalar(20, qbScore['SAF']);
   breakdown['bench'] = scalar(35, qbScore['BENCH']);
 
-  const passerStats = [];
+  const passerRatings = [];
+  const passerStats = {};
   let passerRatingTotalValue = 0;
   // Different versions of the scraping code are inconsistent about capitalizing
   // this key.
   const rawPasserStats = qbScore['passers'] || qbScore['PASSERS'] || {};
-  for (let [_, passer] of entries(rawPasserStats)) {
+  for (let [id, passer] of entries(rawPasserStats)) {
+    const passyd = passer['PASSYD'] || 0;
+    const sackyd = passer['SACKYD'] || 0;
     const stats = {
       'cmp': passer['CMP'] || 0,
       'att': passer['ATT'] || 0,
-      'yds': passer['PASSYD'] || 0,  // Sack yards don't count against rating.
+      'yds': passyd,  // Sack yards don't count against rating.
+      'netyds': passyd + sackyd,
       'int': passer['INT'] || 0,
+      'fuml': passer['FUML'] || 0,
       'td': passer['PASSTD'] || 0,
     };
     const {rating, value} = passerRatingPoints(stats);
     passerRatingTotalValue += value;
-    passerStats.push({
+    passerRatings.push({
       'name': passer['NAME'],
-      'stats': stats,
       'rating': rating,
       'value': value,
     });
+    passerStats[id] = {
+      'name': passer['NAME'],
+      'stats': stats,
+      'rating': rating,
+      'isBad': isBad(stats),
+      'isBenched': !!benchings[id],
+    };
   }
   breakdown['passerRating'] = {
-    'passers': passerStats,
+    'passers': passerRatings,
     'value': passerRatingTotalValue,
   };
 
@@ -256,14 +274,15 @@ function computeScoreComponents(qbScore) {
   };
 
   let fieldPositionValue = 0;
-  if (qbScore['FIELDPOS'] <= 50) {
+  const bestYardLine = qbScore['FIELDPOS'] || 0;
+  if (bestYardLine <= 50) {
     fieldPositionValue = 50;
-  } else if (qbScore['FIELDPOS'] <= 80) {
+  } else if (bestYardLine <= 80) {
     fieldPositionValue = 20;
   }
   breakdown['fieldPosition'] = {
     'value': fieldPositionValue,
-    'bestYardLine': qbScore['FIELDPOS'],
+    'bestYardLine': bestYardLine,
   };
 
   let total = 0;
@@ -276,6 +295,7 @@ function computeScoreComponents(qbScore) {
   }
   return {
     'breakdown': breakdown,
+    'passers': passerStats,
     'total': total,
   };
 };
@@ -365,10 +385,7 @@ function passerRatingPoints({cmp, att, yds, int, td}) {
 
   let value = 0;
 
-  // Minimum 10 pass attempts to be eligible for passer rating points. Even
-  // though that means this legendary 8-attempt performance wouldn't count:
-  // https://www.pro-football-reference.com/boxscores/201410260nyj.htm
-  if (att >= 10) {
+  if (att >= MIN_ATTEMPTS) {
     if (unscaledRating == 0) {
       value = 50;
     } else if (unscaledRating >= 9.5) {
@@ -377,6 +394,14 @@ function passerRatingPoints({cmp, att, yds, int, td}) {
   }
   const rating = unscaledRating * 100 / 6;
   return {'rating': rating, 'value': value};
+}
+
+function isBad(stats) {
+  const turnoverCount = stats['int'] + stats['fuml'];
+  const {rating, _} = passerRatingPoints(stats);
+  // By rule, one of these criteria must be met to consider a passer to have
+  // been benched.
+  return turnoverCount >= 2 || (stats['att'] >= MIN_ATTEMPTS && rating < 67.0);
 }
 
 /**

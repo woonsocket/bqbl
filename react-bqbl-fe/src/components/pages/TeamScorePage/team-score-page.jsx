@@ -30,12 +30,14 @@ function TeamScorePage(props) {
     )
     if (sortScores) {
       if (useProjections) {
-        scoresWeek = scoresWeek.sort(
+        scoresWeek.sort(
           (team, team2) => team2.projection.total - team.projection.total
         );
       } else {
-        scoresWeek = scoresWeek.sort((team, team2) => team2.total - team.total);
+        scoresWeek.sort((team, team2) => team2.total - team.total);
       }
+    } else {
+      scoresWeek.sort((team, team2) => team < team2)
     }
     setScoresList(scoresWeek);
     setIsLoaded(true);
@@ -67,7 +69,7 @@ function TeamScorePage(props) {
           data-testid="team-score-card"
           score={score}
           key={score.teamName}
-          boxScoreLink={boxScoreLink(year, props.week, score.gameInfo.id)}
+          boxScoreLink={boxScoreLink(year, props.week, score.gameInfo.id, score.gameInfo.idType)}
         />
       ))}
       {isLoaded && !scoresList.length && (

@@ -82,9 +82,8 @@ class Firebase {
     return () => ref.off("value");
   }
 
-  getLockedWeeksThen(nowMs, cb) {
-    // TODO(aerion): Namespace the unlock times by year.
-    const ref = this.db.ref("/unlockedweeks");
+  getLockedWeeksThen(year, nowMs, cb) {
+    const ref = this.db.ref(`/unlockedweeks/${year}`);
     ref.on("value", (snapshot) => {
       if (!snapshot.val()) {
         throw new Error(`can't read unlockedweeks`);

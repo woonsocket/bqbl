@@ -89,17 +89,3 @@ class Events(object):
         summary = Events._summary(player_name, play)
         summary['qbFault'] = is_qb_fault
         self.safeties[Events._id(game_id, play_id)] = summary
-
-    def add_passer(self, team, player_id, player_name):
-        """Adds a passer.
-
-        This means that the player threw a pass for the given team. The frontend
-        provides a way for admins to mark a passer as having been benched, which
-        is worth points for the team.
-
-        Args:
-            team: The team abbreviation.
-            player_id: The ID of the player.
-            player_name: Human-readable name of the player, e.g., "J. Edelman".
-        """
-        self.passers[player_id] = {'team': team, 'name': player_name}

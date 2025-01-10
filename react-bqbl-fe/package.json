@@ -29,8 +29,8 @@
     "styled-components": "^6.0.8"
   },
   "scripts": {
-    "start": "DISABLE_ESLINT_PLUGIN=true vite",
-    "build": "DISABLE_ESLINT_PLUGIN=true vite build",
+    "start": "vite",
+    "build": "vite build",
     "test": "jest",
     "dev": "vite"
   },

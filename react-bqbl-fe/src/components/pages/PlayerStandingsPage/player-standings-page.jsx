@@ -60,6 +60,8 @@ function PlayerStandings() {
       {Object.entries(playerTable).map(([playerId, player]) => (
         <PlayerYearCard
           player={player}
+          teams={player.teams}
+          startRows={player.start_rows}
           name={playerId}
           key={playerId}
           year={year}
@@ -69,14 +71,14 @@ function PlayerStandings() {
   );
 }
 
-function PlayerYearCard({player, year, teams, start_rows}) {
+function PlayerYearCard({player, year, teams, startRows}) {
   const [expanded, setExpanded] = React.useState(false);
 
   const scoreEntries247 = teams.map((team) => {
     return { team: team.name, score: team.score247 };
   });
 
-  const startedWeeks = new Map(Object.entries(start_rows));
+  const startedWeeks = new Map(Object.entries(startRows));
   const weeks = seasonWeeksReverse(year)
     .filter((weekId) => startedWeeks.has(weekId))
     .map((weekId) => {

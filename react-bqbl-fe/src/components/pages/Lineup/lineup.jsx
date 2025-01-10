@@ -37,8 +37,8 @@ function Lineup() {
   let uid = uidOverride || user && user.uid || null;
   let weeks = (uid && leagueSpec.plays && leagueSpec.plays[year][uid]) || [];
   useEffect(() => {
-    return firebase.getLockedWeeksThen(Date.now(), setLockedWeeks);
-  }, [firebase]);
+    return firebase.getLockedWeeksThen(year, Date.now(), setLockedWeeks);
+  }, [firebase, year]);
 
   return (
     <Table size="small">

@@ -103,9 +103,7 @@ export const yearSlice = createSlice({
   name: 'year',
   initialState: '2023',
   reducers: {
-    set:(state, action) => {
-      state = action.year
-    },
+    set: (state, action) => action.year,
   }
 })
 
