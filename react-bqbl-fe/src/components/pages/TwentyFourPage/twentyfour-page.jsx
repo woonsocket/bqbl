@@ -8,21 +8,21 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TextField from "@mui/material/TextField";
 import PropTypes from "prop-types";
-import React from "react";
-import { compose } from "react-recompose";
+import React, { useContext } from "react";
 import * as FOOTBALL from "../../../constants/football";
 import { useWeek, useYear } from "../../AppState";
-import { withFirebase } from "../../Firebase";
 import IconAndName from "../../reusable/IconAndName/icon-and-name";
+import { FirebaseContext } from "../../Firebase";
 
-function TwentyFourPageBase(props) {
+function TwentyFourPage(props) {
   let [scores247, setScores247] = React.useState({});
   let year = useYear();
   let week = useWeek();
+  const firebase = useContext(FirebaseContext);
 
   React.useEffect(() => {
-    return props.firebase.get247(year, setScores247);
-  }, [props.firebase, year]);
+    return firebase.get247(year, setScores247);
+  }, [year]);
 
   return (
     <>
@@ -161,7 +161,5 @@ function ScoreTable(props) {
     </Table>
   );
 }
-
-const TwentyFourPage = compose(withFirebase)(TwentyFourPageBase);
 
 export default TwentyFourPage;

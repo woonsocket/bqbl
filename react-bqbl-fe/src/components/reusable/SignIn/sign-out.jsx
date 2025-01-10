@@ -1,39 +1,21 @@
-import React, { Component } from 'react';
-
-import { withFirebase } from '../../Firebase';
-
-import { compose } from 'react-recompose';
+import React, { useContext } from 'react';
+import { FirebaseContext } from '../../Firebase';
 import Button from '@mui/material/Button';
 
-class SignOutBase extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      error: null,
-      vals: [],
-    };
-  }
-
-  onSubmit = event => {
-    this.props.firebase.doSignOut();
+const SignOut = (props) => {
+  const firebase = useContext(FirebaseContext);
+  const onSubmit = (event) => {
+    firebase.doSignOut();
     event.preventDefault();
   };
 
-
-  render() {
-    return (
-      <div>
-        <Button variant="contained" color="primary" onClick={this.onSubmit}>
-          Sign Out
-          </Button>
-      </div>
-    );
-  }
-}
-
-const SignOut = compose(
-  withFirebase,
-)(SignOutBase);
+  return (
+    <div>
+      <Button variant="contained" color="primary" onClick={onSubmit}>
+        Sign Out
+      </Button>
+    </div>
+  );
+};
 
 export default SignOut;

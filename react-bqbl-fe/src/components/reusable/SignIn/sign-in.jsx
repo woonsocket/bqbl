@@ -1,49 +1,36 @@
-import React, { Component } from 'react';
-
+import React, { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import * as ROUTES from '../../../constants/routes';
-import { withFirebase } from '../../Firebase';
-
-import { compose } from 'react-recompose';
 import Button from '@mui/material/Button';
+import { FirebaseContext } from '../../Firebase';
 
-class SignInBase extends Component {
-  constructor(props) {
-    super(props);
+function SignIn(props) {
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+  const firebase = useContext(FirebaseContext);
 
-    this.state = {
-      error: null,
-      vals: [],
-    };
-  }
-
-  onSubmit = event => {
-    this.props.firebase
+  const onSubmit = event => {
+    firebase
       .doSignInWithGoogle()
       .then(socialAuthUser => {
-        this.setState({ error: null });
-        this.props.history.push({pathname: ROUTES.HOME, search: window.location.search});
+        setError(null);
+        navigate({ pathname: ROUTES.HOME, search: window.location.search });
       })
       .catch(error => {
-        this.setState({ error });
+        setError(error);
       });
 
     event.preventDefault();
   };
 
-
-  render() {
-    return (
-      <div>
-        <Button variant="contained" color="primary" onClick={this.onSubmit}>
-          Sign In
-          </Button>
-      </div>
-    );
-  }
+  return (
+    <div>
+      <Button variant="contained" color="primary" onClick={onSubmit}>
+        Sign In
+      </Button>
+      {error && <p>{error.message}</p>}
+    </div>
+  );
 }
-
-const SignIn = compose(
-  withFirebase,
-)(SignInBase);
 
 export default SignIn;
