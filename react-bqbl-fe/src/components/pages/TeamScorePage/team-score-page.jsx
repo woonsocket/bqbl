@@ -39,7 +39,7 @@ function TeamScorePage(props) {
     }
     setScoresList(scoresWeek);
     setIsLoaded(true);
-  }, [scores, week]);
+  }, [scores, week, sortScores, useProjections]);
 
   return (
     <div style={{ textAlign: "center" }}>
@@ -58,6 +58,7 @@ function TeamScorePage(props) {
           onChange={setUseProjectionsCallback}
           value="sort"
           color="primary"
+          data-testid="projections-toggle"
           disabled={!sortScores}
         />
       </div>

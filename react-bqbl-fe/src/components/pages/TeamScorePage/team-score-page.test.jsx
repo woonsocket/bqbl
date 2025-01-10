@@ -1,53 +1,90 @@
-import "@testing-library/jest-dom";
-import { screen } from "@testing-library/react";
-import React from "react";
-import { act } from "react";
-import { MOCK_APP_STATE, MockApp, MockFirebase } from "../../../testing/mocks";
-import { AppStateContext } from "../../AppState";
-import { FirebaseContext } from "../../Firebase";
-import TeamScorePage from "./team-score-page";
-import { Provider } from "react-redux";
-import store from "../../../redux/store";
-import { createRoot } from 'react-dom/client';
+import React from 'react';
+import { render, screen, within } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import userEvent from '@testing-library/user-event';
+import TeamScorePage from './team-score-page';
+import {SCORES} from '../../../testing/scores2021';
+import { act } from '@testing-library/react';
 
-const wait = async () => new Promise((resolve) => setTimeout(resolve, 0));
+// Mock redux hooks
+jest.mock('react-redux', () => ({
+  ...jest.requireActual('react-redux'),
+  useSelector: jest.fn(),
+}));
 
-let container;
+// Mock AppState hooks
+jest.mock('../../AppState', () => ({
+  useWeek: () => '1',
+  useYear: () => '2023',
+}));
 
-beforeEach(() => {
-  container = document.createElement("div");
-  document.body.appendChild(container);
-});
+describe('TeamScorePage', () => {
 
-afterEach(() => {
-  document.body.removeChild(container);
-  container = null;
-});
-
-describe("TeamScorePage", () => {
-  it("renders mocked data", async () => {
-    act(() => {
-      createRoot(container).render(
-        <AppStateContext.Provider value={[MOCK_APP_STATE]}>
-          <FirebaseContext.Provider value={new MockFirebase()}>
-            <MockApp year={"2023"} league={"nbqbl"}>
-              <Provider store={store}>
-                <TeamScorePage />
-              </Provider>
-            </MockApp>
-          </FirebaseContext.Provider>
-        </AppStateContext.Provider>
-      );
+  beforeEach(() => {
+    // Setup redux mock state
+    const { useSelector } = require('react-redux');
+    useSelector.mockImplementation(selector => {
+      const state = { scores: SCORES };
+      const result = selector(state);
+      console.log('Mock state:', state);
+      console.log('Selector result:', result);
+      return result;
     });
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('renders scores', async () => {
+    render(<TeamScorePage week="1" />);
+
+    // Test initial render (sorted by projections)
+    expect(screen.getByText('NE')).toBeInTheDocument();
+    expect(screen.getByText('NYJ')).toBeInTheDocument();
+  });
+
+  it('renders scores and allows sorting', async () => {
+    render(<TeamScorePage week="1" />);
+
+    screen.logTestingPlaygroundURL();
+
+    // Test initial render (sorted by team and projections, BUF first)
+    let firstRow = screen.getAllByRole('heading')[0];
+    expect(firstRow).toHaveTextContent('BUF');
+
+    // Disable sort by projections
+    const projectionsSwitch = screen.getByTestId('projections-toggle');
+    const projectionsSwitchInput = within(projectionsSwitch).getByRole('checkbox');
+    expect(projectionsSwitchInput).toBeChecked();
+
     await act(async () => {
-      await wait();
+      await userEvent.click(projectionsSwitchInput);
+      // Add small delay to let state updates propagate
+      await new Promise(resolve => setTimeout(resolve, 0));
     });
-    // SUPER USEFUL
-    // screen.logTestingPlaygroundURL();
-    // Test that NYJ is in there, as they should be!
-    expect(screen.getByRole("heading", { name: /nyj/i })).toBeInTheDocument();
-    expect(
-      screen.getByText(/17\/29, 151 yd, 1 td, 3 int final/i)
-    ).toBeInTheDocument();
+
+    expect(projectionsSwitchInput).not.toBeChecked();
+    firstRow = screen.getAllByRole('heading')[0];
+    expect(firstRow).toHaveTextContent('ATL');
+
+
+    // Disable sort overall
+    const sortSwitch = screen.getByTestId('sort-toggle');
+    const switchInput = within(sortSwitch).getByRole('checkbox');
+    expect(switchInput).toBeChecked();
+
+    await act(async () => {
+      await userEvent.click(switchInput);
+      // Add small delay to let state updates propagate
+      await new Promise(resolve => setTimeout(resolve, 0));
+    });
+
+    expect(switchInput).not.toBeChecked();
+    screen.logTestingPlaygroundURL();
+    // Verify sort changed
+    firstRow = screen.getAllByRole('heading')[0];
+    expect(firstRow).toHaveTextContent('ARI');
+
   });
 });
