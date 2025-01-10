@@ -34,33 +34,39 @@ import store from '../../redux/store';
 
 const WEEK_SELECTOR_PATHS = [LINKS.PLAYER_SCORES.path, LINKS.TEAM_SCORES.path, LINKS.BENCHING.path];
 const YEAR_SELECTOR_PATHS = [LINKS.PLAYER_SCORES.path, LINKS.TEAM_SCORES.path, LINKS.PLAYER_STANDINGS.path, LINKS.TEAM_STANDINGS.path, LINKS.DRAFT.path];
-
 function App() {
-
-  let year = useYear()
-  let week = useWeek()
-  let league = useLeague()
+  const year = useYear();
+  const week = useWeek();
+  const league = useLeague();
   const firebase = useContext(FirebaseContext);
-
   const [drawerOpen, setDrawerOpen] = React.useState(false);
-  const weekSelector = WEEK_SELECTOR_PATHS.indexOf(window.location.pathname) !== -1;
-  const yearSelector = YEAR_SELECTOR_PATHS.indexOf(window.location.pathname) !== -1;
+
+  const pathname = window.location.pathname;
+  const weekSelector = WEEK_SELECTOR_PATHS.includes(pathname);
+  const yearSelector = YEAR_SELECTOR_PATHS.includes(pathname);
 
   useEffect(() => {
-//    store.dispatch({type: 'year/set', year: year, firebase: firebase})
-    store.dispatch({type: 'league/set', leagueId: league, firebase: firebase})
-    store.dispatch({type: 'scores/load', leagueId: league, year: year, firebase: firebase})
-    store.dispatch({type: 'scores247/load', leagueId: league, year: year, firebase: firebase})
+    store.dispatch({type: 'league/set', leagueId: league, firebase: firebase});
+    store.dispatch({type: 'scores/load', leagueId: league, year: year, firebase: firebase});
+    store.dispatch({type: 'scores247/load', leagueId: league, year: year, firebase: firebase});
   }, [firebase, league, year]);
 
+  const handleDrawerOpen = () => setDrawerOpen(true);
+  const handleDrawerClose = () => setDrawerOpen(false);
 
-  function handleDrawerOpen() {
-    setDrawerOpen(true);
-  }
+  const handleYearChange = (event) => {
+    const usp = new URLSearchParams(window.location.search);
+    usp.set("year", event.target.value);
+    window.location.search = usp.toString();
+  };
 
-  function handleDrawerClose() {
-    setDrawerOpen(false);
-  }
+  const handleWeekChange = (event) => {
+    const usp = new URLSearchParams(window.location.search);
+    usp.set("week", event.target.value);
+    window.location.search = usp.toString();
+  };
+
+  const YEARS = ["2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024"];
 
   return (
     <div>
@@ -77,40 +83,35 @@ function App() {
           <Typography variant="h6" className={styles.title}>
             BQBL
           </Typography>
-          {yearSelector &&
+          {yearSelector && (
             <NativeSelect
-              value={year} className={styles.weekSelect}
-              onChange={event => {
-                let usp = new URLSearchParams(window.location.search);
-                usp.set("year", event.target.value)
-                window.location.search = usp.toString();
-              }}
+              value={year}
+              className={styles.weekSelect}
+              onChange={handleYearChange}
               input={<Input name="year" id="year-native-helper" />}
             >
-              
-              {/* ANNUAL - TODO add to constants*/}
-              {["2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024"].map(id => <option value={id} key={id}>{id}</option>)}
+              {YEARS.map(id => (
+                <option value={id} key={id}>{id}</option>
+              ))}
             </NativeSelect>
-          }
+          )}
 
-          {weekSelector &&
+          {weekSelector && (
             <NativeSelect
-              value={week} className={styles.weekSelect}
-              onChange={event => {
-                let usp = new URLSearchParams(window.location.search);
-                usp.set("week", event.target.value)
-                window.location.search = usp.toString();
-              }}
+              value={week}
+              className={styles.weekSelect}
+              onChange={handleWeekChange}
               input={<Input name="week" id="week-native-helper" />}
             >
-              {WEEK_IDS.map(id => <option value={id} key={id}>Week {id}</option>)}
+              {WEEK_IDS.map(id => (
+                <option value={id} key={id}>Week {id}</option>
+              ))}
             </NativeSelect>
-          }
+          )}
           <SignInToggle />
         </Toolbar>
 
-        <Drawer className={styles.drawer} anchor="left"
-          open={drawerOpen}>
+        <Drawer className={styles.drawer} anchor="left" open={drawerOpen}>
           <div className={styles.drawerHeader}>
             <IconButton onClick={handleDrawerClose} size="large">
               <ChevronLeftIcon />
