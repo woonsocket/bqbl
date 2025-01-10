@@ -4,7 +4,6 @@ import { STARTS } from "./plays2020";
 import { USERS } from "./users2020";
 import { useContext, useEffect } from "react";
 import { FirebaseContext } from "../components/Firebase";
-import store from "../redux/store";
 
 export class MockFirebase {
   auth = {
