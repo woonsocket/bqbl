@@ -33,7 +33,7 @@ describe('TeamStandingsPage', () => {
 
   it('renders team standings', async () => {
     render(<TeamStandingsPage />);
-    screen.logTestingPlaygroundURL();
+    // screen.logTestingPlaygroundURL();
     // Test that initial teams render
     expect(screen.getByText('ARI')).toBeInTheDocument();
     expect(screen.getByText(/118/i)).toBeInTheDocument(); // DEN's 24/7 points

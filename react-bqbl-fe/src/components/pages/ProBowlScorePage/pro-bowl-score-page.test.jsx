@@ -64,7 +64,7 @@ describe('ProBowlScoresPage', () => {
   it('renders pro bowl scores for all leagues', async () => {
     render(<ProBowlScoresPage />);
 
-    screen.logTestingPlaygroundURL();
+    // screen.logTestingPlaygroundURL();
     // Test that league cards render
     expect(screen.getByText('nbqbl')).toBeInTheDocument();
     expect(screen.getByText('abqbl')).toBeInTheDocument();

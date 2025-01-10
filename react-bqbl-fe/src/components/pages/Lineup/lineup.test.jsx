@@ -76,7 +76,7 @@ describe('Lineup', () => {
       </FirebaseContext.Provider>
     );
 
-    screen.logTestingPlaygroundURL();
+    // screen.logTestingPlaygroundURL();
     // Test that initial teams render
     expect(screen.getByRole('cell', {name: /ARI/i})).toBeInTheDocument();
     expect(screen.getByRole('cell', {name: /ATL/i})).toBeInTheDocument();

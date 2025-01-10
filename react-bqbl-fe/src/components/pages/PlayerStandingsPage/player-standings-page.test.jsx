@@ -63,7 +63,7 @@ describe('PlayerStandingsPage', () => {
 
   it('renders player standings', async () => {
     render(<PlayerStandingsPage />);
-    screen.logTestingPlaygroundURL();
+    // screen.logTestingPlaygroundURL();
     // Test that player card renders
     expect(screen.getByText('Jameis Winston')).toBeInTheDocument();
     expect(screen.getByText('Total: 1269')).toBeInTheDocument();
@@ -83,7 +83,7 @@ describe('PlayerStandingsPage', () => {
   it('allows sorting toggle', async () => {
     render(<PlayerStandingsPage />);
 
-    screen.logTestingPlaygroundURL();
+    // screen.logTestingPlaygroundURL();
 
     // Find and click sort switch
     const sortSwitch = screen.getByRole('checkbox');
