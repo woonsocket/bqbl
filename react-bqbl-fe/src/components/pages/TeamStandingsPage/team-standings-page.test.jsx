@@ -11,7 +11,7 @@ jest.mock('react-redux', () => ({
 }));
 
 // Mock AppState hooks
-jest.mock('../../AppState', () => ({
+jest.mock('../../AppState/app-state', () => ({
   useWeek: () => '1',
   useYear: () => '2021',
 }));
@@ -37,6 +37,6 @@ describe('TeamStandingsPage', () => {
     // Test that initial teams render
     expect(screen.getByText('ARI')).toBeInTheDocument();
     expect(screen.getByText(/118/i)).toBeInTheDocument(); // DEN's 24/7 points
-    expect(screen.getByText(/-500/i)).toBeInTheDocument(); // DEN's week 1 score
+    expect(screen.getByText(/[−-]500/)).toBeInTheDocument(); // DEN's week 1 score
   });
 });

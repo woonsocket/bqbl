@@ -1,90 +1,109 @@
-import { render as origRender, screen } from "@testing-library/react";
-import React from "react";
-import { Provider } from "react-redux";
-import { MOCK_APP_STATE, MockFirebase } from "../../../testing/mocks";
-import { MOCK_REDUX_STATE } from "../../../testing/mocks";
-import { AppStateContext } from "../../AppState/app-state";
-import { FirebaseContext } from "../../Firebase";
-import Lineup from "./lineup";
-import configureMockStore from "redux-mock-store";
-import { act } from "react";
+import React from 'react';
+import { render, screen, within } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import userEvent from '@testing-library/user-event';
+import Lineup from './lineup';
+import { act } from '@testing-library/react';
+import { FirebaseContext } from '../../Firebase';
 
-import { createRoot } from "react-dom/client";
+// Mock redux hooks
+jest.mock('react-redux', () => ({
+  ...jest.requireActual('react-redux'),
+  useSelector: jest.fn(),
+}));
 
-const wait = async () => new Promise((resolve) => setTimeout(resolve, 0));
+// Mock AppState hooks
+jest.mock('../../AppState/app-state', () => ({
+  useYear: () => '2023',
+  useLeague: () => 'test-league',
+  useUidOverride: () => null
+}));
 
-let container;
+// Mock Firebase hooks and context
+jest.mock('../../Firebase/firebase', () => ({
+  useUser: () => ({ uid: 'test-user' })
+}));
 
-beforeEach(() => {
-  container = document.createElement("div");
-  document.body.appendChild(container);
+const mockUpdateStartsRow = jest.fn().mockResolvedValue();
+const mockGetLockedWeeksThen = jest.fn().mockImplementation((year, now, callback) => {
+  callback(new Set(['1']));
+  return () => {};
 });
 
-afterEach(() => {
-  document.body.removeChild(container);
-  container = null;
-});
+const mockFirebase = {
+  updateStartsRow: mockUpdateStartsRow,
+  getLockedWeeksThen: mockGetLockedWeeksThen
+};
 
-function render(ui) {
-  function Wrapper({ children }) {
-    const mockStore = configureMockStore();
-    const store = mockStore(MOCK_REDUX_STATE);
-    // console.log(store.getState())
-    return (
-      <AppStateContext.Provider value={[MOCK_APP_STATE]}>
-        <FirebaseContext.Provider value={new MockFirebase()}>
-          <Provider store={store}>{children}</Provider>;
-        </FirebaseContext.Provider>
-      </AppStateContext.Provider>
+describe('Lineup', () => {
+  beforeEach(() => {
+    // Setup redux mock state
+    const { useSelector } = require('react-redux');
+    useSelector.mockImplementation(selector => {
+      const state = {
+        league: {
+          spec: {
+            plays: {
+              '2023': {
+                'test-user': [
+                  {
+                    id: '1',
+                    teams: [
+                      { name: 'ARI', selected: false },
+                      { name: 'ATL', selected: false },
+                      { name: 'BAL', selected: false },
+                      { name: 'BUF', selected: true }
+                    ]
+                  }
+                ]
+              }
+            }
+          }
+        }
+      };
+      return selector(state);
+    });
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('renders lineup table', async () => {
+    render(
+      <FirebaseContext.Provider value={mockFirebase}>
+        <Lineup />
+      </FirebaseContext.Provider>
     );
-  }
-  return origRender(ui, { wrapper: Wrapper });
-}
-
-describe("Lineup", () => {
-  it("renders without crashing", async () => {
-    // console.log(MOCK_REDUX_STATE)
-    act(() => {
-      render(<Lineup />);
-    });
-
-    await act(async () => {
-      await wait();
-    });
 
     screen.logTestingPlaygroundURL();
-    // expect(screen.getByText('cade')).toBeInTheDocument();
+    // Test that initial teams render
+    expect(screen.getByRole('cell', {name: /ARI/i})).toBeInTheDocument();
+    expect(screen.getByRole('cell', {name: /ATL/i})).toBeInTheDocument();
+    expect(screen.getByRole('cell', {name: /BAL/i})).toBeInTheDocument();
+    expect(screen.getByRole('cell', {name: /BUF/i})).toBeInTheDocument();
+  });
 
-    // Add more test cases here...
+  it('allows team selection and updates Firebase', async () => {
+    render(
+      <FirebaseContext.Provider value={mockFirebase}>
+        <Lineup />
+      </FirebaseContext.Provider>
+    );
+
+    // Find and click an unselected team cell (ARI)
+    const cells = screen.getAllByRole('cell');
+    const ariCell = cells.find(cell => cell.textContent.includes('ARI'));
+    
+    await act(async () => {
+      await userEvent.click(ariCell);
+      await new Promise(resolve => setTimeout(resolve, 0));
+    });
+
+    // Verify Firebase update was called
+    expect(mockUpdateStartsRow).toHaveBeenCalled();
+    
+    // Verify locked week shows lock icon
+    expect(screen.getByTitle('week is locked')).toBeInTheDocument();
   });
 });
-// describe('LineupWeek', () => {
-//   const mockWeek = {
-//     id: '1',
-//     teams: [
-//       { name: 'Team A', selected: true },
-//       { name: 'Team B', selected: false },
-//       { name: 'Team C', selected: true },
-//       { name: 'Team D', selected: false },
-//     ],
-//   };
-
-//   test('renders week id', () => {
-//     render(<LineupWeek week={mockWeek} uid="uid" league="league" year="2022" dh={true} locked={false} />);
-//     expect(screen.getByText('1')).toBeInTheDocument();
-//   });
-
-//   test('renders team names and opponents', () => {
-//     render(<LineupWeek week={mockWeek} uid="uid" league="league" year="2022" dh={true} locked={false} />);
-//     expect(screen.getByText('Team A')).toBeInTheDocument();
-//     expect(screen.getByText('Team B')).toBeInTheDocument();
-//     expect(screen.getByText('Team C')).toBeInTheDocument();
-//     expect(screen.getByText('Team D')).toBeInTheDocument();
-//     expect(screen.getByText('Opponent A')).toBeInTheDocument();
-//     expect(screen.getByText('Opponent B')).toBeInTheDocument();
-//     expect(screen.getByText('Opponent C')).toBeInTheDocument();
-//     expect(screen.getByText('Opponent D')).toBeInTheDocument();
-//   });
-
-// Add more test cases here...
-// });

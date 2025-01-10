@@ -13,7 +13,7 @@ jest.mock('react-redux', () => ({
 }));
 
 // Mock AppState hooks
-jest.mock('../../AppState', () => ({
+jest.mock('../../AppState/app-state', () => ({
   useWeek: () => '1',
   useYear: () => '2023',
 }));

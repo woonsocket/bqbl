@@ -43,7 +43,7 @@ function PlayerStandings() {
       ? Object.values(joined).sort((team, team2) => team2.total - team.total)
       : joined;
     setPlayerTable(newJoined);
-  }, [joined]);
+  }, [joined, sortScores]);
 
   return (
     <React.Fragment>
@@ -107,6 +107,7 @@ function PlayerYearCard({player, year, teams, startRows}) {
         avatar={<Avatar aria-label="">{player.name[0]}</Avatar>}
         title={player.name}
         subheader={`Total: ${player.total}`}
+        data-testid="player-card-header"
       />
       <CardContent>
         <PlayerScoreList label="24/7" entries={scoreEntries247} />

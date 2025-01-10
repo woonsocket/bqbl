@@ -1,53 +1,102 @@
-import React from "react";
-import { AppStateContext } from "../../AppState/app-state";
-import { FirebaseContext } from "../../Firebase";
-import { MockFirebase, MOCK_APP_STATE, MockApp } from "../../../testing/mocks";
-import "@testing-library/jest-dom";
-import { act } from "react";
-import { screen } from "@testing-library/react";
-import { createRoot } from 'react-dom/client';
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import PlayerStandingsPage from './player-standings-page';
+import userEvent from '@testing-library/user-event';
+import { act } from '@testing-library/react';
 
-import PlayerStandingsPage from "./player-standings-page";
-import { Provider } from "react-redux";
-import store from "../../../redux/store";
+// Mock redux hooks
+jest.mock('react-redux', () => ({
+  ...jest.requireActual('react-redux'),
+  useSelector: jest.fn(),
+}));
 
-const wait = async () => new Promise((resolve) => setTimeout(resolve, 0));
+// Mock AppState hooks
+jest.mock('../../AppState/app-state', () => ({
+  useYear: () => '2023',
+  useLeague: () => 'test-league',
+}));
 
-let container;
+const MOCK_JOINED_DATA = {
+  'Trevor Lawrence': {
+    name: 'Trevor Lawrence', 
+    total: 892,
+    teams: [
+      { name: 'JAX', score247: 89 },
+      { name: 'TEN', score247: 65 }
+    ],
+    start_rows: {
+      '1': {
+        team_1: { team_name: 'JAX', score: 400 },
+        team_2: { team_name: 'TEN', score: 200 }
+      }
+    }
+  },
+  'Jameis Winston': {
+    name: 'Jameis Winston',
+    total: 1269,
+    teams: [
+      { name: 'DEN', score247: 118 },
+      { name: 'NYJ', score247: 42 }
+    ],
+    start_rows: {
+      '1': {
+        team_1: { team_name: 'DEN', score: -500 },
+        team_2: { team_name: 'NYJ', score: 300 }
+      }
+    }
+  }
+};
 
-beforeEach(() => {
-  container = document.createElement("div");
-  document.body.appendChild(container);
-});
-
-afterEach(() => {
-  document.body.removeChild(container);
-  container = null;
-});
-
-
-describe("PlayerStandingsPage", () => {
-  it("renders mocked data", async () => {
-    act(() => {
-      createRoot(container).render(
-        <AppStateContext.Provider value={[MOCK_APP_STATE]}>
-          <FirebaseContext.Provider value={new MockFirebase()}>
-            <MockApp year={"2023"} league={"nbqbl"}>
-              <Provider store={store}>
-                <PlayerStandingsPage />
-              </Provider>
-            </MockApp>
-          </FirebaseContext.Provider>
-        </AppStateContext.Provider>
-      )
+describe('PlayerStandingsPage', () => {
+  beforeEach(() => {
+    // Setup redux mock state
+    const { useSelector } = require('react-redux');
+    useSelector.mockImplementation(selector => {
+      return MOCK_JOINED_DATA;
     });
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('renders player standings', async () => {
+    render(<PlayerStandingsPage />);
+    screen.logTestingPlaygroundURL();
+    // Test that player card renders
+    expect(screen.getByText('Jameis Winston')).toBeInTheDocument();
+    expect(screen.getByText('Total: 1269')).toBeInTheDocument();
+    
+    // Test that 24/7 scores render
+    expect(screen.getByText(/118/)).toBeInTheDocument();
+    
+    // Test that week scores render
+    expect(screen.getAllByText('Week 1')).toHaveLength(2);
+    expect(screen.getByText(/[−-]500/)).toBeInTheDocument();
+
+    // Test that Jameis appears first (highest score)
+    const playerCards = screen.getAllByTestId('player-card-header');
+    expect(playerCards[0]).toHaveTextContent('Jameis Winston');
+  });
+
+  it('allows sorting toggle', async () => {
+    render(<PlayerStandingsPage />);
+
+    screen.logTestingPlaygroundURL();
+
+    // Find and click sort switch
+    const sortSwitch = screen.getByRole('checkbox');
+    expect(sortSwitch).toBeChecked();
+
     await act(async () => {
-      await wait();
+      await userEvent.click(sortSwitch);
     });
-    // SUPER USEFUL
-    // screen.logTestingPlaygroundURL();
-    // screen.logTestingPlaygroundURL(screen.getAllByTestId('player-card')[0]);
-    expect(screen.getByText(/cade/i)).toBeInTheDocument();
-    expect(screen.getByText(/total: 1269/i)).toBeInTheDocument();
+
+    expect(sortSwitch).not.toBeChecked();
+
+    // Test that Trevor appears first (alphabetical order)
+    const playerCards = screen.getAllByTestId('player-card-header');
+    expect(playerCards[0]).toHaveTextContent('Trevor Lawrence');
   });
 });
