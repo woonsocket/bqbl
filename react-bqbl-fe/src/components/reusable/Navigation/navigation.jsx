@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Link } from 'react-router-dom';
 import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import { useWeek, useYear, useLeague } from '../../AppState/app-state';
 
@@ -58,9 +58,9 @@ function Navigation(props) {
             search: makeParams(league, year, week)}}
                 onClick={props.close} key={"link" + index}
 >
-            <ListItem button key={item_val.text}>
+            <ListItemButton key={item_val.text}>
               <ListItemText primary={item_val.text} />
-            </ListItem>
+            </ListItemButton>
           </Link>
         ))
       }

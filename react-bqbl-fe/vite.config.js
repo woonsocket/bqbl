@@ -151,8 +151,8 @@ function htmlPlugin(mode) {
     return {
         name: "html-plugin",
         transformIndexHtml: {
-            enforce: "pre",
-            transform(html) {
+            order: "pre",
+            handler(html) {
                 return html.replace(/%(.*?)%/g, (match, p1) => env[p1] ?? match);
             },
         },

@@ -1,6 +1,6 @@
 const admin = require('firebase-admin');
 const entries = require('object.entries');
-const functions = require('firebase-functions');
+const functions = require('firebase-functions/v1');
 
 const eventTicker = require('./event-ticker.js');
 const scoring = require('./scoring.js');

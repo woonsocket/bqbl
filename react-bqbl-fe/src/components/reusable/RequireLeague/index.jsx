@@ -1,5 +1,5 @@
 import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import React, { useContext } from 'react';
 import { Link, useLocation } from 'react-router-dom';
@@ -34,9 +34,9 @@ function LeagueSelector(props) {
       {props.leagues.map((league, index) => (
         <Link to={{ pathname: location.pathname, search: makeLeagueParams(league, year, week) }}
           onClick={props.close} key={"link" + index}>
-          <ListItem button key={league}>
+          <ListItemButton key={league}>
             <ListItemText primary={league} />
-          </ListItem>
+          </ListItemButton>
         </Link>
       ))
       }
