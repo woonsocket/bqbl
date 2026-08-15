@@ -26,6 +26,7 @@ import StartsAdminPage from '../pages/StartsAdminPage/starts-admin-page';
 import TeamScorePage from '../pages/TeamScorePage/team-score-page';
 import TeamStandingsPage from '../pages/TeamStandingsPage/team-standings-page';
 import TwentyFourPage from '../pages/TwentyFourPage/twentyfour-page';
+import UpdateLockDatesPage from '../pages/UpdateLockDatesPage/update-lock-dates-page';
 import Navigation, { LINKS } from '../reusable/Navigation/navigation';
 import SignInToggle from '../reusable/SignIn/sign-in-toggle';
 import styles from './App.module.css'
@@ -33,7 +34,7 @@ import styles from './App.module.css'
 import store from '../../redux/store';
 
 const WEEK_SELECTOR_PATHS = [LINKS.PLAYER_SCORES.path, LINKS.TEAM_SCORES.path, LINKS.BENCHING.path];
-const YEAR_SELECTOR_PATHS = [LINKS.PLAYER_SCORES.path, LINKS.TEAM_SCORES.path, LINKS.PLAYER_STANDINGS.path, LINKS.TEAM_STANDINGS.path, LINKS.DRAFT.path];
+const YEAR_SELECTOR_PATHS = [LINKS.PLAYER_SCORES.path, LINKS.TEAM_SCORES.path, LINKS.PLAYER_STANDINGS.path, LINKS.TEAM_STANDINGS.path, LINKS.DRAFT.path, LINKS.UPDATE_LOCK_DATES.path];
 function App() {
   const year = useYear();
   const week = useWeek();
@@ -138,6 +139,7 @@ function App() {
         <Route path={LINKS.FUMBLESIX.path} element={<FumbleSixPage/>} />
         <Route path="/safety" element={<SafetyPage/>} />
         <Route path={LINKS.STARTS_ADMIN.path} element={<StartsAdminPage/>} />
+        <Route path={LINKS.UPDATE_LOCK_DATES.path} element={<UpdateLockDatesPage/>} />
       </Routes>
     </div>
   );

@@ -103,6 +103,10 @@ class Firebase {
     return () => ref.off("value");
   }
 
+  updateUnlockedWeeks(year, weekTimestamps) {
+    return this.db.ref(`/unlockedweeks/${year}`).set(weekTimestamps);
+  }
+
   updateStartsRow(league, year, weekIndex, uid, row) {
     const uri = `${PREFIX}leaguespec/${league}/plays/${year}/${uid}/${weekIndex}`;
     return this.db.ref(uri).update(row);

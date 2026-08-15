@@ -9,6 +9,7 @@ import { useWeek, useYear, useLeague } from '../../AppState/app-state';
 const HOME = '/home';
 const LINEUP = '/lineup';
 const STARTS_ADMIN = '/starts-admin';
+const UPDATE_LOCK_DATES = '/update-lock-dates';
 const PROBOWL = '/probowl';
 const PROBOWL_SCORES = '/probowl-scores';
 const PLAYER_SCORES = '/player-scores';
@@ -34,6 +35,7 @@ export const LINKS = {
   TWENTYFOUR: { path: TWENTYFOUR, text: '24/7 Points' },
   FUMBLESIX: { path: FUMBLESIX, text: 'Fumble Sixes' },
   STARTS_ADMIN: { path: STARTS_ADMIN, text: 'Administer Starts' },
+  UPDATE_LOCK_DATES: { path: UPDATE_LOCK_DATES, text: 'Update Lock Dates' },
 };
 
 function Navigation(props) {
