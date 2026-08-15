@@ -86,7 +86,7 @@ describe('PlayerStandingsPage', () => {
     // screen.logTestingPlaygroundURL();
 
     // Find and click sort switch
-    const sortSwitch = screen.getByRole('checkbox');
+    const sortSwitch = screen.getByRole('switch');
     expect(sortSwitch).toBeChecked();
 
     await act(async () => {

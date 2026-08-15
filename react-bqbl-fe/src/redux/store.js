@@ -180,9 +180,9 @@ export const DEFAULT_REDUCERS = {
 
 export default configureStore({
   reducer: DEFAULT_REDUCERS,
-  middleware: [
-    leagueFetchMiddleware, 
-    scoresMiddleware, 
+  middleware: () => [
+    leagueFetchMiddleware,
+    scoresMiddleware,
     scores247Middleware,
     proBowlStartsMiddleware
   ],

@@ -56,7 +56,7 @@ describe('TeamScorePage', () => {
 
     // Disable sort by projections, making ATL first
     const projectionsSwitch = screen.getByTestId('projections-toggle');
-    const projectionsSwitchInput = within(projectionsSwitch).getByRole('checkbox');
+    const projectionsSwitchInput = within(projectionsSwitch).getByRole('switch');
     expect(projectionsSwitchInput).toBeChecked();
 
     await act(async () => {
@@ -71,7 +71,7 @@ describe('TeamScorePage', () => {
 
     // Disable sort overall
     const sortSwitch = screen.getByTestId('sort-toggle');
-    const switchInput = within(sortSwitch).getByRole('checkbox');
+    const switchInput = within(sortSwitch).getByRole('switch');
     expect(switchInput).toBeChecked();
 
     await act(async () => {

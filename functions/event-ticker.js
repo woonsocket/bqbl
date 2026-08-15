@@ -1,7 +1,5 @@
 const admin = require('firebase-admin');
-const functions = require('firebase-functions');
-
-const request = require('request-promise-native');
+const functions = require('firebase-functions/v1');
 
 // These string values are referenced by clients of the event ticker.
 class EventType {
@@ -88,13 +86,15 @@ function sendToSlack(eventType, playerName, team, desc) {
     'channel': channel,
     'icon_url': iconUrl,
   };
-  return request.post({
-    url: slackUrl,
-    json: true,
-    body: payload,
-  }).catch(error => {
-    if (error) {
-      console.error(`Error sending to Slack: ${error}`);
+  return fetch(slackUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  }).then(response => {
+    if (!response.ok) {
+      throw new Error(`Slack webhook returned ${response.status}`);
     }
+  }).catch(error => {
+    console.error(`Error sending to Slack: ${error}`);
   });
 }
