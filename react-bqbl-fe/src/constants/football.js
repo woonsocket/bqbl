@@ -28,7 +28,7 @@ export const WEEK_IDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"
 export const REGULAR_SEASON_WEEK_IDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17"];
 
 // ANNUAL UPDATE
-export const CURRENT_YEAR = '2025';
+export const CURRENT_YEAR = '2026';
 
 // TODO this dependence on the system clock makes tests hard.
 export function seasonWeeksReverse(year) {
@@ -64,8 +64,8 @@ export function footballWeek() {
     day += 365;
   }
   // ANNUAL UPDATE
-  // Day 247 is Thursday, September 4, 2025
-  let week = Math.ceil((day - 247) / 7);
+  // Day 253 is Thursday, September 10, 2026
+  let week = Math.ceil((day - 253) / 7);
   if (week < 1) {
     week = 1;
   }
