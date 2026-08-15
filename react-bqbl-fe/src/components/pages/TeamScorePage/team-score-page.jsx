@@ -75,6 +75,7 @@ function TeamScorePage(props) {
       {isLoaded && !scoresList.length && (
         <div>No scores found for week {props.week}</div>
       )}
+    <div style={{ marginTop: 16 }}><i>Generative AI can make mistakes</i></div>
     </div>
   );
 }
