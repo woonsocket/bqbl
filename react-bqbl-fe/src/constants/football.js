@@ -28,7 +28,7 @@ export const WEEK_IDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"
 export const REGULAR_SEASON_WEEK_IDS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17"];
 
 // ANNUAL UPDATE
-export const CURRENT_YEAR = '2024';
+export const CURRENT_YEAR = '2025';
 
 // TODO this dependence on the system clock makes tests hard.
 export function seasonWeeksReverse(year) {
@@ -59,10 +59,13 @@ function dayOfYear() {
 export function footballWeek() {
   const yearOffset = new Date().getFullYear() - CURRENT_YEAR;
   // This ignores leap years, but the NFL season always ends before Feb. 28.
-  const day = dayOfYear() + 365 * yearOffset;
+  let day = dayOfYear() + 365 * yearOffset;
+  if (day < 1) {
+    day += 365;
+  }
   // ANNUAL UPDATE
-  // Day 248 is Thursday, September 5, 2024
-  let week = Math.ceil((day - 248) / 7);
+  // Day 247 is Thursday, September 4, 2025
+  let week = Math.ceil((day - 247) / 7);
   if (week < 1) {
     week = 1;
   }
