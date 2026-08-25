@@ -29,6 +29,11 @@ class Firebase {
     this.auth = app.auth();
     this.db = app.database();
     this.functions = app.functions();
+
+    if (process.env.REACT_APP_USE_EMULATORS === "true") {
+      this.functions.useEmulator("localhost", 5001);
+      this.db.useEmulator("localhost", 9000);
+    }
   }
 
   doSignInWithGoogle() {
@@ -156,6 +161,30 @@ class Firebase {
 
   draftTeam() {
     return this.functions.httpsCallable("draftTeam");
+  }
+
+  getDraftThen(league, year, cb) {
+    const ref = this.db.ref(`/leaguespec/${league}/draft/${year}`);
+    ref.on("value", (snapshot) => {
+      cb(snapshot.val());
+    });
+    return () => ref.off("value");
+  }
+
+  startNewYear(league, year) {
+    return this.functions.httpsCallable("startNewYear")({ league, year });
+  }
+
+  randomizeDraft(league, year, teams) {
+    return this.functions.httpsCallable("randomizeDraft")({ league, year, teams });
+  }
+
+  finalizeDraft(league, year) {
+    return this.functions.httpsCallable("finalizeDraft")({ league, year });
+  }
+
+  createNewYear(league, year) {
+    return this.functions.httpsCallable("createNewYear")({ league, year });
   }
 
   getAllLeagues() {

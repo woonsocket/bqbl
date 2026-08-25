@@ -65,22 +65,95 @@ var shuffle = function (array) {
 };
 
 /**
- * Create a league spec at /leaguespec/{LEAGUEID}.
- * 
- * league: string
+ * Create (or add a season to) a league spec at /leaguespec/{LEAGUEID}. 
+ *
+ * leagueId: string
  * year: year to populate the settings for
  */
-exports.createLeague = functions.https.onCall((data, context) => {
-  const leagueId = data.league;
-  const year = data.year;
+function ensureLeagueSettings(leagueId, year) {
+  return admin.database().ref(`/leaguespec/${leagueId}/id`).set(leagueId)
+    .then(() => admin.database()
+      .ref(`/leaguespec/${leagueId}/settings/${year}`).set({ dh: false }));
+}
 
-  const leagueRef = admin.database().ref(`/leaguespec/${leagueId}`);
-  const stubLeague = {
-    id: leagueId,
-    settings: {}
-  };
-  stubLeague["settings"][year] = { dh: false };
-  return leagueRef.set(stubLeague);
+exports.createLeague = functions.https.onCall((data, context) => {
+  return ensureLeagueSettings(data.league, data.year);
+});
+
+/**
+ * Bootstrap a new season for a league: copies the roster forward from the
+ * previous year's finalized users, creates the year's settings, and deals
+ * out an empty draft board (order set, teams left blank) for those players.
+ * Requires the previous year to already have a roster to copy.
+ *
+ * league: string
+ * year: string, the new year to set up
+ */
+exports.startNewYear = functions.https.onCall((data, context) => {
+  const league = data.league;
+  const year = data.year;
+  const prevYear = String(Number(year) - 1);
+
+  return admin.database().ref(`/leaguespec/${league}/users/${prevYear}`)
+    .once('value')
+    .then(snapshot => {
+      const prevUsers = snapshot.val();
+      if (!prevUsers) {
+        throw new functions.https.HttpsError(
+          'failed-precondition',
+          `No roster found for ${league} in ${prevYear} to copy forward.`);
+      }
+      const roster = Object.values(prevUsers).map(
+        u => ({ name: u.name, uid: u.uid }));
+      return Promise.all([
+        ensureLeagueSettings(league, year),
+        admin.database().ref(`/leaguespec/${league}/users/${year}`).set(roster),
+      ]).then(() => roster);
+    })
+    .then(roster => { 
+      const shuffledUsers = shuffle([...roster]);
+      const shuffledUsersReverse = [...shuffledUsers].reverse();
+      // Snake order
+      const order = shuffledUsers.concat(shuffledUsersReverse, shuffledUsers, shuffledUsersReverse);
+      return admin.database().ref(`/leaguespec/${league}/draft/${year}`).set(order);
+    });
+});
+
+/**
+ * Fill every slot of an existing (empty) draft board with a team, in random
+ * order, as if the whole league had drafted all 32 NFL teams. Overwrites any
+ * team assignments already present in the draft board.
+ *
+ * league: string
+ * year: string
+ * teams: array of team abbreviations, one per draft slot
+ */
+exports.randomizeDraft = functions.https.onCall((data, context) => {
+  const league = data.league;
+  const year = data.year;
+  const teams = data.teams;
+  const draftRef = admin.database().ref(`/leaguespec/${league}/draft/${year}`);
+
+  return draftRef.once('value').then(snapshot => {
+    const draft = snapshot.val();
+    if (!draft) {
+      throw new functions.https.HttpsError(
+        'failed-precondition',
+        `No draft board exists for ${league} in ${year} yet.`);
+    }
+    if (!Array.isArray(teams) || teams.length !== draft.length) {
+      throw new functions.https.HttpsError(
+        'invalid-argument',
+        `Expected ${draft.length} teams to fill the draft board, got ` +
+        `${Array.isArray(teams) ? teams.length : teams}.`);
+    }
+    const shuffledTeams = shuffle([...teams]);
+    const updates = {};
+    for (let i = 0; i < draft.length; i++) {
+      updates[`${i}/team`] = shuffledTeams[i];
+    }
+    return draftRef.update(updates);
+  });
 });
 
 exports.finalizeDraft = functions.https.onCall((data, context) => {

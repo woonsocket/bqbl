@@ -10,6 +10,7 @@ const HOME = '/home';
 const LINEUP = '/lineup';
 const STARTS_ADMIN = '/starts-admin';
 const UPDATE_LOCK_DATES = '/update-lock-dates';
+const CREATE_NEW_YEAR = '/create-new-year';
 const PROBOWL = '/probowl';
 const PROBOWL_SCORES = '/probowl-scores';
 const PLAYER_SCORES = '/player-scores';
@@ -36,6 +37,7 @@ export const LINKS = {
   FUMBLESIX: { path: FUMBLESIX, text: 'Fumble Sixes' },
   STARTS_ADMIN: { path: STARTS_ADMIN, text: 'Administer Starts' },
   UPDATE_LOCK_DATES: { path: UPDATE_LOCK_DATES, text: 'Update Lock Dates' },
+  CREATE_NEW_YEAR: { path: CREATE_NEW_YEAR, text: 'Create New Year' },
 };
 
 function Navigation(props) {

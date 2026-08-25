@@ -14,6 +14,7 @@ import { WEEK_IDS } from '../../constants/football';
 import { useLeague, useWeek, useYear } from '../AppState/app-state';
 import { FirebaseContext } from '../Firebase';
 import BenchingPage from '../pages/BenchingPage/benching-page';
+import CreateNewYearPage from '../pages/CreateNewYearPage/create-new-year-page';
 import FumbleSixPage from '../pages/FumbleSixPage';
 import HomePage from '../pages/Home/home';
 import LineupPage from '../pages/Lineup/lineup';
@@ -140,6 +141,7 @@ function App() {
         <Route path="/safety" element={<SafetyPage/>} />
         <Route path={LINKS.STARTS_ADMIN.path} element={<StartsAdminPage/>} />
         <Route path={LINKS.UPDATE_LOCK_DATES.path} element={<UpdateLockDatesPage/>} />
+        <Route path={LINKS.CREATE_NEW_YEAR.path} element={<CreateNewYearPage/>} />
       </Routes>
     </div>
   );
