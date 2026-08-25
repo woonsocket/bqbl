@@ -1,6 +1,6 @@
 # keys
 private-keys
-react-bqbl-fe/.env
+
 
 # deliberately-private
 private
@@ -18,9 +18,12 @@ react-bqbl-fe/.eslintrc.js
 .firebase/hosting.cmVhY3QtYnFibC1mZS9idWlsZA.cache
 .firebase/hosting.cHVibGlj.cache
 firebase-debug.log
+database-debug.log
 
-# build
+# build artifacts and the like
 web3/dist
+react-bqbl-fe/.env
+.venv
 
 # functions
 functions/node_modules/*
