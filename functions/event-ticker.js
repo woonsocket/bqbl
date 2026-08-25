@@ -1,5 +1,9 @@
 const admin = require('firebase-admin');
 const functions = require('firebase-functions/v1');
+const { defineSecret, defineString } = require('firebase-functions/params');
+
+const SLACK_WEBHOOK_URL = defineSecret('SLACK_WEBHOOK_URL');
+const SLACK_CHANNEL = defineString('SLACK_CHANNEL');
 
 // These string values are referenced by clients of the event ticker.
 class EventType {
@@ -16,7 +20,8 @@ class EventType {
  * /eventticker location for updates.
  */
 exports.onNewEvent =
-  functions.database.ref('/events/{year}/{week}/{type}/{eventId}')
+  functions.runWith({ secrets: [SLACK_WEBHOOK_URL] })
+    .database.ref('/events/{year}/{week}/{type}/{eventId}')
     .onCreate((snap, context) => {
       const {year, week, type} = context.params;
       return processEvent(snap.val(), type, year, week);
@@ -57,8 +62,8 @@ function processEvent(event, rawType, year, week) {
 }
 
 function sendToSlack(eventType, playerName, team, desc) {
-  const slackUrl = functions.config().slack.webhook_url;
-  const channel = functions.config().slack.channel;
+  const slackUrl = SLACK_WEBHOOK_URL.value();
+  const channel = SLACK_CHANNEL.value();
   if (!slackUrl || !channel) {
     console.log('skipping Slack send because Slack is not configured');
     return Promise.resolve();

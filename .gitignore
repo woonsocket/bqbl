@@ -31,3 +31,5 @@ functions/firebase-debug.log
 functions/database-debug.log
 functions/ui-debug.log
 database-debug.log
+functions/.env.*.local
+functions/.secret.local
