@@ -2,6 +2,24 @@ const admin = require('firebase-admin');
 const entries = require('object.entries');
 const functions = require('firebase-functions/v1');
 
+/**
+ * Throws if the caller isn't signed in as one of the admins listed at
+ * /roles/admins in the database -- the same check database.rules.json uses
+ * for admin-only writes.
+ */
+async function requireAdmin(context) {
+  if (!context.auth) {
+    throw new functions.https.HttpsError(
+      'unauthenticated', 'You must be signed in to do this.');
+  }
+  const snapshot = await admin.database()
+    .ref(`/roles/admins/${context.auth.uid}`).once('value');
+  if (!snapshot.exists()) {
+    throw new functions.https.HttpsError(
+      'permission-denied', 'You must be an admin to do this.');
+  }
+}
+
 exports.addPlayerToLeague = functions.https.onCall((data, context) => {
   const league = data.league;
   const name = data.name;
@@ -76,7 +94,8 @@ function ensureLeagueSettings(leagueId, year) {
       .ref(`/leaguespec/${leagueId}/settings/${year}`).set({ dh: false }));
 }
 
-exports.createLeague = functions.https.onCall((data, context) => {
+exports.createLeague = functions.https.onCall(async (data, context) => {
+  await requireAdmin(context);
   return ensureLeagueSettings(data.league, data.year);
 });
 
@@ -89,7 +108,8 @@ exports.createLeague = functions.https.onCall((data, context) => {
  * league: string
  * year: string, the new year to set up
  */
-exports.startNewYear = functions.https.onCall((data, context) => {
+exports.startNewYear = functions.https.onCall(async (data, context) => {
+  await requireAdmin(context);
   const league = data.league;
   const year = data.year;
   const prevYear = String(Number(year) - 1);
@@ -128,7 +148,8 @@ exports.startNewYear = functions.https.onCall((data, context) => {
  * year: string
  * teams: array of team abbreviations, one per draft slot
  */
-exports.randomizeDraft = functions.https.onCall((data, context) => {
+exports.randomizeDraft = functions.https.onCall(async (data, context) => {
+  await requireAdmin(context);
   const league = data.league;
   const year = data.year;
   const teams = data.teams;
@@ -156,7 +177,8 @@ exports.randomizeDraft = functions.https.onCall((data, context) => {
   });
 });
 
-exports.finalizeDraft = functions.https.onCall((data, context) => {
+exports.finalizeDraft = functions.https.onCall(async (data, context) => {
+  await requireAdmin(context);
   const leagueId = data.league;
   const year = data.year;
   return admin.database()
@@ -178,7 +200,8 @@ exports.finalizeDraft = functions.https.onCall((data, context) => {
  * Read in a league spec from /leaguespec/{LEAGUEID}.
  * Write out all of the starts for that league.
  */
-exports.createNewYear = functions.https.onCall((data, context) => {
+exports.createNewYear = functions.https.onCall(async (data, context) => {
+  await requireAdmin(context);
   const league = data.league;
   const year = data.year;
   return admin.database()
