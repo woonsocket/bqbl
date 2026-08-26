@@ -33,6 +33,7 @@ class Firebase {
     if (process.env.REACT_APP_USE_EMULATORS === "true") {
       this.functions.useEmulator("localhost", 5001);
       this.db.useEmulator("localhost", 9000);
+      this.auth.useEmulator("http://localhost:9099");
     }
   }
 
@@ -159,8 +160,8 @@ class Firebase {
     return this.db.ref(uri).set(teams);
   }
 
-  draftTeam() {
-    return this.functions.httpsCallable("draftTeam");
+  draftTeam(league, year, team, uidOverride) {
+    return this.functions.httpsCallable("draftTeam")({ league, year, team, uidOverride });
   }
 
   getDraftThen(league, year, cb) {

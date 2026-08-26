@@ -31,7 +31,7 @@ export const LINKS = {
   PLAYER_STANDINGS: { path: PLAYER_STANDINGS, text: 'Player Standings' },
   TEAM_SCORES: { path: TEAM_SCORES, text: 'Team Scores' },
   TEAM_STANDINGS: { path: TEAM_STANDINGS, text: 'Team Standings' },
-  DRAFT: { path: DRAFT, text: 'Draft', hidden: true },
+  DRAFT: { path: DRAFT, text: 'Draft' },
   BENCHING: { path: BENCHING, text: 'Benching' },
   TWENTYFOUR: { path: TWENTYFOUR, text: '24/7 Points' },
   FUMBLESIX: { path: FUMBLESIX, text: 'Fumble Sixes' },

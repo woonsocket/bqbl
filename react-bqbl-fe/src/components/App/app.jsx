@@ -15,6 +15,7 @@ import { useLeague, useWeek, useYear } from '../AppState/app-state';
 import { FirebaseContext } from '../Firebase';
 import BenchingPage from '../pages/BenchingPage/benching-page';
 import CreateNewYearPage from '../pages/CreateNewYearPage/create-new-year-page';
+import DraftPage from '../pages/DraftPage/draft-page';
 import FumbleSixPage from '../pages/FumbleSixPage';
 import HomePage from '../pages/Home/home';
 import LineupPage from '../pages/Lineup/lineup';
@@ -142,6 +143,7 @@ function App() {
         <Route path={LINKS.STARTS_ADMIN.path} element={<StartsAdminPage/>} />
         <Route path={LINKS.UPDATE_LOCK_DATES.path} element={<UpdateLockDatesPage/>} />
         <Route path={LINKS.CREATE_NEW_YEAR.path} element={<CreateNewYearPage/>} />
+        <Route path={LINKS.DRAFT.path} element={<DraftPage/>} />
       </Routes>
     </div>
   );
