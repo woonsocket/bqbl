@@ -449,8 +449,10 @@ def main():
             continue
         data = resp.json()
 
-        home_id = data['data']['viewer']['gameDetail']['homeTeam']['id']
-        away_id = data['data']['viewer']['gameDetail']['visitorTeam']['id']
+        game_detail = data['data']['viewer']['gameDetail']
+        home_id = game_detail['homeTeam']['id']
+        away_id = game_detail['visitorTeam']['id']
+        phase = game_detail['phase']
 
         url = ('https://api.nfl.com/experience/v1/stats/{0}/players'
                .format(id))
@@ -487,11 +489,7 @@ def main():
             season, week, id, game_ids_to_url_slugs.get(id, ''), data,
             players, home_team, away_team)
         scrape_status[id]['lastScrape'] = now.timestamp()
-        # TODO: We shouldn't be parsing data here.
-        try:
-            scrape_status[id]['isFinal'] = data['viewer']['phase'] == 'FINAL'
-        except:
-            scrape_status[id]['isFinal'] = False
+        scrape_status[id]['isFinal'] = phase == 'FINAL'
 
     # Log which teams were updated. In prod, we'll write this to disk for later
     # inspection.
