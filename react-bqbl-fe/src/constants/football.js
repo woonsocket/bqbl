@@ -64,8 +64,8 @@ export function footballWeek() {
     day += 365;
   }
   // ANNUAL UPDATE
-  // Day 253 is Thursday, September 10, 2026
-  let week = Math.ceil((day - 253) / 7);
+  // Day 253 is Thursday of Week 1 (September 10, 2026)
+  let week = Math.ceil((day - 253 + 1) / 7);
   if (week < 1) {
     week = 1;
   }
